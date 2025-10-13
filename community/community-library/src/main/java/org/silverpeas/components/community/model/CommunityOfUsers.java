@@ -28,11 +28,11 @@ import org.silverpeas.components.community.repository.CommunityOfUsersRepository
 import org.silverpeas.core.admin.component.model.InheritableSpaceRoles;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
+import org.silverpeas.core.admin.service.CommunityMembersGroup;
+import org.silverpeas.core.admin.service.CommunityMembershipService;
 import org.silverpeas.core.admin.space.SpaceHomePageType;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
-import org.silverpeas.core.admin.service.AppManagedGroupService;
-import org.silverpeas.core.admin.service.AppManagedGroupDetail;
 import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
@@ -45,6 +45,7 @@ import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.kernel.annotation.NonNull;
+import org.silverpeas.kernel.annotation.Nullable;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.util.Pair;
@@ -362,7 +363,7 @@ public class CommunityOfUsers
    * @implSpec the user will be removed from all the roles of the parent space (the community space)
    * and then his membership status is updated to {@link MembershipStatus#REMOVED}.
    */
-  public CommunityMembership removeMembership(final User user) {
+  public @Nullable CommunityMembership removeMembership(final User user) {
     return Transaction.performInOne(() -> {
       getCommunitySpace().removeUser(user);
       return getMembershipsProvider().get(user)
@@ -413,7 +414,7 @@ public class CommunityOfUsers
       // to ensure the community is removed (and hence its link to the group) before deleting the
       // referenced group
       repository.flush();
-      getCommunitySpace().deleteMembersGroup();
+      getCommunitySpace().delete();
       return null;
     });
   }
@@ -434,18 +435,11 @@ public class CommunityOfUsers
     if (!isPersisted()) {
       return null;
     }
-    GroupDetail group;
     try {
-      if (groupId == null) {
-        SpaceInst spaceInst = getCommunitySpace().getSilverpeasSpace();
-        group = getCommunitySpace().createMembersGroup(spaceInst);
-      } else {
-        group = getCommunitySpace().getMembersGroup();
-      }
+      return getCommunitySpace().getMembersGroup();
     } catch (AdminException e) {
       throw new SilverpeasRuntimeException(e);
     }
-    return group;
   }
 
   @Override
@@ -518,9 +512,7 @@ public class CommunityOfUsers
     private static final SettingBundle settings = ResourceLocator.getSettingBundle(
         "org.silverpeas.components.community.settings.communitySettings");
 
-    private final AppManagedGroupService groupService;
-    private final Administration administration = Administration.get();
-    private final User currentUser;
+    private final CommunityMembershipService communityService = CommunityMembershipService.get();
     private final CommunityOfUsers community;
 
     /**
@@ -531,8 +523,6 @@ public class CommunityOfUsers
      */
     public CommunitySpace(CommunityOfUsers community) {
       this.community = community;
-      groupService = AppManagedGroupService.get();
-      currentUser = User.getCurrentRequester();
     }
 
     /**
@@ -551,10 +541,8 @@ public class CommunityOfUsers
       Objects.requireNonNull(user);
       Objects.requireNonNull(role);
       execute(() -> {
-        var space = getSilverpeasSpace();
-        var profile = getSpaceProfile(role, space);
-        addUserInSpaceProfile(user, profile);
-        addUserInMembershipGroup(user, space);
+        var group = getMembersGroup();
+        communityService.addMember(user, group, role);
       });
     }
 
@@ -570,24 +558,20 @@ public class CommunityOfUsers
     public void removeUser(@NonNull User user) {
       Objects.requireNonNull(user);
       execute(() -> {
-        var space = getSilverpeasSpace();
-        removeUserFromAllSpaceProfiles(user, space);
-        removeUserFromMembershipGroup(user);
+        var group = getMembersGroup();
+        communityService.removeMember(user, group);
       });
     }
 
     /**
-     * Deletes definitely the members group associated with this community space. This method is to
-     * be invoked in community deletion. If no members group has been created before the deletion of
-     * a space, then nothing is done.
+     * Deletes this community space. This will delete the members groups associated with this
+     * community space and, in the case the actual space yet exists, it unset it as a community
+     * space (the space becomes then an usual collaborative space).
      */
-    private void deleteMembersGroup() {
-      execute(() -> {
-        var group = getMembersGroup();
-        if (group != null) {
-          groupService.deleteGroup(group);
-        }
-      });
+    public void delete() {
+      execute(() ->
+          communityService.deleteCommunity(community.spaceId,
+              community.groupId == null ? null : String.valueOf(community.groupId)));
     }
 
     /**
@@ -640,66 +624,18 @@ public class CommunityOfUsers
       return new SynchronizationTask();
     }
 
-    private SpaceProfileInst getSpaceProfile(SilverpeasRole role, SpaceInst space)
-        throws AdminException {
-      var profile = space.getDirectSpaceProfileInst(role.getName());
-      if (profile == null) {
-        profile = new SpaceProfileInst();
-        profile.setName(role.getName());
-        profile.setSpaceFatherId(space.getId());
-        profile.setInherited(false);
-        administration.addSpaceProfileInst(profile, currentUser.getId());
-        space.addSpaceProfileInst(profile);
-      }
-      return profile;
-    }
-
-    private void addUserInSpaceProfile(User user, SpaceProfileInst profile) throws AdminException {
-      if (!isUserHasProfile(user, profile)) {
-        profile.addUser(user.getId());
-        administration.updateSpaceProfileInst(profile, currentUser.getId());
-      }
-    }
-
-    private void addUserInMembershipGroup(User user, SpaceInst space) throws AdminException {
-      var group = getMembersGroup();
-      boolean newGroup = group == null;
-      if (newGroup) {
-        group = createMembersGroup(space);
-      }
-      if (newGroup || !isUserInGroup(user, group)) {
-        administration.addUserInGroup(user.getId(), group.getId());
-      }
-    }
-
     /**
-     * Creates the group of the members for the specified community space.
+     * Creates the group of the members for this community space.
      *
-     * @param space an existing community space in Silverpeas
      * @return the created group of members
      * @throws AdminException if an error occurs while creating the group of members.
      */
-    private AppManagedGroupDetail createMembersGroup(SpaceInst space) throws AdminException {
-      String groupName = settings.getString("community.group.symbol", "") + " " +
-          space.getName();
-      AppManagedGroupDetail group = new AppManagedGroupDetail(groupName.trim(),
-          community.componentInstanceId);
-      groupService.createGroup(group);
+    private CommunityMembersGroup createMembersGroup() throws AdminException {
+      String symbol = settings.getString("community.group.symbol", "");
+      var group = communityService.setUpCommunity(community.spaceId, symbol);
       community.groupId = Integer.parseInt(group.getId());
       community.save();
-      var profile = getSpaceProfile(SilverpeasRole.READER, space);
-      profile.addGroup(group.getId());
-      administration.updateSpaceProfileInst(profile, currentUser.getId());
       return group;
-    }
-
-    private void removeUserFromAllSpaceProfiles(User user, SpaceInst space) {
-      streamOnNonInheritedSpaceProfiles(space)
-          .filter(p -> isUserHasProfile(user, p))
-          .forEach(p -> execute(() -> {
-            p.removeUser(user.getId());
-            administration.updateSpaceProfileInst(p, currentUser.getId());
-          }));
     }
 
     private Stream<SpaceProfileInst> streamOnNonInheritedSpaceProfiles(SpaceInst space) {
@@ -707,42 +643,32 @@ public class CommunityOfUsers
           .filter(not(SpaceProfileInst::isManager).and(not(SpaceProfileInst::isInherited)));
     }
 
-    private void removeUserFromMembershipGroup(User user) throws AdminException {
-      var group = getMembersGroup();
-      if (group != null && isUserInGroup(user, group)) {
-        administration.removeUserFromGroup(user.getId(), group.getId());
-      }
-    }
-
-    private AppManagedGroupDetail getMembersGroup() throws AdminException {
+    private CommunityMembersGroup getMembersGroup() throws AdminException {
+      CommunityMembersGroup group;
       if (community.groupId == null) {
-        return null;
+        group = createMembersGroup();
+      } else {
+        group = communityService.getGroup(String.valueOf(community.groupId));
+        if (group == null) {
+          throw new IllegalStateException(
+              "No group of members defined for the community " + this.community.getId());
+        }
+
+        // check the symbol for group of members didn't change
+        String symbol = settings.getString("community.group.symbol", "") + " ";
+        SpaceInst space = getSilverpeasSpace();
+        if ((symbol.isBlank() && !group.getName().equals(space.getName())) ||
+            (!symbol.isBlank() && !group.getName().startsWith(symbol))) {
+          group.setName((symbol + space.getName()).trim());
+          communityService.updateGroup(group);
+        }
       }
-      AppManagedGroupDetail group = groupService.getGroup(String.valueOf(community.groupId));
-      if (group == null) {
-        return null;
-      }
-      // check the symbol for group of members didn't change
-      String symbol = settings.getString("community.group.symbol", "") + " ";
-      SpaceInst space = getSilverpeasSpace();
-      if ((symbol.isBlank() && !group.getName().equals(space.getName())) ||
-          (!symbol.isBlank() && !group.getName().startsWith(symbol))) {
-        group.setName((symbol + space.getName()).trim());
-        groupService.updateGroup(group);
-      }
+
       return group;
     }
 
     private SpaceInst getSilverpeasSpace() throws AdminException {
-      return administration.getSpaceInstById(community.spaceId);
-    }
-
-    private boolean isUserInGroup(User user, GroupDetail group) {
-      return List.of(group.getUserIds()).contains(user.getId());
-    }
-
-    public boolean isUserHasProfile(User user, SpaceProfileInst profile) {
-      return profile.getAllUsers().contains(user.getId());
+      return communityService.getCommunity(community.spaceId);
     }
 
     private void execute(AdminTask task) {
@@ -782,11 +708,8 @@ public class CommunityOfUsers
             // if there is no users, no need of synchronization
             return;
           }
-          var space = CommunitySpace.this.getSilverpeasSpace();
+          var administration = Administration.get();
           var group = getMembersGroup();
-          if (group == null) {
-            group = createMembersGroup(space);
-          }
           var members = Set.of(group.getUserIds());
 
           // ensure the users playing a role in the community space are also in the members group
