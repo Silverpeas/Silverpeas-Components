@@ -34,6 +34,8 @@ import org.silverpeas.components.community.repository.CommunityMembershipReposit
 import org.silverpeas.components.community.repository.CommunityOfUsersRepository;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
+import org.silverpeas.core.admin.service.CommunityMembershipService;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.space.SpaceHomePageType;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
@@ -52,6 +54,8 @@ import org.silverpeas.core.persistence.datasource.model.jpa.JpaPersistOperation;
 import org.silverpeas.core.persistence.datasource.model.jpa.JpaUpdateOperation;
 import org.silverpeas.core.test.unit.EntityIdSetter;
 import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.kernel.test.annotations.TestManagedBean;
 import org.silverpeas.kernel.test.annotations.TestManagedBeans;
 import org.silverpeas.kernel.test.annotations.TestManagedMock;
 import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
@@ -84,8 +88,12 @@ import static org.mockito.Mockito.*;
 class CommunityOfUsersTest {
 
   private static final String USER_ID = "0";
+
+  /* A given community space with its community membership management application */
   private static final String SPACE_ID = "WA42";
   private static final String INSTANCE_ID = "community42";
+
+  /* The roles played in the community space */
   private static final String[] SPACE_MANAGERS = new String[]{"0"};
   private static final String[] ADMINS = new String[]{"1"};
   private static final String[] PUBLISHERS = new String[]{"2", "3"};
@@ -93,6 +101,11 @@ class CommunityOfUsersTest {
   private static final String[] READERS = new String[]{"6"};
   private static final String[] INHERITED_MANAGERS = new String[]{"42"};
   private static final String NO_MEMBER = "666";
+
+  @TestManagedMock Administration administration;
+  @TestManagedMock
+  OrganizationController organization;
+  @TestManagedBean CommunityMembershipService service;
 
   @TestManagedMock
   EntityManagerProvider entityManagerProvider;
@@ -108,7 +121,7 @@ class CommunityOfUsersTest {
 
 
   @BeforeEach
-  public void fillMembers() {
+  void fillMembers() {
     members.addAll(List.of(ADMINS));
     members.addAll(List.of(PUBLISHERS));
     members.addAll(List.of(WRITERS));
@@ -116,9 +129,8 @@ class CommunityOfUsersTest {
   }
 
   @BeforeEach
-  public void mockRequiredResources(
-      @TestManagedMock Administration administration,
-      @TestManagedMock UserProvider userProvider) throws AdminException {
+  void mockRequiredResources() throws AdminException {
+    UserProvider userProvider = ServiceProvider.getService(UserProvider.class);
     mockUsersProviding(userProvider);
 
     // for the current requester. Requires the user providing to be mocked
@@ -520,6 +532,7 @@ class CommunityOfUsersTest {
       SpaceInst space = mock(SpaceInst.class);
       when(space.getId()).thenReturn(spaceId);
       when(space.getName()).thenReturn("My community");
+      when(space.isCommunitySpace()).thenReturn(true);
       if (profiles.isEmpty()) {
         when(space.getAllSpaceProfilesInst()).thenAnswer(j -> {
           initProfiles(spaceId, profiles);
@@ -564,6 +577,7 @@ class CommunityOfUsersTest {
     when(administration.getGroup(anyString())).thenAnswer(i -> {
       GroupDetail group = new GroupDetail();
       group.setName("foo");
+      group.setSpaceId(SPACE_ID);
       group.setId(i.getArgument(0));
       return group;
     });
