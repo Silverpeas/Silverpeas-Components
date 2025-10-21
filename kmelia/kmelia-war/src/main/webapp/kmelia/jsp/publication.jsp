@@ -71,13 +71,10 @@
   Integer rang = (Integer) request.getAttribute("Rang");
   Integer nbPublis = (Integer) request.getAttribute("NbPublis");
   String language = (String) request.getAttribute("Language");
-  List languages = (List) request.getAttribute("Languages");
+  List<String> languages = (List<String>) request.getAttribute("Languages");
   String contentLanguage = (String) request.getAttribute("ContentLanguage");
   String singleFileURL = (String) request.getAttribute("SingleAttachmentURL");
   boolean userCanValidate = (Boolean) request.getAttribute("UserCanValidate");
-  ValidationStep validation = (ValidationStep) request.getAttribute("ValidationStep");
-  int validationType = (Integer) request.getAttribute("ValidationType");
-  boolean isWriterApproval = (Boolean) request.getAttribute("WriterApproval");
   boolean notificationAllowed = (Boolean) request.getAttribute("NotificationAllowed");
   boolean ratingsAllowed = (Boolean) request.getAttribute("PublicationRatingsAllowed");
   boolean attachmentsEnabled = (Boolean) request.getAttribute("AttachmentsEnabled");
@@ -85,7 +82,7 @@
   boolean lastVisitorsEnabled = (Boolean) request.getAttribute("LastVisitorsEnabled");
   boolean draftOutTaxonomyOK = (Boolean) request.getAttribute("TaxonomyOK");
   int searchScope = (Integer) request.getAttribute("SearchScope");
-  boolean isBasket = false;
+  boolean isBasket = kmeliaScc.getCurrentFolder().isBin();
   String indexIt = "0";
   if (kmeliaScc.isIndexable(kmeliaPublication.getDetail())) {
     indexIt = "1";
@@ -153,16 +150,22 @@
   boolean isOwner = false;
 
   // display message according to previous action
-  if (action.equals("ValidationComplete") || action.equals("ValidationInProgress") || action.equals("Unvalidate") || action.equals("Suspend")) {
-    if (action.equals("ValidationComplete")) {
-      screenMessage = "<div class=\"inlineMessage-ok\">" + resources.getString("PubValidate") + "</div>";
-    } else if (action.equals("ValidationInProgress")) {
-      screenMessage = "<div class=\"inlineMessage\">" + resources.getString("kmelia.PublicationValidationInProgress") + "</div>";
-    } else if (action.equals("Unvalidate")) {
-      screenMessage = "<div class=\"inlineMessage-nok\">" + resources.getString("PublicationRefused") + "</div>";
-    } else if (action.equals("Suspend")) {
-      screenMessage = "<div class=\"inlineMessage-nok\">" + resources.getString("kmelia.PublicationSuspended") + "</div>";
-    }
+  if (action.equals("ValidationComplete") || action.equals("ValidationInProgress")
+          || action.equals("Unvalidate") || action.equals("Suspend")) {
+      switch (action) {
+          case "ValidationComplete":
+              screenMessage = "<div class=\"inlineMessage-ok\">" + resources.getString("PubValidate") + "</div>";
+              break;
+          case "ValidationInProgress":
+              screenMessage = "<div class=\"inlineMessage\">" + resources.getString("kmelia.PublicationValidationInProgress") + "</div>";
+              break;
+          case "Unvalidate":
+              screenMessage = "<div class=\"inlineMessage-nok\">" + resources.getString("PublicationRefused") + "</div>";
+              break;
+          case "Suspend":
+              screenMessage = "<div class=\"inlineMessage-nok\">" + resources.getString("kmelia.PublicationSuspended") + "</div>";
+              break;
+      }
     action = "ViewPublication";
   }
 
@@ -179,7 +182,7 @@
               .getStringWithParams("kmelia.publication.tovalidate.state.by", validatorNames);
         }
       }
-      if (userCanValidate) {
+      if (userCanValidate && !isBasket) {
         screenMessage += "<br/>" + resources.getString("kmelia.publication.tovalidate.action")+"<br/>";
         screenMessage += "<a href=\"javascript:onclick=pubValidate()\" class=\"button validate\"><span>"+resources.getString("PubValidate?")+"</span></a>";
         screenMessage += "<a href=\"javascript:onclick=pubUnvalidate()\" class=\"button refuse\"><span>"+resources.getString("PubUnvalidate?")+"</span></a>";
@@ -192,7 +195,6 @@
 
   if (action.equals("ValidateView")) {
     kmeliaScc.setSessionOwner(true);
-    action = "UpdateView";
     isOwner = true;
   } else {
     isOwner = KmeliaPublicationHelper.isUserConsideredAsOwner(contextComponentId, currentUser.getId(), profile, ownerDetail);
@@ -368,11 +370,11 @@
 
     function pubSuspend() {
       document.pubForm.PubId.value = "<%=id%>";
-      url = "WantToSuspendPubli?PubId="+<%=id%>;
-      windowName = "suspendMotiveWindow";
-      larg = "550";
-      haut = "350";
-      windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
+      const url = "WantToSuspendPubli?PubId="+<%=id%>;
+      const windowName = "suspendMotiveWindow";
+      const larg = "550";
+      const haut = "350";
+      const windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
       if (!suspendMotiveWindow.closed && suspendMotiveWindow.name== "suspendMotiveWindow")
         suspendMotiveWindow.close();
       suspendMotiveWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
@@ -446,8 +448,9 @@
       <% if (StringUtil.isDefined(singleFileURL)) {
           out.print("url = \"" + WebEncodeHelper.javaStringToJsString(singleFileURL) + "\";");
       %>
-      windowName = "attachmentWindow";
-      windowParams = "directories=1,menubar=1,toolbar=1,location=1,resizable=1,scrollbars=1,status=1,alwaysRaised";
+      const windowName = "attachmentWindow";
+      const windowParams =
+          "directories=1,menubar=1,toolbar=1,location=1,resizable=1,scrollbars=1,status=1,alwaysRaised";
       if (!attachmentWindow.closed && attachmentWindow.name== "attachmentWindow")
         attachmentWindow.close();
 
