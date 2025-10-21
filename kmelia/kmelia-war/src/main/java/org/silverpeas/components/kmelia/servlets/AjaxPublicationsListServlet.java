@@ -244,13 +244,15 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       ctx.setLinksAllowed(false).setSeeAlso(true);
       // get selected publication ids from session
       ctx.setSelectedPublications(processPublicationsToLink(req));
-      kmeliaSC.setCurrentFolderId(currentTopic.getNodePK().getId(), true);
       if (sort != null) {
         kmeliaSC.getSort().setCurrentSort(sort);
         kmeliaSC.getSort().setExplicitSort(true);
       }
-      kmeliaSC.loadPublicationsOfCurrentFolder();
-      var publications = kmeliaSC.getSessionPublicationsList();
+      var publications = kmeliaSC.getKmeliaService()
+          .getAuthorizedPublicationsOfFolder(new NodePK(currentTopic.getNodePK().getId(),
+                  currentTopic.getNodePK().getComponentInstanceId()),
+              kmeliaSC.getUserTopicProfile(currentTopic.getNodePK().getId()), kmeliaSC.getUserId()
+              ,kmeliaSC.isTreeStructure());
       ctx.setPublications(publications);
     } else if (toPortlet) {
       ctx.setSortAllowed(false);
