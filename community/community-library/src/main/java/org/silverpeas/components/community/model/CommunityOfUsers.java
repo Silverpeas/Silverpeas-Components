@@ -48,6 +48,7 @@ import org.silverpeas.kernel.annotation.NonNull;
 import org.silverpeas.kernel.annotation.Nullable;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.util.Mutable;
 import org.silverpeas.kernel.util.Pair;
 
 import javax.annotation.Nonnull;
@@ -436,7 +437,7 @@ public class CommunityOfUsers
       return null;
     }
     try {
-      return getCommunitySpace().getMembersGroup();
+      return getCommunitySpace().getOrCreateMembersGroup();
     } catch (AdminException e) {
       throw new SilverpeasRuntimeException(e);
     }
@@ -541,7 +542,7 @@ public class CommunityOfUsers
       Objects.requireNonNull(user);
       Objects.requireNonNull(role);
       execute(() -> {
-        var group = getMembersGroup();
+        var group = getOrCreateMembersGroup();
         communityService.addMember(user, group, role);
       });
     }
@@ -558,7 +559,7 @@ public class CommunityOfUsers
     public void removeUser(@NonNull User user) {
       Objects.requireNonNull(user);
       execute(() -> {
-        var group = getMembersGroup();
+        var group = getOrCreateMembersGroup();
         communityService.removeMember(user, group);
       });
     }
@@ -615,6 +616,21 @@ public class CommunityOfUsers
     }
 
     /**
+     * Gets the group of members of this community.
+     *
+     * @return optionally the group of members or nothing if the group hasn't been yet created.
+     */
+    Optional<CommunityMembersGroup> getMembersGroup() {
+      if (community.groupId == null) {
+        return Optional.empty();
+      }
+      Mutable<CommunityMembersGroup> group = Mutable.empty();
+      execute(() ->
+          group.set(communityService.getGroup(String.valueOf(community.groupId))));
+      return Optional.ofNullable(group.get());
+    }
+
+    /**
      * Gets a synchronization task related to ensure the community space data are up-to-date with
      * the membership of a user. This method is for the {@link CommunityMembershipsProvider}.
      *
@@ -643,16 +659,14 @@ public class CommunityOfUsers
           .filter(not(SpaceProfileInst::isManager).and(not(SpaceProfileInst::isInherited)));
     }
 
-    private CommunityMembersGroup getMembersGroup() throws AdminException {
+    private CommunityMembersGroup getOrCreateMembersGroup() throws AdminException {
       CommunityMembersGroup group;
       if (community.groupId == null) {
         group = createMembersGroup();
       } else {
-        group = communityService.getGroup(String.valueOf(community.groupId));
-        if (group == null) {
-          throw new IllegalStateException(
-              "No group of members defined for the community " + this.community.getId());
-        }
+        group = getMembersGroup()
+            .orElseThrow(() -> new IllegalStateException(
+                "No group of members defined for the community " + this.community.getId()));
 
         // check the symbol for group of members didn't change
         String symbol = settings.getString("community.group.symbol", "") + " ";
@@ -709,7 +723,7 @@ public class CommunityOfUsers
             return;
           }
           var administration = Administration.get();
-          var group = getMembersGroup();
+          var group = getOrCreateMembersGroup();
           var members = Set.of(group.getUserIds());
 
           // ensure the users playing a role in the community space are also in the members group
