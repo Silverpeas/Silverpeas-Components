@@ -173,7 +173,7 @@
 </view:sp-head-part>
 <view:sp-body-part cssClass="yui-skin-sam treeView" id="${componentId}">
   <div compile-directive style="display: none"></div>
-  <div id="<%=componentId %>" class="${profile}">
+  <div class="${profile}">
   <%
     Window window = gef.getWindow();
     BrowseBar browseBar = window.getBrowseBar();
@@ -1026,14 +1026,14 @@
         <%=I18NHelper.getFormLine(resources, null, kmeliaScc.getLanguage())%>
         <tr>
           <td class="txtlibform"><fmt:message key="TopicTitle"/> :</td>
-          <td><input type="text" name="Name" id="folderName" size="60" maxlength="60"/>
+          <td><input type="text" name="Name" id="folderName" maxlength="60"/>
             <input type="hidden" name="ParentId" id="parentId"/>
             <input type="hidden" name="ChildId" id="topicId"/>&nbsp;<img src="<c:out value="${mandatoryFieldUrl}" />" width="5" height="5" alt=""/></td>
         </tr>
 
         <tr>
           <td class="txtlibform"><fmt:message key="TopicDescription" /> :</td>
-          <td><input type="text" name="Description" id="folderDescription" size="60" maxlength="200"/></td>
+          <td><input type="text" name="Description" id="folderDescription" maxlength="200"/></td>
         </tr>
 
         <% if (kmeliaScc.isNotificationAllowed()) { %>
