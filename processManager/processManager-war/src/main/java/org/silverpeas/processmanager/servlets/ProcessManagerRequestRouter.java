@@ -589,6 +589,7 @@ public class ProcessManagerRequestRouter
 
         // Set the form context
         PagesContext context = getFormContext("actionForm", "0", session, true);
+        context.setCreation(true);
         request.setAttribute("context", context);
 
         // Get the form data
