@@ -25,19 +25,12 @@ package org.silverpeas.components.suggestionbox.web;
 
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.web.SilverpeasWebResource;
 import org.silverpeas.core.web.rs.WebEntity;
 import org.silverpeas.core.webapi.rating.RaterRatingEntity;
 import org.silverpeas.core.webapi.validation.ContributionValidationEntity;
-import org.springframework.util.ReflectionUtils;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
-import java.lang.reflect.Field;
+import javax.xml.bind.annotation.*;
 import java.net.URI;
 import java.util.Date;
 
@@ -49,6 +42,7 @@ import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceU
  * an HTTP response or an HTTP request.
  * @author mmoquillon
  */
+@SuppressWarnings("unused")
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.PROPERTY)
 public class SuggestionEntity implements WebEntity {
@@ -186,13 +180,7 @@ public class SuggestionEntity implements WebEntity {
   }
 
   protected void setId(String id) {
-    try {
-      Field idField = ReflectionUtils.findField(Suggestion.class, "id");
-      idField.setAccessible(true);
-      ReflectionUtils.setField(idField, suggestion, new UuidIdentifier().fromString(id));
-    } catch (Exception ex) {
-      throw new RuntimeException(ex.getMessage(), ex);
-    }
+    suggestion.setId(id);
   }
 
   protected SuggestionEntity decorate(final Suggestion suggestion) {

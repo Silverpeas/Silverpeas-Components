@@ -38,22 +38,15 @@ import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifie
 import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
 import org.silverpeas.core.util.Process;
 
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 /**
- * This entity represents a suggestion associated to a suggestion box.
- * A suggestion is described by a title and by a rich content. The rich content is managed by
- * the {@link WysiwygController} object and it is not persisted
- * into the database.
+ * This entity represents a suggestion associated to a suggestion box. A suggestion is described by
+ * a title and by a rich content. The rich content is managed by the {@link WysiwygController}
+ * object and it is not persisted into the database.
+ *
  * @author Yohann Chastagnier
  */
 @Entity
@@ -67,13 +60,14 @@ public class Suggestion extends SilverpeasJpaEntity<Suggestion, UuidIdentifier>
 
   /**
    * Gets the suggestion with the specified unique identifier.
+   *
    * @param identifier the unique identifier of a suggestion.
-   * @return either NONE suggestion if it exists no suggestions with the specified identifier or
-   * the asked suggestion.
+   * @return either NONE suggestion if it exists no suggestions with the specified identifier or the
+   * asked suggestion.
    */
   public static Suggestion getById(String identifier) {
     Suggestion suggestion = SuggestionRepository.get().getById(identifier);
-    return (suggestion == null ? Suggestion.NONE:suggestion);
+    return (suggestion == null ? Suggestion.NONE : suggestion);
   }
 
   /**
@@ -109,6 +103,7 @@ public class Suggestion extends SilverpeasJpaEntity<Suggestion, UuidIdentifier>
 
   /**
    * Constructs a new suggestion with the specified title.
+   *
    * @param title the suggestion title.
    */
   public Suggestion(String title) {
@@ -117,6 +112,7 @@ public class Suggestion extends SilverpeasJpaEntity<Suggestion, UuidIdentifier>
 
   /**
    * Gets the foreign suggestion box of the suggestion.
+   *
    * @return the suggestion box of the suggestion.
    */
   public SuggestionBox getSuggestionBox() {
@@ -125,6 +121,7 @@ public class Suggestion extends SilverpeasJpaEntity<Suggestion, UuidIdentifier>
 
   /**
    * Gets the title of this suggestion.
+   *
    * @return the suggestion title.
    */
   @Override
@@ -134,6 +131,7 @@ public class Suggestion extends SilverpeasJpaEntity<Suggestion, UuidIdentifier>
 
   /**
    * Sets a new title to this suggestion.
+   *
    * @param newTitle the new title. Cannot be null or empty.
    */
   public void setTitle(String newTitle) {
@@ -142,6 +140,7 @@ public class Suggestion extends SilverpeasJpaEntity<Suggestion, UuidIdentifier>
 
   /**
    * Sets the specified content to this suggestion.
+   *
    * @param content the suggestion's content to set.
    */
   public void setContent(String content) {
@@ -154,6 +153,7 @@ public class Suggestion extends SilverpeasJpaEntity<Suggestion, UuidIdentifier>
 
   /**
    * Gets the content of this suggestion.
+   *
    * @return the suggestion's content.
    */
   public String getContent() {
@@ -162,6 +162,7 @@ public class Suggestion extends SilverpeasJpaEntity<Suggestion, UuidIdentifier>
 
   /**
    * Sets the number of comment that were posted on this suggestion.
+   *
    * @param count the number of comments.
    */
   public void setCommentCount(int count) {
@@ -170,6 +171,7 @@ public class Suggestion extends SilverpeasJpaEntity<Suggestion, UuidIdentifier>
 
   /**
    * Gets the count of comments on this suggestion.
+   *
    * @return the number of comments.
    */
   public int getCommentCount() {
@@ -183,6 +185,7 @@ public class Suggestion extends SilverpeasJpaEntity<Suggestion, UuidIdentifier>
 
   /**
    * Sets the rating on the suggestion.
+   *
    * @param contributionRating the rating of the suggestion.
    */
   public void setRating(final ContributionRating contributionRating) {
@@ -196,6 +199,7 @@ public class Suggestion extends SilverpeasJpaEntity<Suggestion, UuidIdentifier>
 
   /**
    * Is this suggestion defined? It is defined if and only if it isn't NONE.
+   *
    * @return true if this suggestion is defined and thus not NONE.
    */
   public boolean isDefined() {
@@ -204,6 +208,7 @@ public class Suggestion extends SilverpeasJpaEntity<Suggestion, UuidIdentifier>
 
   /**
    * Is this suggestion NONE?
+   *
    * @return true if this suggestion isn't defined and thus it is NONE.
    */
   public boolean isNotDefined() {
@@ -223,6 +228,7 @@ public class Suggestion extends SilverpeasJpaEntity<Suggestion, UuidIdentifier>
 
   /**
    * Sets the suggestion box to which this suggestion belongs.
+   *
    * @param box a suggestion box.
    */
   protected void setSuggestionBox(final SuggestionBox box) {
@@ -231,6 +237,7 @@ public class Suggestion extends SilverpeasJpaEntity<Suggestion, UuidIdentifier>
 
   /**
    * Is the content of this suggestion was modified?
+   *
    * @return true if the suggestion's content was modified.
    */
   public boolean isContentModified() {
@@ -239,6 +246,7 @@ public class Suggestion extends SilverpeasJpaEntity<Suggestion, UuidIdentifier>
 
   /**
    * Is this suggestion publishable by the specified user?
+   *
    * @param user the aimed user.
    * @return true if the suggestion is publishable by the specified user, false otherwise.
    */
@@ -250,6 +258,7 @@ public class Suggestion extends SilverpeasJpaEntity<Suggestion, UuidIdentifier>
 
   /**
    * Gets the identifier of the component instance which the suggestion is attached.
+   *
    * @return the identifier of the component instance which the suggestion is attached.
    */
   public String getComponentInstanceId() {
@@ -282,5 +291,18 @@ public class Suggestion extends SilverpeasJpaEntity<Suggestion, UuidIdentifier>
         + ", content=" + content + ", contentModified=" + contentModified + ", validation="
         + getValidation() + ", creationDate=" + getCreationDate() + ", lastUpdateDate="
         + getLastUpdateDate() + '}';
+  }
+
+  /**
+   * Sets the identifier of this suggestion. This method is to be used internally to avoid
+   * reflection use.
+   *
+   * @param id the new unique identifier of the entity.
+   * @return itself.
+   */
+  @Override
+  public Suggestion setId(String id) {
+    super.setId(id);
+    return this;
   }
 }
