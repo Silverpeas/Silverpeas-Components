@@ -75,6 +75,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Date;
@@ -106,6 +107,7 @@ public class SendInKmelia extends ExternalActionImpl {
     final boolean isHistoryEnable = pdfHistory.isEnable();
     final boolean isHistoryFirstAdding = pdfHistory.isFirstAdding();
     final String pdfHistoryName = pdfHistory.getFileName();
+
 
     // 1 - Create publication
     PublicationPK pubPK = new PublicationPK("0", targetId);
@@ -244,10 +246,10 @@ public class SendInKmelia extends ExternalActionImpl {
         fieldValue = copyFormFile(fromPK, toPK, ((FileField) fieldOfFolder).getAttachmentId());
       } else if ("wysiwyg".equals(fieldTemplate.getDisplayerName())) {
         WysiwygFCKFieldDisplayer displayer = new WysiwygFCKFieldDisplayer();
-        fieldValue =
-            displayer.duplicateContent(fieldTemplate, fromPK, toPK, I18NHelper.DEFAULT_LANGUAGE);
+        fieldValue = displayer.duplicateContent(fieldTemplate, fromPK, toPK, I18NHelper.DEFAULT_LANGUAGE);
+        displayer.cloneContents(fromPK, toPK, null);
       }
-    } catch (WorkflowException e) {
+    } catch (WorkflowException | IOException e) {
       SilverLogger.getLogger(this).warn(e);
     }
     return fieldValue;
