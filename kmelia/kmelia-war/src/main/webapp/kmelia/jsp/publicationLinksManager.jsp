@@ -140,6 +140,7 @@
           Sort: sort,
           IEFix: ieFix
         }, function(data) {
+          currentSort = sort;
           $('#pubList').html(data);
         }, "html");
       }

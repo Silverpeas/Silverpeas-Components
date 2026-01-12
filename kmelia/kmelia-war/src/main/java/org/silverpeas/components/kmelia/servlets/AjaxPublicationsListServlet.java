@@ -132,8 +132,13 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 
   private static void initPublicationsPagination(KmeliaSessionController kmeliaSC, Integer index,
       Integer nbItemsPerPage) {
+    boolean inSearchContext = kmeliaSC.getSearchContext() != null;
     if (index != null) {
-      kmeliaSC.setIndexOfFirstPubToDisplay(index);
+      if (inSearchContext) {
+        kmeliaSC.getSearchContext().setPaginationIndex(index);
+      } else {
+        kmeliaSC.setIndexOfFirstPubToDisplay(index);
+      }
     }
     if (nbItemsPerPage != null) {
       kmeliaSC.setNbPublicationsPerPage(nbItemsPerPage);
@@ -216,7 +221,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       }
       renderer.render(res.getWriter(), ctx);
 
-      //We rollback with previous sort of the topic
+      //We roll back with previous sort of the topic
       if (ctx.isToLink()) {
         kmeliaSC.getSort().setCurrentSort(previousSort);
       }
@@ -229,9 +234,6 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       QueryDescription queryDescription) {
     ctx.setSortAllowed(true).setLinksAllowed(true);
     var kmeliaSC = ctx.getSessionController();
-
-    Integer index = req.getParameterAsInteger("Index");
-    Integer sort = req.getParameterAsInteger("Sort");
     boolean toPortlet = req.getParameterAsBoolean("ToPortlet");
     boolean searchRequest = req.getParameterAsBoolean("SearchRequest");
     boolean newSearchInProgress = searchRequest && !queryDescription.isEmpty();
@@ -244,16 +246,13 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       ctx.setLinksAllowed(false).setSeeAlso(true);
       // get selected publication ids from session
       ctx.setSelectedPublications(processPublicationsToLink(req));
-      if (sort != null) {
-        kmeliaSC.getSort().setCurrentSort(sort);
-        kmeliaSC.getSort().setExplicitSort(true);
-      }
       var publications = kmeliaSC.getKmeliaService()
           .getAuthorizedPublicationsOfFolder(new NodePK(currentTopic.getNodePK().getId(),
                   currentTopic.getNodePK().getComponentInstanceId()),
               kmeliaSC.getUserTopicProfile(currentTopic.getNodePK().getId()), kmeliaSC.getUserId()
               ,kmeliaSC.isTreeStructure());
-      ctx.setPublications(publications);
+      kmeliaSC.setSessionPublicationsList(publications);
+      ctx.setPublications(kmeliaSC.getSessionPublicationsList());
     } else if (toPortlet) {
       ctx.setSortAllowed(false);
       var publications = kmeliaSC.getSessionPublicationsList();
@@ -265,9 +264,6 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     } else if (searchContextExists) {
       var publications = kmeliaSC.getSearchContext().getResults();
       ctx.setPublications(publications);
-      if (index != null) {
-        kmeliaSC.getSearchContext().setPaginationIndex(index);
-      }
     } else {
       var publications = kmeliaSC.getSessionPublicationsList();
       ctx.setPublications(publications);
