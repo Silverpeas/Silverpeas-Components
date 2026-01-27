@@ -173,7 +173,7 @@
 </view:sp-head-part>
 <view:sp-body-part cssClass="yui-skin-sam treeView" id="${componentId}">
   <div compile-directive style="display: none"></div>
-  <div id="kmeliaTreeView" class="<%=profile%>">
+  <div id="kmeliaTreeView" class="${profile}">
   <%
     Window window = gef.getWindow();
     BrowseBar browseBar = window.getBrowseBar();
