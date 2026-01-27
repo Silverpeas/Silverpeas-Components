@@ -599,7 +599,7 @@ public class DefaultProjectManagerService implements ProjectManagerService {
 
     calendar.setTime(task.getDateDebut());
 
-    while (charge != 0) {
+    while (charge > 0) {
       calendar.add(Calendar.DATE, 1);
       Date currentDate = calendar.getTime();
       if (!holidays.contains(currentDate)) {
@@ -616,7 +616,7 @@ public class DefaultProjectManagerService implements ProjectManagerService {
     Calendar calendar = Calendar.getInstance();
     List<Date> holidays = getHolidayDates(instanceId);
     calendar.setTime(dateDebut);
-    while (charge != 0) {
+    while (charge > 0) {
       calendar.add(Calendar.DATE, 1);
       Date currentDate = calendar.getTime();
       if (!holidays.contains(currentDate)) {
