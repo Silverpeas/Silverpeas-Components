@@ -184,7 +184,7 @@ public interface ClassifiedService extends ApplicationService {
    * @param field2 : String
    * @return a collection of userId (String)
    */
-  Collection<String> getUsersBySubscribe(String field1, String field2);
+  Collection<String> getUsersBySubscribe(String instanceId, String field1, String field2);
 
   /**
    * delete all subscriptions for the instance corresponding to instanceId
@@ -194,9 +194,8 @@ public interface ClassifiedService extends ApplicationService {
 
   /**
    * send a notification for subscribers to field1 and field2 when classified modified
-   * @param field1 : string
-   * @param field2 : String
-   * @param classified : ClassifiedDetail
+   * @param field1 the first classified field
+   * @param field2 the second classified field
    */
   void sendSubscriptionsNotification(String field1, String field2,
       ClassifiedDetail classified);

@@ -31,12 +31,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 public class ClassifiedsDAO {
 
@@ -46,52 +41,41 @@ public class ClassifiedsDAO {
 
   /**
    * Create a classified
-   * @param con : Connection
-   * @param classified : ClassifiedDetail
-   * @return classifiedId : String
-   * @throws SQLException
+   * @param con connection to the database
+   * @param classified the new classified
+   * @return classifiedId the unique identifier of the created classified
+   * @throws SQLException if the classified cannot be created.
    */
   public static String createClassified(Connection con, ClassifiedDetail classified)
       throws SQLException {
     // Création d'une nouvelle petite annonce
-    String id = "";
-    PreparedStatement prepStmt = null;
-    try {
+    String query =
+        "insert into SC_Classifieds_Classifieds (classifiedId, instanceId, title, description, " +
+            "price, creatorId, creationDate, " +
+            "updateDate, status, validatorId, validateDate) " + "values (?,?,?,?,?,?,?,?,?,?,?)";
+    try(PreparedStatement prepStmt =  con.prepareStatement(query)) {
       int newId = DBUtil.getNextId("SC_Classifieds_Classifieds", "classifiedId");
-      id = Integer.toString(newId);
-      // création de la requete
-      String query =
-          "insert into SC_Classifieds_Classifieds (classifiedId, instanceId, title, description, " +
-              "price, creatorId, creationDate, " +
-              "updateDate, status, validatorId, validateDate) " + "values (?,?,?,?,?,?,?,?,?,?,?)";
-      // initialisation des paramètres
-      prepStmt = con.prepareStatement(query);
+      String id = Integer.toString(newId);
       initParam(prepStmt, newId, classified);
       prepStmt.executeUpdate();
-    } finally {
-      DBUtil.close(prepStmt);
+      return id;
     }
-    return id;
   }
 
 
   /**
-   * update a classified
-   * @param con : Connection
-   * @param classified : ClassifiedDetail
-   * @throws SQLException
+   * Update a classified
+   * @param con connection to the database.
+   * @param classified the ClassifiedDetail with the data to update.
+   * @throws SQLException if the classified cannot be updated
    */
   public static void updateClassified(Connection con, ClassifiedDetail classified)
       throws SQLException {
-    PreparedStatement prepStmt = null;
-    try {
-      // création de la requete
-      String query =
-          "update SC_Classifieds_Classifieds set title = ? , description = ? , price = ? , status" +
-              " = ?  , updateDate = ? , validatorId = ? , validateDate = ? " +
-              " where classifiedId = ? ";
-      // initialisation des paramètres
-      prepStmt = con.prepareStatement(query);
+    String query =
+        "update SC_Classifieds_Classifieds set title = ? , description = ? , price = ? , status" +
+            " = ?  , updateDate = ? , validatorId = ? , validateDate = ? " +
+            " where classifiedId = ? ";
+    try(PreparedStatement prepStmt = con.prepareStatement(query)) {
       prepStmt.setString(1, classified.getTitle());
       prepStmt.setString(2, classified.getDescription());
       prepStmt.setInt(3, classified.getPrice());
@@ -109,92 +93,76 @@ public class ClassifiedsDAO {
       }
       prepStmt.setInt(8, classified.getClassifiedId());
       prepStmt.executeUpdate();
-    } finally {
-      DBUtil.close(prepStmt);
     }
   }
 
   /**
-   * delete the classified corresponding to classifiedId
-   * @param con : Connection
-   * @param classifiedId : String
-   * @throws SQLException
+   * Delete the classified with the specified identifier.
+   * @param con connection to the database
+   * @param classifiedId the unique identifier of a classified
+   * @throws SQLException if the classified fail to be deleted.
    */
   public static void deleteClassified(Connection con, String classifiedId) throws SQLException {
-    PreparedStatement prepStmt = null;
-    try {
-      // création de la requete
-      String query = "delete from SC_Classifieds_Classifieds where classifiedId = ? ";
-      // initialisation des paramètres
-      prepStmt = con.prepareStatement(query);
-      prepStmt.setInt(1, Integer.valueOf(classifiedId));
+    String query = "delete from SC_Classifieds_Classifieds where classifiedId = ? ";
+    try(PreparedStatement prepStmt = con.prepareStatement(query)) {
+      prepStmt.setInt(1, Integer.parseInt(classifiedId));
       prepStmt.executeUpdate();
-    } finally {
-      DBUtil.close(prepStmt);
     }
   }
 
   /**
-   * get the classified correspond to classifiedId
-   * @param con : Connection
-   * @param classifiedId : String
-   * @return classified : ClassifiedDetail
-   * @throws SQLException
+   * Get the classified with the specified identifier.
+   * @param con connection to the database
+   * @param classifiedId the unique identifier of the classified
+   * @return classified the {@link ClassifiedDetail} instance
+   * @throws SQLException if the classified cannot be fetched
    */
   public static ClassifiedDetail getClassified(Connection con, String classifiedId)
       throws SQLException {
     // récupérer la petite annonce
     String query = "select * from SC_Classifieds_Classifieds where classifiedId = ? ";
     ClassifiedDetail classified = null;
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    try {
-      prepStmt = con.prepareStatement(query);
+    try (PreparedStatement prepStmt = con.prepareStatement(query)){
       prepStmt.setInt(1, Integer.parseInt(classifiedId));
-      rs = prepStmt.executeQuery();
-      while (rs.next()) {
-        classified = recupClassified(rs);
+      try (ResultSet rs = prepStmt.executeQuery()) {
+        while (rs.next()) {
+          classified = fetchClassified(rs);
+        }
       }
-    } finally {
-      DBUtil.close(rs, prepStmt);
     }
     return classified;
   }
 
   /**
-   * get all classifieds of a instance corresponding to instanceId
-   * @param con : Connection
-   * @param instanceId : String
-   * @return a collection of ClassifiedDetail
-   * @throws SQLException
+   * Get all classifieds of an instance corresponding to instanceId
+   * @param con connection to the database
+   * @param instanceId the unique identifier of a classified component instance
+   * @return a collection of {@link ClassifiedDetail} instances.
+   * @throws SQLException if the fetching of the classifieds fails
    */
   public static Collection<ClassifiedDetail> getAllClassifieds(Connection con, String instanceId)
       throws SQLException {
     // récupérer toutes les petites annonces
     ArrayList<ClassifiedDetail> listClassifieds = new ArrayList<>();
     String query = "select * from SC_Classifieds_Classifieds where instanceId = ? ";
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    try {
-      prepStmt = con.prepareStatement(query);
+    try (PreparedStatement prepStmt = con.prepareStatement(query)) {
       prepStmt.setString(1, instanceId);
-      rs = prepStmt.executeQuery();
-      while (rs.next()) {
-        ClassifiedDetail classified = recupClassified(rs);
-        listClassifieds.add(classified);
+      try (ResultSet rs = prepStmt.executeQuery()) {
+        while (rs.next()) {
+          ClassifiedDetail classified = fetchClassified(rs);
+          listClassifieds.add(classified);
+        }
       }
-    } finally {
-      DBUtil.close(rs, prepStmt);
     }
     return listClassifieds;
   }
 
   /**
-   * get the number of classifieds to be validated for an instance corresponding to instanceId
-   * @param con : Connection
-   * @param instanceId : String
-   * @return the number : String
-   * @throws SQLException
+   * Get the number of classifieds to be validated for an instance corresponding to instanceId
+   * @param con the connection to the database
+   * @param instanceId the unique identifier of a classified component instance.
+   * @return the count of classifieds in the component instance.
+   * @throws SQLException if an error occurs while getting the classifieds count.
    */
   public static String getNbTotalClassifieds(Connection con, String instanceId)
       throws SQLException {
@@ -203,29 +171,25 @@ public class ClassifiedsDAO {
     String query =
         "select count(classifiedId) from SC_Classifieds_Classifieds where instanceId = ? and " +
             "status = ? ";
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    try {
-      prepStmt = con.prepareStatement(query);
+    try (PreparedStatement prepStmt = con.prepareStatement(query) ) {
       prepStmt.setString(1, instanceId);
       prepStmt.setString(2, ClassifiedDetail.VALID);
-      rs = prepStmt.executeQuery();
-      while (rs.next()) {
-        nb = rs.getString(1);
+      try (ResultSet rs = prepStmt.executeQuery()) {
+        while (rs.next()) {
+          nb = rs.getString(1);
+        }
       }
-    } finally {
-      DBUtil.close(rs, prepStmt);
     }
     return nb;
   }
 
   /**
-   * get all classifieds for user and instance, corresponding to userId and instanceId
-   * @param con : Connection
-   * @param instanceId : String
-   * @param userId : String
-   * @return a collection of ClassifiedDetail
-   * @throws SQLException
+   * Get all the classifieds for user and instance, corresponding to userId and instanceId
+   * @param con connection to the database
+   * @param instanceId the unique identifier of a classifieds component instance.
+   * @param userId the unique identifier of the user
+   * @return a collection of {@link ClassifiedDetail}s of the user.
+   * @throws SQLException if the classifieds getting fails.
    */
   public static List<ClassifiedDetail> getClassifiedsByUser(Connection con, String instanceId,
       String userId) throws SQLException {
@@ -235,30 +199,26 @@ public class ClassifiedsDAO {
         "SELECT * FROM SC_Classifieds_Classifieds WHERE instanceId = ? AND creatorId = ? ORDER BY" +
             " CASE WHEN updatedate IS NULL THEN creationdate ELSE updatedate END DESC, " +
             "classifiedId DESC";
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    try {
-      prepStmt = con.prepareStatement(query);
+    try (PreparedStatement prepStmt = con.prepareStatement(query)) {
       prepStmt.setString(1, instanceId);
       prepStmt.setString(2, userId);
-      rs = prepStmt.executeQuery();
-      while (rs.next()) {
-        ClassifiedDetail classified = recupClassified(rs);
-        listClassifieds.add(classified);
+      try (ResultSet rs = prepStmt.executeQuery()) {
+        while (rs.next()) {
+          ClassifiedDetail classified = fetchClassified(rs);
+          listClassifieds.add(classified);
+        }
       }
-    } finally {
-      DBUtil.close(rs, prepStmt);
     }
     return listClassifieds;
   }
 
   /**
-   * get all classifieds with given status for an instance corresponding to instanceId
-   * @param con : Connection
-   * @param instanceId : String
-   * @param status : status
-   * @return a list of ClassifiedDetail
-   * @throws SQLException
+   * Get all classifieds with given status for an instance corresponding to instanceId
+   * @param con connection to the database
+   * @param instanceId the classifieds component instance
+   * @param status status of the classifieds
+   * @return a list of {@link ClassifiedDetail}
+   * @throws SQLException if the classifieds cannot be fetched.
    */
   public static List<ClassifiedDetail> getClassifiedsWithStatus(Connection con, String instanceId,
       String status, int firstItemIndex, int elementsPerPage) throws SQLException {
@@ -268,41 +228,32 @@ public class ClassifiedsDAO {
         " CASE WHEN updatedate IS NULL THEN creationdate ELSE updatedate END " +
         " ELSE validatedate END DESC, " +
         " validatedate DESC, updatedate DESC, creationdate DESC";
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-
     int lastIndexResult = firstItemIndex + elementsPerPage - 1;
-    boolean displayAllElements = false;
-    if (elementsPerPage == -1) {
-      displayAllElements = true;
-    }
-
-    try {
-      prepStmt = con.prepareStatement(query);
+    boolean displayAllElements = elementsPerPage == -1;
+    try(PreparedStatement prepStmt = con.prepareStatement(query)) {
       prepStmt.setString(1, instanceId);
       prepStmt.setString(2, status);
-      rs = prepStmt.executeQuery();
-      int index = 0;
-      while (rs.next()) {
-        if (displayAllElements || (index >= firstItemIndex && index <= lastIndexResult)) {
-          ClassifiedDetail classified = recupClassified(rs);
-          listClassifieds.add(classified);
+      try (ResultSet rs = prepStmt.executeQuery()) {
+        int index = 0;
+        while (rs.next()) {
+          if (displayAllElements || (index >= firstItemIndex && index <= lastIndexResult)) {
+            ClassifiedDetail classified = fetchClassified(rs);
+            listClassifieds.add(classified);
+          }
+          index++;
         }
-        index++;
       }
-    } finally {
-      DBUtil.close(rs, prepStmt);
     }
     return listClassifieds;
   }
 
   /**
-   * get all expiring classifieds (corresponding of a number of day nbDays)
-   * @param con : Connection
-   * @param nbDays : int
-   * @param instanceId : component instance id
-   * @return a list of ClassifiedDetail
-   * @throws SQLException
+   * Get all expiring classifieds (corresponding of a number of days)
+   * @param con connection to the database
+   * @param nbDays the number of days
+   * @param instanceId component instance identifier
+   * @return a list of {@link ClassifiedDetail}
+   * @throws SQLException if the classifieds cannot be fetched
    */
   public static List<ClassifiedDetail> getAllClassifiedsToUnpublish(Connection con, int nbDays,
       String instanceId) throws SQLException {
@@ -316,178 +267,154 @@ public class ClassifiedsDAO {
         "select * from SC_Classifieds_Classifieds where ( (updateDate is null and creationDate < " +
             "?) or (updateDate is not null and updateDate < ?) ) and instanceId = ? and status = " +
             "'Valid'";
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    try {
-      prepStmt = con.prepareStatement(query);
+    try (PreparedStatement prepStmt = con.prepareStatement(query)) {
       prepStmt.setString(1, Long.toString(date.getTime()));
       prepStmt.setString(2, Long.toString(date.getTime()));
       prepStmt.setString(3, instanceId);
 
-      rs = prepStmt.executeQuery();
-      while (rs.next()) {
-        ClassifiedDetail classified = recupClassified(rs);
-        listClassifieds.add(classified);
+      try (ResultSet rs = prepStmt.executeQuery()) {
+        while (rs.next()) {
+          ClassifiedDetail classified = fetchClassified(rs);
+          listClassifieds.add(classified);
+        }
       }
-    } finally {
-      DBUtil.close(rs, prepStmt);
     }
     return listClassifieds;
   }
 
   /**
-   * create a subscription
-   * @param con : Connection
-   * @param subscribe : Subscribe
-   * @return subscribeId : String
-   * @throws SQLException
+   * Create a subscription for user.
+   * @param con connection to the database
+   * @param subscribe the subscription to create.
+   * @return subscribeId the unique identifier of a subscription.
+   * @throws SQLException if the creation fails.
    */
   public static String createSubscribe(Connection con, Subscribe subscribe) throws SQLException {
-    String id = "";
-    PreparedStatement prepStmt = null;
-    try {
+    String id;
+    String query =
+        "insert into SC_Classifieds_Subscribes (subscribeId, userId, instanceId, field1, " +
+            "field2) " +
+            "values (?,?,?,?,?)";
+    try (PreparedStatement prepStmt = con.prepareStatement(query)) {
       int newId = DBUtil.getNextId("SC_Classifieds_Subscribes", "subscribeId");
       id = Integer.toString(newId);
-      // création de la requete
-      String query =
-          "insert into SC_Classifieds_Subscribes (subscribeId, userId, instanceId, field1, " +
-              "field2) " +
-              "values (?,?,?,?,?)";
-      // initialisation des paramètres
-      prepStmt = con.prepareStatement(query);
       initParamSubscribe(prepStmt, newId, subscribe);
       prepStmt.executeUpdate();
-    } finally {
-      DBUtil.close(prepStmt);
     }
     return id;
   }
 
   /**
-   * delete a subscription corresponding to subscribeId
-   * @param con : Connection
-   * @param subscribeId : String
-   * @throws SQLException
+   * Delete a subscription corresponding to the subscriber identifier
+   * @param con connection to the database
+   * @param subscribeId the unique identifier of a subscription
+   * @throws SQLException if the deletion fails.
    */
   public static void deleteSubscribe(Connection con, String subscribeId) throws SQLException {
-    PreparedStatement prepStmt = null;
-    try {
-      // création de la requete
-      String query = "delete from SC_Classifieds_Subscribes where subscribeId = ? ";
-      // initialisation des paramètres
-      prepStmt = con.prepareStatement(query);
-      prepStmt.setInt(1, Integer.valueOf(subscribeId));
+    String query = "delete from SC_Classifieds_Subscribes where subscribeId = ? ";
+    try (PreparedStatement prepStmt = con.prepareStatement(query)) {
+      prepStmt.setInt(1, Integer.parseInt(subscribeId));
       prepStmt.executeUpdate();
-    } finally {
-      DBUtil.close(prepStmt);
     }
   }
 
   /**
-   * get all subscriptions for an instance corresponding to instanceId
-   * @param con : connection
-   * @param instanceId : String
-   * @return a collection of Subscribe
-   * @throws SQLException
+   * Get all subscriptions for an instance corresponding to instanceId
+   * @param con connection to the database
+   * @param instanceId the unique identifier of a component instance.
+   * @return a collection of {@link Subscribe}
+   * @throws SQLException if the fetching fails
    */
   public static Collection<Subscribe> getAllSubscribes(Connection con, String instanceId)
       throws SQLException {
-    // récupérer tous les abonnements
     ArrayList<Subscribe> listSubscribes = new ArrayList<>();
     String query = "select * from SC_Classifieds_Subscribes where instanceId = ? ";
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    try {
-      prepStmt = con.prepareStatement(query);
+    try (PreparedStatement prepStmt = con.prepareStatement(query)) {
       prepStmt.setString(1, instanceId);
-      rs = prepStmt.executeQuery();
-      while (rs.next()) {
-        Subscribe subscribe = recupSubscribe(rs);
-        listSubscribes.add(subscribe);
+      try (ResultSet rs = prepStmt.executeQuery()) {
+        while (rs.next()) {
+          Subscribe subscribe = fetchSubscribe(rs);
+          listSubscribes.add(subscribe);
+        }
       }
-    } finally {
-      DBUtil.close(rs, prepStmt);
     }
     return listSubscribes;
   }
 
   /**
-   * get all subscriptions for user and instance corresponding to userId and instanceId
-   * @param con : Connection
-   * @param instanceId : String
-   * @param userId : String
-   * @return a collection of Subscribe
-   * @throws SQLException
+   * Get all subscriptions for user and instance corresponding to userId and instanceId
+   * @param con connection to the database
+   * @param instanceId the unique identifier of a component instance
+   * @param userId the unique identifier of a user
+   * @return a collection of {@link Subscribe}
+   * @throws SQLException if the fetching fails.
    */
   public static Collection<Subscribe> getSubscribesByUser(Connection con, String instanceId,
       String userId) throws SQLException {
     // récupérer tous les abonnements de l'utilisateur
     ArrayList<Subscribe> listSubscribes = new ArrayList<>();
     String query = "select * from SC_Classifieds_Subscribes where instanceId = ? and userId = ? ";
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    try {
-      prepStmt = con.prepareStatement(query);
+    try (PreparedStatement prepStmt = con.prepareStatement(query)) {
       prepStmt.setString(1, instanceId);
       prepStmt.setString(2, userId);
-      rs = prepStmt.executeQuery();
-      while (rs.next()) {
-        Subscribe subscribe = recupSubscribe(rs);
-        listSubscribes.add(subscribe);
+      try (ResultSet rs = prepStmt.executeQuery()) {
+        while (rs.next()) {
+          Subscribe subscribe = fetchSubscribe(rs);
+          listSubscribes.add(subscribe);
+        }
       }
-    } finally {
-      DBUtil.close(rs, prepStmt);
     }
     return listSubscribes;
   }
 
   /**
-   * get all subscribing users to a search corresponding to fields field1 and field2
-   * @param con : Connection
-   * @param field1 : String
-   * @param field2 : String
-   * @return a collection of userId (String)
-   * @throws SQLException
+   * Get all subscribing users to a search corresponding to fields field1 and field2
+   * @param con connection to the database
+   * @param instanceId the unique identifier of the component instance on which the subscriptions
+   * have to be found.
+   * @param field1 value of the first field of a classified on which subscription can be done
+   * @param field2 value of the second field of a classified on which subscription can be done
+   * @return a collection of user identifiers.
+   * @throws SQLException if the getting of the subscribers fail.
    */
-  public static Collection<String> getUsersBySubscribe(Connection con, String field1, String field2)
-      throws SQLException {
+  public static Collection<String> getUsersBySubscribe(Connection con, String instanceId,
+      String field1, String field2) throws SQLException {
     // récupérer tous les utilisateurs abonnés à une recherche
     ArrayList<String> listUsers = new ArrayList<>();
-    String query = "select userId from SC_Classifieds_Subscribes where (field1 = ? and field2 = ?) or (field1 = ? and field2='') or (field1='' and field2 = ?)";
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    try {
-      prepStmt = con.prepareStatement(query);
+    String query =
+        "select userId from SC_Classifieds_Subscribes where ((field1 = ? and field2 = ?) or " +
+            "(field1 = ? and field2 = '') or (field1 = '' and field2 = ?)) and instanceId = ?";
+    try (PreparedStatement prepStmt = con.prepareStatement(query)) {
       prepStmt.setString(1, field1);
       prepStmt.setString(2, field2);
       prepStmt.setString(3, field1);
       prepStmt.setString(4, field2);
-      rs = prepStmt.executeQuery();
-      while (rs.next()) {
-        String userId = rs.getString("userId");
-        listUsers.add(userId);
+      prepStmt.setString(5, instanceId);
+      try (ResultSet rs =prepStmt.executeQuery()){
+        while (rs.next()) {
+          String userId = rs.getString("userId");
+          listUsers.add(userId);
+        }
       }
-    } finally {
-      DBUtil.close(rs, prepStmt);
     }
     return listUsers;
   }
 
   /**
-   * get the classified to resultSet
-   * @param rs : ResultSet
-   * @return classified : ClassifiedDetail
-   * @throws SQLException
+   * Fetches from the {@link ResultSet} the encoded {@link ClassifiedDetail}
+   * @param rs the {@link ResultSet}
+   * @return the {@link ClassifiedDetail} instance.
+   * @throws SQLException if the data of the classified cannot be got.
    */
-  private static ClassifiedDetail recupClassified(ResultSet rs) throws SQLException {
+  private static ClassifiedDetail fetchClassified(ResultSet rs) throws SQLException {
     ClassifiedDetail classified = new ClassifiedDetail();
     int classifiedId = rs.getInt("classifiedId");
     String instanceId = rs.getString("instanceId");
     String title = rs.getString("title");
     String description = rs.getString("description");
-    Integer price = 0;
+    int price = 0;
     if (rs.getString("price") != null) {
-      price = Integer.valueOf(rs.getString("price"));
+      price = Integer.parseInt(rs.getString("price"));
     }
     String creatorId = rs.getString("creatorId");
     Date creationDate = new Date(Long.parseLong(rs.getString("creationDate")));
@@ -517,11 +444,11 @@ public class ClassifiedsDAO {
   }
 
   /**
-   * initialise parameters
-   * @param prepStmt : PreparedStatement
-   * @param classifiedId : String
-   * @param classified : ClassifiedDetail
-   * @throws SQLException
+   * Initialize the parameters of the statement with the data of the {@link ClassifiedDetail}
+   * @param prepStmt the SQL statement
+   * @param classifiedId the unique identifier of a classified
+   * @param classified the ClassifiedDetail from which the statement has to be filled.
+   * @throws SQLException if the parameters cannot be set.
    */
   private static void initParam(PreparedStatement prepStmt, int classifiedId,
       ClassifiedDetail classified) throws SQLException {
@@ -547,12 +474,12 @@ public class ClassifiedsDAO {
   }
 
   /**
-   * get a subscription to resultSet
-   * @param rs : ResultSet
-   * @return Subscribe
-   * @throws SQLException
+   * Fetches a subscription from the {@link ResultSet}
+   * @param rs the {@link ResultSet}
+   * @return a {@link Subscribe} instance
+   * @throws SQLException if the {@link Subscribe} cannot be fetched.
    */
-  private static Subscribe recupSubscribe(ResultSet rs) throws SQLException {
+  private static Subscribe fetchSubscribe(ResultSet rs) throws SQLException {
     Subscribe subscribe = new Subscribe();
     int subscribeId = rs.getInt("subscribeId");
     String userId = rs.getString("userId");
@@ -569,11 +496,11 @@ public class ClassifiedsDAO {
   }
 
   /**
-   * initialise parameters
-   * @param prepStmt : PreparedStatement
-   * @param subscribeId : String
-   * @param subscribe : Subscribe
-   * @throws SQLException
+   * Initialize the parameters of the statement with the data of the {@link Subscribe}
+   * @param prepStmt the statement
+   * @param subscribeId the unique identifier of a {@link Subscribe}
+   * @param subscribe the {@link Subscribe}
+   * @throws SQLException if the statement cannot be filled
    */
   private static void initParamSubscribe(PreparedStatement prepStmt, int subscribeId,
       Subscribe subscribe) throws SQLException {
@@ -582,37 +509,5 @@ public class ClassifiedsDAO {
     prepStmt.setString(3, subscribe.getInstanceId());
     prepStmt.setString(4, subscribe.getField1());
     prepStmt.setString(5, subscribe.getField2());
-  }
-
-  /**
-   * get the unpublished classified
-   * @param con : Connection
-   * @param instanceId : String
-   * @param userId : String
-   * @return a collection of ClassifiedDetail
-   * @throws SQLException
-   */
-  public static Collection<ClassifiedDetail> getUnpublishedClassifieds(Connection con,
-      String instanceId, String userId) throws SQLException {
-    ArrayList<ClassifiedDetail> listClassifieds = new ArrayList<>();
-    String query =
-        "select * from SC_Classifieds_Classifieds where instanceId = ? and status = 'Unpublished'" +
-            " and creatorId = ? ";
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    try {
-      prepStmt = con.prepareStatement(query);
-      prepStmt.setString(1, instanceId);
-      prepStmt.setString(2, userId);
-
-      rs = prepStmt.executeQuery();
-      while (rs.next()) {
-        ClassifiedDetail classified = recupClassified(rs);
-        listClassifieds.add(classified);
-      }
-    } finally {
-      DBUtil.close(rs, prepStmt);
-    }
-    return listClassifieds;
   }
 }
