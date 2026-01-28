@@ -302,7 +302,7 @@ public class DefaultClassifiedService implements ClassifiedService {
       final ClassifiedDetail classified) {
     try {
       UserNotificationHelper.buildAndSend(new ClassifiedSubscriptionUserNotification(classified,
-          getUsersBySubscribe(field1, field2)));
+          getUsersBySubscribe(classified.getInstanceId(), field1, field2)));
     } catch (Exception e) {
       SilverLogger.getLogger(this)
           .error(e);
@@ -498,15 +498,15 @@ public class DefaultClassifiedService implements ClassifiedService {
     try (Connection con = openConnection()) {
       return ClassifiedsDAO.getSubscribesByUser(con, instanceId, userId);
     } catch (Exception e) {
-      throw new ClassifiedsRuntimeException(failureOnGetting("subscriptions of the user", userId),
-          e);
+      throw new ClassifiedsRuntimeException(
+          failureOnGetting("subscriptions of the user", userId), e);
     }
   }
 
   @Override
-  public Collection<String> getUsersBySubscribe(String field1, String field2) {
+  public Collection<String> getUsersBySubscribe(String instanceId, String field1, String field2) {
     try (Connection con = openConnection()) {
-      return ClassifiedsDAO.getUsersBySubscribe(con, field1, field2);
+      return ClassifiedsDAO.getUsersBySubscribe(con, instanceId, field1, field2);
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException(failureOnGetting("subscriptions", ""), e);
     }

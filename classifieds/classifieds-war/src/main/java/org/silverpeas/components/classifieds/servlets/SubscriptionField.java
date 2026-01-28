@@ -24,8 +24,8 @@
 
 package org.silverpeas.components.classifieds.servlets;
 
-import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * A field of the classified form used by the search and on which also a user can subscribe for a
@@ -36,16 +36,15 @@ import java.util.Set;
 public class SubscriptionField {
   private final String key;
   private final String label;
-  private final Set<SubscriptionFieldValue> values = new HashSet<>();
+  private final Set<SubscriptionFieldValue> values = new TreeSet<>();
 
   public SubscriptionField(String key, String label) {
     this.key = key;
     this.label = label;
   }
 
-  public SubscriptionField valuedBy(String valueKey, String valueLabel) {
+  public void valuedBy(String valueKey, String valueLabel) {
     values.add(new SubscriptionFieldValue(valueKey, valueLabel));
-    return this;
   }
 
   public String getKey() {

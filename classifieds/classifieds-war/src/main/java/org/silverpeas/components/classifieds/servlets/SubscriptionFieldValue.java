@@ -30,7 +30,7 @@ package org.silverpeas.components.classifieds.servlets;
  *
  * @author mmoquillon
  */
-public class SubscriptionFieldValue {
+public class SubscriptionFieldValue implements Comparable<SubscriptionFieldValue> {
 
   private final String key;
   private final String value;
@@ -62,5 +62,9 @@ public class SubscriptionFieldValue {
     return value;
   }
 
+  @Override
+  public int compareTo(SubscriptionFieldValue o) {
+    return getKey().compareToIgnoreCase(o.getKey());
+  }
 }
   
