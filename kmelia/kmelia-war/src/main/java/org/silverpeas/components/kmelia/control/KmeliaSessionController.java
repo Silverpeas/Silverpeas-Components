@@ -229,6 +229,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   private boolean isKmaxMode = false;
   // i18n
   private String currentLanguage = null;
+  private String cachedCurrentLanguage = null;
   boolean isDragAndDropEnableByUser = false;
   boolean componentManageable = false;
   private final List<PublicationPK> selectedPublicationPKs = new ArrayList<>();
@@ -263,17 +264,19 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   public boolean isPasteNodeAllowed() throws ClipboardException {
-    SilverLogger.getLogger(this).debug("isPasteNodeAllowed() nbSelectedObjects = {0}", getClipboardSelectedObjects().size());
-    return getClipboardSelectedObjects().stream().anyMatch(s->s.isDataFlavorSupported(NodeSelection.NodeDetailFlavor));
+    SilverLogger.getLogger(this).debug("isPasteNodeAllowed() nbSelectedObjects = {0}",
+        getClipboardSelectedObjects().size());
+    return getClipboardSelectedObjects().stream().anyMatch(s -> s.isDataFlavorSupported(NodeSelection.NodeDetailFlavor));
   }
 
   public boolean isPastePublicationAllowed(boolean isRoot) throws ClipboardException {
-    SilverLogger.getLogger(this).debug("isPastePublicationAllowed() isRoot = {0} - nbSelectedObjects = {1}", isRoot,getClipboardSelectedObjects().size());
-    return getClipboardSelectedObjects().stream().anyMatch(s->s.isDataFlavorSupported(
+    SilverLogger.getLogger(this).debug("isPastePublicationAllowed() isRoot = {0} - " +
+ "nbSelectedObjects = {1}", isRoot, getClipboardSelectedObjects().size());
+    return getClipboardSelectedObjects().stream().anyMatch(s -> s.isDataFlavorSupported(
         PublicationSelection.PublicationDetailFlavor)) && (isPublicationAllowed(isRoot));
   }
 
-  private void init()  {
+  private void init() {
     sortValue = new KmeliaPublicationSort(getDefaultSortValue());
 
     // Remove all data store by this SessionController
@@ -763,6 +766,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   /**
    * Update the specified topic. If the local rights of the topic are enabled, then from the
    * inherited rights, only the admin ones are kept.
+   *
    * @param topic the topic to update with the updated data
    * @param alertType the type of notification: notify all the users ("All"), only the publishers
    * ("publisher"), or nobody ("None").
@@ -777,6 +781,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   /**
    * Update only header information about the specified topic.
+   *
    * @param nd the topic to update with the updated data
    * @param alertType the type of notification: notify all the users ("All"), only the publishers
    * ("publisher"), or nobody ("None").
@@ -875,7 +880,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     pubDetail.setCreatorId(getUserId());
     pubDetail.setCreationDate(new Date());
 
-    setCurrentLanguage(pubDetail.getLanguage());
+    //setCurrentLanguage(pubDetail.getLanguage());
 
     String result;
     if (isKmaxMode) {
@@ -1798,8 +1803,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   /**
    * Gets a list of models used as publication content for the current topic. First a global model
-   * for the whole Kmelia instance is looked for. If no such model exists, and if the specified
-   * flag is set at true, then the models defined for the current topic are looked for.
+   * for the whole Kmelia instance is looked for. If no such model exists, and if the specified flag
+   * is set at true, then the models defined for the current topic are looked for.
+   *
    * @param specificToTopic a flag indicating if the models specifics to the current topic have to
    * be taken into account.
    * @return a list of the available models as publication content.
@@ -2391,11 +2397,12 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   /**
    * Is publications can be created in this node
+   *
    * @param isRoot true or false
    * @return true or false
    */
   private boolean isPublicationAllowed(final boolean isRoot) {
-    return (!isRoot) || (getNbPublicationsOnRoot()==0);
+    return (!isRoot) || (getNbPublicationsOnRoot() == 0);
   }
 
   private void pasteClipboardSelection(ClipboardSelection selection,
@@ -3523,6 +3530,23 @@ public class KmeliaSessionController extends AbstractComponentSessionController
         .build();
   }
 
+  /**
+   * Backups the current active content language in order to update it for an operation.
+   */
+  public void backupCurrentLanguage() {
+    this.cachedCurrentLanguage = currentLanguage;
+  }
+
+  /**
+   * Restores the current content language as it was before its backup.
+   */
+  public void restoreCurrentLanguage() {
+    if (this.cachedCurrentLanguage != null) {
+      this.currentLanguage = this.cachedCurrentLanguage;
+      this.cachedCurrentLanguage = null;
+    }
+  }
+
   public enum CLIPBOARD_STATE {
     IS_EMPTY, HAS_COPIES, HAS_CUTS, HAS_COPIES_AND_CUTS
   }
@@ -3593,7 +3617,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
             } else {
               messager.addError(
                   getMultilang().getString("kmelia.publications.batch.update.fail"),
-                      fail.size());
+                  fail.size());
             }
             selectedPublicationPKs.removeAll(success);
             return null;
@@ -3623,8 +3647,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       selectedPublicationPKs.add(publication.getPk());
     }
   }
-
-
 
 
 }
