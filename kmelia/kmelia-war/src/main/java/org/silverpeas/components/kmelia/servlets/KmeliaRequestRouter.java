@@ -148,10 +148,11 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
       toolboxMode = KmeliaHelper.isToolbox(kmelia.getComponentId());
 
-      // Set language choosen by the user
+      // Set language chosen by the user
       setLanguage(request, kmelia);
 
       if (function.startsWith("Main")) {
+        restoreCurrentLanguageIfAny(request, kmelia);
         if (kmaxMode) {
           destination = getDestination("KmaxMain", kmelia, request);
           kmelia.setSessionTopic(null);
@@ -198,6 +199,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
         destination = rootDestination + "repository.jsp";
       } else if ("GoToTopic".equals(function)) {
+        restoreCurrentLanguageIfAny(request, kmelia);
         String topicId = (String) request.getAttribute("Id");
         if (!StringUtil.isDefined(topicId)) {
           topicId = request.getParameter("Id");
@@ -602,14 +604,16 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         if (toolboxMode) {
           destination = getDestination("ToUpdatePublicationHeader", kmelia, request);
         } else {
-          List<String> publicationLanguages = kmelia.getPublicationLanguages(); // languages of
-          // publication
-          // header and attachments
-          if (publicationLanguages.contains(kmelia.getCurrentLanguage())) {
-            request.setAttribute("ContentLanguage", kmelia.getCurrentLanguage());
-          } else {
-            request.setAttribute("ContentLanguage", checkLanguage(kmeliaPublication.getDetail()));
+          // languages of publication header and attachments
+          List<String> publicationLanguages = kmelia.getPublicationLanguages();
+          if (!publicationLanguages.contains(kmelia.getCurrentLanguage())) {
+            // no publication in the current language selected by the user: switch it to the
+            // default one of the publication. We cache the previous current content language for
+            // restoration later
+            kmelia.backupCurrentLanguage();
+            kmelia.setCurrentLanguage(checkLanguage(kmeliaPublication.getDetail()));
           }
+          request.setAttribute("ContentLanguage", kmelia.getCurrentLanguage());
           request.setAttribute("Languages", publicationLanguages);
 
           request.setAttribute("Publication", kmeliaPublication);
@@ -1492,6 +1496,20 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
       return "/admin/jsp/errorpageMain.jsp";
     }
     return destination;
+  }
+
+  /**
+   * In an update operation, within an i18n env, the current content language has been modified to
+   * take into account the publication is in only a single language ; the content language has been
+   * automatically switched to the language of the publication. It is then required to restore the
+   * current content language as it was before in order to not disturb the user.
+   *
+   * @param kmelia the {@link KmeliaActionAccessController} instance linked to this request router.
+   */
+  private void restoreCurrentLanguageIfAny(HttpServletRequest request,
+      KmeliaSessionController kmelia) {
+    kmelia.restoreCurrentLanguage();
+    setLanguage(request, kmelia);
   }
 
   @NonNull
