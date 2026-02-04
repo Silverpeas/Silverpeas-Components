@@ -60,11 +60,11 @@
 <c:if test="${enabled}">
   <div id="searchZone">
     <view:board>
-      <table id="searchLine">
-        <tr><td><div id="searchLabel">${labelSearch}</div>&nbsp;<input type="text" id="topicQuery" size="50" value="<%=query %>" onkeydown="checkSubmitToSearch(event)"/></td>
-          <td><view:button label="${labelSearchButton}" action="javascript:onClick=searchInTopic();"/></td>
-        </tr>
-      </table>
+      <div id="searchLine">
+         <label for="topicQuery" id="searchLabel">${labelSearch}</label>
+         <input type="text" id="topicQuery" value="<%=query %>" onkeydown="checkSubmitToSearch(event)"/>
+         <view:button label="${labelSearchButton}" action="javascript:onClick=searchInTopic();"/>
+      </div>
       <form id="extraFormSearch" action="javaScript:void(0)">
         <% if (searchForm != null) {
           searchForm.display(out, formContext);

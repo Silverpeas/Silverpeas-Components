@@ -53,13 +53,16 @@ body.treeView>div[id*="kmelia"]>div.kmelia #topPage .cellBodyWindows {
   margin: 1em;
 }
 
-#searchZone #searchLine {
-  white-space: nowrap;
+#searchZone #topicQuery{
+  width:min(30ch, 100%) ;
 }
 
-#searchZone #searchLabel,
-#searchZone #searchButton {
-  float: left;
+#searchZone #searchLine {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 1em;
+  align-items: center;
 }
 
 #sortingList #sort7 {
