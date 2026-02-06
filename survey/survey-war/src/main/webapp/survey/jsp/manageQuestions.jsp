@@ -457,17 +457,18 @@
             <c:when test="${requestScope['UpdateSucceed']}">
               <div class="inlineMessage-ok">
                 <fmt:message key="survey.update.succeed" />
-              </div><br clear="all"/>
+              </div><br/>
             </c:when>
           </c:choose>
 
           <!-- SURVEY FORM BEGIN -->
           <form name="surveyForm" action="manageQuestions.jsp" method="post" enctype="multipart/form-data">
             <table>
+              <th></th>
               <tr>
                 <td class="txtlibform" width="30%"><fmt:message key="SurveyCreationQuestion"/> <c:out value="${nbQuestion}" /> :</td>
                 <td width="70%">
-                  <input type="text" name="question" value="<view:encodeHtml string="${questionLabel}" />" size="60" maxlength="<%=DBUtil.getTextFieldLength()%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5">
+                  <input type="text" name="question" value="<view:encodeHtml string="${questionLabel}" />" size="60" maxlength="<%=DBUtil.getTextFieldLength()%>">&nbsp;<img alt="" src="<%=mandatoryField%>" width="5" height="5">
                 </td>
               </tr>
 
@@ -495,7 +496,7 @@
                     <td class="txtlibform"><fmt:message key="SurveyCreationNbPossibleAnswer" /> :</td>
                     <td>
                       <input type="text" name="nbAnswers" id="nbAnswersId" value="<c:out value="${answerNb}"/>" size="3" onchange="javascript:udpateListAnswer(this.value);" />
-                      &nbsp;<img src="<%=mandatoryField%>" alt="<%=resources.getString("GML.requiredField")%>" width="5" height="5"/>
+                      &nbsp;<img src="<%=mandatoryField%>" alt="<fmt:message key="GML.requiredField"/>" width="5" height="5"/>
                     </td>
                   </tr>
                   <tr id="answerNotOpenSA">
@@ -546,8 +547,8 @@
                         <td>
               <span id="imageGallery<c:out value="${answerStatus.index}"/>">
               <c:if test="${not empty imageUrl}">
-                <img src="<c:out value="${imageUrl}"/>" border="0" height="40px" align="top"/>
-                <a href="javascript:deleteImage('<c:out value="${answerStatus.index}"/>')"><img border="0" src="<c:out value="${ctxPath}"/>/util/icons/delete.gif" align="top" alt="<fmt:message key="GML.delete"/>" title="<fmt:message key="GML.delete"/>"></a>
+                <img alt="" src="<c:out value="${imageUrl}"/>" height="40px"/>
+                <a href="javascript:deleteImage('<c:out value="${answerStatus.index}"/>')"><img src="<c:out value="${ctxPath}"/>/util/icons/delete.gif" alt="<fmt:message key="GML.delete"/>" title="<fmt:message key="GML.delete"/>"></a>
               </c:if>
               </span>
                           <input type="hidden" id="valueImageGallery<c:out value="${answerStatus.index}"/>" name="valueImageGallery<c:out value="${answerStatus.index}"/>" value="<c:out value="${answer.image}"/>" />
@@ -634,10 +635,11 @@
                 <c:set var="displaySuggestion" value="" />
               </c:if>
               <tr>
-                <td colspan="2" align="center">
-                  <table cellpadding="0" cellspacing="5" width="100%">
+                <td colspan="2">
+                  <table>
+                    <th></th>
                     <tr>
-                      <td class="intfdcolor"><img src="<%=px%>"></td>
+                      <td class="intfdcolor"><img alt="" src="<%=px%>"></td>
                     </tr>
                   </table>
                 </td>
