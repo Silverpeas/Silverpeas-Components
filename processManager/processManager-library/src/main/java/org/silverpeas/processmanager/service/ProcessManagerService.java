@@ -23,6 +23,7 @@
  */
 package org.silverpeas.processmanager.service;
 
+import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.instance.ProcessInstance;
 import org.silverpeas.processmanager.ProcessManagerException;
 
@@ -47,7 +48,7 @@ public interface ProcessManagerService {
    */
   @SuppressWarnings("unused")
   String createProcess(String componentId, String userId, String fileName, byte[] fileContent)
-      throws ProcessManagerException;
+      throws ProcessManagerException, WorkflowException;
 
   /**
    * Create a process instance for a specific workflow component, by a specific user using one role
@@ -76,7 +77,7 @@ public interface ProcessManagerService {
    * @throws ProcessManagerException when the creation of the process failed.
    */
   String createProcess(String componentId, String userId, String userRole,
-      Map<String, Object> metadata) throws ProcessManagerException;
+      Map<String, Object> metadata) throws ProcessManagerException, WorkflowException;
 
   @SuppressWarnings("unused")
   void doAction(String action, String processId, String componentId, String userId,

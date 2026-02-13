@@ -111,7 +111,7 @@ public class DefaultProcessManagerService implements ProcessManagerService {
    */
   @Override
   public String createProcess(String componentId, String userId, String fileName,
-      byte[] fileContent) throws ProcessManagerException {
+      byte[] fileContent) throws ProcessManagerException, WorkflowException {
     Map<String, Object> metadata = new HashMap<>(1);
     metadata.put(null, new FileContent(fileName, fileContent));
     return createProcess(componentId, userId, DEFAULT_ROLE, metadata);
@@ -143,7 +143,7 @@ public class DefaultProcessManagerService implements ProcessManagerService {
    */
   @Override
   public String createProcess(String componentId, String userId, String userRole,
-      Map<String, Object> metadata) throws ProcessManagerException {
+      Map<String, Object> metadata) throws ProcessManagerException, WorkflowException {
     // Default map for metadata is an empty map
     if (metadata == null) {
       metadata = Collections.emptyMap();
@@ -170,6 +170,7 @@ public class DefaultProcessManagerService implements ProcessManagerService {
       AttachmentServiceProvider.getAttachmentService()
           .unlock(new UnlockContext(attachmentId, userId, null));
     }
+    getProcessInstance(instanceId).updateFolder(data);
     return instanceId;
   }
 
