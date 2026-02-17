@@ -48,7 +48,7 @@ public interface ProcessManagerService {
    */
   @SuppressWarnings("unused")
   String createProcess(String componentId, String userId, String fileName, byte[] fileContent)
-      throws ProcessManagerException, WorkflowException;
+      throws ProcessManagerException, WorkflowException, InterruptedException;
 
   /**
    * Create a process instance for a specific workflow component, by a specific user using one role
@@ -77,7 +77,8 @@ public interface ProcessManagerService {
    * @throws ProcessManagerException when the creation of the process failed.
    */
   String createProcess(String componentId, String userId, String userRole,
-      Map<String, Object> metadata) throws ProcessManagerException, WorkflowException;
+      Map<String, Object> metadata)
+      throws ProcessManagerException, WorkflowException, InterruptedException;
 
   @SuppressWarnings("unused")
   void doAction(String action, String processId, String componentId, String userId,
