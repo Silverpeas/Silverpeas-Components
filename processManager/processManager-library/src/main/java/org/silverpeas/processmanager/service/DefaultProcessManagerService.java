@@ -143,7 +143,8 @@ public class DefaultProcessManagerService implements ProcessManagerService {
    */
   @Override
   public String createProcess(String componentId, String userId, String userRole,
-      Map<String, Object> metadata) throws ProcessManagerException, WorkflowException {
+      Map<String, Object> metadata)
+      throws ProcessManagerException, WorkflowException {
     // Default map for metadata is an empty map
     if (metadata == null) {
       metadata = Collections.emptyMap();
@@ -171,6 +172,13 @@ public class DefaultProcessManagerService implements ProcessManagerService {
           .unlock(new UnlockContext(attachmentId, userId, null));
     }
     getProcessInstance(instanceId).updateFolder(data);
+
+    try {
+      Thread.sleep(4000);
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    }
+
     return instanceId;
   }
 
