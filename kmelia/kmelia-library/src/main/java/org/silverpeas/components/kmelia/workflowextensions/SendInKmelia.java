@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -117,12 +117,12 @@ public class SendInKmelia extends ExternalActionImpl {
     String desc = "";
     desc = applySubstitution(role, pubDesc, desc);
     PublicationDetail pubDetail = PublicationDetail.builder(getLanguage())
-        .setPk(pubPK)
-        .setNameAndDescription(pubName, desc)
-        .created(now, userId)
-        .setBeginDateTime(now, null)
-        .setImportance(1)
-        .build();
+            .setPk(pubPK)
+            .setNameAndDescription(pubName, desc)
+            .created(now, userId)
+            .setBeginDateTime(now, null)
+            .setImportance(1)
+            .build();
 
     if (formIsUsed) {
       pubDetail.setInfoId(xmlFormName);
@@ -140,7 +140,7 @@ public class SendInKmelia extends ExternalActionImpl {
 
     // 3 - Copy all instance regular files to publication
     ResourceReference fromPK = new ResourceReference(getProcessInstance().getInstanceId(),
-        getProcessInstance().getModelId());
+            getProcessInstance().getModelId());
     ResourceReference toPK = new ResourceReference(pubPK);
     copyFiles(fromPK, toPK, DocumentType.attachment);
 
@@ -194,7 +194,7 @@ public class SendInKmelia extends ExternalActionImpl {
     if (StringUtil.isDefined(text)) {
       try {
         result = DataRecordUtil.applySubstitution(text,
-            getProcessInstance().getAllDataRecord(role, "fr"), "fr");
+                getProcessInstance().getAllDataRecord(role, "fr"), "fr");
       } catch (WorkflowException e) {
         SilverLogger.getLogger(this).error(e.getMessage(), e);
       }
@@ -203,24 +203,24 @@ public class SendInKmelia extends ExternalActionImpl {
   }
 
   public void populateFields(String pubId, ResourceReference fromPK, ResourceReference toPK,
-      String xmlFormName) {
+                             String xmlFormName) {
     // Get the current instance
     UpdatableProcessInstance currentProcessInstance =
-        (UpdatableProcessInstance) getProcessInstance();
+            (UpdatableProcessInstance) getProcessInstance();
     try {
       // register xmlForm of publication
       PublicationTemplateManager.getInstance()
-          .addDynamicPublicationTemplate(toPK.getComponentInstanceId() + ":" + xmlFormName,
-              xmlFormName + ".xml");
+              .addDynamicPublicationTemplate(toPK.getComponentInstanceId() + ":" + xmlFormName,
+                      xmlFormName + ".xml");
 
       PublicationTemplateImpl pubTemplate =
-          (PublicationTemplateImpl) PublicationTemplateManager.getInstance()
-              .getPublicationTemplate(toPK.getComponentInstanceId() + ":" + xmlFormName);
+              (PublicationTemplateImpl) PublicationTemplateManager.getInstance()
+                      .getPublicationTemplate(toPK.getComponentInstanceId() + ":" + xmlFormName);
       DataRecord record = pubTemplate.getRecordSet().getEmptyRecord();
       record.setId(pubId);
       for (String fieldName : record.getFieldNames()) {
         Object fieldValue =
-            getFieldValue(fromPK, toPK, currentProcessInstance, pubTemplate, fieldName);
+                getFieldValue(fromPK, toPK, currentProcessInstance, pubTemplate, fieldName);
         record.getField(fieldName).setObjectValue(fieldValue);
       }
       // Update
@@ -232,9 +232,9 @@ public class SendInKmelia extends ExternalActionImpl {
   }
 
   private Object getFieldValue(final ResourceReference fromPK, final ResourceReference toPK,
-      final UpdatableProcessInstance currentProcessInstance,
-      final PublicationTemplateImpl pubTemplate, final String fieldName)
-      throws FormException, PublicationTemplateException {
+                               final UpdatableProcessInstance currentProcessInstance,
+                               final PublicationTemplateImpl pubTemplate, final String fieldName)
+          throws FormException, PublicationTemplateException {
     Object fieldValue = null;
     try {
       Field fieldOfFolder = currentProcessInstance.getField(fieldName);
@@ -256,14 +256,14 @@ public class SendInKmelia extends ExternalActionImpl {
   }
 
   private String copyFormFile(ResourceReference fromPK, ResourceReference toPK,
-      String attachmentId) {
+                              String attachmentId) {
     SimpleDocument attachment;
     if (StringUtil.isDefined(attachmentId)) {
       AttachmentService service = AttachmentServiceProvider.getAttachmentService();
       // Retrieve attachment detail to copy
       attachment =
-          service.searchDocumentById(new SimpleDocumentPK(attachmentId, fromPK.getInstanceId()),
-              null);
+              service.searchDocumentById(new SimpleDocumentPK(attachmentId, fromPK.getInstanceId()),
+                      null);
       if (attachment != null) {
         SimpleDocumentPK copyPK = copyFileWithoutDocumentTypeChange(attachment, toPK);
         return copyPK.getId();
@@ -273,10 +273,10 @@ public class SendInKmelia extends ExternalActionImpl {
   }
 
   private void copyFiles(ResourceReference fromPK, ResourceReference toPK,
-      DocumentType fromType) {
+                         DocumentType fromType) {
     try {
       List<SimpleDocument> origins = AttachmentServiceProvider.getAttachmentService()
-          .listDocumentsByForeignKeyAndType(fromPK, fromType, getLanguage());
+              .listDocumentsByForeignKeyAndType(fromPK, fromType, getLanguage());
       for (SimpleDocument origin : origins) {
         copyFile(origin, toPK, DocumentType.attachment);
       }
@@ -287,12 +287,12 @@ public class SendInKmelia extends ExternalActionImpl {
   }
 
   private SimpleDocumentPK copyFileWithoutDocumentTypeChange(SimpleDocument file,
-      ResourceReference toPK) {
+                                                             ResourceReference toPK) {
     return copyFile(file, toPK, null);
   }
 
   private SimpleDocumentPK copyFile(SimpleDocument file, ResourceReference toPK,
-      DocumentType type) {
+                                    DocumentType type) {
     if (type != null) {
       file.setDocumentType(type);
     }
@@ -329,12 +329,12 @@ public class SendInKmelia extends ExternalActionImpl {
   }
 
   private void generatePDFStepHeader(final String role, HistoryStep step,
-      Document document) {
+                                     Document document) {
     try {
       String activity = "";
       if (step.getResolvedState() != null) {
         State resolvedState =
-            step.getProcessInstance().getProcessModel().getState(step.getResolvedState());
+                step.getProcessInstance().getProcessModel().getState(step.getResolvedState());
         activity = resolvedState.getLabel(role, getLanguage());
       }
 
@@ -391,14 +391,14 @@ public class SendInKmelia extends ExternalActionImpl {
   }
 
   private void generatePDFStepContent(final String role, HistoryStep step,
-      Document document) {
+                                      Document document) {
     try {
       Form form;
       if ("#question#".equals(step.getAction()) || "#response#".equals(step.getAction())) {
         form = null;
       } else {
         form = getProcessInstance().getProcessModel()
-            .getPresentationForm(step.getAction(), role, getLanguage());
+                .getPresentationForm(step.getAction(), role, getLanguage());
       }
 
       if (form != null && step.getActionRecord() != null) {
@@ -414,7 +414,7 @@ public class SendInKmelia extends ExternalActionImpl {
         List<FieldTemplate> fieldTemplates = form.getFieldTemplates();
         for (FieldTemplate fieldTemplate : fieldTemplates) {
           generatePdfFieldContent(step, data, pageContext, tableContent,
-              (GenericFieldTemplate) fieldTemplate);
+                  (GenericFieldTemplate) fieldTemplate);
         }
         document.add(tableContent);
       }
@@ -424,8 +424,8 @@ public class SendInKmelia extends ExternalActionImpl {
   }
 
   private void generatePdfFieldContent(final HistoryStep step, final DataRecord data,
-      final PagesContext pageContext, final PdfPTable tableContent,
-      final GenericFieldTemplate fieldTemplate) {
+                                       final PagesContext pageContext, final PdfPTable tableContent,
+                                       final GenericFieldTemplate fieldTemplate) {
     try {
       Font fontLabel = new Font(FontFamily.HELVETICA, 10, Font.BOLD);
       Font fontValue = new Font(FontFamily.HELVETICA, 10, Font.NORMAL);
@@ -437,8 +437,8 @@ public class SendInKmelia extends ExternalActionImpl {
       // wysiwyg field
       if ("wysiwyg".equals(fieldTemplate.getDisplayerName())) {
         String file =
-            WysiwygFCKFieldDisplayer.getFile(componentId, getProcessInstance().getInstanceId(),
-                fieldTemplate.getFieldName(), getLanguage());
+                WysiwygFCKFieldDisplayer.getFile(componentId, getProcessInstance().getInstanceId(),
+                        fieldTemplate.getFieldName(), getLanguage());
 
         // Extract the text content of the html code
         Source source = new Source(new FileInputStream(file));
@@ -447,7 +447,7 @@ public class SendInKmelia extends ExternalActionImpl {
         // Field file type
         if (StringUtil.isDefined(field.getValue())) {
           SimpleDocument doc = AttachmentServiceProvider.getAttachmentService()
-              .searchDocumentById(new SimpleDocumentPK(field.getValue(), componentId), null);
+                  .searchDocumentById(new SimpleDocumentPK(field.getValue(), componentId), null);
           if (doc != null) {
             fieldValue = doc.getFilename();
           }
@@ -455,7 +455,7 @@ public class SendInKmelia extends ExternalActionImpl {
       } else {
         // Other field types
         FieldDisplayer<Field> fieldDisplayer =
-            TypeManager.getInstance().getDisplayer(fieldTemplate.getTypeName(), "simpletext");
+                TypeManager.getInstance().getDisplayer(fieldTemplate.getTypeName(), "simpletext");
         StringWriter sw = new StringWriter();
         PrintWriter out = new PrintWriter(sw);
         fieldDisplayer.display(out, field, fieldTemplate, pageContext);
@@ -493,7 +493,7 @@ public class SendInKmelia extends ExternalActionImpl {
   }
 
   private void addPdfHistory(final String pdfHistoryName, final String role, PublicationPK pubPK,
-      String userId) {
+                             String userId) {
     final String fileName;
     if (pdfHistoryName != null && !pdfHistoryName.trim().isEmpty()) {
       if (!pdfHistoryName.endsWith(".pdf")) {
@@ -544,19 +544,31 @@ public class SendInKmelia extends ExternalActionImpl {
           topicId = UNKNOWN;
         }
       } else {
-        targetId = getTriggerParameter("targetComponentId").getValue();
-        Parameter paramTopicPath = getTriggerParameter("targetFolderPath");
-        if (paramTopicPath != null && StringUtil.isDefined(paramTopicPath.getValue())) {
+        String paramTopicPath = null;
+        try {
+          targetId = getParameterValue("targetComponentId");
+          paramTopicPath = getParameterValue("targetFolderPath");
+        } catch (Exception e) {
+          SilverLogger.getLogger(SendInKmelia.this).error(e.getMessage(), e);
+          targetId = UNKNOWN;
+          topicId = UNKNOWN;
+        }
+        if (paramTopicPath != null && StringUtil.isDefined(paramTopicPath)) {
           try {
-            String path = DataRecordUtil.applySubstitution(paramTopicPath.getValue(),
-                getProcessInstance().getAllDataRecord(role, "fr"), "fr");
+            String path = DataRecordUtil.applySubstitution(paramTopicPath,
+                    getProcessInstance().getAllDataRecord(role, "fr"), "fr");
             topicId = getNodeId(path, targetId, userId);
           } catch (WorkflowException e) {
             SilverLogger.getLogger(SendInKmelia.this).error(e.getMessage(), e);
             topicId = "0";
           }
         } else {
-          topicId = getTriggerParameter("targetTopicId").getValue();
+          try {
+            topicId = getParameterValue("targetTopicId");
+          } catch (Exception e) {
+            SilverLogger.getLogger(SendInKmelia.this).error(e.getMessage(), e);
+            topicId = UNKNOWN;
+          }
         }
       }
       return this;
@@ -582,7 +594,7 @@ public class SendInKmelia extends ExternalActionImpl {
         String parentId = NodePK.ROOT_NODE_ID;
         for (String name : path) {
           NodeDetail existingNode =
-              getNodeService().getDetailByNameAndFatherId(nodePK, name, Integer.parseInt(parentId));
+                  getNodeService().getDetailByNameAndFatherId(nodePK, name, Integer.parseInt(parentId));
           if (existingNode != null) {
             // topic exists
             parentId = existingNode.getNodePK().getId();
@@ -598,8 +610,8 @@ public class SendInKmelia extends ExternalActionImpl {
               node = getNodeService().createNode(newNode);
             } catch (Exception e) {
               SilverLogger.getLogger(this)
-                  .warn("Cannot create node {0} in path {1}: {2}", name, explicitPath,
-                      e.getMessage());
+                      .warn("Cannot create node {0} in path {1}: {2}", name, explicitPath,
+                              e.getMessage());
               return "0";
             }
             parentId = node.getId();
@@ -637,7 +649,7 @@ public class SendInKmelia extends ExternalActionImpl {
         addPDFHistory = StringUtil.getBooleanValue(getTriggerParameter("addPDFHistory").getValue());
         if (getTriggerParameter("addPDFHistoryFirst") != null) {
           addPDFHistoryFirst =
-              StringUtil.getBooleanValue(getTriggerParameter("addPDFHistoryFirst").getValue());
+                  StringUtil.getBooleanValue(getTriggerParameter("addPDFHistoryFirst").getValue());
         } else {
           addPDFHistoryFirst = true;
         }
