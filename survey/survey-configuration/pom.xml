@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.silverpeas.components</groupId>
     <artifactId>survey</artifactId>
-    <version>6.4.6-SNAPSHOT</version>
+    <version>6.4.6</version>
   </parent>
 
   <groupId>org.silverpeas.components.survey</groupId>
