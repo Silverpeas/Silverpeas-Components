@@ -42,9 +42,9 @@ import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToInternal;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToInternalJsp;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.WebComponentController;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,7 +54,7 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 
 /**
- * The web controller of the ConnecteurJDBC application. Like all of the web controllers in
+ * The web controller of the ConnecteurJDBC application. Like all the web controllers in
  * Silverpeas, it is both session-scoped and spawn per application instance.
  * @author mmoquillon
  */
@@ -72,9 +72,9 @@ public class JdbcConnectorWebController extends
   public static final String COMPARING_VALUE = "columnValue";
   public static final String COMPARING_OPERATORS = "comparators";
 
-  private JdbcRequester requester;
+  private transient JdbcRequester requester;
   private String lastSqlQueryInError = EMPTY;
-  private QueryResult queryResult = new QueryResult();
+  private final transient QueryResult queryResult = new QueryResult();
 
   /**
    * Constructs a new Web controller for the specified context and with the
@@ -268,7 +268,7 @@ public class JdbcConnectorWebController extends
 
   private void executeSQLQuery(final JdbcConnectorWebRequestContext context) {
     if (!queryResult.existsRows()) {
-      // the request is executed only once, when no query hasn't be yet performed.
+      // the request is executed only once, when no query hasn't been yet performed.
       // after that, the query result is cached in this web controller.
       try {
         queryResult.setNewResult(requester.request());

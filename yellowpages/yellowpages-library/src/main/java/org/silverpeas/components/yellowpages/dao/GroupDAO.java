@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.yellowpages.dao;
 
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.exception.UtilException;
 
 import java.sql.Connection;
@@ -32,8 +33,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 
+@Repository
 public class GroupDAO {
-  public static Collection<String> getGroupIds(Connection con, String fatherId, String instanceId)
+
+  public Collection<String> getGroupIds(Connection con, String fatherId, String instanceId)
       throws SQLException {
     ArrayList<String> groupIds = new ArrayList<>();
     String query =
@@ -52,7 +55,7 @@ public class GroupDAO {
     return groupIds;
   }
 
-  public static void addGroup(Connection con, String groupId, String fatherId, String instanceId)
+  public void addGroup(Connection con, String groupId, String fatherId, String instanceId)
       throws SQLException, UtilException {
     String query = "insert into SC_Contact_GroupFather values (?,?,?)";
     try (PreparedStatement prepStmt = con.prepareStatement(query)) {
@@ -63,7 +66,7 @@ public class GroupDAO {
     }
   }
 
-  public static void removeGroup(Connection con, String groupId) throws SQLException {
+  public void removeGroup(Connection con, String groupId) throws SQLException {
     String query = "delete from SC_Contact_GroupFather where groupId = ? ";
     try (PreparedStatement prepStmt = con.prepareStatement(query)) {
       prepStmt.setInt(1, Integer.parseInt(groupId));

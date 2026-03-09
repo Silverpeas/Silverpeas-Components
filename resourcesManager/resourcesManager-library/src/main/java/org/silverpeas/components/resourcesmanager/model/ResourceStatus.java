@@ -27,7 +27,7 @@ package org.silverpeas.components.resourcesmanager.model;
  * @author ehugonnet
  */
 public interface ResourceStatus {
-  public static final String STATUS_FOR_VALIDATION = "A";
-  public static final String STATUS_REFUSED = "R";
-  public static final String STATUS_VALIDATE = "V";
+  String STATUS_FOR_VALIDATION = "A";
+  String STATUS_REFUSED = "R";
+  String STATUS_VALIDATE = "V";
 }

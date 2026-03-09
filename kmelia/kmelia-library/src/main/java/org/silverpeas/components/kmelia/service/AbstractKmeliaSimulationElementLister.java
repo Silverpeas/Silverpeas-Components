@@ -30,7 +30,7 @@ import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.process.annotation.SimulationElementLister;
 
 /**
- * User: Yohann Chastagnier
+ * @author Yohann Chastagnier
  * Date: 24/10/13
  */
 public abstract class AbstractKmeliaSimulationElementLister extends SimulationElementLister {

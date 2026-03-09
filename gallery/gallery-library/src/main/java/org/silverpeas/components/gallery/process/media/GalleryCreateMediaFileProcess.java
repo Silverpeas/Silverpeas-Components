@@ -23,8 +23,7 @@
  */
 package org.silverpeas.components.gallery.process.media;
 
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.components.gallery.MediaUtil;
+import org.silverpeas.components.gallery.MediaProcessor;
 import org.silverpeas.components.gallery.Watermark;
 import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.components.gallery.model.Photo;
@@ -34,6 +33,7 @@ import org.silverpeas.components.gallery.process.AbstractGalleryFileProcess;
 import org.silverpeas.core.process.io.file.FileHandler;
 import org.silverpeas.core.process.management.ProcessExecutionContext;
 import org.silverpeas.core.process.session.ProcessSession;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.io.File;
@@ -47,15 +47,8 @@ public class GalleryCreateMediaFileProcess extends AbstractGalleryFileProcess {
   private final File file;
   private final FileItem fileItem;
   private final Watermark watermark;
-
-  /**
-   * Default hidden constructor
-   * @param media
-   * @param file
-   * @param watermark
-   * @param watermarkHD
-   * @param watermarkOther
-   */
+  private final MediaProcessor mediaProcessor = MediaProcessor.get();
+  
   protected GalleryCreateMediaFileProcess(final Media media, final Object file,
       final Watermark watermark) {
     super(media);
@@ -78,24 +71,11 @@ public class GalleryCreateMediaFileProcess extends AbstractGalleryFileProcess {
     this.watermark = watermark;
   }
 
-  /**
-   * Gets an instance
-   * @param media
-   * @param file
-   * @param watermark
-   * @return
-   */
   public static GalleryCreateMediaFileProcess getInstance(final Media media, final Object file,
       final Watermark watermark) {
     return new GalleryCreateMediaFileProcess(media, file, watermark);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see AbstractFileProcess#processFiles(org.silverpeas.process.
-   * management.ProcessExecutionContext, ProcessSession,
-   * FileHandler)
-   */
   @Override
   public void processFiles(final ProcessExecutionContext context, final ProcessSession session,
       final FileHandler fileHandler) throws Exception {
@@ -123,28 +103,28 @@ public class GalleryCreateMediaFileProcess extends AbstractGalleryFileProcess {
   private void processSoundMedia(final FileHandler fileHandler) throws Exception {
     Sound sound = getMedia().getSound();
     if (fileItem != null) {
-      MediaUtil.processSound(fileHandler, sound, fileItem);
+      mediaProcessor.processSound(fileHandler, sound, fileItem);
     } else {
-      MediaUtil.processSound(fileHandler, sound, file);
+      mediaProcessor.processSound(fileHandler, sound, file);
     }
   }
 
   private void processVideoMedia(final FileHandler fileHandler) throws Exception {
     Video video = getMedia().getVideo();
     if (fileItem != null) {
-      MediaUtil.processVideo(fileHandler, video, fileItem);
+      mediaProcessor.processVideo(fileHandler, video, fileItem);
     } else {
-      MediaUtil.processVideo(fileHandler, video, file);
+      mediaProcessor.processVideo(fileHandler, video, file);
     }
   }
 
   private void processPhotoMedia(final FileHandler fileHandler) throws Exception {
     Photo photo = getMedia().getPhoto();
     if (fileItem != null) {
-      MediaUtil
+      mediaProcessor
           .processPhoto(fileHandler, photo, fileItem, watermark);
     } else {
-      MediaUtil
+      mediaProcessor
           .processPhoto(fileHandler, photo, file, watermark);
     }
   }

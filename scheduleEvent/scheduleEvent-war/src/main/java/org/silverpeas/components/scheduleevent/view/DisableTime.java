@@ -10,10 +10,10 @@ import java.util.Map;
 import java.util.Set;
 
 public class DisableTime extends AbstractTimeVO {
-  private final static String COMPONENT_ID_SUFFIX = "disabled";
-  private final static String HMTL_CLASS_ATTRIBUTE = "titreCouleur inactif";
-  private DateVO parent;
-  private Map<ContributorVO, AvailableVO> availabilities = new HashMap<ContributorVO, AvailableVO>();
+  private static final String COMPONENT_ID_SUFFIX = "disabled";
+  private static final String HTML_CLASS_ATTRIBUTE = "titreCouleur inactif";
+  private final DateVO parent;
+  private final Map<ContributorVO, AvailableVO> availabilities = new HashMap<>();
 
   public DisableTime(DateVO date) {
     parent = date;
@@ -26,7 +26,7 @@ public class DisableTime extends AbstractTimeVO {
 
   @Override
   public String getHtmlClassAttribute() {
-    return HMTL_CLASS_ATTRIBUTE;
+    return HTML_CLASS_ATTRIBUTE;
   }
 
   @Override
@@ -34,18 +34,18 @@ public class DisableTime extends AbstractTimeVO {
     return Collections.unmodifiableMap(availabilities);
   }
 
-  private AvailableVO getDisabledAvaibility(ContributorVO contributor) {
-    return contributor.makeAvailabilty(Availability.DISABLE);
+  private AvailableVO getDisabledAvailability(ContributorVO contributor) {
+    return contributor.makeAvailability(Availability.DISABLE);
   }
 
   @Override
   public Set<Response> match(Set<Response> responses) {
-    return new HashSet<Response>(0);
+    return new HashSet<>(0);
   }
 
   @Override
   public void addAvailability(ContributorVO contributor, AvailableVO availability) {
-    availabilities.put(contributor, getDisabledAvaibility(contributor));
+    availabilities.put(contributor, getDisabledAvailability(contributor));
   }
 
   @Override
@@ -61,5 +61,15 @@ public class DisableTime extends AbstractTimeVO {
   @Override
   public DateVO getDate() {
     return parent;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    return super.equals(o);
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
   }
 }

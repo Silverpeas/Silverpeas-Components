@@ -23,39 +23,22 @@
  */
 package org.silverpeas.components.organizationchart.control;
 
-import org.silverpeas.components.organizationchart.model.OrganizationalChart;
-import org.silverpeas.components.organizationchart.model.OrganizationalChartType;
-import org.silverpeas.components.organizationchart.model.OrganizationalPerson;
-import org.silverpeas.components.organizationchart.model.OrganizationalRole;
-import org.silverpeas.components.organizationchart.model.OrganizationalUnit;
-import org.silverpeas.components.organizationchart.model.PersonCategory;
+import org.silverpeas.components.organizationchart.model.*;
 import org.silverpeas.components.organizationchart.service.AbstractOrganizationChartConfiguration;
 import org.silverpeas.components.organizationchart.service.GroupOrganizationChartConfiguration;
 import org.silverpeas.components.organizationchart.service.LdapOrganizationChartConfiguration;
 import org.silverpeas.components.organizationchart.service.OrganizationChartService;
-import org.silverpeas.components.organizationchart.view.CategoryBox;
-import org.silverpeas.components.organizationchart.view.ChartPersonnVO;
-import org.silverpeas.components.organizationchart.view.ChartUnitVO;
-import org.silverpeas.components.organizationchart.view.ChartVO;
-import org.silverpeas.components.organizationchart.view.OrganizationBox;
-import org.silverpeas.components.organizationchart.view.UserVO;
+import org.silverpeas.components.organizationchart.view.*;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.kernel.util.StringUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.util.viewgenerator.html.UserNameGenerator;
+import org.silverpeas.kernel.util.StringUtil;
 
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class OrganizationChartSessionController extends AbstractComponentSessionController {
 
@@ -90,7 +73,7 @@ public class OrganizationChartSessionController extends AbstractComponentSession
 
   private final AbstractOrganizationChartConfiguration config;
 
-  private List<OrganizationBox> breadcrumb = new ArrayList<>();
+  private final List<OrganizationBox> breadcrumb = new ArrayList<>();
 
   /**
    * Standard Session Controller Constructeur
@@ -140,9 +123,6 @@ public class OrganizationChartSessionController extends AbstractComponentSession
         case TYPE_PERSONNCHART:
           chartVO = buildChartPersonsVO(chart);
           break;
-
-        default:
-          chartVO = null;
       }
     }
 
@@ -150,22 +130,18 @@ public class OrganizationChartSessionController extends AbstractComponentSession
   }
 
   private void processBreadcrumb(OrganizationBox currentOU) {
-    try {
-      boolean isInBreadcrumb = false;
-      Iterator<OrganizationBox> breadcrumbIt = breadcrumb.iterator();
-      while (breadcrumbIt.hasNext()) {
-        OrganizationBox element = breadcrumbIt.next();
-        if (element.getUrl().equalsIgnoreCase(currentOU.getUrl())) {
-          isInBreadcrumb = true;
-        }
-        if (isInBreadcrumb) {
-          breadcrumbIt.remove();
-        }
+    boolean isInBreadcrumb = false;
+    Iterator<OrganizationBox> breadcrumbIt = breadcrumb.iterator();
+    while (breadcrumbIt.hasNext()) {
+      OrganizationBox element = breadcrumbIt.next();
+      if (element.getUrl().equalsIgnoreCase(currentOU.getUrl())) {
+        isInBreadcrumb = true;
       }
-      breadcrumb.add(currentOU);
-    } catch (UnsupportedEncodingException e) {
-      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
+      if (isInBreadcrumb) {
+        breadcrumbIt.remove();
+      }
     }
+    breadcrumb.add(currentOU);
   }
 
   private UserVO organizationalPerson2UserVO(OrganizationalPerson person, OrganizationalRole role) {
@@ -214,7 +190,7 @@ public class OrganizationChartSessionController extends AbstractComponentSession
     List<UserVO> rightUsers = new ArrayList<>();
     List<UserVO> mainActors = new ArrayList<>();
 
-    for (OrganizationalPerson person : chart.getPersonns()) {
+    for (OrganizationalPerson person : chart.getPersons()) {
       if (person.isVisibleOnCenter()) {
         mainActors.add(organizationalPerson2UserVO(person, person.getVisibleCenterRole()));
       } else if (person.isVisibleOnLeft()) {
@@ -264,7 +240,7 @@ public class OrganizationChartSessionController extends AbstractComponentSession
       subOrganizations.add(subUnit);
     }
     if (getSettings().getBoolean("sort.units.name", false)) {
-      Collections.sort(subOrganizations, UnitComparator.comparator);
+      subOrganizations.sort(UnitComparator.comparator);
     }
     chartVO.setSubOrganizations(subOrganizations);
 
@@ -272,9 +248,6 @@ public class OrganizationChartSessionController extends AbstractComponentSession
   }
 
   private boolean isRoot(OrganizationalChart chart) {
-    if (isLDAP()) {
-      return getConfig().getRoot().equalsIgnoreCase(chart.getRoot().getCompleteName());
-    }
     return getConfig().getRoot().equalsIgnoreCase(chart.getRoot().getCompleteName());
   }
 
@@ -292,7 +265,7 @@ public class OrganizationChartSessionController extends AbstractComponentSession
     // Looks for specific users
     List<UserVO> mainActors = new ArrayList<>();
 
-    for (OrganizationalPerson person : chart.getPersonns()) {
+    for (OrganizationalPerson person : chart.getPersons()) {
       if (person.isVisibleOnCenter()) {
         mainActors.add(organizationalPerson2UserVO(person, person.getVisibleCenterRole()));
       }
@@ -304,14 +277,10 @@ public class OrganizationChartSessionController extends AbstractComponentSession
 
     // Sort people by category
     Map<String, List<UserVO>> usersByCategory = new HashMap<>();
-    for (OrganizationalPerson person : chart.getPersonns()) {
+    for (OrganizationalPerson person : chart.getPersons()) {
       PersonCategory category = person.getVisibleCategory();
       if (category != null) {
-        List<UserVO> usersOfCurrentCategory = usersByCategory.get(category.getName());
-        if (usersOfCurrentCategory == null) {
-          usersOfCurrentCategory = new ArrayList<>();
-          usersByCategory.put(category.getName(), usersOfCurrentCategory);
-        }
+        List<UserVO> usersOfCurrentCategory = usersByCategory.computeIfAbsent(category.getName(), k -> new ArrayList<>());
         usersOfCurrentCategory.add(organizationalPerson2UserVO(person, null));
       }
     }
@@ -359,21 +328,7 @@ public class OrganizationChartSessionController extends AbstractComponentSession
     config.setLdapAttAccount(getComponentParameterValue(PARAM_LDAP_ATT_ACCOUNT));
     config.setLdapAttCSSClass(getComponentParameterValue(PARAM_LDAP_ATT_CSS));
 
-    config.setUnitsChartCentralLabel(
-        getRoles(getComponentParameterValue(PARAM_UNITSCHART_CENTRAL_LABEL)));
-    config.setUnitsChartRightLabel(
-        getRoles(getComponentParameterValue(PARAM_UNITSCHART_RIGHT_LABEL)));
-    config
-        .setUnitsChartLeftLabel(getRoles(getComponentParameterValue(PARAM_UNITSCHART_LEFT_LABEL)));
-
-    config.setPersonnsChartCentralLabel(
-        getRoles(getComponentParameterValue(PARAM_PERSONNSCHART_CENTRAL_LABEL)));
-    config.setPersonnsChartCategoriesLabel(
-        getRoles(getComponentParameterValue(PARAM_PERSONNSCHART_CATEGORIES_LABEL)));
-    config.setUnitsChartOthersInfosKeys(
-        getKeysAndLabel(getComponentParameterValue(PARAM_UNITSCHART_OTHERSINFOS_KEYS)));
-    config.setPersonnsChartOthersInfosKeys(
-        getKeysAndLabel(getComponentParameterValue(PARAM_PERSONNSCHART_OTHERSINFOS_KEYS)));
+    setDefaultConfiguration(config);
     config.setLdapAttActif(getComponentParameterValue(PARAM_LDAP_ATT_ACTIF));
 
     config.setDomainId(getComponentParameterValue(PARAM_DOMAIN_ID));
@@ -391,21 +346,25 @@ public class OrganizationChartSessionController extends AbstractComponentSession
     // champ ldap de la description
     config.setAttDesc(getComponentParameterValue(PARAM_LDAP_ATT_DESC));
 
+    setDefaultConfiguration(config);
+    return config;
+  }
+
+  private void setDefaultConfiguration(AbstractOrganizationChartConfiguration config) {
     config.setUnitsChartCentralLabel(
         getRoles(getComponentParameterValue(PARAM_UNITSCHART_CENTRAL_LABEL)));
     config.setUnitsChartRightLabel(
         getRoles(getComponentParameterValue(PARAM_UNITSCHART_RIGHT_LABEL)));
     config
         .setUnitsChartLeftLabel(getRoles(getComponentParameterValue(PARAM_UNITSCHART_LEFT_LABEL)));
-    config.setPersonnsChartCentralLabel(
+    config.setPersonsChartCentralLabel(
         getRoles(getComponentParameterValue(PARAM_PERSONNSCHART_CENTRAL_LABEL)));
-    config.setPersonnsChartCategoriesLabel(
+    config.setPersonsChartCategoriesLabel(
         getRoles(getComponentParameterValue(PARAM_PERSONNSCHART_CATEGORIES_LABEL)));
     config.setUnitsChartOthersInfosKeys(
         getKeysAndLabel(getComponentParameterValue(PARAM_UNITSCHART_OTHERSINFOS_KEYS)));
-    config.setPersonnsChartOthersInfosKeys(
+    config.setPersonsChartOthersInfosKeys(
         getKeysAndLabel(getComponentParameterValue(PARAM_PERSONNSCHART_OTHERSINFOS_KEYS)));
-    return config;
   }
 
   /**
@@ -449,16 +408,6 @@ public class OrganizationChartSessionController extends AbstractComponentSession
     return map;
   }
 
-  public String getLibelleAttribut(String attId) {
-    String attName = "organizationchart.attribut." + attId;
-    String label = getString(attName);
-    if (label == null || label.equalsIgnoreCase(attName)) {
-      return null;
-    } else {
-      return label;
-    }
-  }
-
   public String getDomainId() {
     return getComponentParameterValue(PARAM_DOMAIN_ID);
   }
@@ -476,17 +425,17 @@ public class OrganizationChartSessionController extends AbstractComponentSession
   }
 
   private boolean displayAvatars() {
-    return getParameterValue(PARAM_AVATARS, true);
+    return getParameterValue(PARAM_AVATARS);
   }
 
   public boolean displayLabels() {
-    return getParameterValue(PARAM_LABELS, true);
+    return getParameterValue(PARAM_LABELS);
   }
 
-  private boolean getParameterValue(String paramName, boolean defaultValue) {
+  private boolean getParameterValue(String paramName) {
     String value = getComponentParameterValue(paramName);
     if (!StringUtil.isDefined(value)) {
-      return defaultValue;
+      return true;
     }
     return StringUtil.getBooleanValue(value);
   }

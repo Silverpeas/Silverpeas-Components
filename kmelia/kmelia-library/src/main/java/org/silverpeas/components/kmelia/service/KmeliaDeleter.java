@@ -36,7 +36,7 @@ public interface KmeliaDeleter {
 
   /**
    * Deletes definitively the specified topic and all descendants. Delete all links between
-   * descendants and publications. Its publications will deleted. Delete All subscriptions and
+   * descendants and publications. Its publications will be deleted. Delete All subscriptions and
    * favorites on its topics and all descendants
    *
    * @param pkToDelete the id of the topic to delete

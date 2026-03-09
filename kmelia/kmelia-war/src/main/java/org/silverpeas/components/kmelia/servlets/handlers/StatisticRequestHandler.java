@@ -40,7 +40,7 @@ import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.web.selection.SelectionUsersGroups;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -52,6 +52,8 @@ import java.util.Set;
  */
 public class StatisticRequestHandler {
 
+  private static final String FILTER_ID_GROUP = "filterIdGroup";
+
   /**
    * @param request the HttpServletRequest
    * @param function the specific destination function
@@ -62,7 +64,7 @@ public class StatisticRequestHandler {
     if ("statistics".equals(function)) {
       return processStatisticRequestHandler(request, controller);
     } else if ("statSelectionGroup".equals(function)) {
-      return processStatisticGroupSelectionRequestHandler(request, controller);
+      return processStatisticGroupSelectionRequestHandler(controller);
     }
     return function;
   }
@@ -112,11 +114,11 @@ public class StatisticRequestHandler {
     request.setAttribute("endDate", endDate);
 
     // Retrieve the group filter
-    String groupId = request.getParameter("filterIdGroup");
+    String groupId = request.getParameter(FILTER_ID_GROUP);
     if (StringUtil.isDefined(groupId)) {
       // Filter statistics for each user inside current group
       statFilter.setGroupId(Integer.parseInt(groupId));
-      request.setAttribute("filterIdGroup", groupId);
+      request.setAttribute(FILTER_ID_GROUP, groupId);
       // Retrieve group label
       for (Group group : groups) {
         if (group.getId().equals(groupId)) {
@@ -143,20 +145,18 @@ public class StatisticRequestHandler {
     ProfileInst readerProfile = kmelia.getProfile(KmeliaHelper.ROLE_READER);
     groupsSet.addAll(writerProfile.getAllGroups());
     groupsSet.addAll(readerProfile.getAllGroups());
-    List<String> groups = new ArrayList<>(groupsSet);
-    return groups;
+    return new ArrayList<>(groupsSet);
   }
 
   /**
    * UNUSED CODE, waiting to make only a group selection inside UserPanel available
-   * @param request the HttpServletRequest
    * @param kmelia the KmeliaSessionController
    * @return the current path destination of the RequestRouter
    */
-  private String processStatisticGroupSelectionRequestHandler(HttpServletRequest request,
-      KmeliaSessionController kmelia) {
+  private String processStatisticGroupSelectionRequestHandler(KmeliaSessionController kmelia) {
 
-    String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
+    String webContext = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
+    //noinspection unchecked
     Pair<String, String>[] hostPath = new Pair[1];
     hostPath[0] = new Pair<>(kmelia.getString("kmelia.SelectValidator"), "");
 
@@ -171,17 +171,17 @@ public class StatisticRequestHandler {
     sel.setElementSelectable(false);
 
     String hostUrl =
-        m_context + URLUtil.getURL("useless", kmelia.getComponentId())
+        webContext + URLUtil.getURL("useless", kmelia.getComponentId())
             + "StatisticSetGroup?Role=";// + role
     String cancelUrl =
-        m_context + URLUtil.getURL("useless", kmelia.getComponentId()) + "CloseWindow";
+        webContext + URLUtil.getURL("useless", kmelia.getComponentId()) + "CloseWindow";
 
     sel.setGoBackURL(hostUrl);
     sel.setCancelURL(cancelUrl);
 
     sel.setHtmlFormName("statForm");
     sel.setHtmlFormElementName("filterLibGroup");
-    sel.setHtmlFormElementId("filterIdGroup");
+    sel.setHtmlFormElementId(FILTER_ID_GROUP);
 
     SelectionUsersGroups sug = new SelectionUsersGroups();
     sug.setComponentId(kmelia.getComponentId());

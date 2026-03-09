@@ -157,10 +157,10 @@ class KmeliaUserTreeViewFilter {
   }
 
   /**
-   * Gets the roles of the user on the node represented by the given identifier.<br>
+   * Gets the roles of the user on the node represented by the given identifier.
    * Data are loaded only one time.
    * @param nodeId a node identifier.
-   * @return a list of role.
+   * @return an array of user roles.
    */
   private String[] getNodeUserRoles(String nodeId) {
     if (nodeUserRoles == null) {

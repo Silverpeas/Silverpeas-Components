@@ -32,7 +32,7 @@ import org.silverpeas.components.suggestionbox.model.Suggestion;
 public abstract class AbstractSuggestionActionUserNotification
     extends AbstractSuggestionUserNotification {
 
-  public AbstractSuggestionActionUserNotification(Suggestion resource, NotifAction action) {
+  AbstractSuggestionActionUserNotification(Suggestion resource, NotifAction action) {
     super(resource, action);
   }
 

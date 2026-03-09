@@ -23,33 +23,39 @@
  */
 package org.silverpeas.components.infoletter.servlets;
 
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.silverpeas.components.infoletter.model.InfoLetterPublicationPdC;
-import org.silverpeas.components.infoletter.service.InfoLetterServiceProvider;
-import org.silverpeas.core.persistence.jdbc.bean.IdPK;
+import org.silverpeas.components.infoletter.model.InfoLetterService;
+import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.util.servlet.GoTo;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.net.URLEncoder;
 
 public class GoToNewsletter extends GoTo {
 
   private static final long serialVersionUID = 4824194822323955033L;
 
+  @Inject
+  private InfoLetterService service;
+
   @Override
-  public String getDestination(String objectId, HttpServletRequest req, HttpServletResponse res)
-      throws Exception {
-    IdPK pk = new IdPK(objectId);
-    InfoLetterPublicationPdC infoLetter = InfoLetterServiceProvider.getInfoLetterData().getInfoLetterPublication(pk);
+  public String getDestination(String objectId, HttpServletRequest req, HttpServletResponse res) {
+    ResourceReference ref = new ResourceReference(objectId);
+    InfoLetterPublicationPdC infoLetter =
+        service.getInfoLetterPublication(ContributionIdentifier.from(ref));
     if (infoLetter != null) {
-      String componentId = infoLetter.getComponentInstanceId();
+      String componentId = infoLetter.getInstanceId();
       String gotoURL = URLUtil.getComponentInstanceURL(componentId) + infoLetter.getURL();
 
       // force context of GraphicElementFactory
       setGefSpaceId(req, componentId);
 
-      return "goto=" + URLEncoder.encode(gotoURL, "UTF-8");
+      return "goto=" + URLEncoder.encode(gotoURL, Charsets.UTF_8);
     }
 
     return null;

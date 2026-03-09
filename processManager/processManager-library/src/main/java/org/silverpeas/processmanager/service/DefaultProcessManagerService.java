@@ -23,34 +23,21 @@
  */
 package org.silverpeas.processmanager.service;
 
+import jakarta.transaction.Transactional;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
-import org.silverpeas.core.contribution.attachment.model.DocumentType;
-import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.contribution.content.form.DataRecord;
-import org.silverpeas.core.contribution.content.form.Field;
-import org.silverpeas.core.contribution.content.form.FieldTemplate;
-import org.silverpeas.core.contribution.content.form.Form;
-import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.contribution.content.form.PagesContext;
-import org.silverpeas.core.contribution.content.form.field.DateField;
-import org.silverpeas.core.contribution.content.form.field.FileField;
-import org.silverpeas.core.contribution.content.form.field.GroupField;
-import org.silverpeas.core.contribution.content.form.field.TextField;
-import org.silverpeas.core.contribution.content.form.field.UserField;
+import org.silverpeas.core.contribution.attachment.model.*;
+import org.silverpeas.core.contribution.content.form.*;
+import org.silverpeas.core.contribution.content.form.field.*;
 import org.silverpeas.core.contribution.content.form.form.XmlForm;
 import org.silverpeas.core.contribution.content.form.record.GenericDataRecord;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.MimeTypes;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.workflow.api.Workflow;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.event.TaskDoneEvent;
@@ -60,18 +47,12 @@ import org.silverpeas.core.workflow.api.model.ProcessModel;
 import org.silverpeas.core.workflow.api.task.Task;
 import org.silverpeas.core.workflow.api.user.User;
 import org.silverpeas.core.workflow.engine.user.UserImpl;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.processmanager.ProcessManagerException;
 
-import javax.inject.Singleton;
-import javax.transaction.Transactional;
 import java.io.ByteArrayInputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
 import static org.silverpeas.core.contribution.attachment.AttachmentService.VERSION_MODE;
@@ -81,8 +62,6 @@ import static org.silverpeas.processmanager.ProcessManagerException.PROCESS_INST
  * Process manager service which manage processes
  */
 @Service
-@Singleton
-@Transactional(Transactional.TxType.SUPPORTS)
 public class DefaultProcessManagerService implements ProcessManagerService {
 
   /**
@@ -108,6 +87,7 @@ public class DefaultProcessManagerService implements ProcessManagerService {
    * @return the instance ID of the newly started process
    * @throws ProcessManagerException when the creation of the process failed.
    */
+  @Transactional
   @Override
   public String createProcess(String componentId, String userId, String fileName,
       byte[] fileContent) throws ProcessManagerException, WorkflowException, InterruptedException {
@@ -136,10 +116,11 @@ public class DefaultProcessManagerService implements ProcessManagerService {
    * @param metadata a map of all input metadata, coming with the file and describing it. The key is
    * expected to be the name of a field in the process form definition (with specification of the
    * type name of the field), and the value must be the value to put into this field (it may be a
-   * collection of value if the field is multivalued, else only the first value is considered).
+   * collection of value if the field is multivalued, otherwise only the first value is taken).
    * @return the instance ID of the newly started process
    * @throws ProcessManagerException when the creation of the process failed.
    */
+  @Transactional
   @Override
   public String createProcess(String componentId, String userId, String userRole,
       Map<String, Object> metadata)
@@ -163,6 +144,7 @@ public class DefaultProcessManagerService implements ProcessManagerService {
     return instanceId;
   }
 
+  @Transactional
   @Override
   public void doAction(String action, String processId, String componentId, String userId,
       String userRole, Map<String, Object> metadata) throws ProcessManagerException {
@@ -203,7 +185,7 @@ public class DefaultProcessManagerService implements ProcessManagerService {
 
   /**
    * Retrieve and return the name of the data type, as expected by form templates in workflow
-   * processing, from the Java data type of a given value object.
+   * processing, from the Java data type of given value object.
    * @param value the value object we want to set into a form field
    * @return the corresponding data type of value (or values if the argument is a data collection),
    * or return <code>null</code> if the value is an empty or null value (which means that any type
@@ -276,7 +258,7 @@ public class DefaultProcessManagerService implements ProcessManagerService {
 
   /**
    * Transform and return a given value into a string value suitable for a form field, depending
-   * with the given field type name.
+   * on the given field type name.
    * @param value the value to convert into a string.
    * @param type the field type name.
    * @return the converted string value.
@@ -401,7 +383,7 @@ public class DefaultProcessManagerService implements ProcessManagerService {
   }
 
   /**
-   * Returns the an empty creation record which will be filled in with the creation form.
+   * Returns an empty creation record which will be filled in with the creation form.
    */
   private DataRecord getEmptyCreationRecord(ProcessModel processModel, String currentRole)
       throws ProcessManagerException {

@@ -23,72 +23,40 @@
  */
 package org.silverpeas.components.mailinglist.servlets;
 
-import org.silverpeas.components.mailinglist.service.MailingListServicesProvider;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.silverpeas.components.mailinglist.service.model.MailingListService;
+import org.silverpeas.components.mailinglist.service.model.MessageService;
 import org.silverpeas.components.mailinglist.service.model.beans.Attachment;
 import org.silverpeas.components.mailinglist.service.model.beans.MailingList;
 import org.silverpeas.components.mailinglist.service.model.beans.Message;
+import org.silverpeas.components.mailinglist.service.notification.NotificationHelper;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
+@Bean
 public class MessageProcessor implements MailingListRoutage {
 
-  public static String processMessage(RestRequest rest, HttpServletRequest request) {
+  @Inject
+  private MailingListService mailingListService;
+
+  @Inject
+  private MessageService messageService;
+
+  @Inject
+  private NotificationHelper notificationHelper;
+
+  public String processMessage(RestRequest rest, HttpServletRequest request) {
     String id = rest.getElements().get(DESTINATION_MESSAGE);
     switch (rest.getAction()) {
       case RestRequest.DELETE:
-        if ((Boolean) request.getAttribute(IS_USER_ADMIN_ATT) ||
-            (Boolean) request.getAttribute(IS_USER_MODERATOR_ATT)) {
-          String[] ids = request.getParameterValues(SELECTED_MESSAGE_PARAM);
-          if (ids != null && ids.length > 0) {
-            for (final String id1 : ids) {
-              deleteMessage(id1);
-            }
-          } else {
-            if (id != null && !DELETE_ACTION.equalsIgnoreCase(id) &&
-                !UPDATE_ACTION.equalsIgnoreCase(id)) {
-              deleteMessage(id);
-            }
-          }
-        }
-        if (MODERATION_VALUE.equalsIgnoreCase(rest.getElements().get(DESTINATION_ELEMENT))) {
-          return buildRedirectUrl(request,
-              rest.getComponentId() + '/' + DESTINATION_MODERATION + '/' + rest.getComponentId());
-        }
-        return buildRedirectUrl(request,
-            rest.getComponentId() + '/' + DESTINATION_LIST + '/' + rest.getComponentId());
+        return performDeletion(rest, request, id);
       case RestRequest.UPDATE:
-        boolean isAuthorized = ((Boolean) request.getAttribute(IS_USER_ADMIN_ATT) ||
-            (Boolean) request.getAttribute(IS_USER_MODERATOR_ATT));
-        if (!isAuthorized) {
-          return buildRedirectUrl(request,
-              rest.getComponentId() + '/' + DESTINATION_LIST + '/' + rest.getComponentId());
-        }
-        String[] ids = request.getParameterValues(SELECTED_MESSAGE_PARAM);
-        if (ids != null && ids.length > 0) {
-          for (final String id1 : ids) {
-            moderateMessage(id1);
-          }
-          if (ids.length != 1) {
-            return buildRedirectUrl(request,
-                rest.getComponentId() + '/' + DESTINATION_MODERATION + '/' + rest.getComponentId());
-          }
-          id = ids[0];
-        } else {
-          if (id != null && !DELETE_ACTION.equalsIgnoreCase(id) &&
-              !UPDATE_ACTION.equalsIgnoreCase(id)) {
-            moderateMessage(id);
-          } else {
-            return buildRedirectUrl(request,
-                rest.getComponentId() + '/' + DESTINATION_LIST + '/' + rest.getComponentId());
-          }
-        }
-        rest.getElements().put(DESTINATION_ELEMENT, DESTINATION_MODERATION);
-        setMessage(id, request);
-        request.setAttribute(PREVIOUS_PATH_ATT, rest.getElements().get(DESTINATION_ELEMENT));
-        return JSP_BASE + DESTINATION_DISPLAY_MESSAGE;
+        return performUpdate(rest, request, id);
       case RestRequest.FIND:
         setMessage(id, request);
         request.setAttribute(PREVIOUS_PATH_ATT, rest.getElements().get(DESTINATION_ELEMENT));
@@ -99,32 +67,88 @@ public class MessageProcessor implements MailingListRoutage {
     }
   }
 
+  private @NonNull String performUpdate(RestRequest rest, HttpServletRequest request, String id) {
+    boolean isNotAboutThisMessage = id != null && !DELETE_ACTION.equalsIgnoreCase(id) &&
+        !UPDATE_ACTION.equalsIgnoreCase(id);
+    boolean isAuthorized = ((Boolean) request.getAttribute(IS_USER_ADMIN_ATT) ||
+        (Boolean) request.getAttribute(IS_USER_MODERATOR_ATT));
+    if (!isAuthorized) {
+      return buildRedirectUrl(request,
+          rest.getComponentId() + '/' + DESTINATION_LIST + '/' + rest.getComponentId());
+    }
+    String[] ids = request.getParameterValues(SELECTED_MESSAGE_PARAM);
+    if (ids != null && ids.length > 0) {
+      for (final String id1 : ids) {
+        moderateMessage(id1);
+      }
+      if (ids.length != 1) {
+        return buildRedirectUrl(request,
+            rest.getComponentId() + '/' + DESTINATION_MODERATION + '/' + rest.getComponentId());
+      }
+      id = ids[0];
+    } else {
+      if (isNotAboutThisMessage) {
+        moderateMessage(id);
+      } else {
+        return buildRedirectUrl(request,
+            rest.getComponentId() + '/' + DESTINATION_LIST + '/' + rest.getComponentId());
+      }
+    }
+    rest.getElements().put(DESTINATION_ELEMENT, DESTINATION_MODERATION);
+    setMessage(id, request);
+    request.setAttribute(PREVIOUS_PATH_ATT, rest.getElements().get(DESTINATION_ELEMENT));
+    return JSP_BASE + DESTINATION_DISPLAY_MESSAGE;
+  }
+
+  private @NonNull String performDeletion(RestRequest rest, HttpServletRequest request, String id) {
+    boolean isNotAboutThisMessage = id != null && !DELETE_ACTION.equalsIgnoreCase(id) &&
+        !UPDATE_ACTION.equalsIgnoreCase(id);
+    if ((Boolean) request.getAttribute(IS_USER_ADMIN_ATT) ||
+        (Boolean) request.getAttribute(IS_USER_MODERATOR_ATT)) {
+      String[] ids = request.getParameterValues(SELECTED_MESSAGE_PARAM);
+      if (ids != null && ids.length > 0) {
+        for (final String id1 : ids) {
+          deleteMessage(id1);
+        }
+      } else {
+        if (isNotAboutThisMessage) {
+          deleteMessage(id);
+        }
+      }
+    }
+    if (MODERATION_VALUE.equalsIgnoreCase(rest.getElements().get(DESTINATION_ELEMENT))) {
+      return buildRedirectUrl(request,
+          rest.getComponentId() + '/' + DESTINATION_MODERATION + '/' + rest.getComponentId());
+    }
+    return buildRedirectUrl(request,
+        rest.getComponentId() + '/' + DESTINATION_LIST + '/' + rest.getComponentId());
+  }
+
   protected static String buildRedirectUrl(HttpServletRequest request, String destination) {
     return request.getScheme() + "://" + request.getServerName() + ':' + request.getServerPort() +
         request.getContextPath() + request.getServletPath() + '/' + destination;
   }
 
-  protected static Message findMessage(String id) {
-    return MailingListServicesProvider.getMessageService().getMessage(id);
+  protected Message findMessage(String id) {
+    return messageService.getMessage(id);
   }
 
-  protected static void deleteMessage(String id) {
-    MailingListServicesProvider.getMessageService().deleteMessage(id);
+  protected void deleteMessage(String id) {
+    messageService.deleteMessage(id);
   }
 
-  protected static void moderateMessage(String id) {
-    MailingListServicesProvider.getMessageService().moderateMessage(id);
-    Message message = MailingListServicesProvider.getMessageService().getMessage(id);
-    MailingList list = MailingListServicesProvider.getMailingListService()
-        .findMailingList(message.getComponentId());
+  protected void moderateMessage(String id) {
+    messageService.moderateMessage(id);
+    Message message = messageService.getMessage(id);
+    MailingList list = mailingListService.findMailingList(message.getComponentId());
     try {
-      MailingListServicesProvider.getNotificationHelper().notify(message, list);
+      notificationHelper.notify(message, list);
     } catch (Exception e) {
       SilverLogger.getLogger(MessageProcessor.class).error(e);
     }
   }
 
-  private static void setMessage(String id, HttpServletRequest request) {
+  private void setMessage(String id, HttpServletRequest request) {
     Message message = findMessage(id);
     request.setAttribute(MESSAGE_ATT, message);
     if (message != null && message.getAttachments() != null &&

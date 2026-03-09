@@ -26,11 +26,12 @@ package org.silverpeas.components.scheduleevent.servlets.handlers;
 
 import java.util.Set;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.silverpeas.components.scheduleevent.control.ScheduleEventSessionController;
 import org.silverpeas.components.scheduleevent.service.model.beans.Response;
 import org.silverpeas.components.scheduleevent.service.model.beans.ScheduleEvent;
+import org.silverpeas.kernel.SilverpeasException;
 
 public class ScheduleEventValidResponseRequestHandler implements ScheduleEventRequestHandler {
 
@@ -42,23 +43,23 @@ public class ScheduleEventValidResponseRequestHandler implements ScheduleEventRe
 
   @Override
   public String getDestination(String function, ScheduleEventSessionController scheduleeventSC,
-      HttpServletRequest request) throws Exception {
+      HttpServletRequest request) throws SilverpeasException {
     if (forwardRequestHandler != null) {
       return validUserAnswerAndForwardRequestHandler(function, scheduleeventSC, request);
     } else {
-      throw UndefinedForwardRequestHandlerException();
+      throw undefinedForwardRequestHandlerException();
     }
   }
 
   private String validUserAnswerAndForwardRequestHandler(String function,
-      ScheduleEventSessionController scheduleeventSC, HttpServletRequest request) throws Exception {
+      ScheduleEventSessionController scheduleeventSC, HttpServletRequest request) throws SilverpeasException {
     ScheduleEvent event = getEvent(scheduleeventSC, request);
     if (event != null) {
       String[] checkedAnswers = request.getParameterValues("userChoices");
       updateUserAvailabilities(scheduleeventSC, event, checkedAnswers);
       return forwardRequestHandler.getDestination(function, scheduleeventSC, request);
     } else {
-      throw new Exception("validUserAnswerAndForwardRequestHandler: No valid event");
+      throw new SilverpeasException("validUserAnswerAndForwardRequestHandler: No valid event");
     }
   }
 
@@ -97,8 +98,8 @@ public class ScheduleEventValidResponseRequestHandler implements ScheduleEventRe
     }
   }
 
-  private Exception UndefinedForwardRequestHandlerException() {
-    return new Exception(
+  private SilverpeasException undefinedForwardRequestHandlerException() {
+    return new SilverpeasException(
         "No forward request defines for" + this.getClass());
   }
 

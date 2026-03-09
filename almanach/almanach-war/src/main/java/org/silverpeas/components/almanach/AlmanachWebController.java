@@ -38,8 +38,8 @@ import org.silverpeas.core.web.mvc.webcomponent.annotation.WebComponentControlle
 import org.silverpeas.core.web.subscription.SubscriptionContext;
 import org.silverpeas.core.webapi.calendar.CalendarEntity;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
 
 import static org.silverpeas.components.almanach.AlmanachSettings.getDefaultCalendarView;
 import static org.silverpeas.components.almanach.AlmanachSettings.isCalendarWeekendVisible;

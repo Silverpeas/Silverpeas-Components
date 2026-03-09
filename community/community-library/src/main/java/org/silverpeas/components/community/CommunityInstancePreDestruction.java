@@ -32,9 +32,9 @@ import org.silverpeas.core.contribution.model.WysiwygContent;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.kernel.annotation.Technical;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.transaction.Transactional;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.transaction.Transactional;
 import java.util.Optional;
 
 /**

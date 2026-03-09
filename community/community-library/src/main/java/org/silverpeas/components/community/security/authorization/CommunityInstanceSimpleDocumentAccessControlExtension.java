@@ -29,7 +29,7 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.DefaultInstanceSimpleDocumentAccessControlExtension;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 
 import static org.silverpeas.core.security.authorization.AccessControlOperation.isDownloadActionFrom;
 

@@ -23,7 +23,6 @@
  */
 package org.silverpeas.components.infoletter.servlets;
 
-import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.infoletter.control.InfoLetterSessionController;
 import org.silverpeas.components.infoletter.model.InfoLetter;
 import org.silverpeas.components.infoletter.model.InfoLetterPublication;
@@ -32,6 +31,7 @@ import org.silverpeas.core.contribution.content.ddwe.DragAndDropWbeFile;
 import org.silverpeas.core.contribution.content.renderer.ContributionContentRenderer;
 import org.silverpeas.core.contribution.model.ContributionContent;
 import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
@@ -40,7 +40,7 @@ import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBarElement;
 import org.silverpeas.core.webapi.wbe.WbeFileEdition;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Set;
 

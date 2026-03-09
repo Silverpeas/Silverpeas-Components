@@ -46,7 +46,7 @@ public class UserTemplate implements RecordTemplate {
 
   /**
    * A UserTemplate is built from a file name and a language.
-   * @param fileName the name of a file in which are defined the template of each fields.
+   * @param fileName the name of a file in which are defined the template of each field.
    * @param language the ISO-631 code of a language.
    */
   public UserTemplate(String fileName, String language) {

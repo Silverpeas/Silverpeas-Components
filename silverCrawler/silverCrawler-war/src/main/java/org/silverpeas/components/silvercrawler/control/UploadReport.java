@@ -36,15 +36,16 @@ import java.util.List;
  * @author Ludovic Bertin
  */
 public class UploadReport {
+  private static final String BR = "<br/>";
   File repositoryPath = null;
   List<UploadItem> items = new ArrayList<>();
   boolean conflictous = false;
   boolean failed = false;
   LocalizationBundle resources = ResourceLocator.getLocalizationBundle(
       "org.silverpeas.silvercrawler.multilang.silverCrawlerBundle");
-  public int nbCopied = 0;
-  public int nbIgnored = 0;
-  public int nbReplaced = 0;
+  private int nbCopied = 0;
+  private int nbIgnored = 0;
+  private int nbReplaced = 0;
   boolean forbiddenFolderDetected = false;
 
   /**
@@ -61,8 +62,16 @@ public class UploadReport {
     this.forbiddenFolderDetected = forbiddenFolderDetected;
   }
 
-  public boolean isFailed() {
-    return failed;
+  public void incNbCopied() {
+    nbCopied++;
+  }
+
+  public void incNbIgnored() {
+    nbIgnored++;
+  }
+
+  public void incNbReplaced() {
+    nbReplaced++;
   }
 
   public void setFailed(boolean failed) {
@@ -104,7 +113,7 @@ public class UploadReport {
         if (item.isCopyFailed()) {
           errorMessage.append(resources.getString("silverCrawler.copyFailed")).append(" : ")
               .append(item.getRelativePath().getPath()).append(" - ")
-              .append(item.getCopyFailedException().getMessage()).append("<br/>");
+              .append(item.getCopyFailedException().getMessage()).append(BR);
         }
       }
     }
@@ -118,11 +127,11 @@ public class UploadReport {
       successMessage.append(resources.getString("silverCrawler.dragNDropSucceeded"))
           .append(" :<br/><br/>");
       successMessage.append(nbCopied).append(" ")
-          .append(resources.getString("silverCrawler.filesCopied")).append("<br/>");
+          .append(resources.getString("silverCrawler.filesCopied")).append(BR);
       successMessage.append(nbReplaced).append(" ")
-          .append(resources.getString("silverCrawler.filesReplaced")).append("<br/>");
+          .append(resources.getString("silverCrawler.filesReplaced")).append(BR);
       successMessage.append(nbIgnored).append(" ")
-          .append(resources.getString("silverCrawler.filesIgnored")).append("<br/>");
+          .append(resources.getString("silverCrawler.filesIgnored")).append(BR);
     }
     return successMessage.toString();
   }

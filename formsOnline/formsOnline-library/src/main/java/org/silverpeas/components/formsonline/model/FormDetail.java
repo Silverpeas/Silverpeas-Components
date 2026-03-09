@@ -32,20 +32,13 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.util.MemoizedSupplier;
 import org.silverpeas.kernel.util.StringUtil;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
-import static java.util.Collections.unmodifiableList;
 import static org.silverpeas.components.formsonline.model.FormInstanceValidationType.*;
 import static org.silverpeas.core.util.CollectionUtil.isNotEmpty;
 import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
@@ -62,10 +55,10 @@ public class FormDetail {
   public static final String SENDERS_TYPE = "S";
   public static final String RECEIVERS_TYPE_INTERMEDIATE = "I";
   public static final String RECEIVERS_TYPE_FINAL = "R";
-  public static final List<String> ALL_RIGHT_TYPES = unmodifiableList(
-      asList(SENDERS_TYPE, RECEIVERS_TYPE_INTERMEDIATE, RECEIVERS_TYPE_FINAL));
-  public static final List<String> ALL_RECEIVER_TYPES = unmodifiableList(
-      asList(RECEIVERS_TYPE_INTERMEDIATE, RECEIVERS_TYPE_FINAL));
+  public static final List<String> ALL_RIGHT_TYPES = List.of(SENDERS_TYPE,
+      RECEIVERS_TYPE_INTERMEDIATE, RECEIVERS_TYPE_FINAL);
+  public static final List<String> ALL_RECEIVER_TYPES = List.of(RECEIVERS_TYPE_INTERMEDIATE,
+      RECEIVERS_TYPE_FINAL);
 
   private int id = -1;
   private String xmlFormName = null;
@@ -223,7 +216,8 @@ public class FormDetail {
 
   /**
    * Indicates if the hierarchical validation enabled.
-   * @return true if enabled, false othserwise.
+   *
+   * @return true if enabled, false otherwise.
    */
   public boolean isHierarchicalValidation() {
     return hierarchicalValidation;
@@ -231,6 +225,7 @@ public class FormDetail {
 
   /**
    * Sets the hierarchical validation flag.
+   *
    * @param hierarchicalValidation true to enabled, false otherwise.
    */
   public void setHierarchicalValidation(final boolean hierarchicalValidation) {
@@ -246,6 +241,7 @@ public class FormDetail {
    * For now, the receiver is represented by an e-mail. By this way, the data are sent to the
    * receiver just after a new form request creation.
    * </p>
+   *
    * @return an optional receiver data in charge of request exchange processing.
    */
   public Optional<String> getRequestExchangeReceiver() {
@@ -253,8 +249,9 @@ public class FormDetail {
   }
 
   /**
-   * Sets the receiver data (an e-mail for now) which permits to perform the exchange of a new
-   * form request creation.
+   * Sets the receiver data (an e-mail for now) which permits to perform the exchange of a new form
+   * request creation.
+   *
    * @param requestExchangeReceiver receiver data (an e-mail for now)
    */
   public void setRequestExchangeReceiver(final String requestExchangeReceiver) {
@@ -264,9 +261,10 @@ public class FormDetail {
   /**
    * Indicates id the exchanged form request MUST be deleted after the exchange processing.
    * <p>
-   * If method {@link #getRequestExchangeReceiver()} returns no receiver data, then no deletion
-   * is indicated.
+   * If method {@link #getRequestExchangeReceiver()} returns no receiver data, then no deletion is
+   * indicated.
    * </p>
+   *
    * @return true if a new form request MUST be deleted after exchange, false otherwise.
    */
   public boolean isDeleteAfterRequestExchange() {
@@ -275,9 +273,10 @@ public class FormDetail {
 
   /**
    * Sets the behavior about the deletion of a new form request when it has just been exchanged with
-   * the receiver procided by {@link #getRequestExchangeReceiver()} method.
-   * @param deleteAfterRequestExchange  true if a new form request MUST be deleted after
-   * exchange, false otherwise.
+   * the receiver provided by {@link #getRequestExchangeReceiver()} method.
+   *
+   * @param deleteAfterRequestExchange true if a new form request MUST be deleted after exchange,
+   * false otherwise.
    */
   public void setDeleteAfterRequestExchange(final boolean deleteAfterRequestExchange) {
     this.deleteAfterRequestExchange = deleteAfterRequestExchange;
@@ -362,11 +361,11 @@ public class FormDetail {
 
   private List<User> getAllReceivers() {
     return Stream.concat(getReceiversAsUsers().stream(),
-           Stream.concat(getUsers(getReceiversAsGroups()).stream(),
-           Stream.concat(getIntermediateReceiversAsUsers().stream(),
-                         getUsers(getIntermediateReceiversAsGroups()).stream())))
-           .distinct()
-           .collect(Collectors.toList());
+            Stream.concat(getUsers(getReceiversAsGroups()).stream(),
+                Stream.concat(getIntermediateReceiversAsUsers().stream(),
+                    getUsers(getIntermediateReceiversAsGroups()).stream())))
+        .distinct()
+        .collect(Collectors.toList());
   }
 
   private List<User> getUsers(List<Group> groups) {
@@ -438,10 +437,7 @@ public class FormDetail {
   }
 
   public List<Group> getIntermediateReceiversAsGroups() {
-    if (intermediateReceiversAsGroups == null) {
-      return new ArrayList<>();
-    }
-    return intermediateReceiversAsGroups;
+    return Objects.requireNonNullElseGet(intermediateReceiversAsGroups, ArrayList::new);
   }
 
   public void setIntermediateReceiversAsGroups(final List<Group> receiversAsGroups) {
@@ -449,7 +445,8 @@ public class FormDetail {
   }
 
   protected List<User> getAllIntermediateReceivers() {
-    return Stream.concat(getIntermediateReceiversAsUsers().stream(), getUsers(getIntermediateReceiversAsGroups()).stream())
+    return Stream.concat(getIntermediateReceiversAsUsers().stream(),
+            getUsers(getIntermediateReceiversAsGroups()).stream())
         .distinct()
         .collect(Collectors.toList());
   }
@@ -481,7 +478,8 @@ public class FormDetail {
   public String getHierarchicalValidatorOfCurrentUser() {
     if (hierarchicalValidatorOfCurrentUser == null) {
       if (this.isHierarchicalValidation()) {
-        hierarchicalValidatorOfCurrentUser = getHvManager().getHierarchicalValidatorOf(User.getCurrentRequester().getId());
+        hierarchicalValidatorOfCurrentUser =
+            getHvManager().getHierarchicalValidatorOf(User.getCurrentRequester().getId());
       } else {
         hierarchicalValidatorOfCurrentUser = StringUtil.EMPTY;
       }
@@ -515,7 +513,7 @@ public class FormDetail {
    * For each request validation, a validator provider is provided.
    * </p>
    * <p>
-   *   BE CAREFUL of that following methods MUST have been called before using this method:
+   * BE CAREFUL of that following methods MUST have been called before using this method:
    *   <ul>
    *     <li>{@link #setIntermediateReceiversAsUsers(List)}</li>
    *     <li>{@link #setIntermediateReceiversAsGroups(List)}</li>
@@ -523,6 +521,7 @@ public class FormDetail {
    *     <li>{@link #setReceiversAsGroups(List)}</li>
    *   </ul>
    * </p>
+   *
    * @return a map of validation type associated to a validator list supplier. Keys of map are
    * sorted as the {@link FormInstanceValidationType} enum.
    */
@@ -530,14 +529,17 @@ public class FormDetail {
     if (possibleValidationTypes == null) {
       possibleValidationTypes = new LinkedHashMap<>(FormInstanceValidationType.values().length);
       if (isHierarchicalValidation()) {
-        possibleValidationTypes.put(HIERARCHICAL, f -> () -> singletonList(User.getById(f.getHierarchicalValidator())));
+        possibleValidationTypes.put(HIERARCHICAL,
+            f -> () -> singletonList(User.getById(f.getHierarchicalValidator())));
       }
       if (isIntermediateValidation()) {
-        final MemoizedSupplier<List<User>> supplier = new MemoizedSupplier<>(this::getAllIntermediateReceivers);
+        final MemoizedSupplier<List<User>> supplier =
+            new MemoizedSupplier<>(this::getAllIntermediateReceivers);
         possibleValidationTypes.put(INTERMEDIATE, f -> supplier);
       }
       if (isFinalValidation()) {
-        final MemoizedSupplier<List<User>> supplier = new MemoizedSupplier<>(this::getAllFinalReceivers);
+        final MemoizedSupplier<List<User>> supplier =
+            new MemoizedSupplier<>(this::getAllFinalReceivers);
         possibleValidationTypes.put(FINAL, f -> supplier);
       }
     }

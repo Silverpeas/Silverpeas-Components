@@ -27,13 +27,17 @@ package org.silverpeas.components.silvercrawler.servlets.handlers;
 import org.silverpeas.components.silvercrawler.control.SilverCrawlerSessionController;
 import org.silverpeas.core.util.file.FileUtil;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Handler for use case : admin request folder removal.
  * @author Ludovic Bertin
  */
 public class RemoveFolderHandler extends FunctionHandler {
+
+  protected RemoveFolderHandler(HandlerProvider provider) {
+    super(provider);
+  }
 
   @Override
   public String getDestination(SilverCrawlerSessionController sessionController,
@@ -53,7 +57,7 @@ public class RemoveFolderHandler extends FunctionHandler {
     sessionController.removeSubFolder(folderName, isAdmin);
 
     // redirect to "ViewDirectory" use case
-    return HandlerProvider.getHandler("ViewDirectory")
+    return getHandlerProvider().getHandler("ViewDirectory")
         .computeDestination(sessionController, request);
   }
 

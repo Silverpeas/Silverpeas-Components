@@ -23,6 +23,9 @@
  */
 package org.silverpeas.components.community.model;
 
+import jakarta.annotation.Nonnull;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import org.silverpeas.components.community.AlreadyMemberException;
 import org.silverpeas.components.community.repository.CommunityOfUsersRepository;
 import org.silverpeas.core.admin.component.model.InheritableSpaceRoles;
@@ -51,9 +54,6 @@ import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.util.Mutable;
 import org.silverpeas.kernel.util.Pair;
 
-import javax.annotation.Nonnull;
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
@@ -76,7 +76,7 @@ import static org.silverpeas.kernel.util.StringUtil.EMPTY;
  * <p>
  * The actual members of a community of users are all included in a specific group of users that is
  * automatically created when the community is spawned. This group of members is kept up-to-date
- * with the users playing a role in the community space. The group of members allow to get in one
+ * with the users playing a role in the community space. The group of members allows to get in one
  * shot all the actual members of the community. To have a glance about the memberships to the
  * community, passed, actual and pending, please asks to the {@link CommunityMembershipsProvider}
  * object associated with the community of users.
@@ -367,7 +367,9 @@ public class CommunityOfUsers
   public @Nullable CommunityMembership removeMembership(final User user) {
     return Transaction.performInOne(() -> {
       getCommunitySpace().removeUser(user);
-      return getMembershipsProvider().get(user)
+      //noinspection DataFlowIssue
+      return getMembershipsProvider()
+          .get(user)
           .map(m -> {
             m.delete();
             return m;
@@ -422,7 +424,7 @@ public class CommunityOfUsers
 
   /**
    * Gets the group of all the members of this community of users. If this community isn't
-   * persisted, null is returned. Otherwise the group of members of this community of users is
+   * persisted, null is returned. Otherwise, the group of members of this community of users is
    * returned. In the case such a group isn't yet created, then this method will create it before
    * returning it. If no users are currently members in this community, then the returned group of
    * users will be empty.
@@ -497,7 +499,7 @@ public class CommunityOfUsers
   /**
    * A community space. It is a Silverpeas space which represents a community and for which a group
    * of users is maintained for the members of the community. The community of users is ruled by the
-   * community application instanciated in this same space. Any users playing a role in the space is
+   * community application instantiated in this same space. Any users playing a role in the space is
    * considered as a member of the community and each member of a community has to play at least one
    * role in the space. As such, a member of a community should be a user in the members group. It
    * is the responsibility of the {@link CommunityMembershipsProvider}, from which memberships can
@@ -527,7 +529,7 @@ public class CommunityOfUsers
     }
 
     /**
-     * Adds the specified user into the this community space with the provided role.
+     * Adds the specified user into this community space with the provided role.
      *
      * @param user the user to add in the community space as member.
      * @param role the role the user will play in the community space.
@@ -535,8 +537,7 @@ public class CommunityOfUsers
      * community space.
      * @implNote the adding of a user in the community space consists of adding him both into the
      * corresponding user profile of the space (identified by the Silverpeas role) and into the
-     * group of users dedicated to the members of the community space. If the group doesn't yet
-     * exist, then it is created.
+     * group of members in the community space. If the group doesn't yet exist, then it is created.
      */
     public void addUser(@NonNull User user, @NonNull SilverpeasRole role) {
       Objects.requireNonNull(user);
@@ -566,8 +567,8 @@ public class CommunityOfUsers
 
     /**
      * Deletes this community space. This will delete the members groups associated with this
-     * community space and, in the case the actual space yet exists, it unset it as a community
-     * space (the space becomes then an usual collaborative space).
+     * community space and, in the case the actual space yet exists, it unsets it as a community
+     * space (the space becomes then a usual collaborative space).
      */
     public void delete() {
       execute(() ->
@@ -693,6 +694,13 @@ public class CommunityOfUsers
       }
     }
 
+    private void executeWithinTransaction(AdminTask task) {
+      Transaction.performInOne(() -> {
+        execute(task);
+        return null;
+      });
+    }
+
     @FunctionalInterface
     private interface AdminTask {
 
@@ -708,14 +716,14 @@ public class CommunityOfUsers
       /**
        * Synchronizes the memberships of the underlying community space so that the members group of
        * this space is up-to-date with the users playing a role in it. If a user playing a role in
-       * the space isn't yet in the members group, then he's added in this group. If the a user in
+       * the space isn't yet in the members group, then he's added in this group. If a user in
        * the group isn't playing any role in the space, then he's removed from the members group.
        *
        * @param usersPlayingARole a set with the unique identifiers of the users who play a role in
        * the community space.
        */
       void synchronizeMembersGroup(final Set<String> usersPlayingARole) {
-        execute(() -> {
+        executeWithinTransaction(() -> {
           // get both the users playing currently a role in the community space and the users of
           // the members group associated with the community space
           if (usersPlayingARole.isEmpty()) {

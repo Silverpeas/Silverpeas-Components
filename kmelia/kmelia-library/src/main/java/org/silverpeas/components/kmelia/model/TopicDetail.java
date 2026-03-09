@@ -29,6 +29,7 @@ import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -38,14 +39,14 @@ import java.util.List;
  * @author Nicolas Eysseric
  * @version 1.0
  */
-public class TopicDetail extends Object implements java.io.Serializable {
+public class TopicDetail implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
   /** A NodeDetail collection representing the path from leaf to root */
   private Collection<NodeDetail> path;
 
-  /** the informations of the Topic are in this object */
+  /** the information of the Topic are in this object */
   private NodeDetail nodeDetail;
 
   /** A NodeDetail collection representing the path from leaf to root */

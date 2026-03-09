@@ -35,7 +35,7 @@ import java.util.Collections;
  */
 public class SuggestionNotifyManuallyUserNotification extends AbstractSuggestionUserNotification {
 
-  private User sender;
+  private final User sender;
 
   public SuggestionNotifyManuallyUserNotification(final Suggestion resource,
       final User sender) {

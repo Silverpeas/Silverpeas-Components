@@ -24,6 +24,8 @@
 
 package org.silverpeas.components.formsonline.model;
 
+import org.silverpeas.kernel.annotation.NonNull;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -158,6 +160,7 @@ public class FormInstanceValidations extends ArrayList<FormInstanceValidation> {
   }
 
   @Override
+  @NonNull
   public List<FormInstanceValidation> subList(final int fromIndex, final int toIndex) {
     resetCache();
     return super.subList(fromIndex, toIndex);

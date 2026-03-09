@@ -24,6 +24,7 @@
 
 package org.silverpeas.components.mailinglist.servlets;
 
+import jakarta.inject.Inject;
 import org.silverpeas.components.mailinglist.control.MailingListSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -31,23 +32,15 @@ import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.web.http.HttpRequest;
 
 public class MailingListRequestRouter extends ComponentRequestRouter<MailingListSessionController> implements MailingListRoutage {
-  /**
-   * This method has to be implemented in the component request rooter class. returns the session
-   * control bean name to be put in the request object ex : for almanach, returns "almanach"
-   * @return
-   */
+
+  @Inject
+  private Processors processors;
+
   @Override
   public String getSessionControlBeanName() {
     return "MailingList";
   }
 
-  /**
-   * Method declaration
-   * @param mainSessionCtrl
-   * @param componentContext
-   * @return
-   *
-   */
   @Override
   public MailingListSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
@@ -59,8 +52,8 @@ public class MailingListRequestRouter extends ComponentRequestRouter<MailingList
    * destination page
    *
    * @param function The entering request function (ex : "Main.jsp")
-   * @param componentSC The component Session Control, build and initialised.
-   * @param request
+   * @param componentSC The component Session Control, build and initialized.
+   * @param request the incoming HTTP request
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
@@ -76,11 +69,10 @@ public class MailingListRequestRouter extends ComponentRequestRouter<MailingList
           rest.setComponentId(componentSC.getComponentId());
         } else if ("TodoDetail"
             .equalsIgnoreCase(type)) {
-          String destination = request.getScheme() + "://"
+          return request.getScheme() + "://"
               + request.getServerName() + ':' + request.getServerPort()
               + request.getContextPath() + request.getServletPath() + '/'
               + componentSC.getComponentId() + '/' + request.getParameter("Id");
-          return destination;
         }
       } else if ("portlet".equalsIgnoreCase(function) || "portlet.jsp".equalsIgnoreCase(function)) {
         rest.getElements().put(DESTINATION_PORTLET, "dummy");
@@ -89,33 +81,35 @@ public class MailingListRequestRouter extends ComponentRequestRouter<MailingList
       boolean isAdmin = false;
       boolean isModerated =componentSC.isModerated();
       String[] roles = componentSC.getUserRoles();
-      for (int i = 0; i < roles.length; i++) {
-        if ("admin".equalsIgnoreCase(roles[i])) {
+      for (String role : roles) {
+        if ("admin".equalsIgnoreCase(role)) {
           isAdmin = true;
-        } else if ("moderator".equalsIgnoreCase(roles[i])) {
+        } else if ("moderator".equalsIgnoreCase(role)) {
           isModerator = true;
         }
       }
 
       request.setAttribute(RSS_URL_ATT, componentSC.getRSSUrl());
-      request.setAttribute(IS_USER_ADMIN_ATT, Boolean.valueOf(isAdmin));
-      request.setAttribute(IS_USER_MODERATOR_ATT, Boolean.valueOf(isModerator));
-      request.setAttribute(IS_LIST_MODERATED_ATT, Boolean.valueOf(isModerated));
+      request.setAttribute(IS_USER_ADMIN_ATT, isAdmin);
+      request.setAttribute(IS_USER_MODERATOR_ATT, isModerator);
+      request.setAttribute(IS_LIST_MODERATED_ATT, isModerated);
       request.setAttribute(COMPONENT_ID_ATT, componentSC.getComponentId());
       if (rest.getElements().get(DESTINATION_MESSAGE) != null) {
-        return MessageProcessor.processMessage(rest, request);
+        return processors.getMessageProcessor().processMessage(rest, request);
       } else if (rest.getElements().get(DESTINATION_MODERATION) != null) {
-        return ModerationProcessor.processModeration(rest, request);
+        return processors.getModerationProcessor().processModeration(rest, request);
       } else if (rest.getElements().get(DESTINATION_LIST) != null) {
-        return MailingListProcessor.processMailingList(rest, request);
+        return processors.getMailingListProcessor().processMailingList(rest, request);
       } else if (rest.getElements().get(DESTINATION_USERS) != null) {
-        return UsersProcessor.processUsers(rest, request);
+        return processors.getUsersProcessor().processUsers(rest, request);
       } else if (rest.getElements().get(DESTINATION_SUBSCRIBERS) != null) {
-        return SubscribersProcessor.processSubscription(rest, request, componentSC);
+        return processors.getSubscribersProcessor().processSubscription(rest, request, componentSC);
       } else if (rest.getElements().get(DESTINATION_PORTLET) != null) {
-        return PortletProcessor.processActivities(rest, request, componentSC.getUserId());
+        return processors.getPortletProcessor()
+            .processActivities(rest, request, componentSC.getUserId());
       }
-      return ActivitiesProcessor.processActivities(rest, request, componentSC.getUserId());
+      return processors.getActivitiesProcessor()
+          .processActivities(rest, request, componentSC.getUserId());
 
     } catch (Exception e) {
       request.setAttribute("javax.servlet.jsp.jspException", e);

@@ -31,8 +31,8 @@ import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.kernel.bundle.SettingBundle;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import java.util.Optional;
 
 /**

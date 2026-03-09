@@ -62,11 +62,12 @@ public class DelegatedNewsServiceIT {
   @Deployment
   public static WebArchive createTestArchive() {
     return BasicWarBuilder.onWarForTestClass(DelegatedNewsServiceIT.class)
-        .testFocusedOn(warBuilder -> {
-          warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core");
-          warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud");
-          warBuilder.addPackages(true, "org.silverpeas.components.delegatednews");
-        }).build();
+        .testFocusedOn(warBuilder ->
+            warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core")
+                .addMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud")
+                .addPackages(true, "org.silverpeas.components.delegatednews")
+                .addAsResource("org/silverpeas"))
+        .build();
   }
 
   @Before

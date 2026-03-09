@@ -24,8 +24,9 @@
 
 package org.silverpeas.components.forums;
 
+import jakarta.inject.Inject;
 import org.silverpeas.components.forums.model.ForumPK;
-import org.silverpeas.components.forums.service.ForumsServiceProvider;
+import org.silverpeas.components.forums.service.ForumService;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.contentcontainer.content.AbstractSilverpeasContentManager;
@@ -47,6 +48,9 @@ public class ForumsContentManager extends AbstractSilverpeasContentManager {
 
   private static final String CONTENT_ICON_FILE_NAME = "forumsSmall.gif";
 
+  @Inject
+  private ForumService forumService;
+
   /**
    * Hidden constructor as this implementation must be GET by CDI mechanism.
    */
@@ -61,8 +65,8 @@ public class ForumsContentManager extends AbstractSilverpeasContentManager {
   @Override
   protected Optional<Contribution> getContribution(final String resourceId,
       final String componentInstanceId) {
-    final Contribution forumDetail = ForumsServiceProvider.getForumsService()
-        .getForumDetail(new ForumPK(componentInstanceId, resourceId));
+    final Contribution forumDetail =
+        forumService.getForumDetail(new ForumPK(componentInstanceId, resourceId));
     return Optional.ofNullable(forumDetail);
   }
 
@@ -72,7 +76,7 @@ public class ForumsContentManager extends AbstractSilverpeasContentManager {
     List<ForumPK> ids = resourceReferences.stream()
         .map(r -> new ForumPK(r.getComponentInstanceId(), r.getLocalId()))
         .collect(Collectors.toList());
-    return new ArrayList<>(ForumsServiceProvider.getForumsService().getForums(ids));
+    return new ArrayList<>(forumService.getForums(ids));
   }
 
   @Override

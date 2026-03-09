@@ -27,7 +27,7 @@ package org.silverpeas.processmanager.servlets;
 import org.silverpeas.processmanager.ProcessManagerException;
 import org.silverpeas.processmanager.ProcessManagerSessionController;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * A function handler is associated to a peas function and is called by the request router when this
@@ -35,6 +35,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 @FunctionalInterface
 public interface FunctionHandler {
+
   /**
    * Process the request and returns the response url.
    * @param function the user request name

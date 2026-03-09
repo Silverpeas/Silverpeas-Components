@@ -25,18 +25,20 @@ package org.silverpeas.components.blog;
 
 import org.silverpeas.core.admin.component.ComponentInstancePostConstruction;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 
-import javax.inject.Named;
-import javax.transaction.Transactional;
+import jakarta.inject.Named;
+import jakarta.transaction.Transactional;
 
 /**
  * Once an instance of the blog application is created, creates for it one entry for categories and
  * another one for archives with the Node service.
  * @author mmoquillon
  */
+@Bean
 @Named
 public class BlogInstancePostConstruction implements ComponentInstancePostConstruction {
 

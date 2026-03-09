@@ -23,13 +23,17 @@
  */
 package org.silverpeas.components.quickinfo;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.contribution.publication.PublicationGlobalSilverpeasContentProcessor;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
+import org.silverpeas.kernel.annotation.Technical;
 
 import static org.silverpeas.components.quickinfo.QuickInfoComponentSettings.COMPONENT_NAME;
 import static org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContentProcessor.Constants.PROCESSOR_NAME_SUFFIX;
 
+@Technical
+@Bean
 @Named(COMPONENT_NAME + PROCESSOR_NAME_SUFFIX)
 public class QuickInfoGlobalSilverpeasContentProcessor
     extends PublicationGlobalSilverpeasContentProcessor {

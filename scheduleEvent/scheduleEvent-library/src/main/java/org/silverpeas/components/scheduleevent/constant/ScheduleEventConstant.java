@@ -28,6 +28,6 @@ package org.silverpeas.components.scheduleevent.constant;
  */
 public interface ScheduleEventConstant {
 
-  public static final String PROP_ENABLE_COMMENT = "enableComment";
-  public static final String TOOL_ID = "scheduleEventTool";
+  String PROP_ENABLE_COMMENT = "enableComment";
+  String TOOL_ID = "scheduleEventTool";
 }

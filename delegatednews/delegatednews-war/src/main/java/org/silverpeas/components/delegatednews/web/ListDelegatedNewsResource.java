@@ -30,20 +30,21 @@ import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.annotation.Authorized;
 
-import javax.inject.Inject;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.Status;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response.Status;
+
 import java.util.List;
 
 /**
- * A REST Web resource representing a given delegated news. It is a web service that provides an
- * access to a delegated news referenced by its URL.
+ * A REST Web resource representing a given delegated news. It is a web service that provides access
+ * to a delegated news referenced by its URL.
  */
 @WebService
 @Path(ListDelegatedNewsResource.PATH + "/{instanceId}")
@@ -59,6 +60,7 @@ public class ListDelegatedNewsResource extends RESTWebService {
 
   /**
    * Gets a business service on delegatedNews.
+   *
    * @return a delegatedNews service instance.
    */
   protected DelegatedNewsService getDelegatedNewsService() {
@@ -80,6 +82,7 @@ public class ListDelegatedNewsResource extends RESTWebService {
    * authenticated, a 401 HTTP code is returned. If the user isn't authorized to save the delegated
    * news, a 403 is returned. If a problem occurs when processing the request, a 503 HTTP code is
    * returned.
+   *
    * @param newDelegatedNews an array of delegated news to update order or to delete
    * @return the new list of delegated news after update or delete
    */

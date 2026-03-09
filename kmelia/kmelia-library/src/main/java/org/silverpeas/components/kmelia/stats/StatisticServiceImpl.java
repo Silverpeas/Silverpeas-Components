@@ -24,6 +24,7 @@ import org.silverpeas.components.kmelia.model.StatisticActivityVO;
 import org.silverpeas.components.kmelia.model.StatsFilterVO;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
@@ -35,7 +36,7 @@ import org.silverpeas.core.silverstatistics.access.service.StatisticService;
 import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -44,7 +45,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.time.OffsetDateTime.now;
-import static org.silverpeas.core.admin.service.AdministrationServiceProvider.getAdminService;
 import static org.silverpeas.core.contribution.publication.dao.PublicationCriteria.onComponentInstanceIds;
 import static org.silverpeas.core.contribution.publication.model.PublicationDetail.VALID_STATUS;
 
@@ -59,6 +59,8 @@ public class StatisticServiceImpl implements
   private NodeService nodeService;
   @Inject
   private StatisticService statisticService;
+  @Inject
+  private Administration admin;
 
   @Override
   public Integer getNbConsultedPublication(StatsFilterVO statFilter) {
@@ -135,7 +137,7 @@ public class StatisticServiceImpl implements
   private List<String> getListUserIdsFromGroup(Integer groupId) {
     List<String> userIds = new ArrayList<>();
     try {
-      Group selectedGroup = getAdminService().getGroup(Integer.toString(groupId));
+      Group selectedGroup = admin.getGroup(Integer.toString(groupId));
       String[] arrayUserIds = selectedGroup.getUserIds();
       Collections.addAll(userIds, arrayUserIds);
     } catch (AdminException e) {

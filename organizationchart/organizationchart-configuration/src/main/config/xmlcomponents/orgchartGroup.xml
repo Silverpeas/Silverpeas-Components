@@ -177,7 +177,7 @@
       <order>4</order>
       <parameters>
         <parameter>
-          <name>personnsChartCentralLabel</name>
+          <name>personsChartCentralLabel</name>
           <label>
             <message lang="fr">Rôle(s) du service principal</message>
             <message lang="en">Role(s) of the main organizational unit</message>
@@ -194,7 +194,7 @@
           </help>
         </parameter>
         <parameter>
-          <name>personnsChartCategoriesLabel</name>
+          <name>personsChartCategoriesLabel</name>
           <label>
             <message lang="fr">Catégorie(s) d'un service</message>
             <message lang="en">Categorie(s) of an unit</message>
@@ -211,7 +211,7 @@
           </help>
         </parameter>
         <parameter>
-          <name>personnsChartOthersInfosKeys</name>
+          <name>personsChartOthersInfosKeys</name>
           <label>
             <message lang="fr">Champ(s) à afficher</message>
             <message lang="en">Field(s) to display</message>

@@ -23,31 +23,40 @@
  */
 package org.silverpeas.components.mailinglist;
 
-import org.silverpeas.core.admin.component.ComponentInstancePostConstruction;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.transaction.Transactional;
 import org.silverpeas.components.mailinglist.model.MailingListComponent;
-import org.silverpeas.components.mailinglist.service.MailingListServicesProvider;
+import org.silverpeas.components.mailinglist.service.job.MessageChecker;
+import org.silverpeas.components.mailinglist.service.model.MailingListService;
 import org.silverpeas.components.mailinglist.service.model.beans.MailingList;
-
-import javax.inject.Named;
-import javax.transaction.Transactional;
+import org.silverpeas.core.admin.component.ComponentInstancePostConstruction;
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.kernel.annotation.Technical;
 
 /**
  * Registers for the spawned MailingList instance a message checkers to check and fetch new
  * incoming messages.
  * @author mmoquillon
  */
+@Technical
+@Bean
 @Named
 public class MailinglistInstancePostConstruction implements ComponentInstancePostConstruction {
+
+  @Inject
+  private MailingListService service;
+  @Inject
+  private MessageChecker checker;
 
   @Transactional
   @Override
   public void postConstruct(final String componentInstanceId) {
     MailingList mailingList = new MailingList();
     mailingList.setComponentId(componentInstanceId);
-
-    MailingListServicesProvider.getMailingListService().createMailingList(mailingList);
+    service.createMailingList(mailingList);
 
     MailingListComponent component = new MailingListComponent(componentInstanceId);
-    MailingListServicesProvider.getMessageChecker().addMessageListener(component);
+    checker.addMessageListener(component);
   }
 }

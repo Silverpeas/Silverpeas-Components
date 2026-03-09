@@ -34,9 +34,9 @@ public interface OrganizationChartService {
   }
 
   /**
-   * Gets the {@link OrganizationalChart} instance corresponding the the given parameters.
+   * Gets the {@link OrganizationalChart} instance corresponding the given parameters.
    * @param config the configuration of the requested chart.
-   * @param base the base from which the organizational chart must be build.
+   * @param base the base from which the organizational chart must be built.
    * @param type the organizational chart type.
    * @return the built organizational chart.
    */

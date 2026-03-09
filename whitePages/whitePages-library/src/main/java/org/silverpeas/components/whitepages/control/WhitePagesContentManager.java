@@ -23,11 +23,13 @@
  */
 package org.silverpeas.components.whitepages.control;
 
+import jakarta.inject.Inject;
 import org.silverpeas.components.whitepages.WhitePagesException;
 import org.silverpeas.components.whitepages.model.Card;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.contentcontainer.content.AbstractSilverpeasContentManager;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngine;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
 import org.silverpeas.core.contribution.model.Contribution;
@@ -47,6 +49,12 @@ import java.util.stream.Collectors;
 public class WhitePagesContentManager extends AbstractSilverpeasContentManager {
 
   private static final String CONTENT_ICON_FILE_NAME = "whitePagesSmall.gif";
+
+  @Inject
+  private CardManager cardManager;
+
+  @Inject
+  private ContentManagementEngine contentManagementEngine;
 
   /**
    * Hidden constructor as this implementation must be GET by CDI mechanism.
@@ -74,9 +82,9 @@ public class WhitePagesContentManager extends AbstractSilverpeasContentManager {
       final List<String> resourceIds = resourceReferences.stream()
           .map(ResourceReference::getLocalId)
           .collect(Collectors.toList());
-      return CardManager.getInstance().getCardsByIds(resourceIds).stream()
+      return cardManager.getCardsByIds(resourceIds).stream()
           .map(c -> new CardHeader(Long.parseLong(c.getPK().getId()), c, c.getInstanceId(),
-                                   c.getCreationDate(), Integer.toString(c.getCreatorId())))
+              c.getCreationDate(), Integer.toString(c.getCreatorId())))
           .collect(Collectors.toList());
     } catch (WhitePagesException e) {
       SilverLogger.getLogger(this).error(e);
@@ -86,6 +94,7 @@ public class WhitePagesContentManager extends AbstractSilverpeasContentManager {
 
   /**
    * add a new content. It is registered to contentManager service
+   *
    * @param con a Connection
    * @param card the user card
    * @return the unique silverObjectId which identified the new content
@@ -99,11 +108,12 @@ public class WhitePagesContentManager extends AbstractSilverpeasContentManager {
   /**
    * update the visibility attributes of the content. Here, the type of content is a
    * PublicationDetail
+   *
    * @param card the user card
    */
   protected void updateSilverContentVisibility(Card card) throws ContentManagerException {
-    int silverContentId = getContentManager()
-        .getSilverContentId(card.getPK().getId(), card.getPK().getComponentName());
+    int silverContentId = contentManagementEngine.getSilverContentId(card.getPK().getId(),
+        card.getPK().getComponentName());
     SilverContentVisibility scv = new SilverContentVisibility(isVisible(card));
     getContentManager()
         .updateSilverContentVisibilityAttributes(scv, silverContentId);
@@ -111,6 +121,7 @@ public class WhitePagesContentManager extends AbstractSilverpeasContentManager {
 
   /**
    * delete a content. It is registered to contentManager service
+   *
    * @param con a Connection
    * @param pk the expert identifier to unregister
    */

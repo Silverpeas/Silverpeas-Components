@@ -29,7 +29,7 @@ import org.silverpeas.core.io.media.video.ThumbnailPeriod;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.web.SilverpeasWebResource;
 
-import javax.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.UriBuilder;
 import java.net.URI;
 
 /**
@@ -51,7 +51,7 @@ public final class GalleryResourceURIs {
   public static final String GALLERY_STREAMING_PROVIDER_DATA_PART = "providerData";
 
   /**
-   * Centralized the build of a album URI.
+   * Centralized the build of an album URI.
    * @param album the album.
    * @return the computed URI.
    */
@@ -63,7 +63,7 @@ public final class GalleryResourceURIs {
   }
 
   /**
-   * Centralized the build of a album URI.
+   * Centralized the build of an album URI.
    * @param albumPk the album.
    * @return the computed URI.
    */

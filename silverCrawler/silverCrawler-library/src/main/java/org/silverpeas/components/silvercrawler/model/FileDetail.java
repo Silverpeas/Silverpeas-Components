@@ -30,11 +30,11 @@ import org.silverpeas.core.util.file.FileRepositoryManager;
 public class FileDetail implements java.io.Serializable {
 
   private static final long serialVersionUID = 4697608390797941792L;
-  private String name;
-  private String path;
-  private String fullPath;
-  private long size;
-  private boolean isDirectory;
+  private final String name;
+  private final String path;
+  private final String fullPath;
+  private final long size;
+  private final boolean isDirectory;
   private boolean isIndexed;
 
   public FileDetail(String name, String path, String fullPath, long size, boolean isDirectory) {

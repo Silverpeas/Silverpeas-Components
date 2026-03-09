@@ -23,19 +23,18 @@
  */
 package org.silverpeas.components.resourcesmanager.servlets;
 
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.silverpeas.components.resourcesmanager.control.ResourcesManagerSessionController;
 import org.silverpeas.components.resourcesmanager.model.Resource;
 import org.silverpeas.components.resourcesmanager.util.ResourceUtil;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.io.IOException;
 import java.io.Writer;
 import java.util.Date;
 import java.util.List;
@@ -44,14 +43,12 @@ public class AjaxResourcesManagerServlet extends HttpServlet {
   private static final long serialVersionUID = -8949667715718523202L;
 
   @Override
-  public void doGet(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException {
+  public void doGet(HttpServletRequest req, HttpServletResponse res) {
     doPost(req, res);
   }
 
   @Override
-  public void doPost(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException {
+  public void doPost(HttpServletRequest req, HttpServletResponse res) {
     HttpSession session = req.getSession(true);
     String componentId = req.getParameter("ComponentId");
     ResourcesManagerSessionController sessionController =
@@ -87,8 +84,7 @@ public class AjaxResourcesManagerServlet extends HttpServlet {
           resourceNames
               .insert(0, sessionController.getString("resourcesManager.resourceUnReservable"));
         }
-
-        res.setHeader("charset", "UTF-8");
+        res.setCharacterEncoding(Charsets.UTF_8.name());
 
         Writer writer = res.getWriter();
         writer.write(resourceNames.toString());

@@ -51,12 +51,6 @@ public class DelegatedNewsRequestRouter
     return "DelegatedNews";
   }
 
-  /**
-   * Constructor
-   * @param mainSessionCtrl
-   * @param componentContext
-   * @return
-   */
   public DelegatedNewsSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new DelegatedNewsSessionController(mainSessionCtrl, componentContext);
@@ -66,10 +60,9 @@ public class DelegatedNewsRequestRouter
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    * @param function The entering request function (ex : "Main.jsp")
-   * @param newsSC The component Session Control, build and initialised.
-   * @param request
-   * @return The complete destination URL for a forward (ex :
-   * "/almanach/jsp/almanach.jsp?flag=user")
+   * @param newsSC The component Session Control, build and initialized.
+   * @param request th incoming HTTP request
+   * @return The complete destination URL for a forward (ex: "/almanach/jsp/almanach.jsp?flag=user")
    */
   public String getDestination(String function, DelegatedNewsSessionController newsSC,
       HttpRequest request) {

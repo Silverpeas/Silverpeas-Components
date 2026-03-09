@@ -23,7 +23,6 @@
  */
 package org.silverpeas.components.gallery.media;
 
-import org.silverpeas.core.i18n.I18NHelper;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,8 +32,8 @@ import java.util.Map;
  */
 public class ExifProperty {
 
-  private int property;
-  private Map<String, String> labels;
+  private final int property;
+  private final Map<String, String> labels;
 
   public ExifProperty(int property) {
     this.property = property;
@@ -46,13 +45,6 @@ public class ExifProperty {
    */
   public int getProperty() {
     return property;
-  }
-
-  /**
-   * @return the label
-   */
-  public String getLabel() {
-    return labels.get(I18NHelper.DEFAULT_LANGUAGE);
   }
 
   /**

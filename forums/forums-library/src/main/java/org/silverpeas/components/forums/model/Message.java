@@ -58,15 +58,11 @@ public class Message implements Contribution, Rateable, Serializable, WithAttach
   private String status;
   private ContributionRating contributionRating;
 
-  public Message(int id, String instanceId, String title, String author, Date date, int forumId,
-      int parentId) {
-    this.id = id;
-    this.title = title;
-    this.author = author;
-    this.date = date;
-    this.forumId = forumId;
-    this.parentId = parentId;
-    this.instanceId = instanceId;
+  public static MessageBuilder builder() {
+    return new MessageBuilder();
+  }
+
+  private Message() {
   }
 
   public int getId() {
@@ -194,6 +190,7 @@ public class Message implements Contribution, Rateable, Serializable, WithAttach
 
   /**
    * Indicates if the message is a subject (first message of a forum) or a message.
+   *
    * @return true if this message is the first one, false otherwise.
    */
   public boolean isSubject() {
@@ -208,12 +205,13 @@ public class Message implements Contribution, Rateable, Serializable, WithAttach
     return STATUS_FOR_VALIDATION.equals(status);
   }
 
-   public boolean isRefused() {
+  public boolean isRefused() {
     return STATUS_REFUSED.equals(status);
   }
 
   /**
    * The type of this resource
+   *
    * @return the same value returned by getContributionType()
    */
   public static String getResourceType() {
@@ -291,5 +289,57 @@ public class Message implements Contribution, Rateable, Serializable, WithAttach
               new ContributionRatingPK(String.valueOf(getId()), getInstanceId(), RESOURCE_TYPE));
     }
     return contributionRating;
+  }
+
+  /**
+   * Builder of a message object.
+   */
+  public static class MessageBuilder {
+
+    private final Message message = new Message();
+
+    public MessageBuilder setId(int id) {
+      message.setId(id);
+      return this;
+    }
+
+    public MessageBuilder setInstanceId(String forumInstanceId) {
+      message.setInstanceId(forumInstanceId);
+      return this;
+    }
+
+    public MessageBuilder setTitle(String title) {
+      message.setTitle(title);
+      return this;
+    }
+
+    public MessageBuilder setAuthor(String authorName) {
+      message.setAuthor(authorName);
+      return this;
+    }
+
+    public MessageBuilder setDate(Date messageDate) {
+      message.setDate(messageDate);
+      return this;
+    }
+
+    public MessageBuilder setForum(int forumId) {
+      message.setForumId(forumId);
+      return this;
+    }
+
+    public MessageBuilder setMessageParent(int parentId) {
+      message.setParentId(parentId);
+      return this;
+    }
+
+    public MessageBuilder setStatus(String status) {
+      message.setStatus(status);
+      return this;
+    }
+
+    public Message build() {
+      return message;
+    }
   }
 }

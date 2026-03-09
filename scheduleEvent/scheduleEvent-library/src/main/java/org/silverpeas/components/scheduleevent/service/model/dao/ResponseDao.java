@@ -25,10 +25,9 @@
 package org.silverpeas.components.scheduleevent.service.model.dao;
 
 import org.silverpeas.components.scheduleevent.service.model.beans.Response;
-import org.silverpeas.components.scheduleevent.service.model.beans.Response;
 
 public interface ResponseDao {
 
-  public void deleteResponse(Response response);
+  void deleteResponse(Response response);
 
 }

@@ -40,9 +40,9 @@ import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane;
 import org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPane;
 import org.silverpeas.core.web.util.viewgenerator.html.icons.Icon;
 
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpSession;
-import javax.servlet.jsp.JspWriter;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.jsp.JspWriter;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;

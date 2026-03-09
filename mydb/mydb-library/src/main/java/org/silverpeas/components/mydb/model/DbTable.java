@@ -160,7 +160,7 @@ public class DbTable {
    * Gets the contents of this table as a list of rows, each of them being a tuple valuing
    * all the columns of this table. If the table is empty, then an empty list is returned.
    * @param filter a predicate to use for filtering the table content.
-   * @param orderBy a order by directive already built (without the clause key words).
+   * @param orderBy an order by directive already built (without the clause keywords).
    * @param pagination a pagination in order to avoid bad performances.
    * @return a list of table rows. If a filter is set, it is then applied when requesting the
    * content of this table. The number of table rows is limited by the

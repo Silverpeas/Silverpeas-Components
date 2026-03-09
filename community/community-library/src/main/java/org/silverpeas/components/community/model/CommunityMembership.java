@@ -31,9 +31,9 @@ import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
 
-import javax.annotation.Nonnull;
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
+import jakarta.annotation.Nonnull;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 
 /**
  * Membership of a given user in a community of users. Memberships are managed by the
- * {@link CommunityOfUsers} to which they are related and they are provided by the
+ * {@link CommunityOfUsers} to which they are related, and they are provided by the
  * {@link CommunityMembershipsProvider} which ensures the synchronization between the memberships to
  * a community and the users playing a role in the community space.
  * <p>

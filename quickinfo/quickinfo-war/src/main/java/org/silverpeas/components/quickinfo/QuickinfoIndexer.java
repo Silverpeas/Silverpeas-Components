@@ -27,14 +27,16 @@ package org.silverpeas.components.quickinfo;
 import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.components.quickinfo.model.QuickInfoService;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.web.index.components.ComponentIndexation;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.inject.Singleton;
 import java.util.List;
 
+@Bean
 @Singleton
 @Named("quickinfo" + ComponentIndexation.QUALIFIER_SUFFIX)
 public class QuickinfoIndexer implements ComponentIndexation {

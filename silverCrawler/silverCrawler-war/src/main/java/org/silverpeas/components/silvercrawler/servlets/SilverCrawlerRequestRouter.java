@@ -23,19 +23,23 @@
  */
 package org.silverpeas.components.silvercrawler.servlets;
 
+import jakarta.inject.Inject;
 import org.silverpeas.components.silvercrawler.control.ProfileHelper;
 import org.silverpeas.components.silvercrawler.control.SilverCrawlerSessionController;
 import org.silverpeas.components.silvercrawler.servlets.handlers.FunctionHandler;
 import org.silverpeas.components.silvercrawler.servlets.handlers.HandlerProvider;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.core.web.http.HttpRequest;
 
 public class SilverCrawlerRequestRouter
     extends ComponentRequestRouter<SilverCrawlerSessionController> {
 
   private static final long serialVersionUID = 3258391347331914529L;
+
+  @Inject
+  private HandlerProvider handlerProvider;
 
   /**
    * This method has to be implemented in the component request rooter class.
@@ -46,13 +50,6 @@ public class SilverCrawlerRequestRouter
     return "SilverCrawler";
   }
 
-  /**
-   * Method declaration
-   * @param mainSessionCtrl
-   * @param componentContext
-   * @return
-   *
-   */
   public SilverCrawlerSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new SilverCrawlerSessionController(mainSessionCtrl, componentContext);
@@ -66,21 +63,21 @@ public class SilverCrawlerRequestRouter
    * This method has to be implemented by the component request rooter it has to
    * compute a destination page
    * @param function The entering request function (ex : "Main.jsp")
-   * @param silverCrawlerSC The component Session Control, build and initialised.
-   * @param request
+   * @param silverCrawlerSC The component Session Control, build and initialized.
+   * @param request the HTTP request.
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   public String getDestination(String function, SilverCrawlerSessionController silverCrawlerSC,
       HttpRequest request) {
-    String destination = "";
+    String destination;
     String flag = getFlag(silverCrawlerSC.getUserRoles());
     request.setAttribute("Profile", flag);
     request.setAttribute("UserId", silverCrawlerSC.getUserId());
     request.setAttribute("Language", silverCrawlerSC.getLanguage());
 
     // Delegate to specific Handler
-    FunctionHandler handler = HandlerProvider.getHandler(function);
+    FunctionHandler handler = handlerProvider.getHandler(function);
     destination = handler.computeDestination(silverCrawlerSC, request);
 
 

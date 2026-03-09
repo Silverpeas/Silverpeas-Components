@@ -25,7 +25,6 @@ package org.silverpeas.components.infoletter.model;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.content.ddwe.model.DragAndDropWebEditorStore;
 import org.silverpeas.core.contribution.content.renderer.ContributionContentRenderer;
@@ -38,7 +37,6 @@ import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
 import org.silverpeas.kernel.annotation.NonNull;
 import org.silverpeas.kernel.util.StringUtil;
-import org.silverpeas.core.util.URLUtil;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -58,34 +56,16 @@ public class InfoLetterPublication extends SilverpeasBean implements Comparable<
   public static final int PUBLICATION_EN_REDACTION = 1;
   public static final int PUBLICATION_VALIDEE = 2;
 
-  /**
-   * instance identifier
-   */
   private String instanceId;
 
-  /**
-   * publication title
-   */
   private String title;
 
-  /**
-   * publication description
-   */
   private String description;
 
-  /**
-   * publish date
-   */
   private String parutionDate;
 
-  /**
-   * publication state
-   */
   private int publicationState;
 
-  /**
-   * letter identifier
-   */
   private int letterId;
 
   private WysiwygContent content;
@@ -102,11 +82,11 @@ public class InfoLetterPublication extends SilverpeasBean implements Comparable<
     letterId = 0;
   }
 
-  public InfoLetterPublication(WAPrimaryKey pk, String instanceId, String title, String description,
+  public InfoLetterPublication(ResourceReference pk, String title, String description,
       String parutionDate, int publicationState, int letterId) {
     super();
     setPK(pk);
-    this.instanceId = instanceId;
+    this.instanceId = pk.getInstanceId();
     this.title = title;
     this.description = description;
     this.parutionDate = parutionDate;
@@ -169,10 +149,6 @@ public class InfoLetterPublication extends SilverpeasBean implements Comparable<
 
   public void setLetterId(String letterId) {
     this.letterId = Integer.parseInt(letterId);
-  }
-
-  public String getPermalink() {
-    return URLUtil.getSimpleURL(URLUtil.URL_NEWSLETTER, getPK().getId());
   }
 
   @Override
@@ -250,7 +226,7 @@ public class InfoLetterPublication extends SilverpeasBean implements Comparable<
   public Optional<WysiwygContent> getWysiwygContent() {
     if (this.content == null) {
       this.content = WysiwygController.get(getInstanceId(), getPK().getId(),
-          I18NHelper.DEFAULT_LANGUAGE);
+          I18NHelper.getDefaultLanguage());
     }
     return ofNullable(this.content);
   }
@@ -290,7 +266,7 @@ public class InfoLetterPublication extends SilverpeasBean implements Comparable<
     }
     // Update the Wysiwyg if exists, create one otherwise
     WysiwygController.updateFileAndAttachment(wysiwygContent, identifier.getComponentInstanceId(),
-        identifier.getLocalId(), User.getCurrentUser().getId(), I18NHelper.DEFAULT_LANGUAGE);
+        identifier.getLocalId(), User.getCurrentUser().getId(), I18NHelper.getDefaultLanguage());
   }
 
   /**

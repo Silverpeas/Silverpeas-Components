@@ -1,10 +1,9 @@
 package org.silverpeas.components.scheduleevent.view;
 
-import java.util.Set;
-
 import org.silverpeas.components.scheduleevent.service.model.beans.Response;
 import org.silverpeas.components.scheduleevent.view.AvailabilityFactoryVO.Availability;
-import org.silverpeas.components.scheduleevent.service.model.beans.Response;
+
+import java.util.Set;
 
 public interface ContributorVO {
   String getName();
@@ -15,6 +14,7 @@ public interface ContributorVO {
 
   Set<Response> match(Set<Response> responses);
 
-  AvailableVO makeAvailabilty(Availability availability);
+  AvailableVO makeAvailability(Availability availability);
 
 }
+

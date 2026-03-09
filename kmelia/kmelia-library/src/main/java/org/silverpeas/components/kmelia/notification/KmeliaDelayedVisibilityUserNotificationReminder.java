@@ -25,6 +25,7 @@
 package org.silverpeas.components.kmelia.notification;
 
 import org.silverpeas.components.kmelia.service.KmeliaService;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.reminder.BackgroundReminderProcess;
@@ -35,9 +36,9 @@ import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.inject.Singleton;
 import java.time.temporal.Temporal;
 
 import static org.silverpeas.core.contribution.publication.model.PublicationDetail.DELAYED_VISIBILITY_AT_MODEL_PROPERTY;
@@ -49,6 +50,7 @@ import static org.silverpeas.core.reminder.BackgroundReminderProcess.Constants.P
  * by kmelia component instances.
  * @author silveryocha
  */
+@Bean
 @Named(KmeliaDelayedVisibilityUserNotificationReminder.PROCESS_NAME + PROCESS_NAME_SUFFIX)
 @Singleton
 public class KmeliaDelayedVisibilityUserNotificationReminder implements BackgroundReminderProcess {

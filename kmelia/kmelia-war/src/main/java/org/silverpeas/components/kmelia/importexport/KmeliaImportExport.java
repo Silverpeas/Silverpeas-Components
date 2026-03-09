@@ -133,12 +133,12 @@ public class KmeliaImportExport extends GEDImportExport {
    * exemple avec un même ID), il n'est pas modifié et la méthode ne fait rien et ne lève aucune
    * exception.
    *
-   * @param nodeDetail le détail du noeud à ajouter.
-   * @param topicId l'identifiant du noeud parent, ou 0 pour désigner le noeud racine.
+   * @param nodeDetail le détail du nœud à ajouter.
+   * @param topicId l'identifiant du nœud parent, ou 0 pour désigner le nœud racine.
    * @param unitReport le rapport d'import unitaire.
    * @return un objet clé primaire du nouveau thème créé ou du thème déjà existant (thème de même
    * identifiant non modifié).
-   * @throws ImportExportException en cas d'anomalie lors de la création du noeud.
+   * @throws ImportExportException en cas d'anomalie lors de la création du nœud.
    */
   @Override
   protected NodePK addSubTopicToTopic(NodeDetail nodeDetail, int topicId, UnitReport unitReport)
@@ -148,7 +148,7 @@ public class KmeliaImportExport extends GEDImportExport {
       nodePk.setComponentName(getCurrentComponentId());
       nodeDetail.setCreatorId(getCurrentUserDetail().getId());
 
-      // Recherche si le noeud existe déjà, on s'arrête si c'est le cas
+      // Recherche si le nœud existe déjà, on s'arrête si c'est le cas
       final NodeDetail header = getNodeDetail(nodePk);
       if (header != null) {
         return header.getNodePK();
@@ -186,7 +186,7 @@ public class KmeliaImportExport extends GEDImportExport {
    * @param nodeDetail l'objet node correspondant au thème à créer.
    * @param topicId l'ID du thème dans lequel créer le nouveau thème.
    * @return un objet clé primaire du nouveau thème créé.
-   * @throws ImportExportException en cas d'anomalie lors de la création du noeud.
+   * @throws ImportExportException en cas d'anomalie lors de la création du nœud.
    */
   @Override
   protected NodeDetail addSubTopicToTopic(NodeDetail nodeDetail, int topicId,
@@ -214,7 +214,7 @@ public class KmeliaImportExport extends GEDImportExport {
   }
 
   /**
-   * Méthode récupérant le silverObjectId d'un objet d'id id
+   * Méthode récupérant le silverObjectId d'un objet d'id
    *
    * @param id - id de la publication
    * @return le silverObjectId de l'objet d'id id

@@ -42,9 +42,7 @@
 <view:setBundle basename="org.silverpeas.forums.multilang.forumsBundle"/>
 
 <%!
-public String navigationBar(int forumId, ForumsSessionController fsc)
-    throws ForumsException
-{
+public String navigationBar(int forumId, ForumsSessionController fsc) {
     String navigation = "";
     if (forumId != 0)
     {

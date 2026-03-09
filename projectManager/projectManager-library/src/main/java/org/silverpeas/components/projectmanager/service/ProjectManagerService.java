@@ -59,7 +59,7 @@ public interface ProjectManagerService {
 
   TaskDetail getMostDistantTask(String instanceId, int taskId);
 
-  // Gestion des jours non travailles
+  // Gestion des jours non travaillés
   boolean isHolidayDate(HolidayDetail date);
 
   List<Date> getHolidayDates(String instanceId);

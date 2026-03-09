@@ -51,10 +51,10 @@ package org.silverpeas.components.survey.servlets;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class RecordParticipation extends HttpServlet {
@@ -77,6 +77,7 @@ public class RecordParticipation extends HttpServlet {
 
       // write cookie for this vote or survey
       Cookie cookieIp = new Cookie("surpoll" + surveyId, request.getRemoteAddr());
+      cookieIp.setHttpOnly(true);
       cookieIp.setMaxAge(86400 * cookieDuration);
       cookieIp.setPath("/");
       cookieIp.setSecure(request.isSecure());

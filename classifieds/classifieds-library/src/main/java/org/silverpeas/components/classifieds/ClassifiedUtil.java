@@ -26,7 +26,7 @@ package org.silverpeas.components.classifieds;
 import org.silverpeas.components.classifieds.model.ClassifiedDetail;
 
 /**
- * Utilitary class providing useful operations for all of the objects behaving within the classified
+ * Utility class providing useful operations for all the objects behaving within the classified
  * context.
  */
 public final class ClassifiedUtil {

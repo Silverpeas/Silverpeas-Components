@@ -29,7 +29,7 @@ import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters
 import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityRepository;
 import org.silverpeas.core.util.ServiceProvider;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 /**
  * This entity suggestionRepository provides all necessary methods in order to handle the

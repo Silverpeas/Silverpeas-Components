@@ -24,56 +24,39 @@
 
 package org.silverpeas.components.mydb.web;
 
-import org.apache.commons.lang3.StringUtils;
-import org.silverpeas.components.mydb.model.DataSourceDefinition;
-import org.silverpeas.components.mydb.model.DbColumn;
-import org.silverpeas.components.mydb.model.DbTable;
-import org.silverpeas.components.mydb.model.MyDBConnectionInfo;
-import org.silverpeas.components.mydb.model.TableFieldValue;
-import org.silverpeas.components.mydb.model.TableRow;
+import jakarta.annotation.Nonnull;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import org.silverpeas.components.mydb.model.*;
 import org.silverpeas.components.mydb.model.predicates.AbstractColumnValuePredicate;
 import org.silverpeas.components.mydb.service.MyDBException;
 import org.silverpeas.components.mydb.service.MyDBRuntimeException;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.kernel.util.StringUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.webcomponent.annotation.Homepage;
-import org.silverpeas.core.web.mvc.webcomponent.annotation.LowestRoleAccess;
-import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectTo;
-import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToInternal;
-import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToInternalJsp;
-import org.silverpeas.core.web.mvc.webcomponent.annotation.WebComponentController;
+import org.silverpeas.core.web.mvc.webcomponent.annotation.*;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
-import javax.annotation.Nonnull;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.sql.JDBCType;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.silverpeas.components.mydb.web.TableRowsFilter.FIELD_NONE;
-import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 import static org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayLinesTag.AJAX_EXPORT_PARAMETER_NAME;
 import static org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane.getOrderByFrom;
 import static org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane.getPaginationPageFrom;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 
 /**
- * The web controller of the MyDB application. Like all of the web controllers in
+ * The web controller of the MyDB application. Like all the web controllers in
  * Silverpeas, it is both session-scoped and spawn per application instance.
  * @author mmoquillon
  */
@@ -178,7 +161,7 @@ public class MyDBWebController
       } else {
         tableView.setPagination(getPaginationPageFrom(request, getSessionTableViewId()));
       }
-      tableView.setOrderBy(getOrderByFrom(request, tableView.getOrderBies(), getSessionTableViewId()));
+      tableView.setOrderBy(getOrderByFrom(request, tableView.getOrderByes(), getSessionTableViewId()));
       setUpRequestAttributes(request);
     } catch (MyDBRuntimeException e) {
       context.getMyDBMessageManager().setError(getString("mydb.error.table.read"), e);
@@ -240,7 +223,7 @@ public class MyDBWebController
         final HttpRequest request = context.getRequest();
         final String fkArrayPaneName = "FkTable@" + targetTableName;
         targetTableView.setPagination(getPaginationPageFrom(request, fkArrayPaneName));
-        targetTableView.setOrderBy(getOrderByFrom(request, targetTableView.getOrderBies(), fkArrayPaneName));
+        targetTableView.setOrderBy(getOrderByFrom(request, targetTableView.getOrderByes(), fkArrayPaneName));
         request.setAttribute(TABLE_VIEW, targetTableView);
         request.setAttribute(FK_ARRAY_PANE_NAME, fkArrayPaneName);
         TableRowUIEntity row = findMatchingTableRow(targetTableView, fields);
@@ -552,6 +535,6 @@ public class MyDBWebController
     if (val == null || val.isEmpty()) {
       val = null;
     }
-    return StringUtils.defaultString(val, TableRowsFilter.FIELD_NONE);
+    return Objects.toString(val, TableRowsFilter.FIELD_NONE);
   }
 }

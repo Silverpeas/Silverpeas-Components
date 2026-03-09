@@ -35,29 +35,14 @@ import org.silverpeas.core.process.session.ProcessSession;
  */
 public class GalleryDeleteMediaFileProcess extends AbstractGalleryFileProcess {
 
-  /**
-   * Gets an instance
-   * @param media
-   * @return
-   */
   public static GalleryDeleteMediaFileProcess getInstance(final Media media) {
     return new GalleryDeleteMediaFileProcess(media);
   }
 
-  /**
-   * Default hidden constructor
-   * @param media
-   */
   protected GalleryDeleteMediaFileProcess(final Media media) {
     super(media);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see AbstractFileProcess#processFiles(org.silverpeas.process.
-   * management.ProcessExecutionContext, ProcessSession,
-   * FileHandler)
-   */
   @Override
   public void processFiles(final ProcessExecutionContext context,
       final ProcessSession session, final FileHandler fileHandler) throws Exception {

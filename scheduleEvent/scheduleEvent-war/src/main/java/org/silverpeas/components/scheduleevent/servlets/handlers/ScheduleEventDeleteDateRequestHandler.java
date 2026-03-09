@@ -24,12 +24,11 @@
 
 package org.silverpeas.components.scheduleevent.servlets.handlers;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.silverpeas.components.scheduleevent.control.ScheduleEventSessionController;
 import org.silverpeas.components.scheduleevent.view.ScheduleEventVO;
-import org.silverpeas.components.scheduleevent.control.ScheduleEventSessionController;
-import org.silverpeas.components.scheduleevent.view.ScheduleEventVO;
+import org.silverpeas.kernel.SilverpeasException;
 
 public class ScheduleEventDeleteDateRequestHandler extends ScheduleEventActionDateRequestHandler {
 
@@ -41,28 +40,28 @@ public class ScheduleEventDeleteDateRequestHandler extends ScheduleEventActionDa
 
   @Override
   public String getDestination(String function, ScheduleEventSessionController scheduleeventSC,
-      HttpServletRequest request) throws Exception {
+      HttpServletRequest request) throws SilverpeasException {
     if (forwardRequestHandler != null) {
       return deleteSelectedDateAndForwardRequestHandler(function, scheduleeventSC, request);
     } else {
-      throw UndefinedForwardRequestHandlerException();
+      throw undefinedForwardRequestHandlerException();
     }
   }
 
   private String deleteSelectedDateAndForwardRequestHandler(String function,
-      ScheduleEventSessionController scheduleeventSC, HttpServletRequest request) throws Exception {
+      ScheduleEventSessionController scheduleeventSC, HttpServletRequest request) throws SilverpeasException {
     removeDateOptions(scheduleeventSC, request);
     return forwardRequestHandler.getDestination(function, scheduleeventSC, request);
   }
 
   private void removeDateOptions(ScheduleEventSessionController scheduleeventSC,
-      HttpServletRequest request) throws Exception {
+      HttpServletRequest request) throws SilverpeasException {
     ScheduleEventVO current = (ScheduleEventVO) scheduleeventSC.getCurrentScheduleEventVO();
     current.deleteDate(request.getParameter("dateToDelete"));
   }
 
-  private Exception UndefinedForwardRequestHandlerException() {
-    return new Exception(
+  private SilverpeasException undefinedForwardRequestHandlerException() {
+    return new SilverpeasException(
         "No forward request defines for" + this.getClass());
   }
 }

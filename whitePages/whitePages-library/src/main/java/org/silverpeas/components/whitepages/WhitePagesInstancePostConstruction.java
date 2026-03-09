@@ -31,8 +31,8 @@ import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 
-import javax.inject.Named;
-import javax.transaction.Transactional;
+import jakarta.inject.Named;
+import jakarta.transaction.Transactional;
 
 /**
  * Prepares for the spawned WhitePages instance a publication template from which contact cards

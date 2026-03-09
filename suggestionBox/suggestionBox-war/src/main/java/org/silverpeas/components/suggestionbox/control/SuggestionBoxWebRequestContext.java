@@ -27,7 +27,7 @@ import org.silverpeas.core.web.mvc.webcomponent.WebComponentRequestContext;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 
 /**
- * @author: Yohann Chastagnier
+ * @author Yohann Chastagnier
  */
 public class SuggestionBoxWebRequestContext
     extends WebComponentRequestContext<SuggestionBoxWebController> {
@@ -39,10 +39,6 @@ public class SuggestionBoxWebRequestContext
     suggestionBox = SuggestionBox.getByComponentInstanceId(getComponentInstanceId());
   }
 
-  /**
-   * Gets the suggestion box.
-   * @return
-   */
   public SuggestionBox getSuggestionBox() {
     return suggestionBox;
   }

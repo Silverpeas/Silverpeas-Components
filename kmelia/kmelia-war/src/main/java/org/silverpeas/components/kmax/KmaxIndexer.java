@@ -26,12 +26,14 @@ package org.silverpeas.components.kmax;
 
 import org.silverpeas.components.kmelia.service.KmeliaService;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.web.index.components.ComponentIndexation;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.inject.Singleton;
 
+@Bean
 @Singleton
 @Named("kmax" + ComponentIndexation.QUALIFIER_SUFFIX)
 public class KmaxIndexer implements ComponentIndexation {

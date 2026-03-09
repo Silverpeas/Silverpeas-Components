@@ -31,7 +31,7 @@
   <parent>
     <groupId>org.silverpeas.components</groupId>
     <artifactId>community</artifactId>
-    <version>6.5-SNAPSHOT</version>
+    <version>6.5-ee-SNAPSHOT</version>
   </parent>
 
   <groupId>org.silverpeas.components.community</groupId>
@@ -40,14 +40,6 @@
   <name>community Webapp</name>
 
   <dependencies>
-    <dependency>
-      <groupId>javax.servlet.jsp.jstl</groupId>
-      <artifactId>javax.servlet.jsp.jstl-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.glassfish.web</groupId>
-      <artifactId>javax.servlet.jsp.jstl</artifactId>
-    </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>silverpeas-community</artifactId>
@@ -68,12 +60,6 @@
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core</groupId>
-      <artifactId>silverpeas-core</artifactId>
-      <version>${core.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.silverpeas.core</groupId>
       <artifactId>silverpeas-core-jcr</artifactId>
       <version>${core.version}</version>
       <scope>test</scope>
@@ -88,11 +74,6 @@
       <groupId>org.silverpeas.core</groupId>
       <artifactId>silverpeas-core-web-test</artifactId>
       <version>${core.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.resteasy</groupId>
-      <artifactId>resteasy-html</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

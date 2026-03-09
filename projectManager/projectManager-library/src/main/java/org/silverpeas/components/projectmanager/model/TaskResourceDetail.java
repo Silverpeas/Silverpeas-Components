@@ -85,7 +85,7 @@ public class TaskResourceDetail implements Serializable {
   }
 
   public void setCharge(String f) {
-    if (f != null && f.length() > 0) {
+    if (f != null && !f.isEmpty()) {
       charge = Integer.parseInt(f);
     } else {
       charge = 0;
@@ -97,7 +97,7 @@ public class TaskResourceDetail implements Serializable {
   }
 
   public void setOccupation(String f) {
-    if (f != null && f.length() > 0) {
+    if (f != null && !f.isEmpty()) {
       occupation = Integer.parseInt(f);
     } else {
       occupation = 0;
@@ -122,14 +122,12 @@ public class TaskResourceDetail implements Serializable {
 
   @Override
   public String toString() {
-    StringBuilder result = new StringBuilder();
-    result.append("TaskResourceDetail {").append("\n");
-    result.append("  id = ").append(getId()).append("\n");
-    result.append("  taskId = ").append(getTaskId()).append("\n");
-    result.append("  userId = ").append(getUserId()).append("\n");
-    result.append("  charge = ").append(getCharge()).append("\n");
-    result.append("  instanceId = ").append(getInstanceId()).append("\n");
-    result.append("}");
-    return result.toString();
+    return "TaskResourceDetail {" + "\n" +
+                    "  id = " + getId() + "\n" +
+                    "  taskId = " + getTaskId() + "\n" +
+                    "  userId = " + getUserId() + "\n" +
+                    "  charge = " + getCharge() + "\n" +
+                    "  instanceId = " + getInstanceId() + "\n" +
+                    "}";
   }
 }

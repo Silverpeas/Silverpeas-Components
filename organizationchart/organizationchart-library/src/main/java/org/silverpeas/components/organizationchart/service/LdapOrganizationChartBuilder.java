@@ -23,34 +23,18 @@
  */
 package org.silverpeas.components.organizationchart.service;
 
-import org.silverpeas.components.organizationchart.model.OrganizationalChart;
-import org.silverpeas.components.organizationchart.model.OrganizationalChartType;
-import org.silverpeas.components.organizationchart.model.OrganizationalPerson;
-import org.silverpeas.components.organizationchart.model.OrganizationalPersonComparator;
-import org.silverpeas.components.organizationchart.model.OrganizationalUnit;
-import org.silverpeas.components.organizationchart.model.PersonCategory;
-import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.components.organizationchart.model.*;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.naming.InvalidNameException;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
-import javax.naming.directory.Attribute;
-import javax.naming.directory.Attributes;
-import javax.naming.directory.DirContext;
-import javax.naming.directory.InitialDirContext;
-import javax.naming.directory.SearchControls;
-import javax.naming.directory.SearchResult;
+import javax.naming.directory.*;
 import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import static org.silverpeas.components.organizationchart.model.OrganizationalChartType
     .TYPE_UNITCHART;
@@ -72,7 +56,7 @@ class LdapOrganizationChartBuilder extends AbstractOrganizationChartBuilder {
 
     Map<String, String> env = config.getEnv();
 
-    List<OrganizationalPerson> ouMembers = null;
+    List<OrganizationalPerson> ouMembers;
     List<OrganizationalUnit> units = null;
 
     // beginning node of the search
@@ -124,10 +108,10 @@ class LdapOrganizationChartBuilder extends AbstractOrganizationChartBuilder {
 
     OrganizationalChart chart;
     if (type == TYPE_UNITCHART) {
-      chart = new OrganizationalChart(parent, units, ouMembers, silverpeasUserLinkable);
+      chart = new OrganizationalChart(parent, units, ouMembers);
     } else {
       Set<PersonCategory> categories = getCategories(ouMembers);
-      chart = new OrganizationalChart(parent, ouMembers, categories, silverpeasUserLinkable);
+      chart = new OrganizationalChart(parent, ouMembers, categories);
     }
 
     return chart;
@@ -181,7 +165,7 @@ class LdapOrganizationChartBuilder extends AbstractOrganizationChartBuilder {
    * @param rootOu rootOu
    * @param type type
    * @return a List of OrganizationalPerson objects.
-   * @throws NamingException
+   * @throws NamingException if the resource naming resolution fails.
    */
   private List<OrganizationalPerson> getOUMembers(DirContext ctx, SearchControls ctls,
       String rootOu, OrganizationalChartType type) throws NamingException {
@@ -206,7 +190,7 @@ class LdapOrganizationChartBuilder extends AbstractOrganizationChartBuilder {
         }
       }
     }
-    Collections.sort(personList, new OrganizationalPersonComparator());
+    personList.sort(new OrganizationalPersonComparator());
     return personList;
   }
 
@@ -216,7 +200,7 @@ class LdapOrganizationChartBuilder extends AbstractOrganizationChartBuilder {
    * @param ctls Search controls
    * @param rootOu rootOu
    * @return a List of OrganizationalUnit objects.
-   * @throws NamingException
+   * @throws NamingException if the resource naming resolution fails.
    */
   private List<OrganizationalUnit> getSubOrganizationUnits(DirContext ctx, SearchControls ctls,
       String rootOu) throws NamingException {
@@ -250,7 +234,7 @@ class LdapOrganizationChartBuilder extends AbstractOrganizationChartBuilder {
       unit.setHasSubUnits(hasSubOrganizations);
 
       try {
-        // set responsible of subunit
+        // set responsible for subunit
         List<OrganizationalPerson> users =
             getOUMembers(ctx, ctls, unit.getCompleteName(), TYPE_UNITCHART);
         List<OrganizationalPerson> mainActors = getMainActors(users);
@@ -322,7 +306,7 @@ class LdapOrganizationChartBuilder extends AbstractOrganizationChartBuilder {
    * @param ctx search context
    * @param ctls search controls
    * @return true is at least one result is found.
-   * @throws NamingException
+   * @throws NamingException if the resource naming resolution fails.
    */
   private boolean hasResults(String baseDN, String filter, DirContext ctx, SearchControls ctls)
       throws NamingException {
@@ -337,7 +321,7 @@ class LdapOrganizationChartBuilder extends AbstractOrganizationChartBuilder {
 
   /**
    * Build a OrganizationalPerson object by retrieving attributes values
-   * @param id person Id
+   * @param id person identifier
    * @param attrs ldap attributes
    * @param dn dn
    * @param type organizationChart type
@@ -377,25 +361,25 @@ class LdapOrganizationChartBuilder extends AbstractOrganizationChartBuilder {
 
     // build OrganizationalPerson object
     OrganizationalPerson person =
-        new OrganizationalPerson(id, -1, fullName, function, description, service, login);
+        new OrganizationalPerson(id, -1, fullName, function, service, login);
 
     // Determines attributes to be returned
     Map<String, String> attributesToReturn;
     if (type == TYPE_UNITCHART) {
       attributesToReturn = config.getUnitsChartOthersInfosKeys();
     } else {
-      attributesToReturn = config.getPersonnsChartOthersInfosKeys();
+      attributesToReturn = config.getPersonsChartOthersInfosKeys();
     }
 
     Map<String, String> details = getDetails(attributesToReturn, attrs);
     person.setDetail(details);
 
-    // defined the boxes with personns inside
+    // defined the boxes with persons inside
     if (function != null) {
       if (type == TYPE_UNITCHART) {
         defineUnitChartRoles(person, function, config);
       } else {
-        defineDetailledChartRoles(person, function, config);
+        defineDetailedChartRoles(person, function, config);
       }
     } else {
       person.setVisibleCategory(new PersonCategory("Personnel"));

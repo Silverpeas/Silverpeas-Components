@@ -163,7 +163,7 @@ public abstract class InternalMedia extends Media {
   private boolean getVideoThumbnailUrl() {
     SilverpeasFile thumbFile =
         SilverpeasFileProvider.getFile(FileUtils
-            .getFile(Media.BASE_PATH.getPath(), getComponentInstanceId(),
+            .getFile(Media.BASE_PATH.getPath(), getInstanceId(),
                 getWorkspaceSubFolderName(),
                 "img0.jpg").getPath());
     return thumbFile != null && thumbFile.exists();
@@ -209,7 +209,7 @@ public abstract class InternalMedia extends Media {
     SilverpeasFile file = SilverpeasFile.NO_FILE;
     for (String potentialFileName : potentialFileNames) {
       File physicalFile = FileUtils
-          .getFile(Media.BASE_PATH.getPath(), getComponentInstanceId(), getWorkspaceSubFolderName(),
+          .getFile(Media.BASE_PATH.getPath(), getInstanceId(), getWorkspaceSubFolderName(),
               potentialFileName);
       if (potentialFileNames.size() > 1 && !physicalFile.exists()) {
         continue;

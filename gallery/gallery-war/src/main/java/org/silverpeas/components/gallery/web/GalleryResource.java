@@ -33,15 +33,15 @@ import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.rs.annotation.Authorized;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 
 import static org.silverpeas.components.gallery.constant.GalleryResourceURIs.*;
 import static org.silverpeas.components.gallery.constant.MediaType.*;
@@ -68,7 +68,7 @@ public class GalleryResource extends AbstractGalleryResource {
   public AlbumEntity getAlbum(@PathParam("albumId") final String albumId,
       @QueryParam("sort") final MediaSort sort) {
     try {
-      final AlbumDetail album = getMediaService().getAlbum(new NodePK(albumId, getComponentId()));
+      final AlbumDetail album = getGalleryService().getAlbum(new NodePK(albumId, getComponentId()));
       if (sort != null) {
         sort.perform(album.getMedia());
       }
@@ -90,7 +90,7 @@ public class GalleryResource extends AbstractGalleryResource {
   @GET
   @Path(GALLERY_ALBUMS_URI_PART + "/{albumId}/" + GALLERY_PHOTOS_PART + "/{photoId}")
   @Produces(MediaType.APPLICATION_JSON)
-  public AbstractMediaEntity getPhoto(@PathParam("albumId") final String albumId,
+  public AbstractMediaEntity<?> getPhoto(@PathParam("albumId") final String albumId,
       @PathParam("photoId") final String photoId) {
     return getMediaEntity(Photo, albumId, photoId);
   }
@@ -105,7 +105,7 @@ public class GalleryResource extends AbstractGalleryResource {
   @GET
   @Path(GALLERY_ALBUMS_URI_PART + "/{albumId}/" + GALLERY_VIDEOS_PART + "/{videoId}")
   @Produces(MediaType.APPLICATION_JSON)
-  public AbstractMediaEntity getVideo(@PathParam("albumId") final String albumId,
+  public AbstractMediaEntity<?> getVideo(@PathParam("albumId") final String albumId,
       @PathParam("videoId") final String videoId) {
     return getMediaEntity(Video, albumId, videoId);
   }
@@ -120,7 +120,7 @@ public class GalleryResource extends AbstractGalleryResource {
   @GET
   @Path(GALLERY_ALBUMS_URI_PART + "/{albumId}/" + GALLERY_SOUNDS_PART + "/{soundId}")
   @Produces(MediaType.APPLICATION_JSON)
-  public AbstractMediaEntity getSound(@PathParam("albumId") final String albumId,
+  public AbstractMediaEntity<?> getSound(@PathParam("albumId") final String albumId,
       @PathParam("soundId") final String soundId) {
     return getMediaEntity(Sound, albumId, soundId);
   }
@@ -136,7 +136,7 @@ public class GalleryResource extends AbstractGalleryResource {
   @GET
   @Path(GALLERY_ALBUMS_URI_PART + "/{albumId}/" + GALLERY_STREAMINGS_PART + "/{streamingId}")
   @Produces(MediaType.APPLICATION_JSON)
-  public AbstractMediaEntity getStreaming(@PathParam("albumId") final String albumId,
+  public AbstractMediaEntity<?> getStreaming(@PathParam("albumId") final String albumId,
       @PathParam("streamingId") final String streamingId) {
     return getMediaEntity(Streaming, albumId, streamingId);
   }
@@ -224,7 +224,7 @@ public class GalleryResource extends AbstractGalleryResource {
   public Response getStreamingProviderDataFromStreamingId(
       @PathParam("streamingId") final String streamingId) {
     try {
-      final Media media = getMediaService().getMedia(new MediaPK(streamingId, getComponentId()));
+      final Media media = getGalleryService().getMedia(new MediaPK(streamingId, getComponentId()));
       checkNotFoundStatus(media);
       org.silverpeas.components.gallery.model.Streaming streaming = media.getStreaming();
       checkNotFoundStatus(streaming);
@@ -251,7 +251,7 @@ public class GalleryResource extends AbstractGalleryResource {
   @GET
   @Path(GALLERY_VIDEOS_PART + "/{videoId}/" + GALLERY_MEDIA_EMBED_PART)
   public View getVideoEmbed(@PathParam("videoId") final String videoId) {
-    return getMediaEmbed(Video, videoId, MediaResolution.ORIGINAL);
+    return getMediaEmbed(Video, videoId);
   }
 
   /**
@@ -265,6 +265,6 @@ public class GalleryResource extends AbstractGalleryResource {
   @GET
   @Path(GALLERY_SOUNDS_PART + "/{soundId}/" + GALLERY_MEDIA_EMBED_PART)
   public View getSoundEmbed(@PathParam("soundId") final String soundId) {
-    return getMediaEmbed(Sound, soundId, MediaResolution.ORIGINAL);
+    return getMediaEmbed(Sound, soundId);
   }
 }

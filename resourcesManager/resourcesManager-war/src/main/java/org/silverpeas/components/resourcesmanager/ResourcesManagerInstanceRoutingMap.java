@@ -32,7 +32,7 @@ import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.web.mvc.route.AbstractComponentInstanceRoutingMap;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 import java.net.URI;
 
 /**

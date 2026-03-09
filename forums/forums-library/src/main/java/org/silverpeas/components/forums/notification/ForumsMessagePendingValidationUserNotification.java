@@ -37,10 +37,6 @@ import java.util.Collection;
 public class ForumsMessagePendingValidationUserNotification
     extends AbstractForumsMessageUserNotification {
 
-  /**
-   * Default constructor.
-   * @param resource
-   */
   public ForumsMessagePendingValidationUserNotification(final Message resource) {
     super(resource);
   }

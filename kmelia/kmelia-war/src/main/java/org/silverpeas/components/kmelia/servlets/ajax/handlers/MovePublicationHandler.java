@@ -30,7 +30,7 @@ import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 public class MovePublicationHandler implements AjaxHandler {
 

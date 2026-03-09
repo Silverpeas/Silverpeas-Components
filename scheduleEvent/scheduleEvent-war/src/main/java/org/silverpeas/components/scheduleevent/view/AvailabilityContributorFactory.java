@@ -1,13 +1,13 @@
 package org.silverpeas.components.scheduleevent.view;
 
 public class AvailabilityContributorFactory implements AvailabilityFactoryVO {
-  private final static AvailabilityContributorFactory instance = new AvailabilityContributorFactory();
+  private static final AvailabilityContributorFactory instance = new AvailabilityContributorFactory();
 
   private AvailabilityContributorFactory() {
   }
 
   @Override
-  public AvailableVO makeAvailablity(Availability availability) {
+  public AvailableVO makeAvailability(Availability availability) {
     switch (availability) {
       case AGREE:
         return AgreeAvailability.getInstance();

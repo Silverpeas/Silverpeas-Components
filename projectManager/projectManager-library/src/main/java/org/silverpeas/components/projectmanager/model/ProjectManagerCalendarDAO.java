@@ -28,6 +28,8 @@
  */
 package org.silverpeas.components.projectmanager.model;
 
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -38,15 +40,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.exception.UtilException;
-
 /**
  * @author neysseri
  */
 public class ProjectManagerCalendarDAO {
 
-  private final static String PROJECTMANAGER_CALENDAR_TABLENAME = "SC_ProjectManager_Calendar";
+  private static final String PROJECTMANAGER_CALENDAR_TABLENAME = "SC_ProjectManager_Calendar";
+  private static final String HOLIDAY_DATE = "holidayDate";
 
   /**
    * Hidden constructor.
@@ -55,24 +55,15 @@ public class ProjectManagerCalendarDAO {
   }
 
   public static void addHolidayDate(Connection con, HolidayDetail holiday)
-      throws SQLException, UtilException {
+      throws SQLException {
     if (!isHolidayDate(con, holiday)) {
-      StringBuilder insertStatement = new StringBuilder(128);
-      insertStatement.append("INSERT INTO ").append(
-          PROJECTMANAGER_CALENDAR_TABLENAME);
-      insertStatement.append(" VALUES ( ? , ? , ? )");
-      PreparedStatement prepStmt = null;
-
-      try {
-        prepStmt = con.prepareStatement(insertStatement.toString());
-
+      String insertStatement = "INSERT INTO PROJECTMANAGER_CALENDAR_TABLENAME VALUES ( ? , ? , ? )";
+      try (PreparedStatement prepStmt = con.prepareStatement(insertStatement)) {
         prepStmt.setString(1, date2DBDate(holiday.getDate()));
         prepStmt.setInt(2, holiday.getFatherId());
         prepStmt.setString(3, holiday.getInstanceId());
 
         prepStmt.executeUpdate();
-      } finally {
-        DBUtil.close(prepStmt);
       }
     }
   }
@@ -102,6 +93,7 @@ public class ProjectManagerCalendarDAO {
 
   /**
    * Removes all the holiday dates that were saved for the specified ProjectManager instance.
+   *
    * @param con a connection to the data source into which are stored the holiday dates.
    * @param instanceId the unique identifier of a ProjectManager instance.
    * @throws SQLException if an error occurs while deleting the holiday dates.
@@ -143,7 +135,7 @@ public class ProjectManagerCalendarDAO {
 
   public static List<Date> getHolidayDates(Connection con, String instanceId)
       throws SQLException {
-    List<Date> holidayDates = new ArrayList<Date>();
+    List<Date> holidayDates = new ArrayList<>();
     StringBuilder query = new StringBuilder(128);
     query.append("SELECT * ");
     query.append("FROM ").append(PROJECTMANAGER_CALENDAR_TABLENAME);
@@ -158,7 +150,7 @@ public class ProjectManagerCalendarDAO {
       stmt.setString(1, instanceId);
       rs = stmt.executeQuery();
       while (rs.next()) {
-        holidayDates.add(dbDate2Date(rs.getString("holidayDate"), "holidayDate"));
+        holidayDates.add(dbDate2Date(rs.getString(HOLIDAY_DATE)));
       }
     } finally {
       DBUtil.close(rs, stmt);
@@ -168,7 +160,7 @@ public class ProjectManagerCalendarDAO {
 
   public static List<Date> getHolidayDates(Connection con, String instanceId,
       Date beginDate, Date endDate) throws SQLException {
-    List<Date> holidayDates = new ArrayList<Date>();
+    List<Date> holidayDates = new ArrayList<>();
     StringBuilder query = new StringBuilder(128);
     query.append("SELECT * ");
     query.append("FROM ").append(PROJECTMANAGER_CALENDAR_TABLENAME);
@@ -187,7 +179,7 @@ public class ProjectManagerCalendarDAO {
       stmt.setString(3, date2DBDate(endDate));
       rs = stmt.executeQuery();
       while (rs.next()) {
-        holidayDates.add(dbDate2Date(rs.getString("holidayDate"), "holidayDate"));
+        holidayDates.add(dbDate2Date(rs.getString(HOLIDAY_DATE)));
       }
     } finally {
       DBUtil.close(rs, stmt);
@@ -201,16 +193,16 @@ public class ProjectManagerCalendarDAO {
     return formatter.format(date);
   }
 
-  private static Date dbDate2Date(String dbDate, String fieldName)
+  private static Date dbDate2Date(String dbDate)
       throws SQLException {
-    Date date = null;
+    Date date;
     try {
       // the date format used in database to represent a date
       SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
       date = formatter.parse(dbDate);
     } catch (ParseException e) {
-      throw new SQLException("ProjectManagerCalendarDAO : dbDate2Date(" + fieldName +
-          ") : format unknown " + e.toString(), e);
+      throw new SQLException("ProjectManagerCalendarDAO : dbDate2Date("
+          + ProjectManagerCalendarDAO.HOLIDAY_DATE + ") : format unknown " + e, e);
     }
     return date;
   }

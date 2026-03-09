@@ -34,7 +34,7 @@ import java.util.Map;
  */
 public class YellowpagesActionAccessController {
 
-  private Map<String, SilverpeasRole> actionRole = new HashMap<>();
+  private final Map<String, SilverpeasRole> actionRole = new HashMap<>();
 
   public YellowpagesActionAccessController() {
     actionRole.put("Main", SilverpeasRole.READER);
@@ -50,6 +50,6 @@ public class YellowpagesActionAccessController {
    */
   public boolean hasRightAccess(String action, SilverpeasRole role) {
     boolean actionExist = actionRole.containsKey(action);
-    return (actionExist && role.isGreaterThanOrEquals(actionRole.get(action)) || (!actionExist));
+    return !actionExist || role.isGreaterThanOrEquals(actionRole.get(action));
   }
 }

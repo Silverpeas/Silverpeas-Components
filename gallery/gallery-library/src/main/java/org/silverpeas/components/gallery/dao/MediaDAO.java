@@ -23,17 +23,10 @@
  */
 package org.silverpeas.components.gallery.dao;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.silverpeas.components.gallery.constant.MediaMimeType;
 import org.silverpeas.components.gallery.constant.MediaType;
-import org.silverpeas.components.gallery.model.InternalMedia;
-import org.silverpeas.components.gallery.model.Media;
-import org.silverpeas.components.gallery.model.MediaCriteria;
-import org.silverpeas.components.gallery.model.MediaPK;
-import org.silverpeas.components.gallery.model.MediaWithStatus;
-import org.silverpeas.components.gallery.model.Photo;
-import org.silverpeas.components.gallery.model.Sound;
-import org.silverpeas.components.gallery.model.Streaming;
-import org.silverpeas.components.gallery.model.Video;
+import org.silverpeas.components.gallery.model.*;
 import org.silverpeas.components.gallery.socialnetwork.SocialInformationGallery;
 import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.io.media.Definition;
@@ -50,14 +43,7 @@ import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.silverpeas.core.persistence.jdbc.DBUtil.getUniqueId;
 import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery.*;
@@ -409,22 +395,13 @@ public class MediaDAO {
   /**
    * Prepares query and parameters in order to save a photo.
    * @param photo the photo media to save.
-   * @param isInsert true to indicate an insert context, false to indicated an update one.
+   * @param isInsert true to indicate an insert context, false to indicate an update one.
    * @return the prepared query to save data at photo media level.
    */
   private static List<JdbcSqlQuery> prepareSavePhoto(Photo photo, boolean isInsert) {
     List<JdbcSqlQuery> updateQueries = new ArrayList<>();
-    updateQueries.add(prepareSaveInternalMedia(photo, isInsert));
-    final JdbcSqlQuery photoSave;
-    if (isInsert) {
-      photoSave = insertInto(GALLERY_PHOTO_TABLE);
-      photoSave.withInsertParam(MEDIA_ID_PARAM, photo.getId());
-    } else {
-      photoSave = update(GALLERY_PHOTO_TABLE);
-    }
-    Definition definition = photo.getDefinition();
-    photoSave.withSaveParam("resolutionW", definition.getWidth(), isInsert);
-    photoSave.withSaveParam("resolutionH", definition.getHeight(), isInsert);
+    final JdbcSqlQuery photoSave = prepareMediaSavingQuery(photo, GALLERY_PHOTO_TABLE, isInsert,
+        updateQueries);
     if (!isInsert) {
       photoSave.where(MEDIA_ID_CRITERIA, photo.getId());
     }
@@ -432,25 +409,38 @@ public class MediaDAO {
     return updateQueries;
   }
 
+  private static @NonNull JdbcSqlQuery prepareMediaSavingQuery(InternalMedia media,
+      String mediaTable, boolean isInsert,
+      List<JdbcSqlQuery> updateQueries) {
+    updateQueries.add(prepareSaveInternalMedia(media, isInsert));
+    final JdbcSqlQuery mediaSave;
+    if (isInsert) {
+      mediaSave = insertInto(mediaTable);
+      mediaSave.withInsertParam(MEDIA_ID_PARAM, media.getId());
+    } else {
+      mediaSave = update(mediaTable);
+    }
+
+    if (media instanceof VisualMedia) {
+      var visual = (VisualMedia) media;
+      Definition definition = visual.getDefinition();
+      mediaSave.withSaveParam("resolutionW", definition.getWidth(), isInsert);
+      mediaSave.withSaveParam("resolutionH", definition.getHeight(), isInsert);
+    }
+    return mediaSave;
+  }
+
   /**
    * Prepares query and parameters in order to save a video.
    * @param video the video media to save.
-   * @param isInsert true to indicate an insert context, false to indicated an update one.
+   * @param isInsert true to indicate an insert context, false to indicate an update one.
    * @return the prepared query to save data at video media level.
    */
   private static List<JdbcSqlQuery> prepareSaveVideo(Video video, boolean isInsert) {
     List<JdbcSqlQuery> updateQueries = new ArrayList<>();
-    updateQueries.add(prepareSaveInternalMedia(video, isInsert));
-    final JdbcSqlQuery videoSave;
-    if (isInsert) {
-      videoSave = insertInto(GALLERY_VIDEO_TABLE);
-      videoSave.withInsertParam(MEDIA_ID_PARAM, video.getId());
-    } else {
-      videoSave = update(GALLERY_VIDEO_TABLE);
-    }
-    Definition definition = video.getDefinition();
-    videoSave.withSaveParam("resolutionW", definition.getWidth(), isInsert);
-    videoSave.withSaveParam("resolutionH", definition.getHeight(), isInsert);
+    JdbcSqlQuery videoSave = prepareMediaSavingQuery(video, GALLERY_VIDEO_TABLE, isInsert,
+        updateQueries);
+
     videoSave.withSaveParam("bitrate", video.getBitrate(), isInsert);
     videoSave.withSaveParam("duration", video.getDuration(), isInsert);
     if (!isInsert) {
@@ -463,7 +453,7 @@ public class MediaDAO {
   /**
    * Prepares query and parameters in order to save a sound.
    * @param sound the sound media to save.
-   * @param isInsert true to indicate an insert context, false to indicated an update one.
+   * @param isInsert true to indicate an insert context, false to indicate an update one.
    * @return the prepared query to save data at sound media level.
    */
   private static List<JdbcSqlQuery> prepareSaveSound(Sound sound, boolean isInsert) {
@@ -488,7 +478,7 @@ public class MediaDAO {
   /**
    * Prepares query and parameters in order to save a streaming.
    * @param streaming the streaming to save.
-   * @param isInsert true to indicate an insert context, false to indicated an update one.
+   * @param isInsert true to indicate an insert context, false to indicate an update one.
    * @return the prepared query to save data at streaming media level.
    */
   private static JdbcSqlQuery prepareSaveStreaming(Streaming streaming, boolean isInsert) {
@@ -513,7 +503,7 @@ public class MediaDAO {
    * Prepares query and parameters in order to save a media.
    * @param context the context of save operation.
    * @param media the media to save.
-   * @param isInsert true to indicate an insert context, false to indicated an update one.
+   * @param isInsert true to indicate an insert context, false to indicate an update one.
    * @return the prepared query to save data at common media level.
    */
   private static JdbcSqlQuery prepareSaveMedia(OperationContext context, Media media,
@@ -561,7 +551,7 @@ public class MediaDAO {
   /**
    * Prepares query and parameters in order to save a media.
    * @param iMedia the internal media to save.
-   * @param isInsert true to indicate an insert context, false to indicated an update one.
+   * @param isInsert true to indicate an insert context, false to indicate an update one.
    * @return the prepared query to save data at internal media level.
    */
   private static JdbcSqlQuery prepareSaveInternalMedia(InternalMedia iMedia, boolean isInsert) {
@@ -594,6 +584,7 @@ public class MediaDAO {
    * @throws SQLException on SQL error
    */
   public static void deleteMedia(Media media) throws SQLException {
+    Objects.requireNonNull(media);
     String mediaId = media.getId();
     JdbcSqlQueries updateQueries = new JdbcSqlQueries();
     updateQueries.add(deleteFrom(GALLERY_MEDIA_TABLE).where(MEDIA_ID_CRITERIA, mediaId));
@@ -672,7 +663,7 @@ public class MediaDAO {
   }
 
   /**
-   * get my SocialInformationGallery according to the type of data base used (PostgresSQL,Oracle,
+   * get my SocialInformationGallery according to the type of database used (PostgresSQL,Oracle,
    * MMS).
    * @param userId the identifier of a user.
    * @param period the period on which the data are requested.
@@ -698,7 +689,7 @@ public class MediaDAO {
   }
 
   /**
-   * get list of socialInformationGallery of my contacts according to the type of data base
+   * get list of socialInformationGallery of my contacts according to the type of database
    * used(PostgresSQL,Oracle,MMS) .
    * @param userIds the identifiers of users.
    * @param availableComponents the list of available components.

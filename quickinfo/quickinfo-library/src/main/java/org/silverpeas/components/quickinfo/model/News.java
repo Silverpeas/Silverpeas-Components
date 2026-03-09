@@ -57,13 +57,13 @@ import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -422,7 +422,7 @@ public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements S
   public int getNumberOfAttachments() {
     List<SimpleDocument> attachments = AttachmentServiceProvider.getAttachmentService().
         listDocumentsByForeignKeyAndType(getForeignPK().toResourceReference(), DocumentType.attachment,
-            I18NHelper.DEFAULT_LANGUAGE);
+            I18NHelper.getDefaultLanguage());
     return attachments.size();
   }
 

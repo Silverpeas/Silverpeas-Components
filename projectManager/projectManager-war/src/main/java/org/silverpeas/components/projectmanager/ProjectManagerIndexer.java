@@ -30,15 +30,17 @@ package org.silverpeas.components.projectmanager;
 
 import org.silverpeas.components.projectmanager.service.ProjectManagerService;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.web.index.components.ComponentIndexation;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.inject.Singleton;
 
 /**
  * @author neysseri
  */
+@Bean
 @Singleton
 @Named("projectManager" + ComponentIndexation.QUALIFIER_SUFFIX)
 public class ProjectManagerIndexer implements ComponentIndexation {

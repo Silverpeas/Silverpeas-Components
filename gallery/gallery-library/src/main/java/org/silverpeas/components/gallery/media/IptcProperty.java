@@ -36,17 +36,10 @@ public class IptcProperty extends ExifProperty {
     isdate = false;
   }
 
-
-  /**
-   * @return the date
-   */
   public boolean isDate() {
     return isdate;
   }
 
-  /**
-   * @param date the date to set
-   */
   public void setDate(boolean isdate) {
     this.isdate = isdate;
   }

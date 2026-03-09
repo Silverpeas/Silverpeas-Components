@@ -34,10 +34,10 @@ import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.Writer;
 import java.text.ParseException;
@@ -82,7 +82,7 @@ public class AjaxProjectManagerServlet extends HttpServlet {
       Date beginDate = parseDate(sBeginDate, projectManagerSC);
       Date endDate = parseDate(sEndDate, projectManagerSC);
 
-      int occupation = 0;
+      int occupation;
       if (StringUtil.isDefined(taskId)) {
         occupation = projectManagerSC.checkOccupation(taskId, userId, beginDate, endDate);
       } else {
@@ -151,7 +151,7 @@ public class AjaxProjectManagerServlet extends HttpServlet {
    * Recursive method which build the list of tasks id that are child of the task identifier given
    * in parameter
    * @param projectManagerSC the project manager session controller
-   * @param taskId the current task identifier we need to have task childs
+   * @param taskId the current task identifier we need to have task children
    * @param taskIds the list of ids to build
    */
   private List<Integer> getCollapsedTaskIds(ProjectManagerSessionController projectManagerSC,

@@ -73,12 +73,6 @@ public interface ForumService {
    */
   ForumDetail getForumDetail(ForumPK forumPK);
 
-  Collection<Forum> getForumRootList(String instanceId);
-
-  Collection<Forum> getForumsList(Collection<ForumPK> forumPKs);
-
-  Collection<Message> getThreadsList(Collection<MessagePK> messagePKs);
-
   List<Forum> getForums(ForumPK forumPK);
 
   List<Forum> getForumsByCategory(ForumPK forumPK, String categoryId);
@@ -113,7 +107,7 @@ public interface ForumService {
 
   Message getLastMessage(ForumPK forumPK, List<String> messageParentId, String status);
 
-  Collection getLastMessageRSS(String instanceId, int nbReturned);
+  Collection<Message> getLastMessageRSS(String instanceId, int nbReturned);
 
   int getNbMessages(int forumId, String type, String status);
 
@@ -162,8 +156,6 @@ public interface ForumService {
 
   SubscriptionSubscriberList listAllSubscribers(ForumPK forumPK);
 
-  SubscriptionSubscriberList listAllSubscribers(String instanceId);
-
   boolean isSubscriber(MessagePK messagePK, String userId);
 
   boolean isSubscriberByInheritance(MessagePK messagePK, String userId);
@@ -194,8 +186,4 @@ public interface ForumService {
 
   String getMessageTags(MessagePK messagePK);
 
-
-  Collection<Message> getLastThreads(ForumPK forumPK, int count);
-
-  Collection<Message> getNotAnsweredLastThreads(ForumPK forumPK, int count);
 }

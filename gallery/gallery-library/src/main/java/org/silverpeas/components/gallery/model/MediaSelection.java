@@ -31,7 +31,7 @@ import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 
@@ -52,18 +52,18 @@ public class MediaSelection extends ClipboardSelection {
   @Nonnull
   public synchronized Object getTransferData(DataFlavor parFlavor)
       throws UnsupportedFlavorException {
-    Object transferedData;
+    Object transferredData;
 
     try {
-      transferedData = super.getTransferData(parFlavor);
+      transferredData = super.getTransferData(parFlavor);
     } catch (UnsupportedFlavorException e) {
       if (MediaFlavor.equals(parFlavor)) {
-        transferedData = currentMedia;
+        transferredData = currentMedia;
       } else {
         throw e;
       }
     }
-    return transferedData;
+    return transferredData;
   }
 
   @Override

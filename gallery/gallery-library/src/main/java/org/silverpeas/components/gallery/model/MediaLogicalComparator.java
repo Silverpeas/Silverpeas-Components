@@ -40,29 +40,15 @@ public class MediaLogicalComparator extends AbstractComplexComparator<Media> {
   private static final Integer EMPTY_DIMENSION_ASC = Integer.MAX_VALUE;
   private static final Integer EMPTY_DIMENSION_DESC = Integer.MIN_VALUE;
 
-  /**
-   * Hidden constructor.
-   * @param logicalOrderBy
-   */
   private MediaLogicalComparator(final List<QUERY_ORDER_BY> logicalOrderBy) {
     super();
     this.logicalOrderBy = logicalOrderBy;
   }
 
-  /**
-   * Easy way to obtain an instance of the comparator.
-   * @param logicalOrderBy
-   * @return
-   */
   public static MediaLogicalComparator on(final QUERY_ORDER_BY... logicalOrderBy) {
     return on(CollectionUtil.asList(logicalOrderBy));
   }
 
-  /**
-   * Easy way to obtain an instance of the comparator.
-   * @param logicalOrderBy
-   * @return
-   */
   public static MediaLogicalComparator on(final List<QUERY_ORDER_BY> logicalOrderBy) {
     return new MediaLogicalComparator(logicalOrderBy);
   }
@@ -86,7 +72,7 @@ public class MediaLogicalComparator extends AbstractComplexComparator<Media> {
         break;
       case COMPONENT_INSTANCE_ASC:
       case COMPONENT_INSTANCE_DESC:
-        valueBuffer.append(media.getComponentInstanceId(), queryOrderBy.isAsc());
+        valueBuffer.append(media.getInstanceId(), queryOrderBy.isAsc());
         break;
       case IDENTIFIER_ASC:
       case IDENTIFIER_DESC:

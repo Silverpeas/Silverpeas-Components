@@ -23,41 +23,40 @@
  */
 package org.silverpeas.components.mailinglist.servlets;
 
-import org.silverpeas.components.mailinglist.service.MailingListServicesProvider;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
+import org.silverpeas.components.mailinglist.service.model.MailingListService;
+import org.silverpeas.components.mailinglist.service.model.MessageService;
 import org.silverpeas.components.mailinglist.service.model.beans.Activity;
 import org.silverpeas.components.mailinglist.service.model.beans.InternalUserSubscriber;
 import org.silverpeas.components.mailinglist.service.model.beans.MailingList;
 import org.silverpeas.components.mailinglist.service.model.beans.MailingListActivity;
+import org.silverpeas.core.annotation.Bean;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+@Bean
 public class PortletProcessor implements MailingListRoutage {
 
-  public static String processActivities(RestRequest rest, HttpServletRequest request,
+  @Inject
+  private MailingListService mailingListService;
+  @Inject
+  private MessageService messageService;
+
+  public String processActivities(RestRequest rest, HttpServletRequest request,
       String userId) {
     switch (rest.getAction()) {
       case RestRequest.DELETE:
       case RestRequest.UPDATE:
       case RestRequest.FIND:
       default:
-        MailingList list = MailingListServicesProvider.getMailingListService()
-            .findMailingList(rest.getComponentId());
-        MailingListActivity mailingListActivity =
-            MailingListServicesProvider.getMessageService().getActivity(list);
-        Map years = new HashMap(10);
+        MailingList list = mailingListService.findMailingList(rest.getComponentId());
+        MailingListActivity mailingListActivity = messageService.getActivity(list);
+        Map<String, Map<String, String>> years = new HashMap<>(10);
         for (final Activity activity : mailingListActivity.getActivities()) {
-          Map month = (Map) years.get("" + activity.getYear());
-          if (month == null) {
-            month = new HashMap(12);
-            years.put("" + activity.getYear(), month);
-          }
-          month.put("" + activity.getMonth(), "" + activity.getNbMessages());
+          String year = String.valueOf(activity.getYear());
+          Map<String, String> month = years.computeIfAbsent(year, k -> new HashMap<>(12));
+          month.put(String.valueOf(activity.getMonth()), String.valueOf(activity.getNbMessages()));
         }
         if (!list.isSupportRSS()) {
           request.removeAttribute(RSS_URL_ATT);
@@ -65,8 +64,7 @@ public class PortletProcessor implements MailingListRoutage {
         request.setAttribute(IS_USER_SUBSCRIBER_ATT, isSubscriber(list, userId));
         request.setAttribute(ACTIVITY_LIST_ATT, mailingListActivity);
         request.setAttribute(ACTIVITY_MAP_ATT, years);
-        List yearsList = new ArrayList();
-        yearsList.addAll(years.keySet());
+        List<String> yearsList = new ArrayList<>(years.keySet());
         Collections.sort(yearsList);
         request.setAttribute(ACTIVITY_YEARS_ATT, yearsList);
         request.setAttribute(MAILING_LIST_ATT, list);

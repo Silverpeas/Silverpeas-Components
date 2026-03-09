@@ -32,14 +32,15 @@ import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.webapi.attachment.AttachmentEntity;
 import org.silverpeas.core.web.rs.WebEntity;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlTransient;
 import java.net.URI;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.ADMIN;
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.WRITER;
@@ -160,22 +161,19 @@ public class ReplyEntity implements WebEntity {
     if (this.questionId != other.questionId) {
       return false;
     }
-    if ((this.title == null) ? (other.title != null) : !this.title.equals(other.title)) {
+    if (!Objects.equals(this.title, other.title)) {
       return false;
     }
-    if ((this.content == null) ? (other.content != null) : !this.content.equals(other.content)) {
+    if (!Objects.equals(this.content, other.content)) {
       return false;
     }
-    if ((this.creatorId == null) ? (other.creatorId != null) :
-        !this.creatorId.equals(other.creatorId)) {
+    if (!Objects.equals(this.creatorId, other.creatorId)) {
       return false;
     }
-    if ((this.creatorName == null) ? (other.creatorName != null) :
-        !this.creatorName.equals(other.creatorName)) {
+    if (!Objects.equals(this.creatorName, other.creatorName)) {
       return false;
     }
-    if ((this.creationDate == null) ? (other.creationDate != null) :
-        !this.creationDate.equals(other.creationDate)) {
+    if (!Objects.equals(this.creationDate, other.creationDate)) {
       return false;
     }
     if (this.publicReply != other.publicReply) {
@@ -261,7 +259,7 @@ public class ReplyEntity implements WebEntity {
       for (SimpleDocument attachment : attachmentDetails) {
         entities.add(AttachmentEntity.fromAttachment(attachment));
       }
-      this.attachments = entities.toArray(new AttachmentEntity[entities.size()]);
+      this.attachments = entities.toArray(new AttachmentEntity[0]);
     }
     return this;
   }

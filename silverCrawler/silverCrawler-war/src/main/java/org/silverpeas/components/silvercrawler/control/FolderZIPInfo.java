@@ -29,6 +29,7 @@ package org.silverpeas.components.silvercrawler.control;
  * @author Ludovic Bertin
  */
 public class FolderZIPInfo {
+
   String fileZip = null;
   long size = 0;
   long maxiSize = 0;

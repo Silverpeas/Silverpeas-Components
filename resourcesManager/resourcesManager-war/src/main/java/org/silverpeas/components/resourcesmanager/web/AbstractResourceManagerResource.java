@@ -23,21 +23,20 @@
  */
 package org.silverpeas.components.resourcesmanager.web;
 
-import org.silverpeas.core.util.comparator.AbstractComplexComparator;
-import org.silverpeas.core.web.rs.RESTWebService;
-import org.silverpeas.components.resourcesmanager.ResourcesManagerProvider;
-import org.silverpeas.components.resourcesmanager.service.ResourcesManager;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response.Status;
 import org.silverpeas.components.resourcesmanager.model.Category;
 import org.silverpeas.components.resourcesmanager.model.Reservation;
 import org.silverpeas.components.resourcesmanager.model.Resource;
+import org.silverpeas.components.resourcesmanager.service.ResourcesManager;
+import org.silverpeas.core.util.comparator.AbstractComplexComparator;
+import org.silverpeas.core.web.rs.RESTWebService;
 
-import javax.ws.rs.PathParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response.Status;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -47,6 +46,9 @@ public abstract class AbstractResourceManagerResource extends RESTWebService {
 
   @PathParam("componentInstanceId")
   private String componentInstanceId;
+
+  @Inject
+  private ResourcesManager resourcesManager;
 
   @Override
   protected String getResourceBasePath() {
@@ -73,7 +75,7 @@ public abstract class AbstractResourceManagerResource extends RESTWebService {
     checkNotFoundStatus(resources);
 
     // Sort
-    Collections.sort(resources, new AbstractComplexComparator<Resource>() {
+    resources.sort(new AbstractComplexComparator<>() {
       @Override
       protected ValueBuffer getValuesToCompare(final Resource resource) {
         return new ValueBuffer().append(resource.getCategoryId()).append(resource.getName());
@@ -123,7 +125,7 @@ public abstract class AbstractResourceManagerResource extends RESTWebService {
     checkNotFoundStatus(reservations);
 
     // Sort
-    Collections.sort(reservations, new AbstractComplexComparator<Reservation>() {
+    reservations.sort(new AbstractComplexComparator<>() {
       @Override
       protected ValueBuffer getValuesToCompare(final Reservation reservation) {
         return new ValueBuffer().append(reservation.getBeginDate()).append(reservation.getEndDate())
@@ -163,7 +165,7 @@ public abstract class AbstractResourceManagerResource extends RESTWebService {
 
   /**
    * Centralized build of reservation URI.
-   * @param reservation
+   * @param reservation a reservation
    * @return reservation URI
    */
   protected URI buildReservationURI(Reservation reservation) {
@@ -175,7 +177,7 @@ public abstract class AbstractResourceManagerResource extends RESTWebService {
 
   /**
    * Centralized build of reservation URI.
-   * @param reservationId
+   * @param reservationId unique identifier of a reservation
    * @return reservation URI
    */
   private URI buildReservationURI(Long reservationId) {
@@ -186,7 +188,7 @@ public abstract class AbstractResourceManagerResource extends RESTWebService {
 
   /**
    * Centralized build of resource reservation URI.
-   * @param reservation
+   * @param reservation a reservation
    * @return reservation URI
    */
   protected URI buildResourceReservationURI(Reservation reservation) {
@@ -201,7 +203,7 @@ public abstract class AbstractResourceManagerResource extends RESTWebService {
 
   /**
    * Centralized build of resource reservation URI.
-   * @param category
+   * @param category a category
    * @return reservation URI
    */
   protected URI buildResourceCategoryURI(Category category) {
@@ -216,7 +218,7 @@ public abstract class AbstractResourceManagerResource extends RESTWebService {
 
   /**
    * Centralized build of resource reservation URI.
-   * @param resource
+   * @param resource a resource
    * @return reservation URI
    */
   protected URI buildResourceURI(Resource resource) {
@@ -242,6 +244,6 @@ public abstract class AbstractResourceManagerResource extends RESTWebService {
    * @return Resource manager service layer
    */
   protected ResourcesManager getResourceManager() {
-    return ResourcesManagerProvider.getResourcesManager();
+    return resourcesManager;
   }
 }

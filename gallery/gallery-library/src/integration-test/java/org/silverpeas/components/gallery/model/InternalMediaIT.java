@@ -49,8 +49,8 @@ public class InternalMediaIT {
     return GalleryWarBuilder.onWarForTestClass(InternalMediaIT.class).build();
   }
 
-  private Date beginDownloadDate = DateUtils.addDays(DateUtil.getDate(), -50);
-  private Date endDownloadDate = DateUtils.addDays(DateUtil.getDate(), 50);
+  private final Date beginDownloadDate = DateUtils.addDays(DateUtil.getDate(), -50);
+  private final Date endDownloadDate = DateUtils.addDays(DateUtil.getDate(), 50);
 
   @Test
   public void justInstancedTest() {
@@ -162,7 +162,7 @@ public class InternalMediaIT {
     assertThat(iMedia.getDownloadPeriod().getEndDatable(), comparesEqualTo(endDownloadDate));
   }
 
-  private class InternalMediaForTest extends InternalMedia {
+  private static class InternalMediaForTest extends InternalMedia {
     private static final long serialVersionUID = -5052581924414692298L;
 
     public InternalMediaForTest() {

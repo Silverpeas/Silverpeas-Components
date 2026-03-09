@@ -2,18 +2,20 @@ package org.silverpeas.components.formsonline;
 
 import org.silverpeas.components.formsonline.model.FormsOnlineException;
 import org.silverpeas.components.formsonline.model.FormsOnlineService;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.security.authorization.AccessControlOperation;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.security.authorization.ComponentAuthorization;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 import java.util.Collection;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Bean
 @Named
 public class FormsOnlineComponentAuthorization implements ComponentAuthorization {
 

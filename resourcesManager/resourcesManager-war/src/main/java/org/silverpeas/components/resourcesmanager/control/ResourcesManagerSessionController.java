@@ -35,7 +35,6 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
@@ -238,9 +237,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
         sendNotificationForValidation(resourceId, reservationCourante.getIdAsLong());
       }
     } catch (Exception e) {
-      throw new ResourcesManagerRuntimeException(
-          "ResourcesManagerSessionController.saveReservation()", SilverpeasRuntimeException.ERROR,
-          "root.EX_CANT_GET_REMOTE_OBJECT", e);
+      throw new ResourcesManagerRuntimeException(e);
     }
   }
 
@@ -285,9 +282,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
         sendNotificationForValidation(resourceId, reservation.getIdAsLong());
       }
     } catch (Exception e) {
-      throw new ResourcesManagerRuntimeException(
-          "ResourcesManagerSessionController.updateReservation()", SilverpeasRuntimeException.ERROR,
-          "root.EX_CANT_GET_REMOTE_OBJECT", e);
+      throw new ResourcesManagerRuntimeException(e);
     }
   }
 

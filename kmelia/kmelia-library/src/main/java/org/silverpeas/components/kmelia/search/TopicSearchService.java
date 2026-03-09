@@ -38,11 +38,11 @@ public interface TopicSearchService {
    * @param instanceId the current application identifier
    * @return the list of most interested query search
    */
-  public List<MostInterestedQueryVO> getMostInterestedSearch(String instanceId);
+  List<MostInterestedQueryVO> getMostInterestedSearch(String instanceId);
 
   /**
    * @param kmeliaSearch the kmeliaSearch domain entity to create
    */
-  public void createTopicSearch(TopicSearch kmeliaSearch);
+  void createTopicSearch(TopicSearch kmeliaSearch);
 
 }

@@ -1,7 +1,5 @@
 package org.silverpeas.components.scheduleevent.service;
 
-import javax.inject.Inject;
-
 /*
  * Copyright (C) 2000 - 2024 Silverpeas
  *

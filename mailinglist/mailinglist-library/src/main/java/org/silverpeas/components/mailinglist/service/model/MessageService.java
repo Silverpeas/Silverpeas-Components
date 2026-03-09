@@ -2,7 +2,7 @@
  * Copyright (C) 2000 - 2024 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
+ * it under the terms of the GNU Affero General License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
@@ -16,9 +16,9 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
+ * GNU Affero General License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU Affero General License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 package org.silverpeas.components.mailinglist.service.model;
@@ -37,35 +37,35 @@ public interface MessageService {
     return ServiceProvider.getService(MessageService.class);
   }
 
-  public String saveMessage(Message message);
+  String saveMessage(Message message);
 
-  public void moderateMessage(String id);
+  void moderateMessage(String id);
 
-  public void deleteMessage(String id);
+  void deleteMessage(String id);
 
-  public Message getMessage(String id);
+  Message getMessage(String id);
 
-  public List<Message> listMessages(MailingList mailingList, int pageNumber,
+  List<Message> listMessages(MailingList mailingList, int pageNumber,
       OrderBy orderBy);
 
-  public List<Message> listDisplayableMessages(MailingList mailingList,
+  List<Message> listDisplayableMessages(MailingList mailingList,
       int month, int year, int pageNumber, OrderBy orderBy);
 
-  public List<Message> listDisplayableMessages(MailingList mailingList,
+  List<Message> listDisplayableMessages(MailingList mailingList,
       int number, OrderBy orderBy);
 
-  public List<Message> listUnmoderatedeMessages(MailingList mailingList,
+  List<Message> listUnmoderatedeMessages(MailingList mailingList,
       int pageNumber, OrderBy orderBy);
 
-  public int getNumberOfPagesForUnmoderatedMessages(MailingList mailingList);
+  int getNumberOfPagesForUnmoderatedMessages(MailingList mailingList);
 
-  public int getNumberOfPagesForDisplayableMessages(MailingList mailingList);
+  int getNumberOfPagesForDisplayableMessages(MailingList mailingList);
 
-  public int getNumberOfPagesForAllMessages(MailingList mailingList);
+  int getNumberOfPagesForAllMessages(MailingList mailingList);
 
-  public long getTotalNumberOfMessages(MailingList mailingList);
+  long getTotalNumberOfMessages(MailingList mailingList);
 
-  public void setElementsPerPage(int elementsPerPage);
+  void setElementsPerPage(int elementsPerPage);
 
-  public MailingListActivity getActivity(MailingList mailingList);
+  MailingListActivity getActivity(MailingList mailingList);
 }

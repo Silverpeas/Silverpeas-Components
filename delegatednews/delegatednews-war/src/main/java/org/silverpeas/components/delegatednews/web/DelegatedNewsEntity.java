@@ -33,10 +33,10 @@ import org.silverpeas.core.date.Period;
 import org.silverpeas.core.web.rs.WebEntity;
 import org.silverpeas.core.webapi.profile.UserProfileEntity;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -247,7 +247,7 @@ public class DelegatedNewsEntity implements WebEntity {
 
   /**
    * Creates a new delegated news entity from the specified delegated news.
-   * @param delegatedNews the delegated news to entitify.
+   * @param delegatedNews the delegated news to entity.
    * @return the entity representing the specified delegated news.
    */
   public static DelegatedNewsEntity fromDelegatedNews(final DelegatedNews delegatedNews) {

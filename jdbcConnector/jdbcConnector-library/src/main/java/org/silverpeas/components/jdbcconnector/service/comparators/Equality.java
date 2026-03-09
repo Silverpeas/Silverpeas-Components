@@ -38,7 +38,7 @@ public class Equality implements FieldValueComparator {
   static final String EMPTY_VALUE = "@empty@";
 
   @Override
-  public boolean compare(final Comparable value, final Comparable referenceValue) {
+  public <T> boolean compare(final Comparable<T> value, final Comparable<T> referenceValue) {
     if (value == null && NULL_VALUE.equals(referenceValue)) {
       return true;
     } else if (value != null && !NULL_VALUE.equals(referenceValue)) {

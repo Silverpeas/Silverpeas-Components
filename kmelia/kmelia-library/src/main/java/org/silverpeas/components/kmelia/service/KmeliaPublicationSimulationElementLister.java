@@ -34,7 +34,7 @@ import org.silverpeas.core.process.annotation.SimulationElementLister;
 import java.util.Collection;
 
 /**
- * User: Yohann Chastagnier
+ * @author Yohann Chastagnier
  * Date: 24/10/13
  */
 public class KmeliaPublicationSimulationElementLister

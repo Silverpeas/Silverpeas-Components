@@ -65,7 +65,7 @@ public class UserRecord implements DataRecord {
 
   @Override
   public void setId(String id) {
-    // this record has no id. Id is the one of the underlying user.
+    // this record has no id. ID is the one of the underlying user.
   }
 
   public Field[] getFields() {
@@ -140,7 +140,7 @@ public class UserRecord implements DataRecord {
 
   @Override
   public String getLanguage() {
-    return I18NHelper.DEFAULT_LANGUAGE;
+    return I18NHelper.getDefaultLanguage();
   }
 
   @Override

@@ -58,15 +58,13 @@ public class TopicSearchDaoIT {
         .testFocusedOn(warBuilder -> {
           warBuilder.addClasses(MostInterestedQueryVO.class);
           warBuilder.addPackages(true, "org.silverpeas.components.kmelia.dao");
+          warBuilder.addAsResource("org/silverpeas/components/kmelia/dao");
         }).build();
   }
 
   @Before
   public void generalSetup() {
     dao = ServiceProvider.getService(TopicSearchDao.class);
-  }
-
-  public TopicSearchDaoIT() {
   }
 
   /**

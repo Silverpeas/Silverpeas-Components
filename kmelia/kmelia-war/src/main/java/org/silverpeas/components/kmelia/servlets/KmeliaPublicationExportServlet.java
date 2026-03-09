@@ -11,10 +11,11 @@ import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.util.ClientBrowserUtil;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -100,7 +101,11 @@ public class KmeliaPublicationExportServlet extends HttpServlet {
       IOUtils.copy(in, out);
     } finally {
       if (generatedDocument != null) {
-        generatedDocument.delete();
+        boolean deleted = generatedDocument.delete();
+        if (!deleted) {
+          SilverLogger.getLogger(this).warn("The generated document " + generatedDocument.getName()
+              + " cannot be deleted");
+        }
       }
     }
   }

@@ -25,23 +25,27 @@ package org.silverpeas.components.websites;
 
 import org.silverpeas.core.admin.component.ComponentInstancePostConstruction;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.core.util.file.FileFolderManager;
 
-import javax.inject.Named;
-import javax.transaction.Transactional;
+import jakarta.inject.Named;
+import jakarta.transaction.Transactional;
 import java.io.File;
 
 /**
  * Once an instance of the WebSites application is spawned, creates for it an entry with the Node
- * service to refer the web sites and a folder to store attachments and images of the future
- * web sites.
+ * service to refer the website and a folder to store attachments and images of the future
+ * website.
  * @author mmoquillon
  */
+@Technical
+@Bean
 @Named
 public class WebSitesInstancePostConstruction implements ComponentInstancePostConstruction {
 

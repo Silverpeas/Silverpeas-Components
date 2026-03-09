@@ -23,15 +23,15 @@
  */
 package org.silverpeas.components.mailinglist.servlets;
 
-import org.silverpeas.core.web.util.servlet.RssServlet;
-import org.silverpeas.components.mailinglist.service.MailingListServicesProvider;
+import jakarta.inject.Inject;
 import org.silverpeas.components.mailinglist.service.model.MailingListService;
 import org.silverpeas.components.mailinglist.service.model.MessageService;
 import org.silverpeas.components.mailinglist.service.model.beans.MailingList;
 import org.silverpeas.components.mailinglist.service.model.beans.Message;
+import org.silverpeas.components.mailinglist.service.notification.NotificationFormatter;
 import org.silverpeas.components.mailinglist.service.util.OrderBy;
+import org.silverpeas.core.web.util.servlet.RssServlet;
 
-import javax.inject.Inject;
 import java.util.Collection;
 import java.util.Date;
 
@@ -41,6 +41,8 @@ public class RssMailingListServlet extends RssServlet<Message> {
   private MailingListService mailingListService;
   @Inject
   private MessageService messageService;
+  @Inject
+  private NotificationFormatter formatter;
 
   @Override
   public String getElementCreatorId(Message element) {
@@ -64,7 +66,7 @@ public class RssMailingListServlet extends RssServlet<Message> {
 
   @Override
   public String getElementLink(Message message, String userId) {
-    return MailingListServicesProvider.getNotificationFormatter().prepareUrl(message, false);
+    return formatter.prepareUrl(message, false);
   }
 
   @Override
@@ -73,7 +75,7 @@ public class RssMailingListServlet extends RssServlet<Message> {
   }
 
   @Override
-  public Collection getListElements(String instanceId, int nbReturned) {
+  public Collection<Message> getListElements(String instanceId, int nbReturned) {
     MailingList mailingList = mailingListService.findMailingList(instanceId);
     return messageService
         .listDisplayableMessages(mailingList, nbReturned, new OrderBy("sentDate", true));

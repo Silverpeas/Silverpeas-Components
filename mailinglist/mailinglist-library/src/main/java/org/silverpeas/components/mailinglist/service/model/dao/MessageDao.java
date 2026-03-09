@@ -36,31 +36,31 @@ public interface MessageDao {
     return ServiceProvider.getService(MessageDao.class);
   }
 
-  public String saveMessage(Message message);
+  String saveMessage(Message message);
 
-  public void updateMessage(Message message);
+  void updateMessage(Message message);
 
-  public void deleteMessage(Message message);
+  void deleteMessage(Message message);
 
-  public Message findMessageById(String id);
+  Message findMessageById(String id);
 
-  public List<Message> listAllMessagesOfMailingList(String componentId,
+  List<Message> listAllMessagesOfMailingList(String componentId,
       int page, int elementsPerPage, OrderBy orderBy);
 
-  public List<Message> listDisplayableMessagesOfMailingList(String componentId,
+  List<Message> listDisplayableMessagesOfMailingList(String componentId,
       int month, int year, int page, int elementsPerPage, OrderBy orderBy);
 
-  public List<Message> listUnmoderatedMessagesOfMailingList(String componentId,
+  List<Message> listUnmoderatedMessagesOfMailingList(String componentId,
       int page, int elementsPerPage, OrderBy orderBy);
 
-  public List<Activity> listActivity(String componentId);
+  List<Activity> listActivity(String componentId);
 
-  public List<Message> listActivityMessages(String componentId, int size,
+  List<Message> listActivityMessages(String componentId, int size,
       OrderBy orderBy);
 
-  public long listTotalNumberOfMessages(String componentId);
+  long listTotalNumberOfMessages(String componentId);
 
-  public long listTotalNumberOfDisplayableMessages(String componentId);
+  long listTotalNumberOfDisplayableMessages(String componentId);
 
-  public long listTotalNumberOfUnmoderatedMessages(String componentId);
+  long listTotalNumberOfUnmoderatedMessages(String componentId);
 }

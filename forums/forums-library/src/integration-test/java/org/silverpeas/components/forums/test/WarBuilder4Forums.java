@@ -28,6 +28,7 @@ import org.silverpeas.core.test.BasicWarBuilder;
 /**
  * A builder of a war archive for the Forums application dedicated to integration tests with
  * Arquillian.
+ *
  * @author mmoquillon
  */
 public class WarBuilder4Forums extends BasicWarBuilder {
@@ -36,14 +37,17 @@ public class WarBuilder4Forums extends BasicWarBuilder {
     return (WarBuilder4Forums) new WarBuilder4Forums(test)
         .addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core")
         .createMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud")
-        .testFocusedOn(war -> {
-          war.addPackages(true, "org.silverpeas.components.forums")
-              .addAsResource("org/silverpeas/components/forums");
-        });
+        .addAsResource("silverpeas-oak.properties")
+        .addWebListener(SilverpeasJcrInitialization.class)
+        .testFocusedOn(war ->
+            war.addPackages(true, "org.silverpeas.components.forums")
+                .addAsResource("org/silverpeas"));
   }
+
   /**
    * Constructs a war builder for the specified test class. It will load all the resources in the
    * same packages of the specified test class.
+   *
    * @param test the class of the test for which a war archive will be build.
    */
   protected <T> WarBuilder4Forums(final Class<T> test) {

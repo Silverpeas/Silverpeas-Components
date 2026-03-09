@@ -29,10 +29,10 @@ import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.util.MemoizedSupplier;
 import org.silverpeas.core.web.mvc.webcomponent.WebComponentRequestContext;
 
-import javax.ws.rs.WebApplicationException;
+import jakarta.ws.rs.WebApplicationException;
 import java.util.Collection;
 
-import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static jakarta.ws.rs.core.Response.Status.NOT_FOUND;
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.ADMIN;
 import static org.silverpeas.kernel.util.StringUtil.getBooleanValue;
 

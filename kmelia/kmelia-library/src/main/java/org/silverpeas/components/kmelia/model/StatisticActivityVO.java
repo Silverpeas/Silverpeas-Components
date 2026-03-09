@@ -33,13 +33,9 @@ public class StatisticActivityVO implements Serializable {
    */
   private static final long serialVersionUID = -2115611579875072384L;
 
-  private Integer createdPublicationNumber = null;
-  private Integer modifiedPublicationNumber = null;
+  private Integer createdPublicationNumber;
+  private Integer modifiedPublicationNumber;
 
-  /**
-   * @param createdPublicationNumber
-   * @param modifiedPublicationNumber
-   */
   public StatisticActivityVO(Integer createdPublicationNumber, Integer modifiedPublicationNumber) {
     super();
     this.createdPublicationNumber = createdPublicationNumber;

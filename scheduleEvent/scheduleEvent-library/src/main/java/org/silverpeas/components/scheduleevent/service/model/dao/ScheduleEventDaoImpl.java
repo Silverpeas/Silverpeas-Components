@@ -20,28 +20,30 @@
  */
 package org.silverpeas.components.scheduleevent.service.model.dao;
 
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 import org.silverpeas.components.scheduleevent.constant.ScheduleEventConstant;
 import org.silverpeas.components.scheduleevent.service.model.beans.Response;
 import org.silverpeas.components.scheduleevent.service.model.beans.ScheduleEvent;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.annotation.Repository;
-import org.silverpeas.core.comment.service.CommentServiceProvider;
+import org.silverpeas.core.comment.service.CommentService;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.transaction.Transactional;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 @Repository
-@Transactional
 public class ScheduleEventDaoImpl implements ScheduleEventDao {
 
   @PersistenceContext
   private EntityManager theEntityManager;
+
+  @Inject
+  private CommentService commentService;
 
   private EntityManager getEntityManager() {
     return theEntityManager;
@@ -65,9 +67,7 @@ public class ScheduleEventDaoImpl implements ScheduleEventDao {
     entityManager.remove(attachedEvent);
 
     // delete related schedule event comments
-    CommentServiceProvider
-        .getCommentService()
-        .deleteAllCommentsOnResource(ScheduleEvent.getResourceType(),
+    commentService.deleteAllCommentsOnResource(ScheduleEvent.getResourceType(),
             new ResourceReference(scheduleEvent.getId(), ScheduleEventConstant.TOOL_ID));
   }
 

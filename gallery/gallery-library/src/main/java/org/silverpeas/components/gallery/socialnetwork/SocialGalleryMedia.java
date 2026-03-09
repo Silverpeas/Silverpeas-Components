@@ -20,14 +20,14 @@
  */
 package org.silverpeas.components.gallery.socialnetwork;
 
+import jakarta.inject.Inject;
 import org.silverpeas.components.gallery.service.GalleryService;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.socialnetwork.provider.SocialMediaProvider;
-import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -41,7 +41,12 @@ import java.util.List;
  * @see SocialInformationGallery
  */
 @Provider
-public class SocialGalleryMedia implements SocialMediaProvider {
+public class SocialGalleryMedia implements SocialMediaProvider<SocialInformation> {
+
+  @Inject
+  private GalleryService galleryService;
+  @Inject
+  private OrganizationController organizationController;
 
   protected SocialGalleryMedia() {
   }
@@ -81,7 +86,7 @@ public class SocialGalleryMedia implements SocialMediaProvider {
   }
 
   private GalleryService getGalleryService() {
-    return ServiceProvider.getService(GalleryService.class);
+    return galleryService;
   }
 
   /**
@@ -90,8 +95,8 @@ public class SocialGalleryMedia implements SocialMediaProvider {
    * @return List<String>
    */
   private List<String> getListAvailable(String userId) {
-    List<ComponentInstLight> availableList = OrganizationControllerProvider.
-        getOrganisationController().getAvailComponentInstLights(userId, "gallery");
+    List<ComponentInstLight> availableList =
+        organizationController.getAvailComponentInstLights(userId, "gallery");
     List<String> idsList = new ArrayList<>(availableList.size());
     for (ComponentInstLight comp : availableList) {
       idsList.add(comp.getId());

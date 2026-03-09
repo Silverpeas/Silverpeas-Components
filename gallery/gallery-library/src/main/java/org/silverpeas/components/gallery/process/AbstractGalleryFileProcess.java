@@ -24,8 +24,6 @@
 package org.silverpeas.components.gallery.process;
 
 import org.silverpeas.components.gallery.model.Media;
-import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.process.management.AbstractFileProcess;
 import org.silverpeas.core.process.management.ProcessExecutionContext;
 
@@ -36,31 +34,12 @@ public abstract class AbstractGalleryFileProcess
     extends AbstractFileProcess<ProcessExecutionContext> {
 
   private final Media media;
-  private OrganizationController organizationController;
 
-  /**
-   * Default constructor
-   * @param media
-   */
   protected AbstractGalleryFileProcess(final Media media) {
     this.media = media;
   }
 
-  /**
-   * @return the media
-   */
   protected Media getMedia() {
     return media;
-  }
-
-  /**
-   * Access to the shared OrganizationController
-   * @return
-   */
-  protected OrganizationController getOrganisationController() {
-    if (organizationController == null) {
-      organizationController = OrganizationControllerProvider.getOrganisationController();
-    }
-    return organizationController;
   }
 }

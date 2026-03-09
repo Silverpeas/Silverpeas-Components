@@ -23,22 +23,21 @@
  */
 package org.silverpeas.components.gallery.servlets;
 
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.silverpeas.components.gallery.delegate.MediaDataCreateDelegate;
 import org.silverpeas.components.gallery.service.GalleryService;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.io.upload.UploadSession;
-import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.ZipUtil;
 import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
 import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
+import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 
 /**
@@ -50,6 +49,9 @@ public class GalleryDragAndDrop extends SilverpeasAuthenticatedHttpServlet {
 
   @Inject
   private OrganizationController organizationController;
+
+  @Inject
+  private GalleryService galleryService;
 
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse res) {
@@ -93,19 +95,11 @@ public class GalleryDragAndDrop extends SilverpeasAuthenticatedHttpServlet {
       final MediaDataCreateDelegate delegate =
           new MediaDataCreateDelegate(null, user.getUserPreferences().getLanguage(), albumId);
       delegate.getHeaderData().setDownloadAuthorized(download);
-      getGalleryService()
-          .importFromRepository(user, componentId, repository, delegate);
+      galleryService.importFromRepository(user, componentId, repository, delegate);
 
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e);
     }
   }
 
-  /**
-   * Gets the GalleryService Service
-   * @return a GalleryService
-   */
-  private static GalleryService getGalleryService() {
-    return ServiceProvider.getService(GalleryService.class);
-  }
 }

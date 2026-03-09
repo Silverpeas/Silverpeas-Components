@@ -24,13 +24,15 @@
 
 package org.silverpeas.components.scheduleevent.servlets.handlers;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.silverpeas.components.scheduleevent.control.ScheduleEventSessionController;
 import org.silverpeas.components.scheduleevent.service.model.beans.DateOption;
 import org.silverpeas.components.scheduleevent.service.model.beans.ScheduleEvent;
 import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.kernel.SilverpeasException;
 
-import javax.servlet.http.HttpServletRequest;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Set;
@@ -45,33 +47,37 @@ public class ScheduleEventAddDateRequestHandler extends ScheduleEventActionDateR
 
   @Override
   public String getDestination(String function, ScheduleEventSessionController scheduleeventSC,
-      HttpServletRequest request) throws Exception {
+      HttpServletRequest request) throws SilverpeasException {
     if (forwardRequestHandler != null) {
       return addSelectedDateAndForwardRequestHandler(function, scheduleeventSC, request);
     } else {
-      throw undefinedForwardRequestHandlerException();
+      throw undefinedforwardrequesthandlerexception();
     }
   }
 
   private String addSelectedDateAndForwardRequestHandler(String function,
-      ScheduleEventSessionController scheduleeventSC, HttpServletRequest request) throws Exception {
-    ScheduleEvent current = scheduleeventSC.getCurrentScheduleEvent();
-    Set<DateOption> dates = current.getDates();
-    Date dateToAdd =
-        DateUtil.stringToDate(request.getParameter("dateToAdd"), scheduleeventSC.getLanguage());
-    String dateIdSearch = FORMATTER_TMP_ID.format(dateToAdd);
-    DateOption dateOption = getExistingDateOption(current.getDates(), dateIdSearch);
-    if (dateOption == null) {
-      DateOption option = new DateOption();
-      option.setDay(dateToAdd);
-      dates.add(option);
+      ScheduleEventSessionController scheduleeventSC, HttpServletRequest request) throws SilverpeasException {
+    try {
+      ScheduleEvent current = scheduleeventSC.getCurrentScheduleEvent();
+      Set<DateOption> dates = current.getDates();
+      Date dateToAdd =
+          DateUtil.stringToDate(request.getParameter("dateToAdd"), scheduleeventSC.getLanguage());
+      String dateIdSearch = FORMATTER_TMP_ID.format(dateToAdd);
+      DateOption dateOption = getExistingDateOption(current.getDates(), dateIdSearch);
+      if (dateOption == null) {
+        DateOption option = new DateOption();
+        option.setDay(dateToAdd);
+        dates.add(option);
+      }
+      request.setAttribute(LAST_DATE, jsDateFormatter.format(dateToAdd));
+      return forwardRequestHandler.getDestination(function, scheduleeventSC, request);
+    } catch (ParseException e) {
+      throw new SilverpeasException(e);
     }
-    request.setAttribute(LAST_DATE, jsDateFormatter.format(dateToAdd));
-    return forwardRequestHandler.getDestination(function, scheduleeventSC, request);
   }
 
-  private Exception undefinedForwardRequestHandlerException() {
-    return new Exception(
+  private SilverpeasException undefinedforwardrequesthandlerexception() {
+    return new SilverpeasException(
         "No forward request defines for" + this.getClass());
   }
 }

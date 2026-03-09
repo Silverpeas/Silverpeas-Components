@@ -39,7 +39,7 @@ import java.util.Optional;
 public class QueryResult {
 
   private List<TableRow> rows = Collections.emptyList();
-  private TableRowsFilter filter = new TableRowsFilter();
+  private final TableRowsFilter filter = new TableRowsFilter();
 
   private List<String> fieldNames = Collections.emptyList();
 
@@ -96,7 +96,7 @@ public class QueryResult {
   }
 
   /**
-   * Gets the first non null value from rows of column represented by the given name.
+   * Gets the first non-null value from rows of column represented by the given name.
    * @param fieldName the column field name.
    * @return an optional value.
    */

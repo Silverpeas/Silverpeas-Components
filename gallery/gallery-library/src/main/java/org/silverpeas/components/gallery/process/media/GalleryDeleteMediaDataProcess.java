@@ -53,29 +53,14 @@ public class GalleryDeleteMediaDataProcess extends AbstractGalleryDataProcess {
 
   private Collection<String> albumIds;
 
-  /**
-   * Default hidden constructor
-   * @param media
-   */
   protected GalleryDeleteMediaDataProcess(final Media media) {
     super(media);
   }
 
-  /**
-   * Gets an instance
-   * @param media
-   * @return
-   */
   public static GalleryDeleteMediaDataProcess getInstance(final Media media) {
     return new GalleryDeleteMediaDataProcess(media);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * AbstractGalleryDataProcess#processData(com.silverpeas.gallery
-   * .process.GalleryProcessExecutionContext, ProcessSession)
-   */
   @Override
   protected void processData(final ProcessExecutionContext context,
       final ProcessSession session) throws Exception {
@@ -98,11 +83,6 @@ public class GalleryDeleteMediaDataProcess extends AbstractGalleryDataProcess {
     getGalleryContentManager().deleteSilverContent(getMedia());
   }
 
-  /**
-   * Centralized processing
-   * @param mediaId
-   * @param context
-   */
   private void removeXMLContentOfMedia(final String mediaId,
       final ProcessExecutionContext context) {
     try {

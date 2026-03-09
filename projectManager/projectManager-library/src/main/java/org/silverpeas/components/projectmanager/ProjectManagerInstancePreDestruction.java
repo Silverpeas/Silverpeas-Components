@@ -28,10 +28,11 @@ import org.silverpeas.components.projectmanager.model.ProjectManagerDAO;
 import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
 import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.kernel.annotation.Technical;
 
-import javax.inject.Named;
-import javax.transaction.Transactional;
+import jakarta.inject.Named;
+import jakarta.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -55,7 +56,7 @@ public class ProjectManagerInstancePreDestruction implements ComponentInstancePr
       ProjectManagerCalendarDAO.removeAllHolidayDates(connection, componentInstanceId);
       ProjectManagerDAO.removeAllTasks(connection, componentInstanceId);
     } catch (SQLException e) {
-      throw new RuntimeException(e.getMessage(), e);
+      throw new SilverpeasRuntimeException(e.getMessage(), e);
     }
   }
 }

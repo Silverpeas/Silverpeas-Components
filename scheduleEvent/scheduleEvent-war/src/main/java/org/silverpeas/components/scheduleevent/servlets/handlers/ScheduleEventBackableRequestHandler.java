@@ -1,11 +1,11 @@
 package org.silverpeas.components.scheduleevent.servlets.handlers;
 
-import javax.servlet.http.HttpServletRequest;
-
+import jakarta.servlet.http.HttpServletRequest;
 import org.silverpeas.components.scheduleevent.control.ScheduleEventSessionController;
-import org.silverpeas.components.scheduleevent.control.ScheduleEventSessionController;
+import org.silverpeas.kernel.SilverpeasException;
 
 public interface ScheduleEventBackableRequestHandler extends ScheduleEventRequestHandler {
-  public String getBackDestination(String function, ScheduleEventSessionController scheduleeventSC,
-      HttpServletRequest request) throws Exception;
+
+  String getBackDestination(String function, ScheduleEventSessionController scheduleeventSC,
+      HttpServletRequest request) throws SilverpeasException;
 }

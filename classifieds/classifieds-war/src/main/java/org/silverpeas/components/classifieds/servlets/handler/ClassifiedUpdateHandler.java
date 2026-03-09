@@ -24,13 +24,13 @@
 
 package org.silverpeas.components.classifieds.servlets.handler;
 
-import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.classifieds.control.ClassifiedsRole;
 import org.silverpeas.components.classifieds.control.ClassifiedsSessionController;
 import org.silverpeas.components.classifieds.model.ClassifiedDetail;
 import org.silverpeas.components.classifieds.servlets.FunctionHandler;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.kernel.util.StringUtil;
 
@@ -99,11 +99,11 @@ public class ClassifiedUpdateHandler extends FunctionHandler {
   private void processImage(String imageId, boolean removeIt, FileItem fileImage,
       String classifiedId, ClassifiedsSessionController classifiedsSC) {
     if (fileImage != null) {
-      if (imageId == null && StringUtil.isDefined(fileImage.getName())) {
+      if (imageId == null && StringUtil.isDefined(fileImage.getFileName())) {
         classifiedsSC.createClassifiedImage(fileImage, classifiedId);
-      } else if (imageId != null && StringUtil.isDefined(fileImage.getName())) {
+      } else if (imageId != null && StringUtil.isDefined(fileImage.getFileName())) {
         classifiedsSC.updateClassifiedImage(fileImage, imageId, classifiedId);
-      } else if (imageId != null && !StringUtil.isDefined(fileImage.getName()) && removeIt) {
+      } else if (imageId != null && !StringUtil.isDefined(fileImage.getFileName()) && removeIt) {
         classifiedsSC.deleteClassifiedImage(imageId);
       }
     }

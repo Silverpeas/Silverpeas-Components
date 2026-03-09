@@ -23,12 +23,12 @@
  */
 package org.silverpeas.components.kmelia.servlets.ajax.handlers;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.silverpeas.components.kmelia.control.KmeliaSessionController;
 import org.silverpeas.components.kmelia.servlets.ajax.AjaxHandler;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -41,7 +41,7 @@ public class SortTopicsHandler implements AjaxHandler {
     String componentId = kmelia.getComponentId();
 
     StringTokenizer tokenizer = new StringTokenizer(orderedList, ",");
-    List<NodePK> pks = new ArrayList<NodePK>();
+    List<NodePK> pks = new ArrayList<>();
     while (tokenizer.hasMoreTokens()) {
       pks.add(new NodePK(tokenizer.nextToken(), componentId));
     }

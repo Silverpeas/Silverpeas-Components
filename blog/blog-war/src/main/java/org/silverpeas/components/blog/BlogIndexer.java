@@ -25,12 +25,14 @@ package org.silverpeas.components.blog;
 
 import org.silverpeas.components.blog.service.BlogService;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.web.index.components.ComponentIndexation;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.inject.Singleton;
 
+@Bean
 @Singleton
 @Named("blog" + ComponentIndexation.QUALIFIER_SUFFIX)
 public class BlogIndexer implements ComponentIndexation {

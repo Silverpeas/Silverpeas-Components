@@ -28,25 +28,26 @@ import org.silverpeas.components.kmelia.KmeliaTransversal;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.portlets.FormNames;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.portlet.*;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
 
 public class LastPublicationsPortlet extends GenericPortlet implements FormNames {
 
   private static final String MAX_AGE_ATTR = "maxAge";
-  private static final String UTF_8 = "UTF-8";
+
+  private final AdminController adminController = ServiceProvider.getService(AdminController.class);
 
   @Override
   public void doView(RenderRequest request, RenderResponse response)
-      throws PortletException, IOException {
+      throws PortletException {
     PortletSession session = request.getPortletSession();
     MainSessionController mainSessionController = (MainSessionController) session.getAttribute(
         MainSessionController.MAIN_SESSION_CONTROLLER_ATT, PortletSession.APPLICATION_SCOPE);
@@ -174,26 +175,15 @@ public class LastPublicationsPortlet extends GenericPortlet implements FormNames
     getPortletContext().log(message, ex);
   }
 
-  public static String getRSSUrl(MainSessionController mainSessionController, String spaceId) {
+  private String getRSSUrl(MainSessionController mainSessionController, String spaceId) {
     String userId = mainSessionController.getUserId();
-    AdminController adminController = ServiceProvider.getService(AdminController.class);
     UserFull user = adminController.getUserFull(userId);
-    StringBuilder builder = new StringBuilder();
-    builder.append("/rsslastpublications/").append(spaceId);
-    builder.append("?userId=").append(userId).append("&login=");
-    try {
-      builder.append(URLEncoder.encode(user.getLogin(), UTF_8));
-      builder.append("&password=");
-      builder.append(URLEncoder.encode(user.getPassword(), UTF_8));
-      builder.append("&spaceId=");
-      builder.append(URLEncoder.encode(spaceId, UTF_8));
-    } catch (UnsupportedEncodingException e) {
-      builder.append(user.getLogin());
-      builder.append("&password=");
-      builder.append(user.getPassword());
-      builder.append("&spaceId=");
-      builder.append(spaceId);
-    }
-    return builder.toString();
+    return "/rsslastpublications/" + spaceId +
+        "?userId=" + userId + "&login=" +
+        URLEncoder.encode(user.getLogin(), Charsets.UTF_8) +
+        "&password=" +
+        URLEncoder.encode(user.getPassword(), Charsets.UTF_8) +
+        "&spaceId=" +
+        URLEncoder.encode(spaceId, Charsets.UTF_8);
   }
 }

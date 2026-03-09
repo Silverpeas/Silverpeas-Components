@@ -57,8 +57,8 @@ import org.silverpeas.kernel.exception.NotFoundException;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;
@@ -85,10 +85,13 @@ public class DefaultClassifiedService implements ClassifiedService {
   @Inject
   private OrganizationController organizationController;
 
+  @Inject
+  private ClassifiedsDAO classifiedsDAO;
+
   @Override
   public Optional<ClassifiedDetail> getContributionById(ContributionIdentifier classifiedId) {
     try (Connection con = openConnection()) {
-      return Optional.ofNullable(ClassifiedsDAO.getClassified(con, classifiedId.getLocalId()));
+      return Optional.ofNullable(classifiedsDAO.getClassified(con, classifiedId.getLocalId()));
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException(failureOnGetting(CLASSIFIED, classifiedId), e);
     }
@@ -112,7 +115,7 @@ public class DefaultClassifiedService implements ClassifiedService {
   @Override
   public String createClassified(ClassifiedDetail classified) {
     try (Connection con = openConnection()) {
-      String id = ClassifiedsDAO.createClassified(con, classified);
+      String id = classifiedsDAO.createClassified(con, classified);
       classified.setClassifiedId(Integer.parseInt(id));
       createIndex(classified);
       if (classified.isToValidate()) {
@@ -160,7 +163,7 @@ public class DefaultClassifiedService implements ClassifiedService {
 
     // remove classified itself
     try (Connection con = openConnection()) {
-      ClassifiedsDAO.deleteClassified(con, classifiedId.getLocalId());
+      classifiedsDAO.deleteClassified(con, classifiedId.getLocalId());
     } catch (SQLException e) {
       throw new ClassifiedsRuntimeException(failureOnDeleting(CLASSIFIED, classifiedId), e);
     }
@@ -198,7 +201,7 @@ public class DefaultClassifiedService implements ClassifiedService {
   @Override
   public void updateClassified(ClassifiedDetail classified, boolean notify) {
     try (Connection con = openConnection()) {
-      ClassifiedsDAO.updateClassified(con, classified);
+      classifiedsDAO.updateClassified(con, classified);
       if (classified.isIndexable()) {
         createIndex(classified);
       } else {
@@ -215,7 +218,7 @@ public class DefaultClassifiedService implements ClassifiedService {
   @Override
   public Collection<ClassifiedDetail> getAllClassifieds(String instanceId) {
     try (Connection con = openConnection()) {
-      return ClassifiedsDAO.getAllClassifieds(con, instanceId);
+      return classifiedsDAO.getAllClassifieds(con, instanceId);
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException(
           failureOnGetting("all classifieds in application", instanceId), e);
@@ -225,7 +228,7 @@ public class DefaultClassifiedService implements ClassifiedService {
   @Override
   public String getNbTotalClassifieds(String instanceId) {
     try (Connection con = openConnection()) {
-      return ClassifiedsDAO.getNbTotalClassifieds(con, instanceId);
+      return classifiedsDAO.getNbTotalClassifieds(con, instanceId);
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException(failureOnGetting(CLASSIFIED, "count"), e);
     }
@@ -234,7 +237,7 @@ public class DefaultClassifiedService implements ClassifiedService {
   @Override
   public List<ClassifiedDetail> getClassifiedsByUser(String instanceId, String userId) {
     try (Connection con = openConnection()) {
-      return ClassifiedsDAO.getClassifiedsByUser(con, instanceId, userId);
+      return classifiedsDAO.getClassifiedsByUser(con, instanceId, userId);
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException(failureOnGetting("classifieds of the user", userId), e);
     }
@@ -243,7 +246,7 @@ public class DefaultClassifiedService implements ClassifiedService {
   @Override
   public List<ClassifiedDetail> getClassifiedsToValidate(String instanceId) {
     try (Connection con = openConnection()) {
-      return ClassifiedsDAO.getClassifiedsWithStatus(con, instanceId, ClassifiedDetail.TO_VALIDATE,
+      return classifiedsDAO.getClassifiedsWithStatus(con, instanceId, ClassifiedDetail.TO_VALIDATE,
           0, -1);
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException(
@@ -310,7 +313,7 @@ public class DefaultClassifiedService implements ClassifiedService {
   @Override
   public Collection<ClassifiedDetail> getAllClassifiedsToUnpublish(int nbDays, String instanceId) {
     try (Connection con = openConnection()) {
-      return ClassifiedsDAO.getAllClassifiedsToUnpublish(con, nbDays, instanceId);
+      return classifiedsDAO.getAllClassifiedsToUnpublish(con, nbDays, instanceId);
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException(
           failureOnGetting("all classifieds to unpublish in application", instanceId), e);
@@ -456,7 +459,7 @@ public class DefaultClassifiedService implements ClassifiedService {
   public void createSubscribe(Subscribe subscribe) {
     try (Connection con = openConnection()) {
       if (checkSubscription(subscribe)) {
-        String id = ClassifiedsDAO.createSubscribe(con, subscribe);
+        String id = classifiedsDAO.createSubscribe(con, subscribe);
         subscribe.setSubscribeId(id);
       }
     } catch (Exception e) {
@@ -468,7 +471,7 @@ public class DefaultClassifiedService implements ClassifiedService {
   @Override
   public void deleteSubscribe(String subscribeId) {
     try (Connection con = openConnection()) {
-      ClassifiedsDAO.deleteSubscribe(con, subscribeId);
+      classifiedsDAO.deleteSubscribe(con, subscribeId);
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException(failureOnDeleting("subscription", subscribeId), e);
     }
@@ -494,7 +497,7 @@ public class DefaultClassifiedService implements ClassifiedService {
   @Override
   public Collection<Subscribe> getSubscribesByUser(String instanceId, String userId) {
     try (Connection con = openConnection()) {
-      return ClassifiedsDAO.getSubscribesByUser(con, instanceId, userId);
+      return classifiedsDAO.getSubscribesByUser(con, instanceId, userId);
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException(
           failureOnGetting("subscriptions of the user", userId), e);
@@ -504,7 +507,7 @@ public class DefaultClassifiedService implements ClassifiedService {
   @Override
   public Collection<String> getUsersBySubscribe(String instanceId, String field1, String field2) {
     try (Connection con = openConnection()) {
-      return ClassifiedsDAO.getUsersBySubscribe(con, instanceId, field1, field2);
+      return classifiedsDAO.getUsersBySubscribe(con, instanceId, field1, field2);
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException(failureOnGetting("subscriptions", ""), e);
     }
@@ -512,7 +515,7 @@ public class DefaultClassifiedService implements ClassifiedService {
 
   public Collection<Subscribe> getAllSubscribes(String instanceId) {
     try (Connection con = openConnection()) {
-      return ClassifiedsDAO.getAllSubscribes(con, instanceId);
+      return classifiedsDAO.getAllSubscribes(con, instanceId);
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException(
           failureOnGetting("subscriptions for application", instanceId), e);
@@ -530,7 +533,7 @@ public class DefaultClassifiedService implements ClassifiedService {
   @Override
   public List<ClassifiedDetail> getAllValidClassifieds(String instanceId) {
     try (Connection con = openConnection()) {
-      return ClassifiedsDAO.getClassifiedsWithStatus(con, instanceId, ClassifiedDetail.VALID, -1,
+      return classifiedsDAO.getClassifiedsWithStatus(con, instanceId, ClassifiedDetail.VALID, -1,
           -1);
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException(
@@ -544,7 +547,7 @@ public class DefaultClassifiedService implements ClassifiedService {
       int elementsPerPage) {
     try (Connection con = openConnection()) {
       List<ClassifiedDetail> listClassified =
-          ClassifiedsDAO.getClassifiedsWithStatus(con, instanceId, ClassifiedDetail.VALID,
+          classifiedsDAO.getClassifiedsWithStatus(con, instanceId, ClassifiedDetail.VALID,
               firstItemIndex, elementsPerPage);
 
       // add the search fields

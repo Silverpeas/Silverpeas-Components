@@ -45,6 +45,7 @@ public class TableFieldValue implements Comparable<TableFieldValue> {
    * @param value the value from which a {@link TableFieldValue} has to be built.
    * @return a {@link TableFieldValue} instance wrapping the specified {@link String} value.
    */
+  @SuppressWarnings("unused")
   public static TableFieldValue valueOf(final String value) {
     return new TableFieldValue(value);
   }
@@ -84,6 +85,7 @@ public class TableFieldValue implements Comparable<TableFieldValue> {
     } else if (value == null) {
       return -1;
     } else if (value instanceof Comparable) {
+      //noinspection unchecked
       return ((Comparable) value).compareTo(o.value);
     }
     return toString().compareTo(o.toString());

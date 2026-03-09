@@ -23,11 +23,13 @@
  */
 package org.silverpeas.components.mailinglist.service.model.beans;
 
+import org.silverpeas.kernel.annotation.NonNull;
+
 public class Activity implements Comparable<Activity> {
 
-  private int month;
-  private int year;
-  private long nbMessages;
+  private final int month;
+  private final int year;
+  private final long nbMessages;
 
   public Activity(long nbMessages, int year, int month) {
     this.month = month;
@@ -48,10 +50,7 @@ public class Activity implements Comparable<Activity> {
   }
 
   @Override
-  public int compareTo(Activity other) {
-    if (other == null) {
-      return -1;
-    }
+  public int compareTo(@NonNull Activity other) {
     if (this.equals(other)) {
       return 0;
     }
@@ -79,7 +78,7 @@ public class Activity implements Comparable<Activity> {
     int hash = 3;
     hash = 79 * hash + this.month;
     hash = 79 * hash + this.year;
-    hash = 79 * hash + (int) (this.nbMessages ^ (this.nbMessages >>> 32));
+    hash = 79 * hash + Long.hashCode(this.nbMessages);
     return hash;
   }
 }

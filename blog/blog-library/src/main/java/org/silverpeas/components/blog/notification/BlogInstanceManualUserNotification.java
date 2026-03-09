@@ -26,17 +26,19 @@ package org.silverpeas.components.blog.notification;
 
 import org.silverpeas.components.blog.model.PostDetail;
 import org.silverpeas.components.blog.service.BlogService;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.kernel.exception.NotFoundException;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.notification.user.AbstractComponentInstanceManualUserNotification;
 import org.silverpeas.core.notification.user.NotificationContext;
 import org.silverpeas.core.notification.user.UserNotification;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 
 /**
  * @author silveryocha
  */
+@Bean
 @Named
 public class BlogInstanceManualUserNotification
     extends AbstractComponentInstanceManualUserNotification {

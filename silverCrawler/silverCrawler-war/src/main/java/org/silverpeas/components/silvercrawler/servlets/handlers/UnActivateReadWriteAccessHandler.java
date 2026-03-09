@@ -26,13 +26,17 @@ package org.silverpeas.components.silvercrawler.servlets.handlers;
 
 import org.silverpeas.components.silvercrawler.control.SilverCrawlerSessionController;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Handler for use case : admin request Read/Write access unactivation.
  * @author Ludovic Bertin
  */
 public class UnActivateReadWriteAccessHandler extends FunctionHandler {
+
+  protected UnActivateReadWriteAccessHandler(HandlerProvider provider) {
+    super(provider);
+  }
 
   @Override
   public String getDestination(SilverCrawlerSessionController sessionController,
@@ -42,7 +46,7 @@ public class UnActivateReadWriteAccessHandler extends FunctionHandler {
     sessionController.switchReadWriteAccess(false);
 
     // redirect to "ViewDirectory" use case
-    return HandlerProvider.getHandler("ViewDirectory")
+    return getHandlerProvider().getHandler("ViewDirectory")
         .computeDestination(sessionController, request);
   }
 

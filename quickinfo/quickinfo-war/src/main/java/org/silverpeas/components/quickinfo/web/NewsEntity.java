@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.quickinfo.web;
 
+import jakarta.xml.bind.annotation.XmlRootElement;
 import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.core.contribution.model.Thumbnail;
 import org.silverpeas.core.date.TimeUnit;
@@ -31,11 +32,12 @@ import org.silverpeas.core.util.UnitUtil;
 import org.silverpeas.core.util.time.Duration;
 import org.silverpeas.core.web.rs.WebEntity;
 
-import javax.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElement;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.util.Date;
 
+@XmlRootElement
 public class NewsEntity implements WebEntity {
 
   private static final long serialVersionUID = 1L;

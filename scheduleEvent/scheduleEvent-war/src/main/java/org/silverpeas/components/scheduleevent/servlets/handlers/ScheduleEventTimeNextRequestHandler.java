@@ -26,10 +26,11 @@ package org.silverpeas.components.scheduleevent.servlets.handlers;
 
 import java.util.Set;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.silverpeas.components.scheduleevent.control.ScheduleEventSessionController;
 import org.silverpeas.components.scheduleevent.view.OptionDateVO;
+import org.silverpeas.kernel.SilverpeasException;
 
 public class ScheduleEventTimeNextRequestHandler implements ScheduleEventRequestHandler {
 
@@ -46,7 +47,7 @@ public class ScheduleEventTimeNextRequestHandler implements ScheduleEventRequest
 
   @Override
   public String getDestination(String function, ScheduleEventSessionController scheduleeventSC,
-      HttpServletRequest request) throws Exception {
+      HttpServletRequest request) throws SilverpeasException {
     if (scheduleeventSC.isCurrentScheduleEventDefined()) {
       return saveOptionDatesAndForwardRequestHandler(function, scheduleeventSC, request);
     } else {
@@ -55,13 +56,13 @@ public class ScheduleEventTimeNextRequestHandler implements ScheduleEventRequest
   }
 
   private String saveOptionDatesAndForwardRequestHandler(String function,
-      ScheduleEventSessionController scheduleeventSC, HttpServletRequest request) throws Exception {
+      ScheduleEventSessionController scheduleeventSC, HttpServletRequest request) throws SilverpeasException {
     saveOptionDatesInCurrentScheduleEvent(scheduleeventSC, request);
     return forwardRequestHandler.getDestination(function, scheduleeventSC, request);
   }
 
   private void saveOptionDatesInCurrentScheduleEvent(
-      ScheduleEventSessionController scheduleeventSC, HttpServletRequest request) throws Exception {
+      ScheduleEventSessionController scheduleeventSC, HttpServletRequest request) throws SilverpeasException {
     Set<OptionDateVO> optionalDays = scheduleeventSC.getCurrentOptionalDateIndexes();
     for (OptionDateVO date : optionalDays) {
       setPartOfDayFrom(request, date);
@@ -88,7 +89,7 @@ public class ScheduleEventTimeNextRequestHandler implements ScheduleEventRequest
 
   private String getFirstStepDestination(String function,
       ScheduleEventSessionController scheduleeventSC,
-      HttpServletRequest request) throws Exception {
+      HttpServletRequest request) throws SilverpeasException {
     return firstStepRequestHandler.getDestination(function, scheduleeventSC, request);
   }
 

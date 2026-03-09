@@ -23,6 +23,8 @@
  */
 package org.silverpeas.processmanager;
 
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
 import org.silverpeas.core.SilverpeasExceptionMessages;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.user.model.Group;
@@ -69,8 +71,6 @@ import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.processmanager.record.QuestionRecord;
 import org.silverpeas.processmanager.record.QuestionTemplate;
 
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Function;
@@ -136,7 +136,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   }
 
   /**
-   * Builds a ill session controller. Initialization is skipped and this session controller can only
+   * Builds a session controller. Initialization is skipped and this session controller can only
    * display the fatal exception. Used by the request router when a full session controller can't be
    * built.
    *
@@ -218,7 +218,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   /**
    * Save button on an action can be disabled. So it's return the visibility status of that button.
    *
-   * @return true is save button is visible
+   * @return true if save button is visible
    */
   public boolean isSaveButtonEnabled() {
     return StringUtil.getBooleanValue(getComponentParameterValue("saveButtonEnabled"));
@@ -313,8 +313,8 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     try {
       User activeUser = getActiveUser();
       String[] groupIds = getOrganisationController().getAllGroupIdsOfUser(activeUser.getUserId());
-      List<ProcessInstance> processList = Workflow.getProcessInstanceManager()
-          .getProcessInstances(peasId, activeUser, currentRole, getUserRoles(), groupIds);
+      var processList = Workflow.getProcessInstanceManager().getProcessInstances(peasId,
+          activeUser, currentRole, getUserRoles(), groupIds);
       currentProcessList = getCurrentFilter().filter(processList, currentRole, getLanguage());
     } catch (WorkflowException e) {
       throw new ProcessManagerException(failureOnGetting("process list of workflow", peasId), e);
@@ -335,10 +335,10 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   }
 
   /**
-   * Get the process instance Id referred by the todo with the given todo id
+   * Get the process instance identifier referred by the todo with the given todo identifier.
    *
    * @param externalTodoId external todo identifier
-   * @return the process instance Id referred by the todo with the given todo id.
+   * @return the process instance identifier referred by the todo with the given todo identifier.
    * @throws ProcessManagerException if an error occurs.
    */
   public String getProcessInstanceIdFromExternalTodoId(String externalTodoId)
@@ -506,7 +506,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   }
 
   /**
-   * Get the active user names
+   * Get the active usernames
    */
   private boolean isActiveUser() {
     if (currentProcessInstance == null) {
@@ -854,7 +854,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   }
 
   /**
-   * Returns the an empty creation record which will be filled with the creation form.
+   * Returns an empty creation record which will be filled with the creation form.
    */
   public DataRecord getEmptyCreationRecord() throws ProcessManagerException {
     try {
@@ -878,7 +878,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   }
 
   /**
-   * Returns the an empty question record which will be filled with the question form.
+   * Returns an empty question record which will be filled with the question form.
    */
   public DataRecord getEmptyQuestionRecord() {
     return new QuestionRecord("");
@@ -904,7 +904,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   }
 
   /**
-   * Returns the an empty question record which will be filled with the question form.
+   * Returns an empty question record which will be filled with the question form.
    */
   public DataRecord getQuestionRecord(String questionId) {
     Question question = getQuestion(questionId);
@@ -1136,8 +1136,8 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   /**
    * Replaces the specified user by the other one in all the states of the current process
    * instances. All the roles assigned to the user in all the state in each process instance are
-   * reassigned to the specified substitute. So, the constrain is the substitute must have the
-   * ability to play the same roles than the given user. Otherwise an exception is thrown.
+   * reassigned to the specified substitute. So, the constraint is the substitute must have the
+   * ability to play the same roles as the given user. Otherwise, an exception is thrown.
    *
    * @param userId the unique identifier of the user to replace.
    * @param substituteId the unique identifier of the user that will substitute the above user.
@@ -1208,7 +1208,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
               getCreationTask().buildTaskDoneEvent(creation.getName(), data);
       setSubstituteToEvent(event);
 
-      // Is a validate or a "save as draft" action ?
+      // It is a "validate" or a "save as draft" action?
       if (isDraft) {
         TaskSavedEvent tse = (TaskSavedEvent) event;
         tse.setFirstTimeSaved(firstTimeSaved);
@@ -1284,10 +1284,10 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   }
 
   /**
-   * Search for an hypothetical action of kind "delete", allowed for the current user with the given
+   * Search for a hypothetical action of kind "delete", allowed for the current user with the given
    * role
    *
-   * @return an array of 3 Strings { action.name, state.name, action.label }, an empty array if no
+   * @return an array of 3 Strings { action name, state name, action label }, an empty array if no
    * action found
    */
   public String[] getDeleteAction() {
@@ -1357,8 +1357,8 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   }
 
   /**
-   * Returns a new DataRecord filled with the folder data and which will be be completed by the
-   * action form.
+   * Returns a new DataRecord filled with the folder data and which will be completed by the action
+   * form.
    */
   public DataRecord getActionRecord(String actionName)
       throws ProcessManagerException {
@@ -1384,7 +1384,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
         task.setProcessInstance(currentProcessInstance);
       }
 
-      // Is a validate or a "save as draft" action ?
+      // It is a "validate" or a "save as draft" action?
       if (isDraft) {
         TaskSavedEvent tse = task.buildTaskSavedEvent(actionName, data);
         tse.setFirstTimeSaved(isFirstTimeSaved);
@@ -1501,8 +1501,8 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   /**
    * Un-Lock the current instance for given user and given state
    *
-   * @param userId user Id
-   * @param stateName state name
+   * @param userId user identifier.
+   * @param stateName state name.
    */
   public void unlock(String userId, String stateName) throws ProcessManagerException {
     try {
@@ -1729,7 +1729,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
                 final long elapsedTimeBetweenActionAndQuestion =
                     questionDate.getTime() - actionDate.getTime();
                 return 0 < elapsedTimeBetweenActionAndQuestion &&
-                    elapsedTimeBetweenActionAndQuestion < 30000;
+                       elapsedTimeBetweenActionAndQuestion < 30000;
               }
               return false;
             }).findFirst();
@@ -1743,7 +1743,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
                 final long elapsedTimeBetweenActionAndResponse =
                     responseDate != null ? responseDate.getTime() - actionDate.getTime() : -1;
                 return 0 < elapsedTimeBetweenActionAndResponse &&
-                    elapsedTimeBetweenActionAndResponse < 30000;
+                       elapsedTimeBetweenActionAndResponse < 30000;
               }
               return false;
             }).findFirst();
@@ -1874,7 +1874,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   }
 
   /**
-   * Returns the an empty date record which will be filled with the user settings form.
+   * Returns an empty date record which will be filled with the user settings form.
    */
   public DataRecord getEmptyUserSettingsRecord() throws ProcessManagerException {
     try {
@@ -1885,7 +1885,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   }
 
   /**
-   * Returns the an empty data record which will be filled with the user settings form.
+   * Returns an empty data record which will be filled with the user settings form.
    */
   public DataRecord getUserSettingsRecord() throws ProcessManagerException {
     try {
@@ -2136,7 +2136,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
           int indexFrom = 0;
           if (isProcessIdVisible) {
-            // add process Id
+            // add process id
             csvRow.addCell(instance.getField(indexFrom++).getValue(getLanguage()));
           }
 
@@ -2255,7 +2255,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   }
 
   /**
-   * Get the current tokenId. Token Id prevents users to use several windows with same session.
+   * Get the current tokenId. Token id prevents users to use several windows with same session.
    *
    * @return the current token id
    */
@@ -2264,7 +2264,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   }
 
   /**
-   * Set the current tokenId. Token Id prevents users to use several windows with same session.
+   * Set the current tokenId. Token id prevents users to use several windows with same session.
    *
    * @param newTokenId the current token id
    */
@@ -2419,8 +2419,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    *
    * @return a list of possible replacements.
    */
-  @SuppressWarnings("rawtypes")
-  public List<Replacement> getCurrentAndNextUserReplacementsAsIncumbent() {
+  public List<Replacement<?>> getCurrentAndNextUserReplacementsAsIncumbent() {
     return Replacement.getAllOf(currentUser, peasId)
         .stream()
         .filterCurrentAndNextAt(LocalDate.now())
@@ -2455,7 +2454,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    */
   private String[] userRoles = null;
   /**
-   * The current enabled replacement if any. By default none.
+   * The current enabled replacement if any. By default, none.
    */
   private Replacement<?> currentReplacement = null;
   /**
@@ -2495,7 +2494,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    */
   private boolean isResumingInstance = false;
   /**
-   * Current token Id prevents users to use several windows with the same session.
+   * Current token id prevents users to use several windows with the same session.
    */
   private String currentTokenId = null;
 }

@@ -23,14 +23,14 @@
  */
 package org.silverpeas.components.gallery.process.media;
 
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.components.gallery.MediaUtil;
+import org.silverpeas.components.gallery.MediaProcessor;
 import org.silverpeas.components.gallery.Watermark;
 import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.components.gallery.process.AbstractGalleryFileProcess;
 import org.silverpeas.core.process.io.file.FileHandler;
 import org.silverpeas.core.process.management.ProcessExecutionContext;
 import org.silverpeas.core.process.session.ProcessSession;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 
@@ -42,25 +42,13 @@ public class GalleryUpdateMediaFileProcess extends AbstractGalleryFileProcess {
 
   private final FileItem fileItem;
   private final Watermark watermark;
+  private final MediaProcessor mediaProcessor = MediaProcessor.get();
 
-  /**
-   * Gets an instance
-   * @param media
-   * @param fileItem
-   * @param watermark
-   * @return
-   */
   public static GalleryUpdateMediaFileProcess getInstance(final Media media,
       final FileItem fileItem, final Watermark watermark) {
     return new GalleryUpdateMediaFileProcess(media, fileItem, watermark);
   }
 
-  /**
-   * Default hidden constructor
-   * @param media
-   * @param fileItem
-   * @param watermark
-   */
   protected GalleryUpdateMediaFileProcess(final Media media, final FileItem fileItem,
       final Watermark watermark) {
     super(media);
@@ -68,12 +56,6 @@ public class GalleryUpdateMediaFileProcess extends AbstractGalleryFileProcess {
     this.watermark = watermark;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see AbstractFileProcess#processFiles(org.silverpeas.process.
-   * management.ProcessExecutionContext, ProcessSession,
-   * FileHandler)
-   */
   @Override
   public void processFiles(final ProcessExecutionContext context,
       final ProcessSession session, final FileHandler fileHandler) throws Exception {
@@ -82,7 +64,7 @@ public class GalleryUpdateMediaFileProcess extends AbstractGalleryFileProcess {
 
     // Media
     if (fileItem != null && !getMedia().getType().isStreaming()) {
-      final String name = fileItem.getName();
+      final String name = fileItem.getFileName();
       if (StringUtil.isDefined(name)) {
 
         hasBeenProcessed = true;
@@ -94,15 +76,15 @@ public class GalleryUpdateMediaFileProcess extends AbstractGalleryFileProcess {
         switch (getMedia().getType()) {
           case Photo:
             // Creating new images
-            MediaUtil.processPhoto(fileHandler, getMedia().getPhoto(), fileItem, watermark);
+            mediaProcessor.processPhoto(fileHandler, getMedia().getPhoto(), fileItem, watermark);
             break;
           case Video:
             // Save new video
-            MediaUtil.processVideo(fileHandler, getMedia().getVideo(), fileItem);
+            mediaProcessor.processVideo(fileHandler, getMedia().getVideo(), fileItem);
             break;
           case Sound:
             // Save new sound
-            MediaUtil.processSound(fileHandler, getMedia().getSound(), fileItem);
+            mediaProcessor.processSound(fileHandler, getMedia().getSound(), fileItem);
             break;
           default:
             // In other cases, there is no file to manage.

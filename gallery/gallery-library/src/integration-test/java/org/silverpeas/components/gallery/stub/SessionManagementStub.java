@@ -32,10 +32,11 @@ import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionValidationContext;
 
-import javax.annotation.Nonnull;
-import javax.inject.Singleton;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.inject.Singleton;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+import org.silverpeas.kernel.annotation.NonNull;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
@@ -63,7 +64,7 @@ public class SessionManagementStub implements SessionManagement {
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public SessionInfo getSessionInfo(final String sessionId) {
     SessionInfo session = userDataSessions.get(sessionId);
     if (session == null) {

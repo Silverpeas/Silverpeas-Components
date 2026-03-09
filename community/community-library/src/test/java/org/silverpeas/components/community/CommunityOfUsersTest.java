@@ -61,7 +61,7 @@ import org.silverpeas.kernel.test.annotations.TestManagedMock;
 import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 import org.silverpeas.kernel.util.Pair;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
@@ -453,9 +453,9 @@ class CommunityOfUsersTest {
   }
 
   private void mockRepositoriesBehaviour() {
-    // mock the behaviour of the repositories in the community app
+    // mock the behavior of the repositories in the community app
     EntityIdSetter idSetter = new EntityIdSetter(UuidIdentifier.class);
-    String communityId = new UuidIdentifier().generateNewId().asString();
+    String communityId = new UuidIdentifier().generateNewValue().asString();
 
     EntityManager entityManager = mock(EntityManager.class);
     when(entityManagerProvider.getEntityManager()).thenReturn(entityManager);
@@ -559,8 +559,8 @@ class CommunityOfUsersTest {
       return space;
     });
 
-    // mock the behaviour of a space role update with a modified set of users playing this role
-    // the behaviour update the profiles cache for the space used in the test
+    // mock the behavior of a space role update with a modified set of users playing this role
+    // the behavior update the profiles cache for the space used in the test
     when(
         administration.updateSpaceProfileInst(any(SpaceProfileInst.class), anyString())).thenAnswer(
         i -> {

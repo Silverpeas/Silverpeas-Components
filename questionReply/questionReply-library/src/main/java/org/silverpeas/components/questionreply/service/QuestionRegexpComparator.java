@@ -42,8 +42,8 @@ import java.util.regex.Pattern;
 public class QuestionRegexpComparator implements Comparator<Question> {
 
   private static QuestionRegexpComparator instance;
-  private Pattern pattern = Pattern.compile("([0-9\\.]*)\\s?-\\s?.*");
-  private Pattern numberPattern = Pattern.compile("[0-9]+");
+  private final Pattern pattern = Pattern.compile("([0-9.]*)\\s?-\\s?.*");
+  private final Pattern numberPattern = Pattern.compile("\\d+");
 
   private QuestionRegexpComparator() {
   }
@@ -59,7 +59,7 @@ public class QuestionRegexpComparator implements Comparator<Question> {
 
   @Override
   public int compare(Question question1, Question question2) {
-    int result = -1;
+    int result;
     if (question1 == question2) {
       result = 0;
     } else {

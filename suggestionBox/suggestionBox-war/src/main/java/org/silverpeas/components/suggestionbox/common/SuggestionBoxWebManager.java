@@ -23,6 +23,8 @@
  */
 package org.silverpeas.components.suggestionbox.common;
 
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.model.SuggestionCollection;
@@ -37,28 +39,20 @@ import org.silverpeas.core.contribution.model.ContributionValidation;
 import org.silverpeas.core.notification.message.MessageNotifier;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.util.CollectionUtil;
+import org.silverpeas.core.util.SilverpeasList;
+import org.silverpeas.core.util.comparator.AbstractComplexComparator;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.kernel.bundle.ResourceLocator;
-import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.kernel.util.StringUtil;
-import org.silverpeas.core.util.comparator.AbstractComplexComparator;
-import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.silverpeas.components.suggestionbox.SuggestionBoxComponentSettings.getUserNotificationDisplayLiveTimeForLongMessage;
 import static org.silverpeas.core.contribution.ContributionStatus.PENDING_VALIDATION;
 
 /**
- * @author: Yohann Chastagnier
+ * @author Yohann Chastagnier
  */
 @Service
 public class SuggestionBoxWebManager {
@@ -142,7 +136,7 @@ public class SuggestionBoxWebManager {
 
   /**
    * Gets the list of suggestions that match the specified criteria.
-   * The criteria are applying in web level and aren't propagated downto the business level and
+   * The criteria are applying in web level and aren't propagated down to the business level and
    * hence the persistence level.
    * <p/>
    * The user asking for the suggestions is required in the criteria as some caching is performed
@@ -175,7 +169,7 @@ public class SuggestionBoxWebManager {
    * @see SuggestionCollection#findAllProposedBy(User)
    */
   public List<SuggestionEntity> getAllSuggestionsFor(SuggestionBox suggestionBox, User user) {
-    Map<String, SuggestionEntity> uniqueSuggestionResult = new HashMap<String, SuggestionEntity>();
+    Map<String, SuggestionEntity> uniqueSuggestionResult = new HashMap<>();
     // Suggestions proposed by the user
     for (SuggestionEntity entity : getAllSuggestionsProposedBy(suggestionBox, user)) {
       uniqueSuggestionResult.put(entity.getId(), entity);
@@ -193,13 +187,12 @@ public class SuggestionBoxWebManager {
     } catch (Exception ignore) {
       // If the user has no admin or publisher rights, no suggestion in pending validation are
       // retrieved
-      SilverLogger.getLogger(this).silent(ignore);
     }
     // The final result
     List<SuggestionEntity> finalSuggestionResult =
-        new ArrayList<SuggestionEntity>(uniqueSuggestionResult.values());
+        new ArrayList<>(uniqueSuggestionResult.values());
     // Sorting the result by descending last update date
-    Collections.sort(finalSuggestionResult, new AbstractComplexComparator<SuggestionEntity>() {
+    finalSuggestionResult.sort(new AbstractComplexComparator<>() {
       @Override
       protected ValueBuffer getValuesToCompare(final SuggestionEntity object) {
         return new ValueBuffer().append(object.getLastUpdateDate(), false);
@@ -241,11 +234,9 @@ public class SuggestionBoxWebManager {
       if (suggestion.getValidation().isInDraft() || suggestion.getValidation().isRefused()) {
         return true;
       }
-      if ((suggestion.getValidation().isPendingValidation() ||
+      return (suggestion.getValidation().isPendingValidation() ||
               suggestion.getValidation().isValidated()) &&
-              (fromUser.isAccessAdmin() || SilverpeasRole.ADMIN == highestRole)) {
-        return true;
-      }
+             (fromUser.isAccessAdmin() || SilverpeasRole.ADMIN == highestRole);
     }
     return false;
   }
@@ -359,7 +350,7 @@ public class SuggestionBoxWebManager {
   }
 
   /**
-   * Asserts the specified suggestion is well defined, otherwise an HTTP 404 error is sent back.
+   * Asserts the specified suggestion is well-defined, otherwise an HTTP 404 error is sent back.
    * @param suggestion the suggestion to check.
    */
   public static void assertSuggestionIsDefined(final Suggestion suggestion) {
@@ -422,12 +413,6 @@ public class SuggestionBoxWebManager {
             .getUserProfiles(user.getId(), suggestionBox.getComponentInstanceId())));
   }
 
-  /**
-   * Gets the translation of an element
-   * @param key
-   * @param language
-   * @return
-   */
   private String getStringTranslation(final String key, final String language) {
     LocalizationBundle rl = ResourceLocator.getLocalizationBundle(
           "org.silverpeas.components.suggestionbox.multilang.SuggestionBoxBundle", language);

@@ -35,20 +35,21 @@ import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.contribution.ContributionStatus;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.util.PaginationList;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.annotation.Authorized;
 
-import javax.inject.Inject;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -73,8 +74,11 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
   @Inject
   private SuggestionBoxWebManager suggestionBoxWebManager;
 
+  @Inject
+  private I18n i18n;
+
   /**
-   * Gets the JSON representation of an suggestion. If it doesn't exist, a 404 HTTP code is
+   * Gets the JSON representation of a suggestion. If it doesn't exist, a 404 HTTP code is
    * returned.
    *
    * @param suggestionId the identifier of the suggestion
@@ -177,7 +181,7 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
   }
 
   /**
-   * Gets the JSON representation of a list of suggestions that are published, bu default sorted by
+   * Gets the JSON representation of a list of suggestions that are published, by default sorted by
    * date of validation (from the newer to the older).
    *
    * @param authorId if this parameter is set, then the suggestions to get will be those proposed by
@@ -216,7 +220,7 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
                 .applyJoinOnData(commentJoinData)
                 .orderedBy(QUERY_ORDER_BY.fromPropertyName(property)));
         if (suggestions instanceof PaginationList) {
-          String maxlength = String.valueOf(((PaginationList) suggestions).originalListSize());
+          String maxlength = String.valueOf(((PaginationList<?>) suggestions).originalListSize());
           getHttpServletResponse().setHeader(RESPONSE_HEADER_ARRAYSIZE, maxlength);
         }
         return suggestions;
@@ -248,7 +252,9 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
     for (Comment comment : comments) {
       Suggestion suggestion =
           suggestionBox.getSuggestions().get(comment.getResourceReference().getLocalId());
-      commentEntities.add(SuggestionCommentEntity.fromComment(comment).onSuggestion(suggestion));
+      commentEntities.add(
+          SuggestionCommentEntity.fromComment(comment, i18n.getDefaultLanguage())
+              .onSuggestion(suggestion));
     }
     return commentEntities;
   }

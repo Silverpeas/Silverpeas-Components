@@ -24,6 +24,7 @@
 
 package org.silverpeas.components.survey.notification;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.notification.user.AbstractComponentInstanceManualUserNotification;
 import org.silverpeas.core.notification.user.NotificationContext;
@@ -32,11 +33,12 @@ import org.silverpeas.core.questioncontainer.container.model.QuestionContainerDe
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerPK;
 import org.silverpeas.core.questioncontainer.container.service.QuestionContainerService;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 
 /**
  * @author silveryocha
  */
+@Bean
 @Named
 public class SurveyInstanceManualUserNotification
     extends AbstractComponentInstanceManualUserNotification {

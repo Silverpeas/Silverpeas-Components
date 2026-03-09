@@ -23,7 +23,6 @@
  */
 package org.silverpeas.components.kmelia.control;
 
-import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.owasp.encoder.Encode;
 import org.silverpeas.components.kmelia.FileImport;
@@ -48,6 +47,8 @@ import org.silverpeas.components.kmelia.service.KmeliaService;
 import org.silverpeas.components.kmelia.service.KmeliaXmlFormUpdateContext;
 import org.silverpeas.core.ActionType;
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.util.file.*;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.ProfiledObjectId;
 import org.silverpeas.core.admin.ProfiledObjectType;
@@ -131,10 +132,6 @@ import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplates;
 import org.silverpeas.core.util.*;
 import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
-import org.silverpeas.core.util.file.FileFolderManager;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.file.FileUploadUtil;
-import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.logging.SilverLogger;
@@ -167,7 +164,6 @@ import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 import static org.silverpeas.components.kmelia.control.KmeliaSessionController.CLIPBOARD_STATE.*;
 import static org.silverpeas.components.kmelia.export.KmeliaPublicationExporter.*;
-import static org.silverpeas.core.admin.component.model.ComponentInst.getComponentLocalId;
 import static org.silverpeas.core.cache.service.CacheAccessorProvider.getSessionCacheAccessor;
 import static org.silverpeas.core.cache.service.VolatileIdentifierProvider.newVolatileIntegerIdentifierOn;
 import static org.silverpeas.core.contribution.attachment.AttachmentService.VERSION_MODE;
@@ -239,6 +235,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   // select/deselect all
   private boolean allPublicationsListSelected = false;
+  private final PdcManager pdcManager = PdcManager.get();
+  private final NodeService nodeService = NodeService.get();
+  private final PublicationService publicationService = PublicationService.get();
+  private final AdminController adminController = ServiceProvider.getService(AdminController.class);
 
   public KmeliaSessionController(MainSessionController mainSessionCtrl, ComponentContext context) {
     super(mainSessionCtrl, context, "org.silverpeas.kmelia.multilang.kmeliaBundle",
@@ -302,7 +302,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   public boolean isPasteNodeAllowed() {
     try {
-      return getClipboardSelectedObjects().stream().anyMatch(s->s.isDataFlavorSupported(NodeSelection.NodeDetailFlavor));
+      return getClipboardSelectedObjects().stream().anyMatch(s -> s.isDataFlavorSupported(NodeSelection.NodeDetailFlavor));
     } catch (ClipboardException e) {
       SilverLogger.getLogger(this).error(e);
       return false;
@@ -311,7 +311,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   public boolean isPastePublicationAllowed(boolean isRootNode) {
     try {
-      return getClipboardSelectedObjects().stream().anyMatch(s->s.isDataFlavorSupported(
+      return getClipboardSelectedObjects().stream().anyMatch(s -> s.isDataFlavorSupported(
           PublicationSelection.PublicationDetailFlavor)) && (isPublicationAllowed(isRootNode));
     } catch (ClipboardException e) {
       SilverLogger.getLogger(this).error(e);
@@ -1209,7 +1209,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   /**
    * Get all visible publications
    *
-   * @return List of WAAtributeValuePair (Id and InstanceId)
+   * @return List of WAAtributeValuePair (idd and instanceId)
    */
   public List<WAAttributeValuePair> getAllVisiblePublications() {
     List<WAAttributeValuePair> allVisiblesPublications = new ArrayList<>();
@@ -1263,7 +1263,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   /**
    * Si le mode brouillon est activé et que le classement PDC est possible alors une publication ne
-   * peut sortir du mode brouillon que si elle est classée sur le PDC
+   * peut sortir du mode brouillon que si elle est classée sur le PDC.
    *
    * @return true si le PDC n'est pas utilisé ou si aucun axe n'est utilisé par le composant ou si
    * la publication est classée sur le PDC
@@ -1345,7 +1345,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     List<ValidationStep> steps =
         getPublicationService().getValidationSteps(getSessionPubliOrClone().getDetail().getPK());
 
-    // Get users who have already validate this publication
+    // Get users who have already validated this publication
     List<String> validators = new ArrayList<>();
     for (ValidationStep step : steps) {
       step.setUserFullName(getOrganisationController().getUserDetail(step.getUserId()).
@@ -1740,15 +1740,15 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   public PdcManager getPdcManager() {
-    return PdcManager.get();
+    return pdcManager;
   }
 
   public NodeService getNodeService() {
-    return NodeService.get();
+    return nodeService;
   }
 
   public PublicationService getPublicationService() {
-    return PublicationService.get();
+    return publicationService;
   }
 
   public ImportReport importFile(File fileUploaded, String importMode,
@@ -1957,7 +1957,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   /**
    * Get session publications
    *
-   * @return List of WAAtributeValuePair (Id and InstanceId)
+   * @return List of WAAtributeValuePair (id and instanceId)
    */
   public List<WAAttributeValuePair> getCurrentPublicationsList() {
     List<WAAttributeValuePair> currentPublications = new ArrayList<>();
@@ -2141,7 +2141,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       }
     } else {
       profile.setObjectId(new ProfiledObjectId(ProfiledObjectType.NODE, nodeId));
-      profile.setComponentFatherId(getComponentLocalId(getComponentId()));
+      profile.setComponentFatherId(
+          SilverpeasComponentInstance.getIdentity(getComponentId()).getInstanceLocalId());
       // Create the profile
       getAdmin().addProfileInst(profile);
     }
@@ -2244,7 +2245,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   private AdminController getAdmin() {
-    return ServiceProvider.getService(AdminController.class);
+    return adminController;
   }
 
   private ProfileInst getProfile(List<ProfileInst> profiles, String role) {
@@ -2375,17 +2376,17 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       }
       SimulationActionProcessProcessor.get()
           .withContext(s -> s.getSourcePKs().addAll(pubPkMoved))
-            .listElementsWith(KmeliaPublicationSimulationElementLister::new)
-            .byAction(() -> ActionType.MOVE)
+          .listElementsWith(KmeliaPublicationSimulationElementLister::new)
+          .byAction(() -> ActionType.MOVE)
           .andWithContext(s -> s.getSourcePKs().addAll(publicationPkCopied))
-            .listElementsWith(KmeliaPublicationSimulationElementLister::new)
-            .byAction(() -> ActionType.COPY)
+          .listElementsWith(KmeliaPublicationSimulationElementLister::new)
+          .byAction(() -> ActionType.COPY)
           .andWithContext(s -> s.getSourcePKs().addAll(nodePkMoved))
-            .listElementsWith(KmeliaNodeSimulationElementLister::new)
-            .byAction(() -> ActionType.MOVE)
+          .listElementsWith(KmeliaNodeSimulationElementLister::new)
+          .byAction(() -> ActionType.MOVE)
           .andWithContext(s -> s.getSourcePKs().addAll(nodePkCopied))
-            .listElementsWith(KmeliaNodeSimulationElementLister::new)
-            .byAction(() -> ActionType.COPY)
+          .listElementsWith(KmeliaNodeSimulationElementLister::new)
+          .byAction(() -> ActionType.COPY)
           .toTargets(t -> t.getTargetPKs().add(targetNode.getNodePK()))
           .setLanguage(() -> currentLanguage)
           .execute(() -> {
@@ -2568,9 +2569,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   /**
-   * Returns URL of the right version of the given document according to current folder rights if
-   * user is a reader, returns last public version (null if it does not exist) if user is not a
-   * reader, returns last version (public or working one)
+   * Gets the URL of the right version of the given document according to current folder rights. If
+   * the user is a reader, returns the last public version (null if it does not exist). If the user
+   * is not a reader, returns the last version (public or working one)
    *
    * @param document a loaded {@link SimpleDocument} instance.
    * @param fromAlias true if getting document version from an alias.
@@ -2678,10 +2679,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   /**
-   * return the value of component parameter "axisIdGlossary". This paramater indicate the axis of
+   * return the value of component parameter "axisIdGlossary". This parameter indicate the axis of
    * pdc to use to highlight word in publication content
    *
-   * @return an indentifier of Pdc axis
+   * @return an identifier of Pdc axis
    */
   public String getAxisIdGlossary() {
     return getComponentParameterValue("axisIdGlossary");
@@ -2797,8 +2798,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       final Map<PublicationPK, PublicationDetail> indexedUserPubs = new HashMap<>(results.size());
       final AtomicInteger rank = new AtomicInteger(0);
       getKmeliaService().getPublicationDetails(results.stream()
-                .map(i -> new ResourceReference(i.getObjectId(), i.getComponent()))
-                .collect(Collectors.toList()))
+              .map(i -> new ResourceReference(i.getObjectId(), i.getComponent()))
+              .collect(Collectors.toList()))
           .forEach(p -> indexedUserPubs.put(p.getPK(), p));
       userPublications = results.stream()
           .map(i -> {
@@ -2955,7 +2956,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
    *
    * @param topicId the unique identifier of the topic.
    * @param componentId the unique identifier of the component instance.
-   * @return true if the default classification can be modified during the automatical
+   * @return true if the default classification can be modified during the automatic
    * classification of the imported publications. False otherwise.
    */
   public boolean isDefaultClassificationModifiable(String topicId, String componentId) {
@@ -3357,7 +3358,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   /**
    * Gets the XML form to use in a local search. This form is also the default template for the
    * publication contents in the Kmelia instance. Such form can only be set at the Kmelia instance
-   * level and it is applied for all the topics.
+   * level, and it is applied for all the topics.
    * <p>
    * Setting an XML form for the whole Kmelia instance is in opposition with the feature to set one
    * or more XML forms as publication contents for a given folder. Latter is enabled only if there

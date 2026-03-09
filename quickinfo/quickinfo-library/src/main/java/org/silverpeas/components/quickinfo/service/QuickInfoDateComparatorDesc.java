@@ -49,7 +49,7 @@ public class QuickInfoDateComparatorDesc implements Comparator<News> {
     if (compareResult == 0) {
       compareResult = pd1.getUpdateDate().compareTo(pd2.getUpdateDate());
     }
-    return 0 - compareResult;
+    return -compareResult;
   }
 
 }

@@ -39,8 +39,6 @@ import org.silverpeas.core.contribution.ContributionStatus;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.comparator.AbstractComplexComparator;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static org.silverpeas.components.suggestionbox.model.SuggestionCriteria.JOIN_DATA_APPLY;
@@ -60,11 +58,9 @@ public class SuggestionFinderByCriteria implements SuggestionCriteriaProcessor {
   private SuggestionCriteria criteria;
   private List<QUERY_ORDER_BY> logicalOrderBy;
 
-  public SuggestionFinderByCriteria() {
-  }
-
   @Override
   public void startProcessing() {
+    // nothing to do
   }
 
   @Override
@@ -92,25 +88,26 @@ public class SuggestionFinderByCriteria implements SuggestionCriteriaProcessor {
 
   @Override
   public SuggestionCriteriaProcessor processStatus(List<ContributionStatus> status) {
-    criteria.statusIsOneOf(status.toArray(new ContributionStatus[status.size()]));
+    criteria.statusIsOneOf(status.toArray(new ContributionStatus[0]));
     return this;
   }
 
   @Override
   public SuggestionCriteriaProcessor processJoinDataApply(
       final List<JOIN_DATA_APPLY> joinDataApplies) {
-    if (CollectionUtil.isNotEmpty(joinDataApplies)) {
-      if (joinDataApplies.contains(JOIN_DATA_APPLY.COMMENT)) {
+    if (CollectionUtil.isNotEmpty(joinDataApplies)
+        && joinDataApplies.contains(JOIN_DATA_APPLY.COMMENT)) {
         CommentService commentService = CommentServiceProvider.getCommentService();
         List<CommentedPublicationInfo> suggestionInfos = commentService.
-            getMostCommentedPublicationsInfo(Suggestion.TYPE, Arrays.asList(new ResourceReference(null,
-                criteria.getSuggestionBox().getComponentInstanceId())));
+            getMostCommentedPublicationsInfo(Suggestion.TYPE,
+                List.of(new ResourceReference(null,
+                    criteria.getSuggestionBox().getComponentInstanceId())));
 
         for (CommentedPublicationInfo info : suggestionInfos) {
           criteria.identifierIsOneOf(info.getPublicationId());
         }
       }
-    }
+
     return this;
   }
 
@@ -118,22 +115,22 @@ public class SuggestionFinderByCriteria implements SuggestionCriteriaProcessor {
   public SuggestionCriteriaProcessor processOrdering(List<QUERY_ORDER_BY> orderings) {
     if (CollectionUtil.isNotEmpty(orderings)) {
       logicalOrderBy = orderings;
-      QUERY_ORDER_BY[] queryOrderBies = new QUERY_ORDER_BY[orderings.size()];
+      QUERY_ORDER_BY[] queryOrderBys = new QUERY_ORDER_BY[orderings.size()];
       int i = 0;
       for (QUERY_ORDER_BY queryOrderBy : orderings) {
         if (queryOrderBy.isApplicableOnJpaQuery()) {
-          queryOrderBies[i++] = queryOrderBy;
+          queryOrderBys[i++] = queryOrderBy;
         } else {
           // ordering is requested on a data that is not directly retrieved from jpqlQuery.
           // JPA order by container is unset and logicalOrderBy will be used.
-          queryOrderBies = null;
+          queryOrderBys = null;
           break;
         }
       }
-      if (queryOrderBies != null) {
+      if (queryOrderBys != null) {
         // ordering is requested on data that are directly retrieved from jpqlQuery.
         // Logical order by container is unset.
-        criteria.orderedBy(queryOrderBies);
+        criteria.orderedBy(queryOrderBys);
         logicalOrderBy = null;
       }
     }
@@ -142,7 +139,7 @@ public class SuggestionFinderByCriteria implements SuggestionCriteriaProcessor {
 
   @Override
   public SuggestionCriteriaProcessor processIdentifiers(List<String> identifiers) {
-    criteria.identifierIsOneOf(identifiers.toArray(new String[identifiers.size()]));
+    criteria.identifierIsOneOf(identifiers.toArray(new String[0]));
     return this;
   }
 
@@ -160,7 +157,7 @@ public class SuggestionFinderByCriteria implements SuggestionCriteriaProcessor {
   @Override
   public List<Suggestion> result() {
     if (CollectionUtil.isNotEmpty(logicalOrderBy)) {
-      Collections.sort(suggestions, new SuggestionLogicalComparator());
+      suggestions.sort(new SuggestionLogicalComparator());
     }
     return suggestions;
   }

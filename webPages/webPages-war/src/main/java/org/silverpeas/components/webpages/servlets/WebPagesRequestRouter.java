@@ -23,7 +23,6 @@
  */
 package org.silverpeas.components.webpages.servlets;
 
-import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.webpages.control.WebPagesSessionController;
 import org.silverpeas.components.webpages.model.WebPagesException;
 import org.silverpeas.core.ActionType;
@@ -32,13 +31,14 @@ import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.util.ContributionManagementContext;
 import org.silverpeas.core.subscription.service.ComponentSubscriptionResource;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.web.mvc.util.WysiwygRouting;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 
 import static org.silverpeas.core.contribution.model.CoreContributionType.COMPONENT_INSTANCE;
@@ -63,11 +63,6 @@ public class WebPagesRequestRouter extends ComponentRequestRouter<WebPagesSessio
     return "WebPages";
   }
 
-  /**
-   * @param mainSessionCtrl
-   * @param componentContext
-   * @return
-   */
   @Override
   public WebPagesSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
@@ -78,15 +73,15 @@ public class WebPagesRequestRouter extends ComponentRequestRouter<WebPagesSessio
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    * @param function The entering request function (ex : "Main.jsp")
-   * @param webPagesSC The component Session Control, build and initialised.
-   * @param request
+   * @param webPagesSC The component Session Control, build and initialized.
+   * @param request the HTTP request
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
   public String getDestination(String function, WebPagesSessionController webPagesSC,
       HttpRequest request) {
-    String destination = "";
+    String destination;
     String rootDestination = "/webPages/jsp/";
     try {
       if (function.startsWith("Main") || "searchResult".equals(function)) {
@@ -96,7 +91,7 @@ public class WebPagesRequestRouter extends ComponentRequestRouter<WebPagesSessio
           // Si le role est publieur, le composant s'ouvre en edition
           destination = getDestination(FUNCTION_EDIT, webPagesSC, request);
         } else {
-          // affichage de la page wysiwyg si le role est lecteur ou si il y a un contenu
+          // affichage de la page WYSIWYG si le role est lecteur ou s'il y a un contenu
           destination = getDestination(FUNCTION_PREVIEW, webPagesSC, request);
         }
       } else if (FUNCTION_EDIT.equals(function)) {
@@ -163,7 +158,7 @@ public class WebPagesRequestRouter extends ComponentRequestRouter<WebPagesSessio
   }
 
   /**
-   * Setup the request to manager some behaviors around subscription notification sending.
+   * Set up the request to manager some behaviors around subscription notification sending.
    * @param request the current request.
    * @param componentInstanceId the identifier of current component instance.
    */

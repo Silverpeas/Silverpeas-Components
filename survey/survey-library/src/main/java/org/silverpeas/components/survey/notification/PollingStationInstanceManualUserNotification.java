@@ -24,11 +24,13 @@
 
 package org.silverpeas.components.survey.notification;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
+import org.silverpeas.core.annotation.Bean;
 
 /**
  * @author silveryocha
  */
+@Bean
 @Named
 public class PollingStationInstanceManualUserNotification
     extends SurveyInstanceManualUserNotification {}

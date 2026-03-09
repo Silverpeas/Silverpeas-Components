@@ -31,8 +31,8 @@ import org.silverpeas.core.admin.user.notification.UserEvent;
 import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
 
-import javax.inject.Inject;
-import javax.transaction.Transactional;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
 /**
  * A listener of events concerning an operation applied on a user profile in Silverpeas. This

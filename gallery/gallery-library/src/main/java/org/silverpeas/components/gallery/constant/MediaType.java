@@ -30,7 +30,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import org.silverpeas.kernel.logging.SilverLogger;
 
 /**
- * @author: Yohann Chastagnier
+ * @author Yohann Chastagnier
  */
 public enum MediaType {
   Unknown(null),
@@ -47,11 +47,6 @@ public enum MediaType {
     mediaWebUriPart = name().toLowerCase() + "s";
   }
 
-  /**
-   * Gets the enum instance according to the specified type.
-   * @param type
-   * @return
-   */
   @JsonCreator
   public static MediaType from(String type) {
     try {
@@ -67,57 +62,32 @@ public enum MediaType {
     return name();
   }
 
-  /**
-   * Instantiates a new model instance according to the media type.
-   * @param <M>
-   * @return
-   */
   @SuppressWarnings("unchecked")
   public <M extends Media> M newInstance() {
     try {
-      return (M) mediaClass.newInstance();
+      return (M) mediaClass.getDeclaredConstructor().newInstance();
     } catch (Exception e) {
       SilverLogger.getLogger(this).warn(e);
       return null;
     }
   }
 
-  /**
-   * Indicates if current type is the photo one.
-   * @return
-   */
   public boolean isPhoto() {
     return Photo == this;
   }
 
-  /**
-   * Indicates if current type is the video one.
-   * @return
-   */
   public boolean isVideo() {
     return Video == this;
   }
 
-  /**
-   * Indicates if current type is the sound one.
-   * @return
-   */
   public boolean isSound() {
     return Sound == this;
   }
 
-  /**
-   * Indicates if current type is the streaming one.
-   * @return
-   */
   public boolean isStreaming() {
     return Streaming == this;
   }
 
-  /**
-   * Gets the prefix folder name of a media on Silverpeas workspace.
-   * @return
-   */
   public String getTechnicalFolder() {
     if (this == MediaType.Photo) {
       return "image";
@@ -126,10 +96,6 @@ public enum MediaType {
     }
   }
 
-  /**
-   * Gets the media Web Uri part.
-   * @return
-   */
   public String getMediaWebUriPart() {
     return mediaWebUriPart;
   }

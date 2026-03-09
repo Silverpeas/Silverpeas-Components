@@ -36,23 +36,18 @@ public class MonthVO implements Serializable {
   /**
    * List of weeks inside a month
    */
-  private List<WeekVO> weeks = null;
+  private List<WeekVO> weeks;
 
   /**
    * Number of month in a year
    */
-  private String number = null;
+  private String number;
 
   /**
    * Number of days in this month
    */
-  private int nbDays = 0;
+  private int nbDays;
 
-  /**
-   * @param weeks
-   * @param number
-   * @param nbDays TODO
-   */
   public MonthVO(List<WeekVO> weeks, String number, int nbDays) {
     super();
     this.weeks = weeks;

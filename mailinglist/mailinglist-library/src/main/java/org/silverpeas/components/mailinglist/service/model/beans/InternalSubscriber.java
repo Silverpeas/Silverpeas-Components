@@ -23,11 +23,11 @@
  */
 package org.silverpeas.components.mailinglist.service.model.beans;
 
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.DiscriminatorType;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorColumn;
+import jakarta.persistence.DiscriminatorType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "sc_mailinglist_internal_sub")
@@ -74,12 +74,7 @@ public abstract class InternalSubscriber extends IdentifiableObject {
       return true;
     }
     if (id == null) {
-      if (other.id != null) {
-        return false;
-      }
-    } else if (!id.equals(other.id)) {
-      return false;
-    }
-    return true;
+      return other.id == null;
+    } else return id.equals(other.id);
   }
 }

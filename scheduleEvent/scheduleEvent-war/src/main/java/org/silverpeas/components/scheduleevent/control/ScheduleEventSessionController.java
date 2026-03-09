@@ -49,6 +49,7 @@ import org.silverpeas.core.importexport.ical.ExportableCalendar;
 import org.silverpeas.core.importexport.ical.ICalExporterProvider;
 import org.silverpeas.core.notification.message.MessageNotifier;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
+import org.silverpeas.kernel.SilverpeasException;
 import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.util.URLUtil;
@@ -375,7 +376,7 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
         Integer.parseInt(getUserId()));
   }
 
-  public Set<OptionDateVO> getCurrentOptionalDateIndexes() throws Exception {
+  public Set<OptionDateVO> getCurrentOptionalDateIndexes() throws SilverpeasException {
     return ((ScheduleEventVO) getCurrentScheduleEventVO()).getOptionalDateIndexes();
   }
 

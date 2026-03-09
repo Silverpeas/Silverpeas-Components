@@ -45,6 +45,7 @@ import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygControlle
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.rating.model.ContributionRatingPK;
 import org.silverpeas.core.contribution.rating.service.RatingService;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
@@ -63,8 +64,9 @@ import org.silverpeas.core.tagcloud.model.TagCloudUtil;
 import org.silverpeas.core.tagcloud.service.TagCloudService;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Inject;
-import javax.transaction.Transactional;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -72,8 +74,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-
-import static org.silverpeas.core.i18n.I18NHelper.DEFAULT_LANGUAGE;
 
 /**
  * Forums service layer which manage forums application
@@ -90,11 +90,15 @@ public class DefaultForumService implements ForumService {
   private NodeService node;
   @Inject
   private ForumsContentManager forumsContentManager;
+  @Inject
+  private I18n i18n;
+  @Inject
+  private ForumsDAO forumsDAO;
 
   @Override
   public Collection<ForumDetail> getForums(Collection<ForumPK> forumPKs) {
     try (Connection con = openConnection()) {
-      return ForumsDAO.selectByForumPKs(con, forumPKs);
+      return forumsDAO.selectByForumPKs(con, forumPKs);
     } catch (SQLException e) {
       throw new ForumsRuntimeException(e);
     }
@@ -103,7 +107,7 @@ public class DefaultForumService implements ForumService {
   @Override
   public Forum getForum(ForumPK forumPK) {
     try (Connection con = openConnection()) {
-      return ForumsDAO.getForum(con, forumPK);
+      return forumsDAO.getForum(con, forumPK);
     } catch (SQLException e) {
       throw new ForumsRuntimeException(e);
     }
@@ -113,11 +117,11 @@ public class DefaultForumService implements ForumService {
   public ForumPath getForumPath(final ForumPK forumPK) {
     final List<Forum> path = new ArrayList<>();
     try (Connection con = openConnection()) {
-      Forum currentForum = ForumsDAO.getForum(con, forumPK);
+      Forum currentForum = forumsDAO.getForum(con, forumPK);
       if (currentForum != null) {
         path.add(currentForum);
         while (currentForum != null && !currentForum.isRoot()) {
-          currentForum = ForumsDAO.getForum(con,
+          currentForum = forumsDAO.getForum(con,
               new ForumPK(forumPK.getInstanceId(), currentForum.getParentIdAsString()));
           if (currentForum != null) {
             path.add(currentForum);
@@ -130,43 +134,10 @@ public class DefaultForumService implements ForumService {
     }
   }
 
-  /**
-   * Gets all the forums of the specified component instance that don't have a parent forum.
-   * @param instanceId the unique identifier of a component instance.
-   * @return a collection of forums.
-   */
-  @Override
-  public Collection<Forum> getForumRootList(final String instanceId) {
-    Collection<String> forumRootIds = getForumSonsIds(new ForumPK(instanceId, "0"));
-    Collection<Forum> forumRoots = new ArrayList<>();
-    for (String forumRootId : forumRootIds) {
-      forumRoots.add(getForum(new ForumPK(instanceId, forumRootId)));
-    }
-    return forumRoots;
-  }
-
-  @Override
-  public Collection<Forum> getForumsList(Collection<ForumPK> forumPKs) {
-    try (Connection con = openConnection()) {
-      return ForumsDAO.getForumsByKeys(con, forumPKs);
-    } catch (SQLException e) {
-      throw new ForumsRuntimeException(e);
-    }
-  }
-
-  @Override
-  public Collection<Message> getThreadsList(Collection<MessagePK> messagePKs) {
-    try (Connection con = openConnection()) {
-      return ForumsDAO.getThreadsByKeys(con, messagePKs);
-    } catch (SQLException e) {
-      throw new ForumsRuntimeException(e);
-    }
-  }
-
   @Override
   public String getForumName(int forumId) {
     try (Connection con = openConnection()) {
-      return ForumsDAO.getForumName(con, forumId);
+      return forumsDAO.getForumName(con, forumId);
     } catch (SQLException e) {
       throw new ForumsRuntimeException(e);
     }
@@ -175,7 +146,7 @@ public class DefaultForumService implements ForumService {
   @Override
   public void deleteAll(final String instanceId) {
     try (Connection con = openConnection()) {
-      ForumsDAO.deleteAllForums(con, instanceId);
+      forumsDAO.deleteAllForums(con, instanceId);
     } catch (SQLException e) {
       throw new ForumsRuntimeException(e);
     }
@@ -184,7 +155,7 @@ public class DefaultForumService implements ForumService {
   @Override
   public boolean isForumActive(int forumId) {
     try (Connection con = openConnection()) {
-      return ForumsDAO.isForumActive(con, forumId);
+      return forumsDAO.isForumActive(con, forumId);
     } catch (SQLException e) {
       throw new ForumsRuntimeException(e);
     }
@@ -193,7 +164,7 @@ public class DefaultForumService implements ForumService {
   @Override
   public int getForumParentId(int forumId) {
     try (Connection con = openConnection()) {
-      return ForumsDAO.getForumParentId(con, forumId);
+      return forumsDAO.getForumParentId(con, forumId);
     } catch (SQLException e) {
       throw new ForumsRuntimeException(e);
     }
@@ -202,7 +173,7 @@ public class DefaultForumService implements ForumService {
   @Override
   public String getForumInstanceId(int forumId) {
     try (Connection con = openConnection()) {
-      return ForumsDAO.getForumInstanceId(con, forumId);
+      return forumsDAO.getForumInstanceId(con, forumId);
     } catch (SQLException e) {
       throw new ForumsRuntimeException(e);
     }
@@ -210,7 +181,7 @@ public class DefaultForumService implements ForumService {
 
   public String getForumCreatorId(int forumId) {
     try (Connection con = openConnection()) {
-      return ForumsDAO.getForumCreatorId(con, forumId);
+      return forumsDAO.getForumCreatorId(con, forumId);
     } catch (SQLException e) {
       throw new ForumsRuntimeException(e);
     }
@@ -219,7 +190,7 @@ public class DefaultForumService implements ForumService {
   @Override
   public List<Forum> getForums(ForumPK forumPK) {
     try (Connection con = openConnection()) {
-      return ForumsDAO.getForumsList(con, forumPK);
+      return forumsDAO.getForumsList(con, forumPK);
     } catch (SQLException e) {
       throw new ForumsRuntimeException(e);
     }
@@ -228,7 +199,7 @@ public class DefaultForumService implements ForumService {
   @Override
   public ForumDetail getForumDetail(ForumPK forumPK) {
     try (Connection con = openConnection()) {
-      return ForumsDAO.getForumDetail(con, forumPK);
+      return forumsDAO.getForumDetail(con, forumPK);
     } catch (SQLException e) {
       throw new ForumsRuntimeException(e);
     }
@@ -237,7 +208,7 @@ public class DefaultForumService implements ForumService {
   @Override
   public List<Forum> getForumsByCategory(ForumPK forumPK, String categoryId) {
     try (Connection con = openConnection()) {
-      return ForumsDAO.getForumsListByCategory(con, forumPK, categoryId);
+      return forumsDAO.getForumsListByCategory(con, forumPK, categoryId);
     } catch (SQLException e) {
       throw new ForumsRuntimeException(e);
     }
@@ -246,7 +217,7 @@ public class DefaultForumService implements ForumService {
   @Override
   public List<String> getForumSonsIds(ForumPK forumPK) {
     try (Connection con = openConnection()) {
-      return ForumsDAO.getForumSonsIds(con, forumPK);
+      return forumsDAO.getForumSonsIds(con, forumPK);
     } catch (SQLException e) {
       throw new ForumsRuntimeException(e);
     }
@@ -254,6 +225,7 @@ public class DefaultForumService implements ForumService {
 
   /**
    * Locks recursively in writing the tree of a given forum.
+   *
    * @param forumPK the unique identifier of the forum.
    * @param level the locking level.
    */
@@ -264,17 +236,18 @@ public class DefaultForumService implements ForumService {
       lockForum(new ForumPK(forumPK.getComponentName(), sonsId), level);
     }
     try (Connection con = openConnection()) {
-      ForumsDAO.lockForum(con, forumPK, level);
+      forumsDAO.lockForum(con, forumPK, level);
     } catch (SQLException e) {
       throw new ForumsRuntimeException(e);
     }
   }
 
   /**
-   * Deverrouille recursivement un forum en ecriture a partir de sa primary key
-   * @param forumPK la primary key du forum
-   * @param level le niveau de verrouillage
-   * @return int le code d'erreur
+   * Unlock the forum in writing forum.
+   *
+   * @param forumPK the unique identifier of the forum.
+   * @param level the level of the forum locking
+   * @return the result of the operation. Greater than 0 means error.
    */
   @Override
   public int unlockForum(ForumPK forumPK, int level) {
@@ -283,7 +256,7 @@ public class DefaultForumService implements ForumService {
       unlockForum(new ForumPK(forumPK.getComponentName(), sonsId), level);
     }
     try (Connection con = openConnection()) {
-      return ForumsDAO.unlockForum(con, forumPK, level);
+      return forumsDAO.unlockForum(con, forumPK, level);
     } catch (SQLException e) {
       throw new ForumsRuntimeException(e);
     }
@@ -291,6 +264,7 @@ public class DefaultForumService implements ForumService {
 
   /**
    * Supprime un forum et tous ses sous-forums a partir de sa primary key
+   *
    * @param forumPK la primary key du forum
    */
   @Transactional(Transactional.TxType.REQUIRED)
@@ -307,7 +281,7 @@ public class DefaultForumService implements ForumService {
       // Recuperation des ids de messages
       List<String> messagesIds = getMessagesIds(forumPK);
       // Suppression du forum et de ses messages
-      ForumsDAO.deleteForum(con, forumPK);
+      forumsDAO.deleteForum(con, forumPK);
       // Suppression de l'index du forum dans le moteur de recherches
       deleteIndex(forumPK);
       // Suppression de l'index de chaque message dans le moteur de recherches
@@ -324,6 +298,7 @@ public class DefaultForumService implements ForumService {
 
   /**
    * Creates a new forum.
+   *
    * @param forumPK the global identifier of the forum to create
    * @param forumName the name of the forum
    * @param forumDescription a short description of the forum.
@@ -339,7 +314,7 @@ public class DefaultForumService implements ForumService {
   public int createForum(ForumPK forumPK, String forumName, String forumDescription,
       String forumCreator, int forumParent, String categoryId, String keywords) {
     try (Connection con = openConnection()) {
-      int forumId = ForumsDAO
+      int forumId = forumsDAO
           .createForum(con, forumPK, forumName, forumDescription, forumCreator, forumParent,
               categoryId);
       forumPK.setId(String.valueOf(forumId));
@@ -353,13 +328,14 @@ public class DefaultForumService implements ForumService {
   }
 
   /**
-   * Met a jour les informations sur un forum dans la datasource
-   * @param forumPK la primary key du forum
-   * @param forumName nom du forum
-   * @param forumDescription description du forum
-   * @param forumParent l'id du forum parent
-   * @param categoryId l'id de la catégorie
-   * @param keywords the keywords associated to this forum.
+   * Updates the specified forum with the given information.
+   *
+   * @param forumPK the unique identifier of a forum
+   * @param forumName the new name of the forum
+   * @param forumDescription the new description of the forum
+   * @param forumParent the unique identifier of the new parent forum
+   * @param categoryId the unique identifier of the new category
+   * @param keywords the new keywords of the forum.
    */
   @Override
   public void updateForum(ForumPK forumPK, String forumName, String forumDescription,
@@ -370,7 +346,7 @@ public class DefaultForumService implements ForumService {
   private void updateForum(ForumPK forumPK, String forumName, String forumDescription,
       int forumParent, String categoryId, String keywords, boolean updateTagCloud) {
     try (Connection con = openConnection()) {
-      ForumsDAO.updateForum(con, forumPK, forumName, forumDescription, forumParent, categoryId);
+      forumsDAO.updateForum(con, forumPK, forumName, forumDescription, forumParent, categoryId);
       deleteIndex(forumPK);
       createIndex(forumPK);
       if (updateTagCloud) {
@@ -383,7 +359,7 @@ public class DefaultForumService implements ForumService {
 
   private List<Message> getMessagesList(ForumPK forumPK) {
     try (Connection con = openConnection()) {
-      return ForumsDAO.getMessagesList(con, forumPK);
+      return forumsDAO.getMessagesList(con, forumPK);
     } catch (SQLException e) {
       throw new ForumsRuntimeException(e);
     }
@@ -401,7 +377,7 @@ public class DefaultForumService implements ForumService {
 
   private List<String> getSubjectsIds(ForumPK forumPK) {
     try (Connection con = openConnection()) {
-      return ForumsDAO.getSubjectsIds(con, forumPK);
+      return forumsDAO.getSubjectsIds(con, forumPK);
     } catch (SQLException e) {
       throw new ForumsRuntimeException(e);
     }
@@ -409,7 +385,7 @@ public class DefaultForumService implements ForumService {
 
   private List<String> getMessagesIds(ForumPK forumPK, int messageParentId) {
     try (Connection con = openConnection()) {
-      return ForumsDAO.getMessagesIds(con, forumPK, messageParentId);
+      return forumsDAO.getMessagesIds(con, forumPK, messageParentId);
     } catch (SQLException e) {
       throw new ForumsRuntimeException(e);
     }
@@ -422,7 +398,7 @@ public class DefaultForumService implements ForumService {
   @Override
   public int getNbMessages(int forumId, String type, String status) {
     try (Connection con = openConnection()) {
-      return ForumsDAO.getNbMessages(con, forumId, type, status);
+      return forumsDAO.getNbMessages(con, forumId, type, status);
     } catch (SQLException e) {
       throw new ForumsRuntimeException(e);
     }
@@ -431,7 +407,7 @@ public class DefaultForumService implements ForumService {
   @Override
   public int getAuthorNbMessages(String userId, String status) {
     try (Connection con = openConnection()) {
-      return ForumsDAO.getAuthorNbMessages(con, userId, status);
+      return forumsDAO.getAuthorNbMessages(con, userId, status);
     } catch (SQLException e) {
       throw new ForumsRuntimeException(e);
     }
@@ -440,7 +416,7 @@ public class DefaultForumService implements ForumService {
   @Override
   public int getNbResponses(int forumId, int messageId, String status) {
     try (Connection con = openConnection()) {
-      return ForumsDAO.getNbResponses(con, forumId, messageId, status);
+      return forumsDAO.getNbResponses(con, forumId, messageId, status);
     } catch (Exception e) {
       throw new ForumsRuntimeException(e);
     }
@@ -448,6 +424,7 @@ public class DefaultForumService implements ForumService {
 
   /**
    * Gets the last message posted into the given forum.
+   *
    * @param forumPK the unique identifier of the forum.
    * @param status the status of the message to get.
    * @return the last message in the forum with the specified status.
@@ -456,26 +433,26 @@ public class DefaultForumService implements ForumService {
   @Override
   public Message getLastMessage(ForumPK forumPK, String status) {
     try (Connection con = openConnection()) {
-      return ForumsDAO.getLastMessage(con, forumPK, status);
+      return forumsDAO.getLastMessage(con, forumPK, status);
     } catch (SQLException e) {
       throw new ForumsRuntimeException(e);
     }
   }
 
   @Override
-  public Collection<Object> getLastMessageRSS(String instanceId, int nbReturned) {
+  public Collection<Message> getLastMessageRSS(String instanceId, int nbReturned) {
     int countdown = nbReturned;
     // retourne les nbReturned messages des forums de l'instance instanceId
-    Collection<Object> messages = new ArrayList<>();
+    Collection<Message> messages = new ArrayList<>();
     try (Connection con = openConnection()) {
       // récupère la liste des id des messages
-      Collection<String> allMessagesIds = ForumsDAO.getLastMessageRSS(con, instanceId);
+      Collection<String> allMessagesIds = forumsDAO.getLastMessageRSS(con, instanceId);
       Iterator<String> it = allMessagesIds.iterator();
       // prendre que les nbReturned derniers
       while (it.hasNext() && countdown != 0) {
         String messageId = it.next();
         MessagePK messagePK = new MessagePK(instanceId, messageId);
-        messages.add(getMessageInfos(messagePK));
+        messages.add(getMessage(messagePK));
         countdown--;
       }
     } catch (SQLException e) {
@@ -503,7 +480,7 @@ public class DefaultForumService implements ForumService {
   @Override
   public Message getLastMessage(ForumPK forumPK, List<String> messageParentIds, String status) {
     try (Connection con = openConnection()) {
-      return ForumsDAO.getLastMessage(con, forumPK, messageParentIds, status);
+      return forumsDAO.getLastMessage(con, forumPK, messageParentIds, status);
     } catch (Exception e) {
       throw new ForumsRuntimeException(e);
     }
@@ -511,11 +488,12 @@ public class DefaultForumService implements ForumService {
 
   /**
    * Is there any non read messages with the given status in the specified forum?
+   *
    * @param userId the unique identifier of a user
    * @param forumPK the unique identifier of the forum
    * @param status the status of the non read messages (validated, waiting, ...)
-   * @return true if there is at least one message with the given status non read by the user.
-   * False otherwise.
+   * @return true if there is at least one message with the given status non read by the user. False
+   * otherwise.
    */
   @Override
   public boolean isNewMessageByForum(String userId, ForumPK forumPK, String status) {
@@ -523,7 +501,7 @@ public class DefaultForumService implements ForumService {
     List<String> messagesIds = getSubjectsIds(forumPK);
     int messageParentId;
     for (String messagesId : messagesIds) {
-      // pour ce message on recherche la date de la dernière visite
+      // For this message we are looking for the date of the last visit
       messageParentId = Integer.parseInt(messagesId);
 
       if (isNewMessage(userId, forumPK, messageParentId, status)) {
@@ -549,7 +527,7 @@ public class DefaultForumService implements ForumService {
 
       // recherche sur tous les messages de la date de visite la plus ancienne
       // date de la dernière visite pour un message
-      Date dateLastVisit = ForumsDAO.getLastVisit(con, userId, messagesIds);
+      Date dateLastVisit = forumsDAO.getLastVisit(con, userId, messagesIds);
 
       if (dateLastMessageBySubject == null || dateLastVisit == null ||
           dateLastVisit.before(dateLastMessageBySubject)) {
@@ -564,31 +542,17 @@ public class DefaultForumService implements ForumService {
   }
 
   /**
-   * enregistre la date de la dernière visite d'un utilisateur sur un forum
-   * @param messageId l'id du message
-   * @param userId l'id de l'utilisateur
+   * Saves the date of the last visit of the given user to the specified message.
+   *
+   * @param userId the unique identifier of the user
+   * @param messageId the unique identifier of the message
    * @author sfariello
    */
   @Override
   public void setLastVisit(String userId, int messageId) {
     try (Connection con = openConnection()) {
-      ForumsDAO.addLastVisit(con, userId, messageId);
+      forumsDAO.addLastVisit(con, userId, messageId);
     } catch (Exception e) {
-      throw new ForumsRuntimeException(e);
-    }
-  }
-
-  /**
-   * Recupere les infos d'un message
-   * @param messagePK la primary key du message
-   * @return Vector la liste des champs du message
-   * @author frageade
-   * @since 04 Octobre 2000
-   */
-  private List<?> getMessageInfos(MessagePK messagePK) {
-    try (Connection con = openConnection()) {
-      return ForumsDAO.getMessageInfos(con, messagePK);
-    } catch (SQLException e) {
       throw new ForumsRuntimeException(e);
     }
   }
@@ -596,7 +560,7 @@ public class DefaultForumService implements ForumService {
   @Override
   public Message getMessage(MessagePK messagePK) {
     try (Connection con = openConnection()) {
-      Message message = ForumsDAO.getMessage(con, messagePK);
+      Message message = forumsDAO.getMessage(con, messagePK);
       if (message != null) {
         message.setText(getWysiwygContent(messagePK.getInstanceId(), messagePK.getId()));
       }
@@ -628,7 +592,7 @@ public class DefaultForumService implements ForumService {
   @Override
   public String getMessageTitle(int messageId) {
     try (Connection con = openConnection()) {
-      return ForumsDAO.getMessageTitle(con, messageId);
+      return forumsDAO.getMessageTitle(con, messageId);
     } catch (SQLException e) {
       throw new ForumsRuntimeException(e);
     }
@@ -637,7 +601,7 @@ public class DefaultForumService implements ForumService {
   @Override
   public int getMessageParentId(int messageId) {
     try (Connection con = openConnection()) {
-      return ForumsDAO.getMessageParentId(con, messageId);
+      return forumsDAO.getMessageParentId(con, messageId);
     } catch (SQLException e) {
       throw new ForumsRuntimeException(e);
     }
@@ -645,6 +609,7 @@ public class DefaultForumService implements ForumService {
 
   /**
    * Create new forum message
+   *
    * @param messagePK message primary key identifier
    * @param title message title
    * @param authorId message author identifier
@@ -662,7 +627,7 @@ public class DefaultForumService implements ForumService {
       int forumId, int parentId, String content, String keywords, String status) {
     try (Connection con = openConnection()) {
       int messageId =
-          ForumsDAO.createMessage(con, title, authorId, creationDate, forumId, parentId, status);
+          forumsDAO.createMessage(con, title, authorId, creationDate, forumId, parentId, status);
       messagePK.setId(String.valueOf(messageId));
       createTagCloud(messagePK, keywords);
       createWysiwyg(messagePK, content, authorId);
@@ -679,7 +644,7 @@ public class DefaultForumService implements ForumService {
       String status) {
     try (Connection con = openConnection()) {
       deleteIndex(messagePK);
-      ForumsDAO.updateMessage(con, messagePK, title, status);
+      forumsDAO.updateMessage(con, messagePK, title, status);
       updateWysiwyg(messagePK, message, userId);
       createIndex(messagePK);
     } catch (SQLException e) {
@@ -697,8 +662,9 @@ public class DefaultForumService implements ForumService {
   }
 
   /**
-   * Supprime un message et tous ses sous-messages a partir de sa primary key
-   * @param messagePK la primary key du message
+   * Remove the specified message and all the submessages.
+   *
+   * @param messagePK the unique identifier of the message
    * @author frageade
    * @since 04 Octobre 2000
    */
@@ -706,7 +672,7 @@ public class DefaultForumService implements ForumService {
   @Override
   public void deleteMessage(MessagePK messagePK) {
     try (Connection con = openConnection()) {
-      Collection<String> messageChildren = ForumsDAO.getMessageSons(con, messagePK);
+      Collection<String> messageChildren = forumsDAO.getMessageSons(con, messagePK);
       if (!messageChildren.isEmpty()) {
         for (String child : messageChildren) {
           deleteMessage(new MessagePK(messagePK.getComponentName(), child));
@@ -716,7 +682,7 @@ public class DefaultForumService implements ForumService {
       // Deleting subscriptions
       getSubscribeService().unsubscribeByResource(ForumMessageSubscriptionResource.from(messagePK));
 
-      ForumsDAO.deleteMessage(con, messagePK);
+      forumsDAO.deleteMessage(con, messagePK);
       deleteIndex(messagePK);
       deleteTagCloud(messagePK);
       deleteNotation(messagePK);
@@ -730,7 +696,7 @@ public class DefaultForumService implements ForumService {
   public boolean isModerator(String userId, ForumPK forumPK) {
     if (!("0".equals(forumPK.getId()))) {
       try (Connection con = openConnection()) {
-        return ForumsDAO.isModerator(con, forumPK, userId);
+        return forumsDAO.isModerator(con, forumPK, userId);
       } catch (SQLException e) {
         throw new ForumsRuntimeException(e);
       }
@@ -741,7 +707,7 @@ public class DefaultForumService implements ForumService {
   @Override
   public void addModerator(ForumPK forumPK, String userId) {
     try (Connection con = openConnection()) {
-      ForumsDAO.addModerator(con, forumPK, userId);
+      forumsDAO.addModerator(con, forumPK, userId);
     } catch (SQLException e) {
       throw new ForumsRuntimeException(e);
     }
@@ -750,7 +716,7 @@ public class DefaultForumService implements ForumService {
   @Override
   public void removeModerator(ForumPK forumPK, String userId) {
     try (Connection con = openConnection()) {
-      ForumsDAO.removeModerator(con, forumPK, userId);
+      forumsDAO.removeModerator(con, forumPK, userId);
     } catch (Exception e) {
       throw new ForumsRuntimeException(e);
     }
@@ -759,7 +725,7 @@ public class DefaultForumService implements ForumService {
   @Override
   public void removeAllModerators(ForumPK forumPK) {
     try (Connection con = openConnection()) {
-      ForumsDAO.removeAllModerators(con, forumPK);
+      forumsDAO.removeAllModerators(con, forumPK);
     } catch (SQLException e) {
       throw new ForumsRuntimeException(e);
     }
@@ -768,10 +734,10 @@ public class DefaultForumService implements ForumService {
   @Override
   public List<Moderator> getModerators(int forumId) {
     try (Connection con = openConnection()) {
-      List<Moderator> moderators = ForumsDAO.getModerators(con, forumId);
+      List<Moderator> moderators = forumsDAO.getModerators(con, forumId);
       int parentId = getForumParentId(forumId);
       while (parentId > 0) {
-        for (Moderator moderatorByInheritance : ForumsDAO.getModerators(con, parentId)) {
+        for (Moderator moderatorByInheritance : forumsDAO.getModerators(con, parentId)) {
           moderatorByInheritance.setByInheritance(true);
           moderators.add(moderatorByInheritance);
         }
@@ -787,13 +753,13 @@ public class DefaultForumService implements ForumService {
   @Override
   public void moveMessage(MessagePK messagePK, ForumPK forumPK) {
     try (Connection con = openConnection()) {
-      Collection<String> children = ForumsDAO.getMessageSons(con, messagePK);
+      Collection<String> children = forumsDAO.getMessageSons(con, messagePK);
       if (!children.isEmpty()) {
         for (String childId : children) {
           moveMessage(new MessagePK(messagePK.getComponentName(), childId), forumPK);
         }
       }
-      ForumsDAO.moveMessage(con, messagePK, forumPK);
+      forumsDAO.moveMessage(con, messagePK, forumPK);
     } catch (SQLException e) {
       throw new ForumsRuntimeException(e);
     }
@@ -801,6 +767,7 @@ public class DefaultForumService implements ForumService {
 
   /**
    * Subscribe the given user to the given forum message.
+   *
    * @param messagePK the unique identifier of the message.
    * @param userId the unique identifier of the user to subscribe.
    */
@@ -812,6 +779,7 @@ public class DefaultForumService implements ForumService {
 
   /**
    * Unsubscribe the given user to the given forum message.
+   *
    * @param messagePK the unique identifier of the message.
    * @param userId the unique identifier of the user to unsubscribe.
    */
@@ -823,6 +791,7 @@ public class DefaultForumService implements ForumService {
 
   /**
    * Subscribe the given user to the given forum.
+   *
    * @param forumPK the unique identifier of the forum.
    * @param userId the unique identifier of the user to subscribe.
    */
@@ -834,6 +803,7 @@ public class DefaultForumService implements ForumService {
 
   /**
    * Unsubscribe the given user to the given forum.
+   *
    * @param forumPK the unique identifier of the forum.
    * @param userId the unique identifier of the user to unsubscribe.
    */
@@ -845,6 +815,7 @@ public class DefaultForumService implements ForumService {
 
   /**
    * Gets the list of subscribers related to the given forum message.
+   *
    * @param messagePK the unique identifier of the message.
    * @return a list of subscribers.
    */
@@ -856,6 +827,7 @@ public class DefaultForumService implements ForumService {
 
   /**
    * Gets the list of subscribers related to the given forum.
+   *
    * @param forumPK the unique identifier of the forum.
    * @return a list of subscribers.
    */
@@ -866,18 +838,8 @@ public class DefaultForumService implements ForumService {
   }
 
   /**
-   * Gets the list of subscribers to the given component instance.
-   * This kind of subscribers come from WEB-Service subscriptions (/services/subscribe/{instanceId})
-   * @param instanceId the unique identifier of the component instance.
-   * @return a list of subscribers.
-   */
-  @Override
-  public SubscriptionSubscriberList listAllSubscribers(final String instanceId) {
-    return ResourceSubscriptionProvider.getSubscribersOfComponent(instanceId);
-  }
-
-  /**
    * Indicates if the given user has subscribed to the given forum message.
+   *
    * @param messagePK the unique identifier of a message.
    * @param userId the unique identifier of the user.
    * @return true if the given user has subscribed to the specified message. False otherwise.
@@ -890,6 +852,7 @@ public class DefaultForumService implements ForumService {
 
   /**
    * Indicates if the given user is subscribed by inheritance to the given forum message.
+   *
    * @param messagePK the unique identifier of a message.
    * @param userId the unique identifier of the user.
    * @return true if the given user has subscribed to the specified message. False otherwise.
@@ -903,6 +866,7 @@ public class DefaultForumService implements ForumService {
 
   /**
    * Indicates if the given user has subscribed to the given forum.
+   *
    * @param forumPK the unique identifier of the forum.
    * @param userId the unique identifier of the user.
    * @return true if the given user has subscribed to the specified forum. False otherwise.
@@ -915,6 +879,7 @@ public class DefaultForumService implements ForumService {
 
   /**
    * Indicates if the given user is subscribed by inheritance to the given forum.
+   *
    * @param forumPK the unique identifier of the forum.
    * @param userId the unique identifier of the user.
    * @return true if the given user has subscribed to the specified forum. False otherwise.
@@ -928,6 +893,7 @@ public class DefaultForumService implements ForumService {
 
   /**
    * Indicates if the given user has subscribed to the given component instance.
+   *
    * @param instanceId the unique identifier of the component instance.
    * @param userId the unique identifier of the user.
    * @return true if the given user has subscribed to the specified component instance. False
@@ -951,7 +917,8 @@ public class DefaultForumService implements ForumService {
       indexEntry.setTitle(message.getTitle());
       indexEntry.setCreationDate(message.getDate());
       indexEntry.setCreationUser(message.getAuthor());
-      WysiwygController.addToIndex(indexEntry, new ResourceReference(messagePK), DEFAULT_LANGUAGE);
+      WysiwygController.addToIndex(indexEntry, new ResourceReference(messagePK),
+          i18n.getDefaultLanguage());
       IndexEngineProxy.addIndexEntry(indexEntry);
     }
 
@@ -978,11 +945,12 @@ public class DefaultForumService implements ForumService {
   private void deleteIndex(ForumPK forumPK) {
     IndexEngineProxy.removeIndexEntry(
         new IndexEntryKey(forumPK.getComponentName(), RESOURCE_TYPE, forumPK.
-        getId()));
+            getId()));
   }
 
   /**
    * Open connection
+   *
    * @return the connection
    */
   protected Connection openConnection() {
@@ -1033,14 +1001,14 @@ public class DefaultForumService implements ForumService {
   @Override
   public void deleteCategory(String categoryId, String instanceId) {
     try {
-      // pour cette categorie, rechercher les forums et mettre '0' dans la categorie
+      // pour cette catégorie, rechercher les forums et mettre '0' dans la catégorie
       List<Forum> forums = getForumsByCategory(new ForumPK(instanceId, null), categoryId);
       for (Forum forum : forums) {
         ForumPK forumPK = new ForumPK(instanceId, forum.getIdAsString());
         updateForum(forumPK, forum.getName(), forum.getDescription(), forum.getParentId(), null,
             null, false);
       }
-      // suppression de la categorie
+      // suppression de la catégorie
       NodePK nodePk = new NodePK(categoryId, instanceId);
       node.deleteNode(nodePk);
     } catch (Exception e) {
@@ -1059,49 +1027,10 @@ public class DefaultForumService implements ForumService {
 
   }
 
-  @Override
-  public Collection<Message> getLastThreads(ForumPK forumPK, int count) {
-    return getLastThreads(forumPK, count, false);
-  }
-
-  @Override
-  public Collection<Message> getNotAnsweredLastThreads(ForumPK forumPK, int count) {
-    return getLastThreads(forumPK, count, true);
-  }
-
-  private Collection<Message> getLastThreads(ForumPK forumPK, int count, boolean notAnswered) {
-    try (Connection con = openConnection()) {
-      ForumPK[] forumPKs;
-      if ("0".equals(forumPK.getId())) {
-        // Derniers threads des forums du composant.
-        List<String> forumsIds = ForumsDAO.getForumsIds(con, forumPK);
-        int forumsCount = forumsIds.size();
-        forumPKs = new ForumPK[forumsCount];
-        String componentId = forumPK.getComponentName();
-        for (int i = 0; i < forumsCount; i++) {
-          forumPKs[i] = new ForumPK(componentId, forumsIds.get(i));
-        }
-      } else {
-        // Derniers threads du forum.
-        forumPKs = new ForumPK[]{forumPK};
-      }
-
-      if (notAnswered) {
-        // Threads non répondus.
-        return ForumsDAO.getNotAnsweredLastThreads(con, forumPKs, count);
-      } else {
-        // Tous les threads.
-        return ForumsDAO.getLastThreads(con, forumPKs, count);
-      }
-    } catch (Exception e) {
-      throw new ForumsRuntimeException(e);
-    }
-  }
-
   /**
-   * Create the tagclouds corresponding to the forum detail.
-   * @param forumPK theprimary key of the forum.
-   * @
+   * Create the tag clouds corresponding to the forum detail.
+   *
+   * @param forumPK the primary key of the forum.
    */
   private void createTagCloud(ForumPK forumPK, String keywords) {
     TagCloud tagCloud =
@@ -1132,7 +1061,8 @@ public class DefaultForumService implements ForumService {
   }
 
   /**
-   * Delete the tagclouds corresponding to the publication key.
+   * Delete the tag clouds corresponding to the publication key.
+   *
    * @param forumPK The primary key of the forum.
    */
   private void deleteTagCloud(ForumPK forumPK) {
@@ -1146,7 +1076,8 @@ public class DefaultForumService implements ForumService {
   }
 
   /**
-   * Update the tagclouds corresponding to the publication detail.
+   * Update the tag clouds corresponding to the publication detail.
+   *
    * @param forumPK the primary key of the forum.
    */
   private void updateTagCloud(ForumPK forumPK, String keywords) {
@@ -1197,26 +1128,26 @@ public class DefaultForumService implements ForumService {
 
   protected String getWysiwygContent(String componentId, String messageId) {
     String text = "";
-    if (WysiwygController.haveGotWysiwyg(componentId, messageId, DEFAULT_LANGUAGE)) {
-      text = WysiwygController.load(componentId, messageId, DEFAULT_LANGUAGE);
+    if (WysiwygController.haveGotWysiwyg(componentId, messageId, i18n.getDefaultLanguage())) {
+      text = WysiwygController.load(componentId, messageId, i18n.getDefaultLanguage());
     }
     return text;
   }
 
   private void createWysiwyg(MessagePK messagePK, String text, String userId) {
     WysiwygController.createUnindexedFileAndAttachment(text, new ResourceReference(messagePK),
-        userId, DEFAULT_LANGUAGE);
+        userId, i18n.getDefaultLanguage());
   }
 
   private void updateWysiwyg(MessagePK messagePK, String text, String userId) {
     String componentId = messagePK.getComponentName();
     String messageId = messagePK.getId();
-    if (WysiwygController.haveGotWysiwyg(componentId, messageId, DEFAULT_LANGUAGE)) {
+    if (WysiwygController.haveGotWysiwyg(componentId, messageId, i18n.getDefaultLanguage())) {
       WysiwygController
-          .updateFileAndAttachment(text, componentId, messageId, userId, DEFAULT_LANGUAGE);
+          .updateFileAndAttachment(text, componentId, messageId, userId, i18n.getDefaultLanguage());
     } else {
       WysiwygController.createUnindexedFileAndAttachment(text, new ResourceReference(messagePK),
-          userId, DEFAULT_LANGUAGE);
+          userId, i18n.getDefaultLanguage());
     }
   }
 

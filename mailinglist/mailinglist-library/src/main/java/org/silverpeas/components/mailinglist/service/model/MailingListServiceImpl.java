@@ -23,29 +23,17 @@
  */
 package org.silverpeas.components.mailinglist.service.model;
 
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import org.silverpeas.components.mailinglist.model.MailingListRuntimeException;
-import org.silverpeas.components.mailinglist.service.model.beans.ExternalUser;
-import org.silverpeas.components.mailinglist.service.model.beans.InternalGroupSubscriber;
-import org.silverpeas.components.mailinglist.service.model.beans.InternalSubscriber;
-import org.silverpeas.components.mailinglist.service.model.beans.InternalUser;
-import org.silverpeas.components.mailinglist.service.model.beans.InternalUserSubscriber;
-import org.silverpeas.components.mailinglist.service.model.beans.MailingList;
+import org.silverpeas.components.mailinglist.service.model.beans.*;
 import org.silverpeas.components.mailinglist.service.model.dao.MailingListDao;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
-import javax.inject.Inject;
-import javax.transaction.Transactional;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @Transactional
@@ -70,7 +58,7 @@ public class MailingListServiceImpl implements MailingListService {
     String subscribedAddress = organisationController
         .getComponentParameterValue(mailingList.getComponentId(), PARAM_ADDRESS);
     String componentId = mailingList.getComponentId();
-    String[] ids = this.organisationController.getCompoId("mailinglist");
+    String[] ids = this.organisationController.getCompoId(COMPONENT_NAME);
     if (ids != null) {
       for (final String id : ids) {
         String currentId = id;
@@ -80,9 +68,7 @@ public class MailingListServiceImpl implements MailingListService {
         if (!componentId.equalsIgnoreCase(currentId)) {
           String param = organisationController.getComponentParameterValue(id, PARAM_ADDRESS);
           if (param != null && param.equalsIgnoreCase(subscribedAddress)) {
-            throw new MailingListRuntimeException(
-                "MailingListServiceImpl",
-                SilverpeasRuntimeException.ERROR, "Address already subscribed");
+            throw new MailingListRuntimeException("Address already subscribed");
           }
         }
       }
@@ -195,8 +181,8 @@ public class MailingListServiceImpl implements MailingListService {
   }
 
   protected boolean getParamBooleanValue(String param) {
-    return param != null &&
-        (Boolean.valueOf(param) || "Y".equalsIgnoreCase(param) || "YES".equalsIgnoreCase(param));
+    return Boolean.parseBoolean(param) || "Y".equalsIgnoreCase(param)
+        || "YES".equalsIgnoreCase(param);
   }
 
   @Override
@@ -272,13 +258,8 @@ public class MailingListServiceImpl implements MailingListService {
   public void unsubscribe(String componentId, String userId) {
     MailingList mailingList = this.mailingListDao.findByComponentId(componentId);
     if (mailingList != null && userId != null) {
-      Iterator<InternalUserSubscriber> iter = mailingList.getInternalSubscribers().iterator();
-      while (iter.hasNext()) {
-        InternalUserSubscriber user = iter.next();
-        if (userId.equalsIgnoreCase(user.getExternalId())) {
-          iter.remove();
-        }
-      }
+      mailingList.getInternalSubscribers().removeIf(
+          user -> userId.equalsIgnoreCase(user.getExternalId()));
       this.mailingListDao.updateMailingList(mailingList);
     }
   }

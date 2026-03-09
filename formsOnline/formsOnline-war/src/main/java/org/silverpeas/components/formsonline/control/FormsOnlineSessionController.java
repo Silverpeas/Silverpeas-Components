@@ -21,9 +21,9 @@
 package org.silverpeas.components.formsonline.control;
 
 import net.htmlparser.jericho.Source;
-import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.formsonline.FormsOnlineComponentSettings;
 import org.silverpeas.components.formsonline.model.*;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.kernel.SilverpeasException;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
@@ -72,9 +72,9 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
   private FormDetail currentForm;
   private int currentStateFilter;
   private FormInstanceValidationType currentValidationTypeFilter;
-  private Selection selection = null;
-  private Set<String> selectedValidatorRequestIds = new HashSet<>();
-  private Map<Integer, String> statusLabels = new HashMap<>();
+  private final Selection selection;
+  private final Set<String> selectedValidatorRequestIds = new HashSet<>();
+  private final Map<Integer, String> statusLabels = new HashMap<>();
 
   public static final String USER_PANEL_SENDERS_PREFIX = "listSenders";
   public static final String USER_PANEL_RECEIVERS_PREFIX = "listReceivers";
@@ -624,7 +624,7 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
   }
 
   private void loadStatusLabel(int status, String key) {
-    statusLabels.put(Integer.valueOf(status), getString(key));
+    statusLabels.put(status, getString(key));
   }
 
   public PagesContext getFormPageContext() {

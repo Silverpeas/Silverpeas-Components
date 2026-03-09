@@ -30,21 +30,21 @@ import org.apache.xerces.xni.XNIException;
 import org.cyberneko.html.filters.ElementRemover;
 
 public class NekoElementRemover extends ElementRemover {
+
   @Override
   public void comment(org.apache.xerces.xni.XMLString text,
-      org.apache.xerces.xni.Augmentations augs)
-      throws org.apache.xerces.xni.XNIException {
-    return;
+      org.apache.xerces.xni.Augmentations augs) {
+    // does nothing
   }
 
   @Override
   public void ignorableWhitespace(org.apache.xerces.xni.XMLString text,
-      org.apache.xerces.xni.Augmentations augs)
-      throws org.apache.xerces.xni.XNIException {
-    return;
+      org.apache.xerces.xni.Augmentations augs) {
+    // does nothing
   }
 
   /** End element. */
+  @Override
   public void endElement(QName element, Augmentations augs)
       throws XNIException {
     if (fElementDepth <= fRemovalElementDepth && elementAccepted(element.rawname)) {
@@ -62,9 +62,8 @@ public class NekoElementRemover extends ElementRemover {
   @Override
   public void processingInstruction(java.lang.String target,
       org.apache.xerces.xni.XMLString data,
-      org.apache.xerces.xni.Augmentations augs)
-      throws org.apache.xerces.xni.XNIException {
-    return;
+      org.apache.xerces.xni.Augmentations augs) {
+    // does nothing
   }
 
 }

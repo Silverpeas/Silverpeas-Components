@@ -24,7 +24,7 @@ package org.silverpeas.components.kmelia.export;
 
 /**
  * This interface defines the different parts a template for export must be compound of.
- * Each part in the template is uniquely identified by a name and they can be programmatically
+ * Each part in the template is uniquely identified by a name, and they can be programmatically
  * retrieved by this name.
  */
 public interface DocumentTemplateParts {
@@ -32,90 +32,90 @@ public interface DocumentTemplateParts {
   /**
    * Field in the template corresponding to the author (the creator) of the publication to export.
    */
-  static final String FIELD_AUTHOR = "Author";
+  String FIELD_AUTHOR = "Author";
 
   /**
    * Field in the template corresponding to the user that has lastly modified the publication to export.
    */
-  static final String FIELD_LAST_MODIFIER = "Modifier";
+  String FIELD_LAST_MODIFIER = "Modifier";
 
   /**
    * Field in the template corresponding to the last modification date of the publication to export.
    */
-  static final String FIELD_MODIFICATION_DATE = "ModifiedAt";
+  String FIELD_MODIFICATION_DATE = "ModifiedAt";
 
   /**
    * Field in the template corresponding to the creation date of the publication to export.
    */
-  static final String FIELD_CREATION_DATE = "CreatedAt";
+  String FIELD_CREATION_DATE = "CreatedAt";
 
   /**
    * Field in the template corresponding to the URL of the publication to export.
    */
-  static final String FIELD_URL = "URL";
+  String FIELD_URL = "URL";
 
   /**
    * Field in the template corresponding to the version of the publication to export.
    */
-  static final String FIELD_VERSION = "Version";
+  String FIELD_VERSION = "Version";
 
   /**
    * The field in the template corresponding to the description of the publication to export.
    */
-  static final String FIELD_DESCRIPTION = "Subject";
+  String FIELD_DESCRIPTION = "Subject";
 
   /**
    * The section in the template relative to the information about the publication.
    */
-  static final String SECTION_INFO = "Info";
+  String SECTION_INFO = "Info";
 
   /**
    * The section in the template relative to the attachments of the publication.
    */
-  static final String SECTION_ATTACHMENTS = "Attachments";
+  String SECTION_ATTACHMENTS = "Attachments";
 
   /**
    * The section in the template relative to the links to others publications.
    */
-  static final String SECTION_SEEALSO = "SeeAlso";
+  String SECTION_SEEALSO = "SeeAlso";
 
   /**
    * The section in the template relative to the classification of the publication.
    */
-  static final String SECTION_CLASSIFICATION = "Classification";
+  String SECTION_CLASSIFICATION = "Classification";
 
   /**
    * The section in the template that renders the publication's comments.
    */
-  static final String SECTION_COMMENTS = "Comments";
+  String SECTION_COMMENTS = "Comments";
 
   /**
    * The section in the template that renders the publication's content.
    */
-  static final String SECTION_CONTENT = "Content";
+  String SECTION_CONTENT = "Content";
 
   /**
    * The area in which the metadata about the publication are rendered. The metadata are displayed
    * in the text section defined by SECTION_INFO.
    */
-  static final String LIST_OF_METADATA = "PubliInfo";
+  String LIST_OF_METADATA = "PubliInfo";
 
   /*
-   * The area in wich all the comments of the publication have to be rendered. The comments are
+   * The area in which all the comments of the publication have to be rendered. The comments are
    * displayed in the text section defined by SECTION_COMMENTS.
    */
-  static final String LIST_OF_COMMENTS = "PubliComments";
+  String LIST_OF_COMMENTS = "PubliComments";
 
   /*
-   * The area in wich all the attachments of the publication have to be rendered. The attachments
+   * The area in which all the attachments of the publication have to be rendered. The attachments
    * are displayed in the text section defined by SECTION_ATTACHMENTS.
    */
-  static final String LIST_OF_ATTACHMENTS = "PubliAttachments";
+  String LIST_OF_ATTACHMENTS = "PubliAttachments";
 
   /*
-   * The area in wich all the publications to which the publication is linked are rendered. The
+   * The area in which all the publications to which the publication is linked are rendered. The
    * links are displayed in the text section defined by SECTION_SEEALSO.
    */
-  static final String LIST_OF_LINKS = "PubliSeeAlso";
+  String LIST_OF_LINKS = "PubliSeeAlso";
 
 }

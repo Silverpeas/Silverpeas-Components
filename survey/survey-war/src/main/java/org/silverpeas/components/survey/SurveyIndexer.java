@@ -48,19 +48,24 @@
 package org.silverpeas.components.survey;
 
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerHeader;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerPK;
 import org.silverpeas.core.questioncontainer.container.service.QuestionContainerService;
 import org.silverpeas.core.web.index.components.ComponentIndexation;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.inject.Singleton;
+import org.silverpeas.kernel.annotation.Technical;
+
 import java.util.Collection;
 
 /**
  * This class is the main entry point to index the content of survey component
  */
+@Technical
+@Bean
 @Singleton
 @Named("survey" + ComponentIndexation.QUALIFIER_SUFFIX)
 public class SurveyIndexer implements ComponentIndexation {

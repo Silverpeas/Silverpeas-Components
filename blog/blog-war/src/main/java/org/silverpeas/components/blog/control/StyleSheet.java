@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.blog.control;
 
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlTransient;
 
 public class StyleSheet extends CustomEntity {
   private static final long serialVersionUID = -9024520644328445228L;

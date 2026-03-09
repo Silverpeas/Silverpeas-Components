@@ -24,13 +24,15 @@
 
 package org.silverpeas.components.kmelia.notification;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.node.model.NodePK;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 
 /**
  * @author silveryocha
  */
+@Bean
 @Named
 public class KmaxInstanceManualUserNotification extends KmeliaInstanceManualUserNotification {
 

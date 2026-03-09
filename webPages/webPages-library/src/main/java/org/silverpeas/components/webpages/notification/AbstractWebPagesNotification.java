@@ -19,7 +19,7 @@ abstract class AbstractWebPagesNotification extends AbstractTemplateUserNotifica
   private final User user;
   private final String pageName;
 
-  public AbstractWebPagesNotification(final NodePK resource, final User user) {
+  protected AbstractWebPagesNotification(final NodePK resource, final User user) {
     super(resource);
     this.user = user;
     this.pageName = OrganizationControllerProvider.

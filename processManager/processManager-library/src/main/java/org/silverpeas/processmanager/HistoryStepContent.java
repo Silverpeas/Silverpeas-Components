@@ -30,9 +30,9 @@ import org.silverpeas.core.contribution.content.form.PagesContext;
 
 public class HistoryStepContent {
 
-  Form form;
-  PagesContext pageContext;
-  DataRecord record;
+  private Form form;
+  private PagesContext pageContext;
+  private DataRecord record;
 
   public HistoryStepContent(Form form, PagesContext pageContext,
       DataRecord record) {

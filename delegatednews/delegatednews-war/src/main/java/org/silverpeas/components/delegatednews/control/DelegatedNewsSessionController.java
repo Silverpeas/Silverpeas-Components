@@ -26,11 +26,9 @@ package org.silverpeas.components.delegatednews.control;
 import org.silverpeas.components.delegatednews.DelegatedNewsRuntimeException;
 import org.silverpeas.components.delegatednews.model.DelegatedNews;
 import org.silverpeas.components.delegatednews.service.DelegatedNewsService;
-import org.silverpeas.components.delegatednews.service.DelegatedNewsServiceProvider;
 import org.silverpeas.components.delegatednews.web.DelegatedNewsEntity;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.exception.EncodingException;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
@@ -59,7 +57,7 @@ public class DelegatedNewsSessionController extends AbstractComponentSessionCont
     super(mainSessionCtrl, componentContext,
         "org.silverpeas.delegatednews.multilang.DelegatedNewsBundle",
         "org.silverpeas.delegatednews.settings.DelegatedNewsIcons");
-    service = DelegatedNewsServiceProvider.getDelegatedNewsService();
+    service = DelegatedNewsService.get();
   }
 
   public boolean isUser() {
@@ -82,11 +80,6 @@ public class DelegatedNewsSessionController extends AbstractComponentSessionCont
     return false;
   }
 
-  /**
-   * Is component instance available
-   * @return boolean : true si l'instanceId passsée en paramètre appartient au tableau passé en
-   * paramètre 2
-   */
   private boolean isAvailComponentId(String instanceId, String[] allowedComponentIds) {
     if (instanceId == null) {
       return false;
@@ -129,7 +122,7 @@ public class DelegatedNewsSessionController extends AbstractComponentSessionCont
 
   /**
    * Refuse delegated news identified by pubId
-   * @param pubId the delegated news identifer to refuse
+   * @param pubId the delegated news identifier to refuse
    * @param refuseReasonText the reason why delegated news has been refused
    */
   public void refuseDelegatedNews(String pubId, String refuseReasonText) {
@@ -152,7 +145,7 @@ public class DelegatedNewsSessionController extends AbstractComponentSessionCont
   /**
    * Converts the list of Delegated News into its JSON representation.
    * @return a JSON representation of the list of Delegated News (as string)
-   * @throws DelegatedNewsRuntimeException
+   * @throws DelegatedNewsRuntimeException if an error occurs
    */
   public String getListDelegatedNewsJSON(List<DelegatedNews> listDelegatedNews) {
     List<DelegatedNewsEntity> listDelegatedNewsEntity = new ArrayList<>();
@@ -168,22 +161,21 @@ public class DelegatedNewsSessionController extends AbstractComponentSessionCont
    * Converts the list of Delegated News Entity into its JSON representation.
    * @param listDelegatedNewsEntity the list of delegated news to convert into JSON representation
    * @return a JSON representation of the list of Delegated News Entity (as string)
-   * @throws DelegatedNewsRuntimeException
+   * @throws DelegatedNewsRuntimeException if an error occurs
    */
   private String listAsJSON(List<DelegatedNewsEntity> listDelegatedNewsEntity) {
     DelegatedNewsEntity[] entities =
-        listDelegatedNewsEntity.toArray(new DelegatedNewsEntity[listDelegatedNewsEntity.size()]);
+        listDelegatedNewsEntity.toArray(new DelegatedNewsEntity[0]);
     try {
       return JSONCodec.encode(entities);
     } catch (EncodingException ex) {
-      throw new DelegatedNewsRuntimeException("DelegatedNewsSessionController.listAsJSON()",
-          SilverpeasRuntimeException.ERROR, "root.EX_NO_MESSAGE", ex);
+      throw new DelegatedNewsRuntimeException(ex);
     }
   }
 
   private DelegatedNewsService getService() {
     if (service == null) {
-      service = DelegatedNewsServiceProvider.getDelegatedNewsService();
+      service = DelegatedNewsService.get();
     }
     return service;
   }

@@ -24,15 +24,14 @@
 
 package org.silverpeas.components.quickinfo.socialnetwork;
 
+import jakarta.inject.Inject;
 import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.components.quickinfo.model.QuickInfoServiceProvider;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.annotation.Provider;
-import org.silverpeas.core.comment.service.CommentServiceProvider;
+import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.comment.socialnetwork.SocialInformationComment;
 import org.silverpeas.core.date.Period;
-import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.socialnetwork.provider.SocialNewsCommentProvider;
 import org.silverpeas.core.util.URLUtil;
 
@@ -42,7 +41,13 @@ import java.util.Date;
 import java.util.List;
 
 @Provider
-public class SocialQuickInfoComment implements SocialNewsCommentProvider {
+public class SocialQuickInfoComment implements SocialNewsCommentProvider<SocialInformationComment> {
+
+  @Inject
+  private CommentService commentService;
+
+  @Inject
+  private OrganizationController organizationController;
 
   private List<String> getListResourceType() {
     List<String> listResourceType = new ArrayList<>();
@@ -50,8 +55,7 @@ public class SocialQuickInfoComment implements SocialNewsCommentProvider {
     return listResourceType;
   }
 
-  @SuppressWarnings("unchecked")
-  private List<SocialInformation> decorate(List<SocialInformationComment> listSocialInformation) {
+  private List<SocialInformationComment> decorate(List<SocialInformationComment> listSocialInformation) {
     for (SocialInformationComment socialInformation : listSocialInformation) {
       String resourceId = socialInformation.getComment().getResourceReference().getLocalId();
 
@@ -64,30 +68,28 @@ public class SocialQuickInfoComment implements SocialNewsCommentProvider {
       socialInformation.setTitle(news.getTitle());
     }
 
-    return (List) listSocialInformation;
+    return listSocialInformation;
   }
 
   @Override
-  public List<SocialInformation> getSocialInformationList(String userId, Date begin, Date end) {
+  public List<SocialInformationComment> getSocialInformationList(String userId, Date begin,
+      Date end) {
     List<SocialInformationComment> listSocialInformation =
-        CommentServiceProvider.getCommentService()
-            .getSocialInformationCommentsListByUserId(getListResourceType(), userId,
-                Period.between(begin.toInstant(), end.toInstant()));
+        commentService.getSocialInformationCommentsListByUserId(getListResourceType(), userId,
+            Period.between(begin.toInstant(), end.toInstant()));
 
     return decorate(listSocialInformation);
   }
 
   @Override
-  public List<SocialInformation> getSocialInformationListOfMyContacts(String myId,
+  public List<SocialInformationComment> getSocialInformationListOfMyContacts(String myId,
       List<String> myContactsIds, Date begin, Date end) {
-    OrganizationController oc = OrganizationControllerProvider.getOrganisationController();
-    List<String> instanceIds = new ArrayList<>();
-    instanceIds.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "quickinfo")));
+    List<String> instanceIds = new ArrayList<>(Arrays.asList(
+        organizationController.getComponentIdsForUser(myId, "quickinfo")));
 
     List<SocialInformationComment> listSocialInformation =
-        CommentServiceProvider.getCommentService()
-            .getSocialInformationCommentsListOfMyContacts(getListResourceType(), myContactsIds,
-                instanceIds, Period.between(begin.toInstant(), end.toInstant()));
+        commentService.getSocialInformationCommentsListOfMyContacts(getListResourceType(),
+            myContactsIds, instanceIds, Period.between(begin.toInstant(), end.toInstant()));
 
     return decorate(listSocialInformation);
   }

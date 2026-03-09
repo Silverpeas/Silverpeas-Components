@@ -23,11 +23,12 @@
  */
 package org.silverpeas.components.yellowpages;
 
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import org.silverpeas.components.yellowpages.model.TopicDetail;
 import org.silverpeas.components.yellowpages.model.UserContact;
 import org.silverpeas.components.yellowpages.service.YellowpagesService;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.contact.model.ContactDetail;
 import org.silverpeas.core.node.model.NodeDetail;
@@ -36,7 +37,6 @@ import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
 import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
 
-import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -47,7 +47,15 @@ import java.util.List;
 public class YellowpagesStatistics implements ComponentStatisticsProvider {
 
   private static final String USELESS = "useless";
-  private NodeService nodeService = NodeService.get();
+
+  @Inject
+  private NodeService nodeService;
+
+  @Inject
+  private YellowpagesService yellowpagesService;
+
+  @Inject
+  private OrganizationController organizationController;
 
   @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId) {
@@ -67,12 +75,8 @@ public class YellowpagesStatistics implements ComponentStatisticsProvider {
     return myArrayList;
   }
 
-  /**
-   * Method declaration
-   * @return instance of {@link YellowpagesService}.
-   */
   private YellowpagesService getYellowPagesService() {
-    return YellowpagesService.get();
+    return yellowpagesService;
   }
 
   /**
@@ -86,12 +90,9 @@ public class YellowpagesStatistics implements ComponentStatisticsProvider {
       return result;
     }
 
-    OrganizationController organisationController =
-        OrganizationControllerProvider.getOrganisationController();
-
     if (topicId.startsWith("group_")) {
       int nbUsers =
-          organisationController.getAllSubUsersNumber(topicId.substring("group_".length()));
+          organizationController.getAllSubUsersNumber(topicId.substring("group_".length()));
       for (int n = 0; n < nbUsers; n++) {
         ContactDetail detail =
             new ContactDetail(USELESS, USELESS, USELESS, USELESS, USELESS, USELESS, USELESS,

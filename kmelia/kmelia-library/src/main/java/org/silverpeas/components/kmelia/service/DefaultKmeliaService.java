@@ -20,6 +20,12 @@
  */
 package org.silverpeas.components.kmelia.service;
 
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.inject.Singleton;
+import jakarta.transaction.Transactional;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response.Status;
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.components.kmelia.*;
 import org.silverpeas.components.kmelia.model.*;
@@ -28,6 +34,7 @@ import org.silverpeas.core.ActionType;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.ProfiledObjectId;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.RemovedSpaceAndComponentInstanceChecker;
@@ -54,7 +61,7 @@ import org.silverpeas.core.contribution.template.form.dao.ModelDAO;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.index.indexing.model.IndexManager;
 import org.silverpeas.core.io.media.image.thumbnail.ThumbnailException;
 import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailController;
@@ -103,12 +110,6 @@ import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-import javax.transaction.Transactional;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response.Status;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -132,7 +133,6 @@ import static org.silverpeas.components.kmelia.notification.KmeliaDelayedVisibil
 import static org.silverpeas.components.kmelia.service.KmeliaHelper.isToolbox;
 import static org.silverpeas.components.kmelia.service.KmeliaOperationContext.OperationType.*;
 import static org.silverpeas.components.kmelia.service.KmeliaServiceContext.*;
-import static org.silverpeas.core.admin.component.model.ComponentInst.getComponentLocalId;
 import static org.silverpeas.core.admin.service.OrganizationControllerProvider.getOrganisationController;
 import static org.silverpeas.core.cache.service.CacheAccessorProvider.getThreadCacheAccessor;
 import static org.silverpeas.core.contribution.attachment.AttachmentService.VERSION_MODE;
@@ -190,6 +190,14 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
   private PdcSubscriptionManager pdcSubscriptionManager;
   @Inject
   private KmeliaContentManager kmeliaContentManager;
+  @Inject
+  private I18n i18n;
+  @Inject
+  private PublicationAccessControl publicationAccessControl;
+  @Inject
+  private NodeAccessControl nodeAccessControl;
+  @Inject
+  private ComponentAccessControl componentAccessControl;
 
   private int getNbPublicationsOnRoot(String componentId) {
     String parameterValue =
@@ -222,7 +230,7 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
     try {
       nodeDetail = nodeService.getDetail(pk);
       if (mustUserRightsBeChecked) {
-        if (!NodeAccessControl.get().isUserAuthorized(userId, nodeDetail)) {
+        if (!nodeAccessControl.isUserAuthorized(userId, nodeDetail)) {
           nodeDetail.setUserRole("noRights");
         }
         List<NodeDetail> availableChildren = getAllowedSubfolders(nodeDetail, userId);
@@ -376,7 +384,7 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
   /**
    * Add a subtopic to a topic - If a subtopic of same name already exists a NodePK with id=-1 is
    * returned else the new topic NodePK
-   * @param fatherPK the topic Id of the future father
+   * @param fatherPK the topic id of the future father
    * @param subTopic the NodeDetail of the new sub topic
    * @return If a subtopic of same name already exists a NodePK with id=-1 is returned else the new
    * topic NodePK
@@ -479,7 +487,7 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
   /**
    * Delete a topic and all descendants. Delete all links between descendants and publications. This
    * publications will be visible in the Declassified zone. Delete All subscriptions and favorites
-   * on this topics and all descendants
+   * on these topics and all descendants
    *
    * @param pkToDelete the id of the topic to delete
    * @since 1.0
@@ -1291,7 +1299,7 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
         unIndexExternalElementsOfPublication(pub.getPK());
       }
     }
-    // send notifications like a publish action
+    // send notifications like a publishing action
     sendSubscriptionsNotification(pub, NotifAction.PUBLISHED, false);
   }
 
@@ -1652,7 +1660,7 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
                 Location::isAlias)
             .thenComparing(Location::getInstanceId)
             .thenComparing(Location::getId))
-        .filter(l -> NodeAccessControl.get().isUserAuthorized(userId, l))
+        .filter(l -> nodeAccessControl.isUserAuthorized(userId, l))
         .findFirst()
         .orElse(root);
   }
@@ -1660,7 +1668,7 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
   /**
    * Gets all the locations of the publication in the original Kmelia instance.
    * @param pubPK the identifying key of the publication
-   * @param inComponentInstance true o get location in component instance only, false to get all
+   * @param inComponentInstance true to get location in component instance only, false to get all
    * @return a collection of {@link Location} objects.
    */
   private List<Location> getPublicationLocations(PublicationPK pubPK,
@@ -1718,7 +1726,7 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
     if (accessControlFiltering) {
       final Map<PublicationPK, ResourceReference> indexedReferences = references.stream()
           .collect(toMap(r -> new PublicationPK(r.getId(), r.getInstanceId()), r -> r));
-      final List<ResourceReference> authorizedReferences = PublicationAccessControl.get()
+      final List<ResourceReference> authorizedReferences = publicationAccessControl
           .filterAuthorizedByUser(indexedReferences.keySet(), userId)
           .map(indexedReferences::get)
           .collect(Collectors.toList());
@@ -1739,7 +1747,7 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
         .collect(toMap(r -> new PublicationPK(r.getId(), r.getInstanceId()), r -> r));
     final AccessControlContext modificationContext = AccessControlContext.init()
         .onOperationsOf(MODIFICATION);
-    final List<ResourceReference> authorizedReferences = PublicationAccessControl.get()
+    final List<ResourceReference> authorizedReferences = publicationAccessControl
         .filterAuthorizedByUser(indexedReferences.keySet(), userId, modificationContext)
         .map(indexedReferences::get)
         .collect(Collectors.toList());
@@ -1938,7 +1946,7 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
       stepUserIds.add(step.getUserId());
     }
 
-    // check if all users have validate
+    // check if all users have validated
     boolean validationOK = true;
     for (int i = 0; validationOK && i < allValidators.size(); i++) {
       String validatorId = allValidators.get(i);
@@ -2040,7 +2048,7 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
       validationComplete = true;
     } else {
       if (validationType == KmeliaHelper.VALIDATION_TARGET_N) {
-        // check that validators are well defined
+        // check that validators are well-defined
         // If not, considering validation as classic one
         PublicationDetail publi = publicationService.getDetail(validatedPK);
         validationComplete = !isDefined(publi.getTargetValidatorId());
@@ -2400,7 +2408,7 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
   public UserNotification getUserNotification(PublicationPK pubPK, SimpleDocumentPK documentPk,
       NodePK topicPK) {
     final PublicationDetail pubDetail = getPublicationDetail(pubPK);
-    // componentId of document is always the same than its publication (case of alias)
+    // componentId of document is always the same as its publication (case of alias)
     documentPk.setComponentName(pubDetail.getInstanceId());
     final SimpleDocument document = getAttachmentService().searchDocumentById(documentPk, null);
     SimpleDocument version = document.getLastPublicVersion();
@@ -2850,7 +2858,7 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
   }
 
   /**
-   * Copy model used from a node to an other one.
+   * Copy model used from a node to another one.
    * @param from the node the models used are linked to.
    * @param to the node the models must be copied.
    */
@@ -3395,7 +3403,7 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
       String description, byte[] contents) {
     try {
       Date creationDate = new Date();
-      SimpleAttachment file = SimpleAttachment.builder(I18NHelper.DEFAULT_LANGUAGE)
+      SimpleAttachment file = SimpleAttachment.builder(i18n.getDefaultLanguage())
           .setFilename(FileUtil.getFilename(filename))
           .setTitle(filename)
           .setDescription("")
@@ -3600,7 +3608,7 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
         children.add(temp);
       }
 
-      // adding special folders "non visible publications"
+      // adding special folders "non-visible publications"
       if (isUserCanWrite(instanceId, userId)) {
         NodeDetail temp = new NodeDetail();
         temp.getNodePK().setId(KmeliaHelper.SPECIALFOLDER_NONVISIBLEPUBS);
@@ -3651,7 +3659,7 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
       if (treeview == null) {
         treeview = getTreeview(node.getNodePK(), userId);
       }
-      // set nb objects in each nodes
+      // set nb objects in each node
       setNbItemsOfFolders(instanceId, node.getChildrenDetails(), treeview);
     }
   }
@@ -4216,19 +4224,19 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
           .forEach(verifiedGroupIds::add);
     } else {
       // check users and groups according to component instance rights
-      ComponentAccessControl accessControl = ComponentAccessControl.get();
       profile.getAllUsers().stream()
-          .filter(u -> accessControl.isUserAuthorized(u, instanceId))
+          .filter(u -> componentAccessControl.isUserAuthorized(u, instanceId))
           .forEach(verifiedUserIds::add);
       profile.getAllGroups().stream()
-          .filter(g -> accessControl.isGroupAuthorized(g, instanceId))
+          .filter(g -> componentAccessControl.isGroupAuthorized(g, instanceId))
           .forEach(verifiedGroupIds::add);
     }
 
     profile.setId("-1");
     profile.setUsers(verifiedUserIds);
     profile.setGroups(verifiedGroupIds);
-    profile.setComponentFatherId(getComponentLocalId(instanceId));
+    profile.setComponentFatherId(
+        SilverpeasComponentInstance.getIdentity(instanceId).getInstanceLocalId());
     profile.setObjectId(ProfiledObjectId.fromNode(node.getId()));
     profile.setParentObjectId(ProfiledObjectId.fromNode(node.getFatherPK().getId()));
   }
@@ -4447,7 +4455,7 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
             publications.size());
 
     // Validation process is performed, maybe some must be validated.
-    KmeliaValidation.by(userId).validatorHasNoMoreRight().validate(publications);
+    KmeliaValidation.by(userId).with(this).validatorHasNoMoreRight().validate(publications);
   }
 
   private boolean isPublicationVisible(PublicationDetail detail, SilverpeasRole profile,
@@ -4461,7 +4469,7 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
         if (detail.isDraft()) {
           // si le theme est en co-rédaction et si on autorise le mode brouillon visible par tous
           // toutes les publications en mode brouillon sont visibles par tous, sauf les lecteurs
-          // sinon, seules les publications brouillon sont visibles à l'utilisateur
+          // sinon, seuls les brouillons sont visibles à l'utilisateur
           return isVisibleInDraft(detail, profile, userId, coWriting);
         } else {
           return isVisibleInPublished(detail, profile, userId, coWriting);
@@ -4596,7 +4604,7 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
               .excludingNodes(NodePK.BIN_NODE_ID)
               .orderByDescendingLastUpdateDate());
       // only publications allowed by current user must be returned
-      List<PublicationDetail> publications = PublicationAccessControl.get()
+      List<PublicationDetail> publications = publicationAccessControl
           .filterAuthorizedByUser(userId, temp)
           .collect(Collectors.toList());
       return asKmeliaPublication(publications);

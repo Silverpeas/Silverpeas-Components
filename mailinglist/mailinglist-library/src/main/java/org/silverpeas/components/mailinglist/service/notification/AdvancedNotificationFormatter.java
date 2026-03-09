@@ -23,22 +23,25 @@
  */
 package org.silverpeas.components.mailinglist.service.notification;
 
+import jakarta.inject.Inject;
 import org.silverpeas.components.mailinglist.service.model.beans.Message;
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.util.StringUtil;
-import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplates;
 
-import javax.enterprise.inject.Default;
-import javax.inject.Singleton;
+import jakarta.enterprise.inject.Default;
+import jakarta.inject.Singleton;
 import java.util.Properties;
 
 /**
  * @author ehugonnet
  */
+@Bean
 @Singleton
 @Default
 public class AdvancedNotificationFormatter extends AbstractNotificationFormatter {
@@ -51,6 +54,9 @@ public class AdvancedNotificationFormatter extends AbstractNotificationFormatter
 
   public static final String MODERATION_TEMPLATE_FILE = "mailinglistModerationMessage";
   public static final String SIMPLE_TEMPLATE_FILE = "mailinglistSimpleMessage";
+
+  @Inject
+  private I18n i18n;
 
   static {
     SettingBundle settings =
@@ -89,7 +95,7 @@ public class AdvancedNotificationFormatter extends AbstractNotificationFormatter
   @Override
   public String formatMessage(Message message, String lang, boolean moderate) {
     SilverpeasTemplate template = getTemplate(message, "", moderate);
-    String currentLanguage = I18NHelper.DEFAULT_LANGUAGE;
+    String currentLanguage = i18n.getDefaultLanguage();
     if (StringUtil.isDefined(lang)) {
       currentLanguage = lang;
     }

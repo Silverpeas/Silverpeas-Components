@@ -32,12 +32,12 @@ import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.core.util.file.FileFolderManager;
 
-import javax.inject.Named;
-import javax.transaction.Transactional;
+import jakarta.inject.Named;
+import jakarta.transaction.Transactional;
 import java.io.File;
 
 /**
- * Deletes all the web site managed by the WebSites instance that is being deleted.
+ * Deletes all the websites managed by the WebSites instance that is being deleted.
  * @author mmoquillon
  */
 @Technical

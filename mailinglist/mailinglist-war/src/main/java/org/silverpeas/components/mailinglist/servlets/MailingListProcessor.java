@@ -23,47 +23,38 @@
  */
 package org.silverpeas.components.mailinglist.servlets;
 
-import org.silverpeas.components.mailinglist.service.MailingListServicesProvider;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
+import org.silverpeas.components.mailinglist.service.model.MailingListService;
+import org.silverpeas.components.mailinglist.service.model.MessageService;
 import org.silverpeas.components.mailinglist.service.model.beans.MailingList;
 import org.silverpeas.components.mailinglist.service.model.beans.Message;
 import org.silverpeas.components.mailinglist.service.util.OrderBy;
-import java.util.List;
-import javax.servlet.http.HttpServletRequest;
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.kernel.logging.SilverLogger;
 
+import java.util.List;
+
+@Bean
 public class MailingListProcessor implements MailingListRoutage {
 
-  public static String processMailingList(RestRequest rest,
-      HttpServletRequest request) {
+  @Inject
+  private MailingListService mailingListService;
+
+  @Inject
+  private MessageService messageService;
+
+  public String processMailingList(RestRequest rest, HttpServletRequest request) {
     switch (rest.getAction()) {
       case RestRequest.DELETE:
       case RestRequest.UPDATE:
       case RestRequest.FIND:
       default:
-        int page = 0;
-        if (request.getParameter(CURRENT_PAGE_PARAM) != null) {
-          try {
-            page = Integer.parseInt(request.getParameter(CURRENT_PAGE_PARAM));
-          } catch (NumberFormatException nfex) {
-          }
-        }
-        int year = -1;
-        if (rest.getElements().get(CURRENT_YEAR_PARAM) != null) {
-          try {
-            year = Integer.parseInt(rest.getElements().get(CURRENT_YEAR_PARAM));
-          } catch (NumberFormatException nfex) {
-            year = -1;
-          }
-        }
-        int month = -1;
-        if (rest.getElements().get(CURRENT_MONTH_PARAM) != null) {
-          try {
-            month = Integer.parseInt(rest.getElements().get(CURRENT_MONTH_PARAM));
-          } catch (NumberFormatException nfex) {
-            month = -1;
-          }
-        }
+        int page = getPage(request);
+        int year = getYear(rest);
+        int month = getMonth(rest);
         String id = rest.getElements().get(DESTINATION_LIST);
-        MailingList list = MailingListServicesProvider.getMailingListService().findMailingList(id);
+        MailingList list = mailingListService.findMailingList(id);
         String orderParam = request.getParameter(ORDER_BY_PARAM);
         String ascendantParam = request.getParameter(ORDER_ASC_PARAM);
         boolean asc = false;
@@ -71,18 +62,41 @@ public class MailingListProcessor implements MailingListRoutage {
           orderParam = "sentDate";
         }
         if (ascendantParam != null) {
-          asc = Boolean.valueOf(ascendantParam);
+          asc = Boolean.parseBoolean(ascendantParam);
         }
         request.setAttribute(orderParam, !asc);
         OrderBy orderBy = new OrderBy(orderParam, asc);
-        List<Message> messages = MailingListServicesProvider.getMessageService()
-            .listDisplayableMessages(list, month, year, page, orderBy);
+        List<Message> messages =
+            messageService.listDisplayableMessages(list, month, year, page, orderBy);
         request.setAttribute(MESSAGES_LIST_ATT, messages);
-        int nbPages = MailingListServicesProvider.getMessageService()
-            .getNumberOfPagesForDisplayableMessages(list);
+        int nbPages = messageService.getNumberOfPagesForDisplayableMessages(list);
         request.setAttribute(NB_PAGE_ATT, nbPages);
         request.setAttribute(CURRENT_PAGE_ATT, page);
         return JSP_BASE + DESTINATION_DISPLAY_LIST;
     }
+  }
+
+  private int getMonth(RestRequest rest) {
+    return decodeParam(rest.getElements().get(CURRENT_MONTH_PARAM), -1);
+  }
+
+  private int getYear(RestRequest rest) {
+    return decodeParam(rest.getElements().get(CURRENT_YEAR_PARAM), -1);
+  }
+
+  private int decodeParam(String param, int defaultValue) {
+    int year = defaultValue;
+    if (param != null) {
+      try {
+        year = Integer.parseInt(param);
+      } catch (NumberFormatException e) {
+        SilverLogger.getLogger(this).error(e.getMessage());
+      }
+    }
+    return year;
+  }
+
+  private int getPage(HttpServletRequest request) {
+    return decodeParam(request.getParameter(CURRENT_PAGE_PARAM), 0);
   }
 }

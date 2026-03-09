@@ -74,7 +74,7 @@ class KmeliaUserTreeViewFilterTest {
   private OrganizationController organisationController;
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     // Verifying common data
     List<NodeDetail> commonTree = buildCommonTree();
 
@@ -83,9 +83,9 @@ class KmeliaUserTreeViewFilterTest {
         Pair.of(NODE_AB_ID, null), Pair.of(NODE_ABA_ID, null), Pair.of(NODE_B_ID, null),
         Pair.of(NODE_BA_ID, null));
 
-    NodeDetail node_AA = commonTree.get(2);
-    assertThat(node_AA.getId(), is(NODE_AA_ID));
-    assertThat(node_AA.getChildrenDetails(), hasSize(2));
+    NodeDetail nodeAA = commonTree.get(2);
+    assertThat(nodeAA.getId(), is(NODE_AA_ID));
+    assertThat(nodeAA.getChildrenDetails(), hasSize(2));
   }
 
   @Test
@@ -153,11 +153,11 @@ class KmeliaUserTreeViewFilterTest {
   void setBestUserRoleAndFilterOnCommonTreeWithRightHandlingOnNodeAAButNoUserRight() {
     List<NodeDetail> commonTree = buildCommonTree();
 
-    NodeDetail node_AA = commonTree.get(2);
-    node_AA.setRightsDependsOnMe();
-    assertThat(node_AA.getId(), is(NODE_AA_ID));
-    assertThat(node_AA.haveRights(), is(true));
-    assertThat(node_AA.getChildrenDetails(), hasSize(2));
+    NodeDetail nodeAA = commonTree.get(2);
+    nodeAA.setRightsDependsOnMe();
+    assertThat(nodeAA.getId(), is(NODE_AA_ID));
+    assertThat(nodeAA.haveRights(), is(true));
+    assertThat(nodeAA.getChildrenDetails(), hasSize(2));
 
     KmeliaUserTreeViewFilter
         .from(USER_ID, INSTANCE_ID, ROOT_NODE_PK, READER_ROLE, true)
@@ -170,9 +170,9 @@ class KmeliaUserTreeViewFilterTest {
         Pair.of(NODE_B_ID, READER_ROLE),
         Pair.of(NODE_BA_ID, READER_ROLE));
 
-    assertThat(node_AA.getId(), is(NODE_AA_ID));
-    assertThat(node_AA.haveRights(), is(true));
-    assertThat(node_AA.getChildrenDetails(), empty());
+    assertThat(nodeAA.getId(), is(NODE_AA_ID));
+    assertThat(nodeAA.haveRights(), is(true));
+    assertThat(nodeAA.getChildrenDetails(), empty());
   }
 
   @Test
@@ -180,17 +180,17 @@ class KmeliaUserTreeViewFilterTest {
   setBestUserRoleAndFilterOnCommonTreeWithRightHandlingOnNodeAAandNodeAABbutNoUserRight() {
     List<NodeDetail> commonTree = buildCommonTree();
 
-    NodeDetail node_AA = commonTree.get(2);
-    node_AA.setRightsDependsOnMe();
-    assertThat(node_AA.getId(), is(NODE_AA_ID));
-    assertThat(node_AA.haveRights(), is(true));
-    assertThat(node_AA.getChildrenDetails(), hasSize(2));
+    NodeDetail nodeAA = commonTree.get(2);
+    nodeAA.setRightsDependsOnMe();
+    assertThat(nodeAA.getId(), is(NODE_AA_ID));
+    assertThat(nodeAA.haveRights(), is(true));
+    assertThat(nodeAA.getChildrenDetails(), hasSize(2));
 
-    NodeDetail node_AAB = commonTree.get(4);
-    node_AAB.setRightsDependsOnMe();
-    assertThat(node_AAB.getId(), is(NODE_AAB_ID));
-    assertThat(node_AAB.haveRights(), is(true));
-    assertThat(node_AAB.getChildrenDetails(), empty());
+    NodeDetail nodeAAB = commonTree.get(4);
+    nodeAAB.setRightsDependsOnMe();
+    assertThat(nodeAAB.getId(), is(NODE_AAB_ID));
+    assertThat(nodeAAB.haveRights(), is(true));
+    assertThat(nodeAAB.getChildrenDetails(), empty());
 
     KmeliaUserTreeViewFilter
         .from(USER_ID, INSTANCE_ID, ROOT_NODE_PK, READER_ROLE, true)
@@ -203,13 +203,13 @@ class KmeliaUserTreeViewFilterTest {
         Pair.of(NODE_B_ID, READER_ROLE),
         Pair.of(NODE_BA_ID, READER_ROLE));
 
-    assertThat(node_AA.getId(), is(NODE_AA_ID));
-    assertThat(node_AA.haveRights(), is(true));
-    assertThat(node_AA.getChildrenDetails(), empty());
+    assertThat(nodeAA.getId(), is(NODE_AA_ID));
+    assertThat(nodeAA.haveRights(), is(true));
+    assertThat(nodeAA.getChildrenDetails(), empty());
 
-    assertThat(node_AAB.getId(), is(NODE_AAB_ID));
-    assertThat(node_AAB.haveRights(), is(true));
-    assertThat(node_AAB.getChildrenDetails(), empty());
+    assertThat(nodeAAB.getId(), is(NODE_AAB_ID));
+    assertThat(nodeAAB.haveRights(), is(true));
+    assertThat(nodeAAB.getChildrenDetails(), empty());
   }
 
   @Test
@@ -220,17 +220,17 @@ class KmeliaUserTreeViewFilterTest {
 
     List<NodeDetail> commonTree = buildCommonTree();
 
-    NodeDetail node_AA = commonTree.get(2);
-    node_AA.setRightsDependsOnMe();
-    assertThat(node_AA.getId(), is(NODE_AA_ID));
-    assertThat(node_AA.haveRights(), is(true));
-    assertThat(node_AA.getChildrenDetails(), hasSize(2));
+    NodeDetail nodeAA = commonTree.get(2);
+    nodeAA.setRightsDependsOnMe();
+    assertThat(nodeAA.getId(), is(NODE_AA_ID));
+    assertThat(nodeAA.haveRights(), is(true));
+    assertThat(nodeAA.getChildrenDetails(), hasSize(2));
 
-    NodeDetail node_AAB = commonTree.get(4);
-    node_AAB.setRightsDependsOnMe();
-    assertThat(node_AAB.getId(), is(NODE_AAB_ID));
-    assertThat(node_AAB.haveRights(), is(true));
-    assertThat(node_AAB.getChildrenDetails(), empty());
+    NodeDetail nodeAAB = commonTree.get(4);
+    nodeAAB.setRightsDependsOnMe();
+    assertThat(nodeAAB.getId(), is(NODE_AAB_ID));
+    assertThat(nodeAAB.haveRights(), is(true));
+    assertThat(nodeAAB.getChildrenDetails(), empty());
 
     when(organisationController.getUserObjectProfiles(USER_ID, INSTANCE_ID, ProfiledObjectType.NODE))
         .thenReturn(UserNodeRoleMapping.from(NODE_AAB_ID, READER_ROLE, WRITER_ROLE));
@@ -248,13 +248,13 @@ class KmeliaUserTreeViewFilterTest {
         Pair.of(NODE_B_ID, READER_ROLE),
         Pair.of(NODE_BA_ID, READER_ROLE));
 
-    assertThat(node_AA.getId(), is(NODE_AA_ID));
-    assertThat(node_AA.haveRights(), is(true));
-    assertThat(node_AA.getChildrenDetails(), contains(node_AAB));
+    assertThat(nodeAA.getId(), is(NODE_AA_ID));
+    assertThat(nodeAA.haveRights(), is(true));
+    assertThat(nodeAA.getChildrenDetails(), contains(nodeAAB));
 
-    assertThat(node_AAB.getId(), is(NODE_AAB_ID));
-    assertThat(node_AAB.haveRights(), is(true));
-    assertThat(node_AAB.getChildrenDetails(), empty());
+    assertThat(nodeAAB.getId(), is(NODE_AAB_ID));
+    assertThat(nodeAAB.haveRights(), is(true));
+    assertThat(nodeAAB.getChildrenDetails(), empty());
   }
 
   @Test

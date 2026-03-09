@@ -36,14 +36,6 @@ public class InfoLetterException extends SilverpeasRuntimeException {
 
   private static final long serialVersionUID = 166786757597185876L;
 
-  public InfoLetterException(final String message) {
-    super(message);
-  }
-
-  public InfoLetterException(final String message, final Throwable cause) {
-    super(message, cause);
-  }
-
   public InfoLetterException(final Throwable cause) {
     super(cause);
   }

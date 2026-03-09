@@ -33,39 +33,19 @@ import org.silverpeas.core.process.session.ProcessSession;
 
 public class GalleryDeindexMediaDataProcess extends AbstractGalleryDataProcess {
 
-  /**
-   * Process to deindex a media in Database
-   * @param media
-   * @return
-   */
   public static GalleryDeindexMediaDataProcess getInstance(final Media media) {
     return new GalleryDeindexMediaDataProcess(media);
   }
 
-  /**
-   * Default hidden conctructor
-   * @param media
-   */
   protected GalleryDeindexMediaDataProcess(final Media media) {
     super(media);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * AbstractGalleryDataProcess#processData(com.silverpeas.gallery
-   * .process.GalleryProcessExecutionContext, ProcessSession)
-   */
   @Override
-  protected void processData(final ProcessExecutionContext context, final ProcessSession session)
-      throws Exception {
+  protected void processData(final ProcessExecutionContext context, final ProcessSession session) {
     // Nothing to do
   }
 
-  /*
-   * (non-Javadoc)
-   * @see AbstractProcess#onSuccessful()
-   */
   @Override
   public void onSuccessful() throws Exception {
     super.onSuccessful();

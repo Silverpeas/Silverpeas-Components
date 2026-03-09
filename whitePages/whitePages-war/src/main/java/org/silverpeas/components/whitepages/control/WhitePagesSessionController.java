@@ -23,7 +23,6 @@
  */
 package org.silverpeas.components.whitepages.control;
 
-import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.whitepages.WhitePagesException;
 import org.silverpeas.components.whitepages.model.Card;
 import org.silverpeas.components.whitepages.model.SearchField;
@@ -57,6 +56,7 @@ import org.silverpeas.core.pdc.pdc.model.*;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.*;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.kernel.bundle.ResourceLocator;
@@ -71,7 +71,7 @@ import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.*;
 
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;

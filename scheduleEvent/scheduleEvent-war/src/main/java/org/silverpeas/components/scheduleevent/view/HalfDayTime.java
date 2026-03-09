@@ -3,18 +3,14 @@ package org.silverpeas.components.scheduleevent.view;
 import org.silverpeas.components.scheduleevent.service.model.beans.DateOption;
 import org.silverpeas.components.scheduleevent.service.model.beans.Response;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class HalfDayTime extends AbstractTimeVO {
-  private final static String HMTL_CLASS_ATTRIBUTE = "titreCouleur";
+  private static final String HMTL_CLASS_ATTRIBUTE = "titreCouleur";
 
-  private DateVO parent;
-  private DateOption date;
-  private Map<ContributorVO, AvailableVO> availabilities = new HashMap<ContributorVO, AvailableVO>();
+  private final DateVO parent;
+  private final DateOption date;
+  private final Map<ContributorVO, AvailableVO> availabilities = new HashMap<>();
 
   public HalfDayTime(DateVO parent, DateOption date) {
     this.parent = parent;
@@ -42,7 +38,7 @@ public class HalfDayTime extends AbstractTimeVO {
 
   @Override
   public Set<Response> match(Set<Response> responses) {
-    Set<Response> match = new HashSet<Response>();
+    Set<Response> match = new HashSet<>();
     for(Response response: responses) {
       if (isMatchedDateId(response.getOptionId())) {
         match.add(response);
@@ -77,5 +73,15 @@ public class HalfDayTime extends AbstractTimeVO {
   @Override
   public DateVO getDate() {
     return parent;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    return super.equals(o);
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
   }
 }

@@ -31,10 +31,9 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
-import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.index.indexing.IndexFileManager;
 import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,21 +42,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-/**
- * Class declaration
- * @author
- */
 public class FileFolder implements java.io.Serializable {
 
   private static final long serialVersionUID = 7637795486882013995L;
   /**
    * A File collection representing files in folder
    */
-  private List<FileDetail> files;
+  private final List<FileDetail> files;
   /**
    * A File collection representing folders in folder
    */
-  private List<FileDetail> folders;
+  private final List<FileDetail> folders;
   /**
    * folder name
    */
@@ -65,21 +60,16 @@ public class FileFolder implements java.io.Serializable {
   /**
    * folder path
    */
-  private String path;
+  private final String path;
   /**
    * is folder writable ?
    */
-  private boolean writable;
+  private final boolean writable;
   /**
    * is folder readable ?
    */
   private boolean readable;
 
-  /**
-   * Constructor declaration
-   * @param rootPath
-   * @param path
-   */
   public FileFolder(String rootPath, String path) {
     this(rootPath, path, false, "");
   }
@@ -90,113 +80,98 @@ public class FileFolder implements java.io.Serializable {
 
   public FileFolder(String rootPath, String path, boolean isAdmin, String componentId) {
     this.path = path;
-    files = new ArrayList<>(0);
-    folders = new ArrayList<>(0);
-    IndexReader reader = null;
+    files = new ArrayList<>();
+    folders = new ArrayList<>();
     try {
-      // Check security access : cannot browse inside rootPath
+      // Check security access: cannot browse inside rootPath
       FileUtil.validateFilename(path, rootPath);
       File f = new File(path);
-
-      writable = f.canWrite();
+      this.writable = f.canWrite();
 
       if (f.exists()) {
         this.name = f.getName();
         this.readable = f.canRead();
-        File[] children = f.listFiles();
-        boolean isIndexed = false;
-
-        if (isAdmin) {
-          // ouverture de l'index
-          Directory indexPath =
-              FSDirectory.open(Paths.get(IndexFileManager.getAbsoluteIndexPath(componentId)));
-          if (DirectoryReader.indexExists(indexPath)) {
-            reader = DirectoryReader.open(indexPath);
-          }
-        }
-        if (children != null && children.length > 0) {
-          for (File childFile : children) {
-            isIndexed = false;
-            if (isAdmin) {
-              // rechercher si le répertoire (ou le fichier) est indexé
-              StringBuilder pathIndex = new StringBuilder(componentId).append("|");
-              if (childFile.isDirectory()) {
-                pathIndex.append("LinkedDir").append("|");
-              } else {
-                pathIndex.append("LinkedFile").append("|");
-              }
-              pathIndex.append(FilenameUtils.separatorsToUnix(childFile.getPath()));
-              Term term = new Term("key", pathIndex.toString());
-              if (reader != null && reader.docFreq(term) == 1) {
-                isIndexed = true;
-              }
-            }
-
-            if (childFile.isDirectory()) {
-              folders.add(
-                  new FileDetail(childFile.getName(), childFile.getPath(), null, childFile.length(),
-                      true, isIndexed));
-            } else {
-              String childPath =
-                  FileUtils.getFile(childFile.getPath().substring(rootPath.length())).getPath();
-              files.add(new FileDetail(childFile.getName(), childPath, childFile.getPath(),
-                  childFile.length(), false, isIndexed));
-            }
-          }
-        }
+        lookupForChildren(f, rootPath, isAdmin, componentId);
       }
     } catch (Exception e) {
       throw new SilverpeasRuntimeException(e);
-    } finally {
-      // fermeture de l'index
-      if (reader != null && isAdmin) {
-        try {
-          reader.close();
-        } catch (IOException e) {
-          SilverLogger.getLogger(this).warn(e);
+    }
+  }
+
+  private void lookupForChildren(File f, String rootPath, boolean isAdmin, String componentId) throws IOException {
+    File[] children = f.listFiles();
+    try (IndexReader reader = openIndexReader(componentId, isAdmin)) {
+      if (children != null) {
+        for (File childFile : children) {
+          boolean isIndexed = isIsIndexed(reader, childFile, isAdmin, componentId);
+          if (childFile.isDirectory()) {
+            folders.add(
+                new FileDetail(childFile.getName(), childFile.getPath(), null, childFile.length(),
+                    true, isIndexed));
+          } else {
+            String childPath =
+                FileUtils.getFile(childFile.getPath().substring(rootPath.length())).getPath();
+            files.add(new FileDetail(childFile.getName(), childPath, childFile.getPath(),
+                childFile.length(), false, isIndexed));
+          }
         }
       }
     }
   }
 
-  /**
-   * @return
-   */
+  private static boolean isIsIndexed(IndexReader reader, File childFile, boolean isAdmin,
+      String componentId) throws IOException {
+    boolean isIndexed = false;
+    if (isAdmin) {
+      // rechercher si le répertoire (ou le fichier) est indexé
+      StringBuilder pathIndex = new StringBuilder(componentId).append("|");
+      if (childFile.isDirectory()) {
+        pathIndex.append("LinkedDir").append("|");
+      } else {
+        pathIndex.append("LinkedFile").append("|");
+      }
+      pathIndex.append(FilenameUtils.separatorsToUnix(childFile.getPath()));
+      Term term = new Term("key", pathIndex.toString());
+      if (reader != null && reader.docFreq(term) == 1) {
+        isIndexed = true;
+      }
+    }
+    return isIndexed;
+  }
+
+  private IndexReader openIndexReader(String componentId, boolean isAdmin) throws IOException {
+    IndexReader reader = null;
+    if (isAdmin) {
+      // ouverture de l'index
+      Directory indexPath =
+          FSDirectory.open(Paths.get(IndexFileManager.getAbsoluteIndexPath(componentId)));
+      if (DirectoryReader.indexExists(indexPath)) {
+        reader = DirectoryReader.open(indexPath);
+      }
+    }
+    return reader;
+  }
+
   public Collection<FileDetail> getFiles() {
     return files;
   }
 
-  /**
-   * @return
-   */
   public Collection<FileDetail> getFolders() {
     return folders;
   }
 
-  /**
-   * @return
-   */
   public String getName() {
     return name;
   }
 
-  /**
-   * @return
-   */
   public String getPath() {
     return path;
   }
 
-  /**
-   * @param readable the readable to set
-   */
   public void setReadable(boolean readable) {
     this.readable = readable;
   }
 
-  /**
-   * @return the readable
-   */
   public boolean isReadable() {
     return readable;
   }

@@ -25,7 +25,7 @@ package org.silverpeas.components.silvercrawler.servlets.handlers;
 
 import org.silverpeas.components.silvercrawler.control.SilverCrawlerSessionController;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -34,6 +34,10 @@ import java.util.Collection;
  * @author Ludovic Bertin
  */
 public class RemoveSelectedFilesHandler extends FunctionHandler {
+
+  protected RemoveSelectedFilesHandler(HandlerProvider provider) {
+    super(provider);
+  }
 
   @Override
   public String getDestination(SilverCrawlerSessionController sessionController,
@@ -60,7 +64,7 @@ public class RemoveSelectedFilesHandler extends FunctionHandler {
     }
 
     // redirect to "ViewDirectory" use case
-    return HandlerProvider.getHandler("ViewDirectory")
+    return getHandlerProvider().getHandler("ViewDirectory")
         .computeDestination(sessionController, request);
   }
 

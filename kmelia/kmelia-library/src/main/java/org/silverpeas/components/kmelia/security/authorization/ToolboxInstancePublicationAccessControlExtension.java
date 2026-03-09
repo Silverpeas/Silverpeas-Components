@@ -24,12 +24,14 @@
 
 package org.silverpeas.components.kmelia.security.authorization;
 
-import javax.inject.Named;
-import javax.inject.Singleton;
+import jakarta.inject.Named;
+import jakarta.inject.Singleton;
+import org.silverpeas.core.annotation.Bean;
 
 /**
  * @author silveryocha
  */
+@Bean
 @Named
 @Singleton
 public class ToolboxInstancePublicationAccessControlExtension

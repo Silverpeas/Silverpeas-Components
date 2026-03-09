@@ -77,7 +77,7 @@ public class RequestCriteria {
    * Initializes the criteria with component instance ids.
    * <p>
    * By security, if no ids are given, the service using the criteria will return directly an
-   * empty list instead of performing the sql query.
+   * empty list instead of performing the SQL query.
    * </p>
    * @param componentInstanceIds identifiers of component instances.
    * @return an instance of criteria.
@@ -90,7 +90,7 @@ public class RequestCriteria {
    * Initializes the criteria with component instance ids.
    * <p>
    * By security, if no ids are given, the service using the criteria will return directly an
-   * empty list instead of performing the sql query.
+   * empty list instead of performing the SQL query.
    * </p>
    * @param componentInstanceIds identifiers of component instances.
    * @return an instance of criteria.

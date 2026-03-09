@@ -29,7 +29,7 @@ import org.silverpeas.core.io.media.Definition;
 /**
  * This class represents a Video.
  */
-public class Video extends InternalMedia {
+public class Video extends InternalMedia implements VisualMedia {
   private static final long serialVersionUID = 5772513957256327862L;
 
   private Definition definition = Definition.fromZero();
@@ -56,6 +56,7 @@ public class Video extends InternalMedia {
    * Gets the definition of the resolution.
    * @return the definition of the resolution.
    */
+  @Override
   public Definition getDefinition() {
     return definition;
   }
@@ -64,6 +65,7 @@ public class Video extends InternalMedia {
    * Sets the definition of the resolution.
    * @param definition the definition of the resolution.
    */
+  @Override
   public void setDefinition(Definition definition) {
     this.definition = definition != null ? definition : Definition.fromZero();
   }

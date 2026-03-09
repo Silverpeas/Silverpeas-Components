@@ -23,28 +23,27 @@
  */
 package org.silverpeas.components.websites.service;
 
-/**
- * This is the webSite manager EJB-tier controller of the MVC. It is implemented as a session EJB.
- * It controls all the activities that happen in a client session. It also provides mechanisms to
- * access other session EJBs.
- *
- * @author Cecile BONIN
- * @version 1.0
- */
-
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.components.websites.model.FolderDetail;
 import org.silverpeas.components.websites.model.IconDetail;
 import org.silverpeas.components.websites.model.SiteDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * This is the WebSite manager service controller of the MVC. It is implemented as a CDI Bean. It
+ * controls all the activities that happen in a client session. It also provides mechanisms to
+ * access other service layer.
+ *
+ * @author Cecile BONIN
+ * @version 1.0
+ */
 public interface WebSiteService {
 
   static WebSiteService get() {
@@ -52,64 +51,64 @@ public interface WebSiteService {
   }
 
   /* gestion des themes */
-  public FolderDetail goTo(NodePK pk);
+  FolderDetail goTo(NodePK pk);
 
-  public void addFolder(NodeDetail subFolder, NodePK fatherId, UserDetail currentUser);
+  void addFolder(NodeDetail subFolder, NodePK fatherId, UserDetail currentUser);
 
-  public void updateFolder(NodeDetail topic, NodePK fatherPK);
+  void updateFolder(NodeDetail topic, NodePK fatherPK);
 
-  public NodeDetail getFolderDetail(NodePK pk);
+  NodeDetail getFolderDetail(NodePK pk);
 
-  public void deleteFolder(NodePK pkToDelete);
+  void deleteFolder(NodePK pkToDelete);
 
-  public void changeTopicsOrder(String way, NodePK nodePK, NodePK fatherPK);
+  void changeTopicsOrder(String way, NodePK nodePK, NodePK fatherPK);
 
   /* gestion des publi */
-  public PublicationDetail getPublicationDetail(PublicationPK pk);
+  PublicationDetail getPublicationDetail(PublicationPK pk);
 
-  public String createPublication(String componentId, PublicationDetail pubDetail);
+  String createPublication(String componentId, PublicationDetail pubDetail);
 
-  public void addPublicationToTopic(PublicationPK pubPK, NodePK fatherPK);
+  void addPublicationToTopic(PublicationPK pubPK, NodePK fatherPK);
 
-  public void removePublicationFromTopic(PublicationPK pubPK, NodePK fatherPK);
+  void removePublicationFromTopic(PublicationPK pubPK, NodePK fatherPK);
 
-  public void updatePublication(PublicationDetail pubDetail, String componentId);
+  void updatePublication(PublicationDetail pubDetail, String componentId);
 
-  public void deletePublication(PublicationPK pubPK);
+  void deletePublication(PublicationPK pubPK);
 
-  public Collection<NodePK> getAllFatherPK(PublicationPK pubPK);
+  Collection<NodePK> getAllFatherPK(PublicationPK pubPK);
 
-  public String getIdPublication(String componentId, String idSite);
+  String getIdPublication(String componentId, String idSite);
 
-  public void updateClassification(PublicationPK pubPK, List<String> arrayTopic);
+  void updateClassification(PublicationPK pubPK, List<String> arrayTopic);
 
-  public void changePubsOrder(PublicationPK pubPK, NodePK nodePK, int direction);
+  void changePubsOrder(PublicationPK pubPK, NodePK nodePK, int direction);
 
-  public Collection<SiteDetail> getAllWebSite(String componentId);
+  Collection<SiteDetail> getAllWebSite(String componentId);
 
-  public SiteDetail getWebSite(String componentId, String id);
+  SiteDetail getWebSite(String componentId, String id);
 
-  public List<SiteDetail> getWebSites(String componentId, List<String> ids);
+  List<SiteDetail> getWebSites(String componentId, List<String> ids);
 
-  public Collection<IconDetail> getIcons(String componentId, String id);
+  Collection<IconDetail> getIcons(String componentId, String id);
 
-  public String getNextId(String componentId);
+  String getNextId(String componentId);
 
-  public Collection<IconDetail> getAllIcons(String componentId);
+  Collection<IconDetail> getAllIcons(String componentId);
 
-  public void associateIcons(String componentId, String id, Collection<String> liste);
+  void associateIcons(String componentId, String id, Collection<String> liste);
 
-  public void publish(String componentId, Collection<String> liste);
+  void publish(String componentId, Collection<String> liste);
 
-  public void dePublish(String componentId, Collection<String> liste);
+  void dePublish(String componentId, Collection<String> liste);
 
-  public void deleteWebSites(String componentId, Collection<String> liste);
+  void deleteWebSites(String componentId, Collection<String> liste);
 
-  public int getSilverObjectId(String componentId, String id);
+  int getSilverObjectId(String componentId, String id);
 
-  public void index(String componentId);
+  void index(String componentId);
 
-  public void updateWebSite(String componentId, SiteDetail description);
+  void updateWebSite(String componentId, SiteDetail description);
 
-  public String createWebSite(String componentId, SiteDetail description, UserDetail currentUser);
+  String createWebSite(String componentId, SiteDetail description, UserDetail currentUser);
 }

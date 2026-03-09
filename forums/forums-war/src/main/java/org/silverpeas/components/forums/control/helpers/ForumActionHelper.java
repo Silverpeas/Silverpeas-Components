@@ -32,8 +32,8 @@ import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.jsp.JspWriter;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.jsp.JspWriter;
 import java.io.IOException;
 
 /**
@@ -56,7 +56,6 @@ public class ForumActionHelper {
   public static final int UNSUBSCRIBE_THREAD = 13;
   public static final int SUBSCRIBE_THREAD = 14;
   public static final int UPDATE_MESSAGE = 15;
-  public static final int EVALUATE_FORUM = 16;
   public static final int UNSUBSCRIBE_FORUM = 17;
   public static final int SUBSCRIBE_FORUM = 18;
   public static final int UNSUBSCRIBE_FORUMS = 19;
@@ -133,10 +132,10 @@ public class ForumActionHelper {
           deleteForum(params, request, fsc);
           break;
         case LOCK_FORUM:
-          lockForum(params, invoker.isAdmin(), invoker.isModerator, fsc);
+          lockForum(params, invoker.isAdmin(), invoker.isModerator(), fsc);
           break;
         case UNLOCK_FORUM:
-          boolean success = unlockForum(params, invoker.isAdmin(), invoker.isModerator, fsc);
+          boolean success = unlockForum(params, invoker.isAdmin(), invoker.isModerator(), fsc);
           if (success) {
             printOutScript(translations, out);
           }

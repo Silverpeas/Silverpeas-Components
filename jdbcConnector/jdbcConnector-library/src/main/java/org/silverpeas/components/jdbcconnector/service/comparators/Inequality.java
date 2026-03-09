@@ -35,7 +35,7 @@ import static org.silverpeas.components.jdbcconnector.service.comparators.Equali
 public class Inequality implements FieldValueComparator {
 
   @Override
-  public boolean compare(final Comparable value, final Comparable referenceValue) {
+  public <T> boolean compare(final Comparable<T> value, final Comparable<T> referenceValue) {
     if (value == null && NULL_VALUE.equals(referenceValue)) {
       return false;
     } else if (value != null && !NULL_VALUE.equals(referenceValue)) {

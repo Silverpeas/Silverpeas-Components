@@ -35,51 +35,29 @@ import java.util.Map;
 public class GalleryPasteDelegate {
 
   private final AlbumDetail album;
-  private final Map<Media, Boolean> mediaToPaste = new LinkedHashMap<Media, Boolean>();
-  private final Map<AlbumDetail, Boolean> albumsToPaste = new LinkedHashMap<AlbumDetail, Boolean>();
+  private final Map<Media, Boolean> mediaToPaste = new LinkedHashMap<>();
+  private final Map<AlbumDetail, Boolean> albumsToPaste = new LinkedHashMap<>();
 
-  /**
-   *
-   */
-  public GalleryPasteDelegate(final AlbumDetail album) {
+ public GalleryPasteDelegate(final AlbumDetail album) {
     this.album = album;
   }
 
-  /**
-   * Adds a media to paste
-   * @param media
-   * @param isCutted
-   */
-  public void addMedia(final Media media, final boolean isCutted) {
-    mediaToPaste.put(media, isCutted);
+  public void addMedia(final Media media, final boolean isCut) {
+    mediaToPaste.put(media, isCut);
   }
 
-  /**
-   * Adds an album to paste
-   * @param album
-   * @param isCutted
-   */
-  public void addAlbum(final AlbumDetail album, final boolean isCutted) {
-    albumsToPaste.put(album, isCutted);
+  public void addAlbum(final AlbumDetail album, final boolean isCut) {
+    albumsToPaste.put(album, isCut);
   }
 
-  /**
-   * @return the album
-   */
   public AlbumDetail getAlbum() {
     return album;
   }
 
-  /**
-   * @return the mediaToPaste
-   */
   public Map<Media, Boolean> getMediaToPaste() {
     return mediaToPaste;
   }
 
-  /**
-   * @return the albumsToPaste
-   */
   public Map<AlbumDetail, Boolean> getAlbumsToPaste() {
     return albumsToPaste;
   }

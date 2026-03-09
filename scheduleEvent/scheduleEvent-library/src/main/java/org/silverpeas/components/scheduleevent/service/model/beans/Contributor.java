@@ -23,15 +23,15 @@ package org.silverpeas.components.scheduleevent.service.model.beans;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.PrePersist;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "sc_scheduleevent_contributor")
@@ -90,45 +90,6 @@ public class Contributor implements Comparable<Contributor>, Serializable {
     }
   }
 
-//  @Override
-//  public int hashCode() {
-//    final int prime = 31;
-//    int result = super.hashCode();
-//    result = prime * result + ((lastValidation == null) ? 0 : lastValidation.hashCode());
-//    result = prime * result + ((lastVisit == null) ? 0 : lastVisit.hashCode());
-//    result = prime * result + (int) (userId ^ (userId >>> 32));
-//    result = prime * result + ((userName == null) ? 0 : userName.hashCode());
-//    return result;
-//  }
-//
-//  @Override
-//  public boolean equals(Object obj) {
-//    if (this == obj)
-//      return true;
-//    if (obj == null)
-//      return false;
-//    if (getClass() != obj.getClass())
-//      return false;
-//    Contributor other = (Contributor) obj;
-//    if (lastValidation == null) {
-//      if (other.lastValidation != null)
-//        return false;
-//    } else if (!lastValidation.equals(other.lastValidation))
-//      return false;
-//    if (lastVisit == null) {
-//      if (other.lastVisit != null)
-//        return false;
-//    } else if (!lastVisit.equals(other.lastVisit))
-//      return false;
-//    if (userId != other.userId)
-//      return false;
-//    if (userName == null) {
-//      if (other.userName != null)
-//        return false;
-//    } else if (!userName.equals(other.userName))
-//      return false;
-//    return true;
-//  }
   public void setLastVisit(Date lastVisit) {
     this.lastVisit = lastVisit;
   }
@@ -159,10 +120,7 @@ public class Contributor implements Comparable<Contributor>, Serializable {
       } else {
         return (userId == other.userId);
       }
-    } else if (!id.equals(other.id)) {
-      return false;
-    }
-    return true;
+    } else return id.equals(other.id);
   }
 
   public Date getLastVisit() {

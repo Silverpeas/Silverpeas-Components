@@ -25,15 +25,17 @@ package org.silverpeas.components.almanach;
 
 import org.silverpeas.core.admin.component.ComponentInstancePostConstruction;
 import org.silverpeas.core.admin.component.model.SilverpeasSharedComponentInstance;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.calendar.Calendar;
 
-import javax.inject.Named;
-import javax.transaction.Transactional;
+import jakarta.inject.Named;
+import jakarta.transaction.Transactional;
 
 /**
  * Creates for the spawned Almanach instance a new calendar to gathers user's events.
  * @author silveryocha
  */
+@Bean
 @Named
 public class AlmanachInstancePostConstruction implements ComponentInstancePostConstruction {
 

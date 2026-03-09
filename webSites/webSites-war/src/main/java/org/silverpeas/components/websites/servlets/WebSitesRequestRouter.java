@@ -23,7 +23,6 @@
  */
 package org.silverpeas.components.websites.servlets;
 
-import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.websites.control.WebSiteSessionController;
 import org.silverpeas.components.websites.model.SiteDetailBuilder;
 import org.silverpeas.components.websites.service.WebSitesException;
@@ -35,8 +34,10 @@ import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.JSONCodec;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.file.FileUploadUtil;
@@ -92,7 +93,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
    * This method has to be implemented by the component request router it has to compute a
    * destination page
    * @param function The entering request function (ex : "Main.jsp")
-   * @param scc The component Session Control, build and initialised.
+   * @param scc The component Session Control, build and initialized.
    * @param request The entering request. The request router need it to get parameters
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
@@ -331,7 +332,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
     String listeIcones = request.getParameter(ICON_LIST_PARAM);
     String listeTopics = request.getParameter(TOPIC_LIST_PARAM);
 
-    int popup = (tempPopup != null) && (tempPopup.length() > 0) ? 1 : 0;
+    int popup = (tempPopup != null) && (!tempPopup.isEmpty()) ? 1 : 0;
     int etat = StringUtil.isDefined(letat) ? Integer.parseInt(letat) : -1;
 
     List<String> listIcons = new ArrayList<>();
@@ -356,7 +357,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
         .createSiteDetail();
 
     scc.updateWebSite(descriptionSite2);
-    if (listIcons.size() > 0) {
+    if (!listIcons.isEmpty()) {
       scc.associateIcons(id, listIcons);
     }
 
@@ -419,7 +420,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
 
     // Retrieve positions
     String positions = request.getParameter("Positions");
-    int popup = (tempPopup != null) && (tempPopup.length() > 0) ? 1 : 0;
+    int popup = (tempPopup != null) && (!tempPopup.isEmpty()) ? 1 : 0;
     List<String> listIcons =
         listeIcones != null ? CollectionUtil.asList(listeIcones.split(",")) : new ArrayList<>();
     if (listIcons.get(0).isEmpty()) {
@@ -444,7 +445,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
 
     String pubId = scc.createWebSite(descriptionSite);
 
-    if (listIcons.size() > 0) {
+    if (!listIcons.isEmpty()) {
       scc.associateIcons(id, listIcons);
     }
 
@@ -549,7 +550,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
       }
 
       // dePublish
-      if (arrayToDePublish.size() > 0) {
+      if (!arrayToDePublish.isEmpty()) {
         scc.dePublish(arrayToDePublish);
       }
 
@@ -569,14 +570,14 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
 
             /* isPublished dans un autre theme */
         listNodePk = scc.getAllFatherPK(idPubToDeClassify);
-        if (listNodePk.size() == 0) {
+        if (listNodePk.isEmpty()) {
           arrayToDePublish.add(pub.getVersion());
         }
         begin = end + 1;
         end = listeSite.indexOf(',', begin);
       }
       // dePublish
-      if (arrayToDePublish.size() > 0) {
+      if (!arrayToDePublish.isEmpty()) {
         scc.dePublish(arrayToDePublish);
       }
 
@@ -600,7 +601,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
         begin = end + 1;
         end = listeSite.indexOf(',', begin);
       }
-      if (arrayToClassify.size() > 0) {
+      if (!arrayToClassify.isEmpty()) {
         scc.publish(arrayToClassify); // set etat du site a 1
       }
 
@@ -622,7 +623,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
 
             /* isPublished dans un autre theme */
         listNodePk = scc.getAllFatherPK(pubId);
-        if (listNodePk.size() == 0) {
+        if (listNodePk.isEmpty()) {
           PublicationDetail pubDetail = scc.getPublicationDetail(pubId);
           idSiteToDeClassify = pubDetail.getVersion();
           arrayToDeClassify.add(idSiteToDeClassify);
@@ -632,7 +633,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
         end = listeSite.indexOf(',', begin);
       }
 
-      if (arrayToDeClassify.size() > 0) {
+      if (!arrayToDeClassify.isEmpty()) {
         scc.dePublish(arrayToDeClassify); // set etat du site a 0
       }
       action = "Search";
@@ -756,8 +757,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
   }
 
   private String toWysiwygEditor(final WebSiteSessionController scc, final HttpRequest request,
-      final String userRole) throws WebSitesException, UnsupportedEncodingException,
-      RoutingException {
+      final String userRole) throws WebSitesException {
     String path = request.getParameter(PATH_PARAM);
     scc.checkPath(path);
     String name = request.getParameter("name");
@@ -768,14 +768,14 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
     WysiwygRouting.WysiwygRoutingContext context =
         WysiwygRouting.WysiwygRoutingContext.fromComponentSessionController(scc)
             .withContributionId(ContributionIdentifier.from(scc.getComponentId(), id, UNKNOWN))
-            .withBrowseInfo(URLEncoder.encode(nameSite, "UTF-8"))
-            .withFileName(URLEncoder.encode(name, "UTF-8") + FOLDER_PATH_FILTER +
-                URLEncoder.encode(path, "UTF-8"))
-            .withLanguage(I18NHelper.DEFAULT_LANGUAGE)
+            .withBrowseInfo(URLEncoder.encode(nameSite, Charsets.UTF_8))
+            .withFileName(URLEncoder.encode(name, Charsets.UTF_8) + FOLDER_PATH_FILTER +
+                URLEncoder.encode(path, Charsets.UTF_8))
+            .withLanguage(I18NHelper.getDefaultLanguage())
             .withComeBackUrl(URLEncoder.encode(URLUtil.getApplicationURL() +
                 URLUtil.getURL(scc.getSpaceId(), scc.getComponentId()) + "FromWysiwyg?Path=" +
                 path + "&name=" + name + "&nameSite=" + nameSite + "&profile=" + userRole + "&id=" +
-                id, "UTF-8"));
+                id, Charsets.UTF_8));
     return routing.getDestinationToWysiwygEditor(context);
   }
 
@@ -789,7 +789,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
 
     int begin = 0;
     int end = listeIcones.indexOf(',', begin);
-    StringBuilder listeMessage = new StringBuilder("");
+    StringBuilder listeMessage = new StringBuilder();
 
     // parcours des icones
     while (end != -1) {

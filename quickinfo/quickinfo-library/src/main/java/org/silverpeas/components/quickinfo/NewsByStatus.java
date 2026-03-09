@@ -28,7 +28,6 @@ import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.components.quickinfo.service.QuickInfoDateComparatorDesc;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -57,13 +56,13 @@ public class NewsByStatus {
     }
     sortByDateDesc(drafts);
     sortByDateDesc(visibles);
-    Collections.sort(notYetVisibles, new QuickInfoBeginDateComparator(notYetVisiblesSort));
-    Collections.sort(noMoreVisibles, new QuickInfoEndDateComparator(noMoreVisiblesSort));
+    notYetVisibles.sort(new QuickInfoBeginDateComparator(notYetVisiblesSort));
+    noMoreVisibles.sort(new QuickInfoEndDateComparator(noMoreVisiblesSort));
   }
 
   private void sortByDateDesc(List<News> listOfNews) {
     Comparator<News> comparator = QuickInfoDateComparatorDesc.comparator;
-    Collections.sort(listOfNews, comparator);
+    listOfNews.sort(comparator);
   }
 
   public List<News> getVisibles() {

@@ -23,6 +23,12 @@
  */
 package org.silverpeas.components.gallery.web;
 
+import jakarta.inject.Inject;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.StreamingOutput;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -35,28 +41,22 @@ import org.silverpeas.components.gallery.model.InternalMedia;
 import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.components.gallery.model.MediaPK;
 import org.silverpeas.components.gallery.service.GalleryService;
-import org.silverpeas.components.gallery.service.MediaServiceProvider;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.io.file.SilverpeasFileProvider;
 import org.silverpeas.core.io.media.Definition;
 import org.silverpeas.core.io.media.video.ThumbnailPeriod;
 import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.http.FileResponse;
 import org.silverpeas.core.web.rs.RESTWebService;
+import org.silverpeas.kernel.util.StringUtil;
 
-import javax.ws.rs.PathParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.StreamingOutput;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.Collection;
-import java.util.EnumSet;
+import java.util.stream.Stream;
 
 import static org.silverpeas.components.gallery.constant.GalleryResourceURIs.GALLERY_BASE_URI;
 
@@ -67,6 +67,9 @@ abstract class AbstractGalleryResource extends RESTWebService {
 
   @PathParam("componentInstanceId")
   private String componentInstanceId;
+
+  @Inject
+  private GalleryService galleryService;
 
   /*
    * (non-Javadoc)
@@ -106,8 +109,8 @@ abstract class AbstractGalleryResource extends RESTWebService {
    * @param album the album of the photo.
    * @return the corresponding photo entity.
    */
-  private AbstractMediaEntity asWebEntity(Media media, AlbumDetail album) {
-    final AbstractMediaEntity entity;
+  private AbstractMediaEntity<?> asWebEntity(Media media, AlbumDetail album) {
+    final AbstractMediaEntity<?> entity;
     switch (media.getType()) {
       case Photo:
         entity = PhotoEntity.createFrom(media.getPhoto())
@@ -146,11 +149,11 @@ abstract class AbstractGalleryResource extends RESTWebService {
    * @param mediaId the identifier of the expected media
    * @return the corresponding media entity.
    */
-  AbstractMediaEntity getMediaEntity(final MediaType expectedMediaType, final String albumId,
+  AbstractMediaEntity<?> getMediaEntity(final MediaType expectedMediaType, final String albumId,
       final String mediaId) {
     try {
-      final AlbumDetail album = getMediaService().getAlbum(new NodePK(albumId, getComponentId()));
-      final Media media = getMediaService().getMedia(new MediaPK(mediaId, getComponentId()));
+      final AlbumDetail album = getGalleryService().getAlbum(new NodePK(albumId, getComponentId()));
+      final Media media = getGalleryService().getMedia(new MediaPK(mediaId, getComponentId()));
       checkNotFoundStatus(media);
       verifyUserMediaAccess(media);
       verifyMediaIsInAlbum(media, album);
@@ -178,7 +181,7 @@ abstract class AbstractGalleryResource extends RESTWebService {
   private Pair<Media, SilverpeasFile> getCheckedMedia(final MediaType expectedMediaType,
       final String mediaId, final MediaResolution requestedMediaResolution, final String size) {
     try {
-      final Media media = getMediaService().getMedia(new MediaPK(mediaId, getComponentId()));
+      final Media media = getGalleryService().getMedia(new MediaPK(mediaId, getComponentId()));
       checkNotFoundStatus(media);
       verifyUserMediaAccess(media);
       // Adjusting the resolution according to the user rights
@@ -244,20 +247,19 @@ abstract class AbstractGalleryResource extends RESTWebService {
 
   /**
    * Centralization of getting of media embed.
+   *
    * @param expectedMediaType expected media type
    * @param mediaId the media identifier
-   * @param requestedMediaResolution requested media resolution
    */
-  View getMediaEmbed(final MediaType expectedMediaType, final String mediaId,
-      final MediaResolution requestedMediaResolution) {
+  View getMediaEmbed(final MediaType expectedMediaType, final String mediaId) {
     try {
-      final Media media = getMediaService().getMedia(new MediaPK(mediaId, getComponentId()));
+      final Media media = getGalleryService().getMedia(new MediaPK(mediaId, getComponentId()));
       checkNotFoundStatus(media);
       verifyUserMediaAccess(media);
       // Adjusting the resolution according to the user rights
       MediaResolution mediaResolution = MediaResolution.PREVIEW;
-      if (requestedMediaResolution.getWidth() != null) {
-        mediaResolution = requestedMediaResolution;
+      if (MediaResolution.ORIGINAL.getWidth() != null) {
+        mediaResolution = MediaResolution.ORIGINAL;
       }
       // Verifying the physical file exists and that the type of media is the one expected
       checkMediaExistsWithRequestedMimeType(expectedMediaType, media, mediaResolution);
@@ -310,7 +312,7 @@ abstract class AbstractGalleryResource extends RESTWebService {
   Response getMediaThumbnail(final String mediaId,
       final String thumbnailId, final String sizeDirective) {
     try {
-      final Media media = getMediaService().getMedia(new MediaPK(mediaId, getComponentId()));
+      final Media media = getGalleryService().getMedia(new MediaPK(mediaId, getComponentId()));
       checkNotFoundStatus(media);
       verifyUserMediaAccess(media);
       // Verifying the physical file exists
@@ -344,8 +346,8 @@ abstract class AbstractGalleryResource extends RESTWebService {
    */
   private boolean isUserPrivileged() {
     Collection<SilverpeasRole> userRoles = getUserRoles();
-    return EnumSet.of(SilverpeasRole.ADMIN, SilverpeasRole.PUBLISHER, SilverpeasRole.WRITER,
-        SilverpeasRole.PRIVILEGED_USER).stream().anyMatch(userRoles::contains);
+    return Stream.of(SilverpeasRole.ADMIN, SilverpeasRole.PUBLISHER, SilverpeasRole.WRITER,
+        SilverpeasRole.PRIVILEGED_USER).anyMatch(userRoles::contains);
   }
 
   /**
@@ -392,7 +394,7 @@ abstract class AbstractGalleryResource extends RESTWebService {
   /**
    * Verifying that the authenticated user is authorized to view the given media.
    * @param media a media for which the access has to be verified.
-   * @throws javax.ws.rs.WebApplicationException if user is not authorized to view the media
+   * @throws jakarta.ws.rs.WebApplicationException if user is not authorized to view the media
    */
   void verifyUserMediaAccess(Media media) {
     if (!hasUserMediaAccess(media)) {
@@ -401,7 +403,7 @@ abstract class AbstractGalleryResource extends RESTWebService {
   }
 
   /**
-   * @throws javax.ws.rs.WebApplicationException if the given media is not included in the given
+   * @throws jakarta.ws.rs.WebApplicationException if the given media is not included in the given
    * album.
    */
   private void verifyMediaIsInAlbum(Media media, AlbumDetail album) {
@@ -424,7 +426,7 @@ abstract class AbstractGalleryResource extends RESTWebService {
   /**
    * @return gallery media service layer
    */
-  GalleryService getMediaService() {
-    return MediaServiceProvider.getMediaService();
+  GalleryService getGalleryService() {
+    return galleryService;
   }
 }

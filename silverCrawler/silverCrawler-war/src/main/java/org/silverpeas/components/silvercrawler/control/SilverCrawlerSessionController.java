@@ -23,7 +23,6 @@
  */
 package org.silverpeas.components.silvercrawler.control;
 
-import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.components.silvercrawler.model.FileDetail;
 import org.silverpeas.components.silvercrawler.model.FileFolder;
@@ -48,6 +47,8 @@ import org.silverpeas.core.index.search.SearchEngineProvider;
 import org.silverpeas.core.index.search.model.MatchingIndexEntry;
 import org.silverpeas.core.index.search.model.ParseException;
 import org.silverpeas.core.index.search.model.QueryDescription;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.UnitUtil;
 import org.silverpeas.core.util.ZipUtil;
@@ -83,6 +84,7 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
   private final SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmm");
   private UploadReport lastReport;
   private static final Pattern WEIRD_CHARACTERS_REGEX = Pattern.compile("[/\\\\:*?\"<>|]");
+  private final Statistic statistic = ServiceProvider.getService(Statistic.class);
 
   /**
    * Standard Session Controller Constructor
@@ -226,7 +228,7 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
     // rechercher si la taille du répertoire est < à la taille maxi
     boolean sizeOk = getSize(downloadPath.getPath(), sizeMax);
 
-    // si la taille est inferieur à celle autorisée :
+    // si la taille est inférieur à celle autorisée :
     if (sizeOk) {
       try {
         zipSize = ZipUtil.compressPathToZip(downloadPath, zipFile);
@@ -248,17 +250,17 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
 
   public Collection<HistoryByUser> getHistoryByFolder(String folderName) {
     String path = getFullPath(folderName);
-    return Statistic.getHistoryByObject(path, getComponentId());
+    return statistic.getHistoryByObject(path, getComponentId());
   }
 
   public Collection<HistoryByUser> getHistoryByFolderFromResult(String folderName) {
     File path = FileUtils.getFile(rootPath, folderName);
-    return Statistic.getHistoryByObject(path.getPath(), getComponentId());
+    return statistic.getHistoryByObject(path.getPath(), getComponentId());
   }
 
   public Collection<HistoryDetail> getHistoryByUser(String folderName, String userId) {
     String path = getFullPath(folderName);
-    return Statistic.getHistoryByObjectAndUser(path, userId, getComponentId());
+    return statistic.getHistoryByObjectAndUser(path, userId, getComponentId());
   }
 
   public void unindexPath(String folderName) {
@@ -333,7 +335,7 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
               docs.add(file);
             }
           } else {
-            // l'objet n'existe plus, suppression de son index
+            // l'objet n'existe plus, suppression de son index.
             IndexEngineProxy.removeIndexEntry(new IndexEntryKey(getComponentId(), type, path));
           }
         }
@@ -586,7 +588,7 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
 
   public void saveFile(FileItem fileItem, boolean replaceFile)
       throws SilverCrawlerFileUploadException {
-    String name = FileUtil.getFilename(fileItem.getName());
+    String name = FileUtil.getFilename(fileItem.getFileName());
     if (StringUtil.isDefined(name)) {
       // compute full path
       String fullPath = getFullPath(name);
@@ -599,7 +601,7 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
 
       // Write file to disk
       try {
-        fileItem.write(newFile);
+        fileItem.saveTo(newFile);
       } catch (Exception e) {
         throw new SilverCrawlerFileUploadException(getString("silverCrawler.unknownCause"), e);
       }
@@ -653,9 +655,9 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
         try {
           FileUtils.copyFile(sourcePath, targetPath);
           if (item.itemAlreadyExists) {
-            lastReport.nbReplaced++;
+            lastReport.incNbReplaced();
           } else {
-            lastReport.nbCopied++;
+            lastReport.incNbCopied();
           }
         } catch (IOException e) {
           SilverLogger.getLogger(this)
@@ -665,7 +667,7 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
           lastReport.setFailed(true);
         }
       } else {
-        lastReport.nbIgnored++;
+        lastReport.incNbIgnored();
       }
     }
 

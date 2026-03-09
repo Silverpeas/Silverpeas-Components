@@ -85,12 +85,12 @@ class StubbedOrganizationChartBuilder {
     OrganizationalChart chart;
     switch (type) {
       case TYPE_UNITCHART:
-        chart = new OrganizationalChart(root, units, ouMembers, silverpeasUserLinkable);
+        chart = new OrganizationalChart(root, units, ouMembers);
         break;
 
       default:
         Set<PersonCategory> categories = getCategories(ouMembers);
-        chart = new OrganizationalChart(root, ouMembers, categories, silverpeasUserLinkable);
+        chart = new OrganizationalChart(root, ouMembers, categories);
         break;
     }
 
@@ -110,11 +110,11 @@ class StubbedOrganizationChartBuilder {
 
     List<OrganizationalRole> centralCategory = new ArrayList<>();
     centralCategory.add(new OrganizationalRole("Leader", "leader"));
-    config.setPersonnsChartCentralLabel(centralCategory);
+    config.setPersonsChartCentralLabel(centralCategory);
 
     List<OrganizationalRole> categories = new ArrayList<>();
     categories.add(new OrganizationalRole("Musiciens", "musicien"));
-    config.setPersonnsChartCategoriesLabel(categories);
+    config.setPersonsChartCategoriesLabel(categories);
   }
 
   private List<OrganizationalPerson> getOUMembers(String rootOu, OrganizationalChartType type) {
@@ -124,7 +124,7 @@ class StubbedOrganizationChartBuilder {
     if (rootOu.equalsIgnoreCase("ou=Metallica,ou=Bands,dc=mondomain,dc=com")) {
 
       OrganizationalPerson person1 =
-          new OrganizationalPerson(0, -1, "James Hetfield", "leader", "Une description",
+          new OrganizationalPerson(0, -1, "James Hetfield", "leader",
               "Metallica", "hetfield");
       HashMap<String, String> person1Detail = new HashMap<>();
       person1Detail.put("Instrument", "Chant & guitare");
@@ -133,7 +133,7 @@ class StubbedOrganizationChartBuilder {
       personList.add(person1);
 
       OrganizationalPerson person2 =
-          new OrganizationalPerson(1, -1, "Kirk Hammett", "musicien", "Une autre description",
+          new OrganizationalPerson(1, -1, "Kirk Hammett", "musicien",
               "Metallica", "hammett");
       Map<String, String> person2Detail = new HashMap<>(1);
       person2Detail.put("Instrument", "Guitare");
@@ -142,7 +142,7 @@ class StubbedOrganizationChartBuilder {
       personList.add(person2);
 
       OrganizationalPerson person21 =
-          new OrganizationalPerson(2, -1, "Lars Ulrich", "musicien", "Une autre description",
+          new OrganizationalPerson(2, -1, "Lars Ulrich", "musicien",
               "Metallica", "ulrich");
       Map<String, String> person21Detail = new HashMap<>(1);
       person21Detail.put("Instrument", "Batterie");
@@ -271,7 +271,7 @@ class StubbedOrganizationChartBuilder {
     boolean roleDefined = false;
 
     // central
-    for (OrganizationalRole role : config.getPersonnsChartCentralLabel()) {
+    for (OrganizationalRole role : config.getPersonsChartCentralLabel()) {
       if (isFunctionMatchingRole(function, role)) {
         pers.setVisibleOnCenter(true);
         pers.setVisibleCenterRole(role);
@@ -283,7 +283,7 @@ class StubbedOrganizationChartBuilder {
     // categories
     if (!roleDefined) {
       int order = 0;
-      for (OrganizationalRole role : config.getPersonnsChartCategoriesLabel()) {
+      for (OrganizationalRole role : config.getPersonsChartCategoriesLabel()) {
         if (isFunctionMatchingRole(function, role)) {
           pers.setVisibleCategory(new PersonCategory(role.getLabel(), role.getLdapKey(), order));
           roleDefined = true;

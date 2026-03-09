@@ -34,10 +34,6 @@ public class ForumsRuntimeException extends SilverpeasRuntimeException {
     super(message);
   }
 
-  public ForumsRuntimeException(final String message, final Throwable cause) {
-    super(message, cause);
-  }
-
   public ForumsRuntimeException(final Throwable cause) {
     super(cause);
   }

@@ -23,7 +23,9 @@
  */
 package org.silverpeas.components.whitepages.dao;
 
-import org.silverpeas.components.whitepages.model.SearchField;
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -31,25 +33,21 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.components.whitepages.model.SearchField;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.test.BasicWarBuilder;
 import org.silverpeas.core.test.integration.rule.DbUnitLoadingRule;
-import org.silverpeas.core.util.ServiceProvider;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.util.Set;
 
-import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 @RunWith(Arquillian.class)
 public class SearchFieldDaoIT {
 
+  @Inject
   private SearchFieldDao searchFieldDao;
-
-  public SearchFieldDaoIT() {
-  }
 
   @Rule
   public DbUnitLoadingRule dbUnitLoadingRule =
@@ -64,14 +62,16 @@ public class SearchFieldDaoIT {
     return BasicWarBuilder.onWarForTestClass(SearchFieldDaoIT.class).testFocusedOn(warBuilder -> {
       warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core");
       warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core.services:silverpeas-core-pdc");
-      warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud");
+      warBuilder.addAsResource("org/silverpeas/util/logging/silverpeasLogging.properties");
+      warBuilder.addAsResource(
+          "org/silverpeas/jobStartPagePeas/settings/jobStartPagePeasSettings.properties");
+      warBuilder.addAsResource("org/silverpeas/components/whitepages/dao");
       warBuilder.addPackages(true, "org.silverpeas.components.whitepages");
     }).build();
   }
 
   @Before
   public void generalSetup() {
-    searchFieldDao = ServiceProvider.getService(SearchFieldDao.class);
     assertThat(searchFieldDao, notNullValue());
   }
 
@@ -79,7 +79,7 @@ public class SearchFieldDaoIT {
    * Tests the creation of a search field.
    */
   @Test
-  public void testCreateSearchField() throws Exception {
+  public void testCreateSearchField() {
     String searchFieldId = Transaction.performInOne(() -> {
       SearchField searchField = new SearchField();
       searchField.setFieldId("field23");
@@ -96,7 +96,7 @@ public class SearchFieldDaoIT {
    * Tests the deletion of the search fields belonging to an application instance.
    */
   @Test
-  public void testDeleteSearchFieldsFor() throws Exception {
+  public void testDeleteSearchFieldsFor() {
     Transaction.performInOne(() -> {
       searchFieldDao.deleteSearchFieldsFor("whitePages1");
       return null;

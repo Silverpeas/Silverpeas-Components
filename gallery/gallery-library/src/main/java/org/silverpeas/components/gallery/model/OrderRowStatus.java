@@ -33,7 +33,7 @@ public enum OrderRowStatus {
   TO_BE_DECIDED("");
   private final String code;
 
-  private OrderRowStatus(String code) {
+  OrderRowStatus(String code) {
     this.code = code;
   }
 

@@ -32,8 +32,8 @@ import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SilverpeasList;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -153,7 +153,7 @@ public class CommunityMembershipsProvider {
    * in the related community space. A user is member of a community space if, and only if, he plays
    * a role in it. So, to ensure to keep the table of memberships up-to-date, a synchronization of
    * it with the users playing a role in the community space is required. The goal is to ensure the
-   * state of the table of memberships reflect the user profiles defined for the community space:
+   * state of the table of memberships reflects the user profiles defined for the community space:
    * </p>
    * <ul>
    *   <li>

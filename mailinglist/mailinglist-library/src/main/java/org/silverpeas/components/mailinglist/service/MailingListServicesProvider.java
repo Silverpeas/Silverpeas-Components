@@ -23,35 +23,53 @@
  */
 package org.silverpeas.components.mailinglist.service;
 
+import jakarta.inject.Inject;
 import org.silverpeas.components.mailinglist.service.job.MessageChecker;
 import org.silverpeas.components.mailinglist.service.model.MailingListService;
 import org.silverpeas.components.mailinglist.service.model.MessageService;
 import org.silverpeas.components.mailinglist.service.notification.NotificationFormatter;
 import org.silverpeas.components.mailinglist.service.notification.NotificationHelper;
+import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.util.ServiceProvider;
 
+@Provider
 public class MailingListServicesProvider {
+
+  @Inject
+  private MailingListService mailingListService;
+  @Inject
+  private MessageService messageService;
+  @Inject
+  private MessageChecker messageChecker;
+  //@Inject
+  private NotificationHelper notificationHelper;
+  @Inject
+  private NotificationFormatter notificationFormatter;
+
+  public static MailingListServicesProvider get() {
+    return ServiceProvider.getService(MailingListServicesProvider.class);
+  }
 
   private MailingListServicesProvider() {
   }
 
-  public static MailingListService getMailingListService() {
-    return MailingListService.get();
+  public MailingListService getMailingListService() {
+    return mailingListService;
   }
 
-  public static MessageService getMessageService() {
-    return MessageService.get();
+  public MessageService getMessageService() {
+    return messageService;
   }
 
-  public static MessageChecker getMessageChecker() {
-    return ServiceProvider.getService(MessageChecker.class);
+  public MessageChecker getMessageChecker() {
+    return messageChecker;
   }
 
-  public static NotificationHelper getNotificationHelper() {
-    return NotificationHelper.get();
+  public NotificationHelper getNotificationHelper() {
+    return notificationHelper;
   }
 
-  public static NotificationFormatter getNotificationFormatter() {
-    return NotificationFormatter.get();
+  public NotificationFormatter getNotificationFormatter() {
+    return notificationFormatter;
   }
 }

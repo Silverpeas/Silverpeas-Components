@@ -24,6 +24,8 @@
 
 package org.silverpeas.components.resourcesmanager;
 
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import org.silverpeas.components.resourcesmanager.model.Resource;
 import org.silverpeas.components.resourcesmanager.model.ResourceValidator;
 import org.silverpeas.components.resourcesmanager.service.ResourceService;
@@ -33,9 +35,6 @@ import org.silverpeas.kernel.annotation.NonNull;
 import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -49,7 +48,6 @@ import java.util.stream.Collectors;
  */
 @Technical
 @Service
-@Singleton
 public class ResourcesManagersSynchronizer {
 
   @Inject
@@ -58,7 +56,7 @@ public class ResourcesManagersSynchronizer {
   /**
    * Synchronizes the list of managers of the resources managed by the specified Resources Manager
    * application and by taking into account the given users have been removed from the Manager role
-   * profile for the application. The specified users could could have been explicitly removed or
+   * profile for the application. The specified users could have been explicitly removed or
    * have been in a group that has been removed from the Manager role profile.
    *
    * @param instanceId the unique identifier of a Resource Managers application.

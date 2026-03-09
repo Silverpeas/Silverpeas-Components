@@ -30,7 +30,7 @@ import java.util.List;
 public class ImportReport {
 
   private int nbAdded;
-  private List<String> errors = new ArrayList<String>();
+  private final List<String> errors = new ArrayList<>();
 
   public void setNbAdded(int nbAdded) {
     this.nbAdded = nbAdded;

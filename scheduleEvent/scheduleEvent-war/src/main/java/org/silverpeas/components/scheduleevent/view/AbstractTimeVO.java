@@ -24,7 +24,7 @@
 package org.silverpeas.components.scheduleevent.view;
 
 /**
- * Common implementation for all of the concrete {@link TimeVO} classes.
+ * Common implementation for all the concrete {@link TimeVO} classes.
  * @author mmoquillon
  */
 public abstract class AbstractTimeVO implements TimeVO {

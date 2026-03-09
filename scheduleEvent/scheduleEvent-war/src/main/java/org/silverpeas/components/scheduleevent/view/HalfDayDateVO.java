@@ -1,12 +1,12 @@
 package org.silverpeas.components.scheduleevent.view;
 
+import org.silverpeas.components.scheduleevent.service.model.beans.DateOption;
+import org.silverpeas.kernel.SilverpeasException;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-
-import org.silverpeas.components.scheduleevent.service.model.beans.DateOption;
-import org.silverpeas.components.scheduleevent.service.model.beans.DateOption;
 
 public class HalfDayDateVO implements DateVO {
   private static final int MORNING_HOUR_LIMIT = 12;
@@ -19,11 +19,11 @@ public class HalfDayDateVO implements DateVO {
     MORNING, AFTERNOON
   }
 
-  private Date date;
+  private final Date date;
   private TimeVO morning;
   private TimeVO afternoon;
 
-  public HalfDayDateVO(Date date) throws Exception {
+  public HalfDayDateVO(Date date) {
     this.date = date;
     setupMorningPart();
     setupAfternoonPart();
@@ -40,7 +40,7 @@ public class HalfDayDateVO implements DateVO {
   }
 
   private List<TimeVO> createDayPartAsTimeSequence() {
-    List<TimeVO> times = new ArrayList<TimeVO>(HALF_DAY_AS_TIME_SEQUENCE_SIZE);
+    List<TimeVO> times = new ArrayList<>(HALF_DAY_AS_TIME_SEQUENCE_SIZE);
     times.add(morning);
     times.add(afternoon);
     return times;
@@ -55,24 +55,24 @@ public class HalfDayDateVO implements DateVO {
     return this.date.equals(date.getDay());
   }
 
-  public void addTime(DateOption date) throws Exception {
+  public void addTime(DateOption date) throws SilverpeasException {
     if (hasSameDateAs(date)) {
       HalfDayPart halfDayPart = getHalfDayPartOf(date);
       addUnassignedTime(date, halfDayPart);
     } else {
-      throw new Exception("Can't add time on disaligned dates");
+      throw new SilverpeasException("Can't add time on disaligned dates");
     }
   }
 
-  private void addUnassignedTime(DateOption date, HalfDayPart halfDayPart) throws Exception {
+  private void addUnassignedTime(DateOption date, HalfDayPart halfDayPart) throws SilverpeasException {
     if (canAddTimeFor(halfDayPart)) {
       addTime(halfDayPart, date);
     } else {
-      throw new Exception(halfDayPart + " part is already set for " + date.getDay());
+      throw new SilverpeasException(halfDayPart + " part is already set for " + date.getDay());
     }
   }
 
-  private void addTime(HalfDayPart halfDayPart, DateOption date) throws Exception {
+  private void addTime(HalfDayPart halfDayPart, DateOption date) throws SilverpeasException {
     switch (halfDayPart) {
       case MORNING:
         morning = makeMorning(date);
@@ -81,7 +81,7 @@ public class HalfDayDateVO implements DateVO {
         afternoon = makeAfternoon(date);
         break;
       default:
-        throw new Exception("addTime: " + halfDayPart + " not supported");
+        throw new SilverpeasException("addTime: " + halfDayPart + " not supported");
     }
   }
 
@@ -100,15 +100,15 @@ public class HalfDayDateVO implements DateVO {
   }
 
   private HalfDayTime makeAfternoon(DateOption date) {
-    HalfDayTime afternoon = new HalfDayTime(this, date);
-    afternoon.setPartOfDay(PartOfDayAfternoon.getInstance());
-    return afternoon;
+    HalfDayTime theAfternoon = new HalfDayTime(this, date);
+    theAfternoon.setPartOfDay(PartOfDayAfternoon.getInstance());
+    return theAfternoon;
   }
 
   private HalfDayTime makeMorning(DateOption date) {
-    HalfDayTime morning = new HalfDayTime(this, date);
-    morning.setPartOfDay(PartOfDayMorning.getInstance());
-    return morning;
+    HalfDayTime theMorning = new HalfDayTime(this, date);
+    theMorning.setPartOfDay(PartOfDayMorning.getInstance());
+    return theMorning;
   }
 
   @Override

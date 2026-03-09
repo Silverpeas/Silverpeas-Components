@@ -23,41 +23,20 @@
  */
 package org.silverpeas.components.yellowpages;
 
-import org.silverpeas.core.exception.SilverpeasException;
+
+import org.silverpeas.kernel.SilverpeasException;
 
 public class YellowpagesException extends SilverpeasException {
 
-  private static final long serialVersionUID = -871064868796293299L;
-
-  /**
-   * --------------------------------------------------------------------------
-   * constructors constructors
-   */
-  public YellowpagesException(String callingClass, int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
+  public YellowpagesException(String message, String... parameters) {
+    super(message, parameters);
   }
 
-  public YellowpagesException(String callingClass, int errorLevel, String message,
-      String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public YellowpagesException(String message, Throwable cause) {
+    super(message, cause);
   }
 
-  public YellowpagesException(String callingClass, int errorLevel, String message,
-      Exception nested) {
-    super(callingClass, errorLevel, message, nested);
+  public YellowpagesException(Throwable cause) {
+    super(cause);
   }
-
-  public YellowpagesException(String callingClass, int errorLevel, String message,
-      String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  /**
-   * --------------------------------------------------------------------------
-   * getModule getModule
-   */
-  public String getModule() {
-    return "yellowpages";
-  }
-
 }

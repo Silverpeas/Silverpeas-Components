@@ -29,10 +29,6 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import java.io.Serializable;
 import java.util.Date;
 
-/**
- * Class declaration
- * @author
- */
 public class HistoryByUser implements Serializable {
 
   private static final long serialVersionUID = -5874285806646269018L;

@@ -35,29 +35,30 @@ import org.silverpeas.kernel.logging.SilverLogger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class DataWarningQueryResult extends Object {
+public class DataWarningQueryResult {
 
-  protected DataWarningQuery queryParent = null;
+  protected DataWarningQuery queryParent;
   // Query result
-  protected ArrayList<String> columns = null;
-  protected List values = null;
-  protected boolean hasError = false;
+  protected ArrayList<String> columns;
+  protected List<List<String>> values;
+  protected boolean hasError;
   protected Exception errEx = null;
   protected String errQuery = "";
   protected String errLowestLevel = "";
   protected String errFullText = "";
-  protected HashMap valuesByUser = null;
-  protected int persoColumnNumber = 0;
-  protected String persoUID = "";
+  protected Map<String, List<List<String>>> valuesByUser;
+  protected int persoColumnNumber;
+  protected String persoUID;
 
   public DataWarningQueryResult(DataWarningQuery qp, boolean pe, int colNum, String puid) {
     queryParent = qp;
     columns = new ArrayList<>();
-    values = new ArrayList();
+    values = new ArrayList<>();
     hasError = false;
     if (pe) {
-      valuesByUser = new HashMap();
+      valuesByUser = new HashMap<>();
     } else {
       valuesByUser = null;
     }
@@ -136,14 +137,14 @@ public class DataWarningQueryResult extends Object {
     columns.add(columnName);
   }
 
-  public List getColumns() {
+  public List<String> getColumns() {
     return columns;
   }
 
   // Values functions
   // ----------------
   // Return all values (list of list)
-  public List getValues() {
+  public List<List<String>> getValues() {
     return values;
   }
 
@@ -176,19 +177,19 @@ public class DataWarningQueryResult extends Object {
     }
   }
 
-  public void addRow(List row) {
+  public void addRow(List<String> row) {
     // Add Full row to global result
     values.add(row);
 
     // Add reduced row to user specific results if needed
     if (isPersoEnabled()) {
-      String userPersoValue = (String) row.get(persoColumnNumber);
-      List allUserRows = getValues(userPersoValue);
-      List clonedOne = new ArrayList(row);
+      String userPersoValue = row.get(persoColumnNumber);
+      List<List<String>> allUserRows = getValues(userPersoValue);
+      List<String> clonedOne = new ArrayList<>(row);
       if (allUserRows == null) {
-        allUserRows = new ArrayList();
+        allUserRows = new ArrayList<>();
       }
-      // Remove User-specific Id
+      // Remove User-specific id
       clonedOne.remove(persoColumnNumber);
       allUserRows.add(clonedOne);
       valuesByUser.put(userPersoValue, allUserRows);
@@ -196,18 +197,18 @@ public class DataWarningQueryResult extends Object {
   }
 
   // Return entire row
-  protected ArrayList getRow(int row) {
+  protected List<String> getRow(int row) {
     if (values.size() > row) {
-      return (ArrayList) values.get(row);
+      return values.get(row);
     } else {
-      return new ArrayList();
+      return new ArrayList<>();
     }
   }
 
   public String getValue(int row, int col) {
-    ArrayList al = getRow(row);
+    var al = getRow(row);
     if (al.size() > col) {
-      return (String) (al.get(col));
+      return al.get(col);
     } else {
       return "";
     }
@@ -239,13 +240,13 @@ public class DataWarningQueryResult extends Object {
     }
   }
 
-  public List getValues(String userId) {
+  public List<List<String>> getValues(String userId) {
     if (isPersoEnabled()) {
-      // Translate user Id to user Perso Value
+      // Translate user id to user Perso Value
       String userPersoValue = returnPersoValue(userId);
-      List<List> valret = new ArrayList<>();
+      List<List<String>> valret = new ArrayList<>();
       for (int i = 0; i < values.size(); i++) {
-        List valeur = (List) getValues().get(i);
+        List<String> valeur = getValues().get(i);
         if (valeur.size() > 1 && valeur.get(persoColumnNumber).equals(userPersoValue)) {
           valret.add(valeur);
         }
@@ -258,40 +259,38 @@ public class DataWarningQueryResult extends Object {
     }
   }
 
-  protected ArrayList getRow(String userId, int row) {
+  protected List<String> getRow(String userId, int row) {
     if (isPersoEnabled()) {
-      List al = getValues(userId);
+      List<List<String>> al = getValues(userId);
 
       if (al.size() > row) {
-        return (ArrayList) al.get(row);
+        return al.get(row);
       } else {
-        return new ArrayList();
+        return new ArrayList<>();
       }
     } else {
       if (values.size() > row) {
-        return (ArrayList) values.get(row);
+        return values.get(row);
       } else {
-        return new ArrayList();
+        return new ArrayList<>();
       }
     }
   }
 
   public String getValue(String userId, int row, int col) {
-
-
-    ArrayList al = getRow(userId, row);
+    var al = getRow(userId, row);
 
     if (al.size() > col) {
-      return (String) (al.get(col));
+      return al.get(col);
     } else {
       return "";
     }
   }
 
-  public List getPersoColumns() {
+  public List<String> getPersoColumns() {
 
     if (isPersoEnabled()) {
-      ArrayList clo = ((ArrayList) columns.clone());
+      var clo = new ArrayList<>(columns);
       if (clo.size() > persoColumnNumber) {
         clo.remove(persoColumnNumber);
       }
@@ -310,7 +309,7 @@ public class DataWarningQueryResult extends Object {
   }
 
   public int getNbRows(String userId) {
-    List allUserRows = getValues(userId);
+    List<List<String>> allUserRows = getValues(userId);
     if (allUserRows != null) {
       return allUserRows.size();
     } else {

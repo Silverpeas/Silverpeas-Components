@@ -24,10 +24,9 @@
 
 package org.silverpeas.components.scheduleevent.servlets.handlers;
 
-import javax.servlet.http.HttpServletRequest;
-
+import jakarta.servlet.http.HttpServletRequest;
 import org.silverpeas.components.scheduleevent.control.ScheduleEventSessionController;
-import org.silverpeas.components.scheduleevent.control.ScheduleEventSessionController;
+import org.silverpeas.kernel.SilverpeasException;
 
 public class ScheduleEventDateNextRequestHandler implements ScheduleEventRequestHandler {
 
@@ -44,7 +43,7 @@ public class ScheduleEventDateNextRequestHandler implements ScheduleEventRequest
 
   @Override
   public String getDestination(String function, ScheduleEventSessionController scheduleeventSC,
-      HttpServletRequest request) throws Exception {
+      HttpServletRequest request) throws SilverpeasException {
     if (scheduleeventSC.isCurrentScheduleEventDefined()) {
       return forwardRequestHandler.getDestination(function, scheduleeventSC, request);
     } else {
@@ -54,7 +53,7 @@ public class ScheduleEventDateNextRequestHandler implements ScheduleEventRequest
 
   private String getFirstStepDestination(String function,
       ScheduleEventSessionController scheduleeventSC,
-      HttpServletRequest request) throws Exception {
+      HttpServletRequest request) throws SilverpeasException {
     return firstStepRequestHandler.getDestination(function, scheduleeventSC, request);
   }
 

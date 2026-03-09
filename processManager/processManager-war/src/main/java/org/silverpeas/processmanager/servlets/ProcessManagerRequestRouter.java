@@ -23,19 +23,17 @@
  */
 package org.silverpeas.processmanager.servlets;
 
-import org.apache.commons.fileupload.FileItem;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.model.UnlockContext;
-import org.silverpeas.core.contribution.content.form.DataRecord;
-import org.silverpeas.core.contribution.content.form.Form;
-import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.contribution.content.form.PagesContext;
-import org.silverpeas.core.contribution.content.form.RecordTemplate;
+import org.silverpeas.core.contribution.content.form.*;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.JSONCodec;
-import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.web.export.ExportCSVBuilder;
 import org.silverpeas.core.web.http.HttpRequest;
@@ -51,17 +49,9 @@ import org.silverpeas.core.workflow.api.model.State;
 import org.silverpeas.core.workflow.api.task.Task;
 import org.silverpeas.core.workflow.api.user.Replacement;
 import org.silverpeas.core.workflow.engine.model.StateImpl;
-import org.silverpeas.processmanager.CurrentState;
-import org.silverpeas.processmanager.LockVO;
-import org.silverpeas.processmanager.NamedValue;
-import org.silverpeas.processmanager.ProcessFilter;
-import org.silverpeas.processmanager.ProcessManagerException;
-import org.silverpeas.processmanager.ProcessManagerSessionController;
-import org.silverpeas.processmanager.StepVO;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.processmanager.*;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -73,12 +63,14 @@ public class ProcessManagerRequestRouter
     extends ComponentRequestRouter<ProcessManagerSessionController> {
 
   private static final long serialVersionUID = -4758787807784357891L;
+  private static final String CONTEXT = "context";
 
   /**
    * Map the function name to the function handler
    */
   private static Map<String, FunctionHandler> handlerMap = null;
 
+  private static final String PROCESS_ID = "processId";
   /**
    * The removeProcess handler for the supervisor.
    */
@@ -88,7 +80,7 @@ public class ProcessManagerRequestRouter
         protected String computeDestination(String function,
             ProcessManagerSessionController session,
             HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
-          String processId = request.getParameter("processId");
+          String processId = request.getParameter(PROCESS_ID);
           session.removeProcess(processId);
           return listProcessHandler.getDestination(function, session, request);
         }
@@ -101,7 +93,7 @@ public class ProcessManagerRequestRouter
     @Override
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
-      String processId = request.getParameter("processId");
+      String processId = request.getParameter(PROCESS_ID);
       session.resetCurrentProcessInstance(processId);
       WorkflowError[] errors = session.getProcessInstanceErrors(processId);
       request.setAttribute("errors", errors);
@@ -119,7 +111,7 @@ public class ProcessManagerRequestRouter
     request.setAttribute("form", form);
     // Set the form context
     PagesContext context = getFormContext("assignForm", "0", session, true);
-    request.setAttribute("context", context);
+    request.setAttribute(CONTEXT, context);
     // Get the form data
     DataRecord data = session.getAssignRecordOfActiveStates(processInstance);
     request.setAttribute("data", data);
@@ -133,7 +125,7 @@ public class ProcessManagerRequestRouter
     @Override
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
-      String processId = request.getParameter("processId");
+      String processId = request.getParameter(PROCESS_ID);
       session.resetCurrentProcessInstance(processId);
       prepareReAssignationAndDo(session, request,
           (f, d, c) -> setSharedAttributes(session, request));
@@ -178,6 +170,7 @@ public class ProcessManagerRequestRouter
     }
   };
 
+  private static final String ACTION_FUNC = "Action";
   /**
    * The listProcess handler. Used as the Main handler too.
    */
@@ -202,14 +195,13 @@ public class ProcessManagerRequestRouter
       List<DataRecord> processList;
       if (request.getAttribute("dontreset") == null) {
         String from = (String) request.getAttribute("From");
-        boolean doAPause = "Creation".equals(from) || "Action".equals(from);
+        boolean doAPause = "Creation".equals(from) || ACTION_FUNC.equals(from);
         processList = session.resetCurrentProcessList(doAPause);
       } else {
         processList = session.getCurrentProcessList();
       }
       request.setAttribute("processList", processList);
-      //noinspection rawtypes
-      final List<Replacement> replacements =
+      final List<Replacement<?>> replacements =
           session.getCurrentAndNextUserReplacementsAsIncumbent();
       request.setAttribute("CurrentAndNextReplacementsAsIncumbent", replacements);
       setProcessFilterAttributes(session, request);
@@ -272,7 +264,7 @@ public class ProcessManagerRequestRouter
     @Override
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
-      String processId = request.getParameter("processId");
+      String processId = request.getParameter(PROCESS_ID);
       if (processId != null) {
         session.resetCurrentProcessInstance(processId);
       }
@@ -288,7 +280,7 @@ public class ProcessManagerRequestRouter
     @Override
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
-      String processId = request.getParameter("processId");
+      String processId = request.getParameter(PROCESS_ID);
       String stateName = request.getParameter("stateName");
       String userId = request.getParameter("userId");
       session.resetCurrentProcessInstance(processId);
@@ -304,7 +296,7 @@ public class ProcessManagerRequestRouter
   private static final FunctionHandler viewProcessHandler = new SessionSafeFunctionHandler() {
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
-      String processId = request.getParameter("processId");
+      String processId = request.getParameter(PROCESS_ID);
       String force = request.getParameter("force");
 
       session.resetCurrentProcessInstance(processId);
@@ -328,7 +320,7 @@ public class ProcessManagerRequestRouter
       request.setAttribute("form", form);
 
       PagesContext context = getFormContext("presentation", "0", session, true);
-      request.setAttribute("context", context);
+      request.setAttribute(CONTEXT, context);
 
       List<CurrentState> activeStates = session.getActiveStates();
       request.setAttribute("activeStates", activeStates);
@@ -362,15 +354,15 @@ public class ProcessManagerRequestRouter
       String type = request.getParameter("Type");
       String todoId = request.getParameter("Id");
 
-      // Accept only links coming from todo details
+      // Accept only links coming from TodoDetails
       if (type == null || (!type.equals("TodoDetail") &&
-          !type.equals("ProcessInstance"))) {
+                           !type.equals("ProcessInstance"))) {
         return listProcessHandler.getDestination(function, session, request);
       }
 
       String processId = todoId;
       if (type.equals("TodoDetail")) {
-        // from todo, todoId is in fact the externalId
+        // from TodoDetails, todoId is in fact the externalId
         processId = session.getProcessInstanceIdFromExternalTodoId(todoId);
 
         String roleName = session.getRoleNameFromExternalTodoId(todoId);
@@ -413,7 +405,7 @@ public class ProcessManagerRequestRouter
   private static final FunctionHandler viewHistoryHandler = new SessionSafeFunctionHandler() {
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
-      String processId = request.getParameter("processId");
+      String processId = request.getParameter(PROCESS_ID);
 
       session.resetCurrentProcessInstance(processId);
 
@@ -428,6 +420,7 @@ public class ProcessManagerRequestRouter
     }
   };
 
+  private static final String IS_FIRST_TIME_SAVED = "isFirstTimeSaved";
   /**
    * The createProcess handler
    */
@@ -441,16 +434,16 @@ public class ProcessManagerRequestRouter
       request.setAttribute("form", form);
 
       PagesContext context = getFormContext("createForm", "0", session, true);
-      request.setAttribute("context", context);
+      request.setAttribute(CONTEXT, context);
 
       DataRecord data = session.getEmptyCreationRecord();
       request.setAttribute("data", data);
 
-      request.setAttribute("isFirstTimeSaved", "yes");
+      request.setAttribute(IS_FIRST_TIME_SAVED, "yes");
 
       setSharedAttributes(session, request);
 
-      // Session Safe : Generate token Id
+      // Session Safe : Generate token id
       generateTokenId(session, request);
 
       return "/processManager/jsp/createProcess.jsp";
@@ -469,7 +462,7 @@ public class ProcessManagerRequestRouter
       DataRecord data = session.getEmptyCreationRecord();
 
       try {
-        // Session Safe : reset Token Id
+        // Session Safe : reset Token id
         resetTokenId(session, request);
 
         // use random id as temporary object id
@@ -478,7 +471,7 @@ public class ProcessManagerRequestRouter
 
         boolean isDraft = StringUtil.getBooleanValue(FileUploadUtil.getParameter(items, "isDraft"));
         boolean isFirstTimeSaved =
-            StringUtil.getBooleanValue(FileUploadUtil.getParameter(items, "isFirstTimeSaved"));
+            StringUtil.getBooleanValue(FileUploadUtil.getParameter(items, IS_FIRST_TIME_SAVED));
 
         String instanceId = session.createProcessInstance(data, isDraft, isFirstTimeSaved);
 
@@ -509,6 +502,9 @@ public class ProcessManagerRequestRouter
     }
   };
 
+  private static final String ACTION = "action";
+  private static final String STATE = "state";
+  private static final String ACTION_FORM = "actionForm";
   /**
    * The resumeAction handler
    */
@@ -522,31 +518,31 @@ public class ProcessManagerRequestRouter
       State state = (stateName == null) ?
           new StateImpl("") :
           session.getState(session.getCurrentProcessInstance(), stateName);
-      request.setAttribute("state", state);
+      request.setAttribute(STATE, state);
       String actionName = savedStep.getAction();
-      request.setAttribute("action", session.getAction(actionName));
+      request.setAttribute(ACTION, session.getAction(actionName));
 
       // Get the associated form
       Form form = session.getActionForm(actionName);
       request.setAttribute("form", form);
 
       // Set the form context
-      PagesContext context = getFormContext("actionForm", "0", session, true);
-      request.setAttribute("context", context);
+      PagesContext context = getFormContext(ACTION_FORM, "0", session, true);
+      request.setAttribute(CONTEXT, context);
 
       // Get the form data
       DataRecord data = session.getSavedStepRecord(savedStep);
       request.setAttribute("data", data);
 
       // Set flag to indicate action record has already been saved as draft
-      request.setAttribute("isFirstTimeSaved", "no");
+      request.setAttribute(IS_FIRST_TIME_SAVED, "no");
 
       // Set flag to indicate instance is in resuming mode
       session.setResumingInstance(true);
 
       // Set global attributes
       setSharedAttributes(session, request);
-      // Session Safe : Generate token Id
+      // Session Safe : Generate token id
       generateTokenId(session, request);
       return "/processManager/jsp/editAction.jsp";
     }
@@ -560,12 +556,12 @@ public class ProcessManagerRequestRouter
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
 
       // Set process instance
-      String processId = request.getParameter("processId");
+      String processId = request.getParameter(PROCESS_ID);
       session.resetCurrentProcessInstance(processId);
 
       // retrieve state name and action name
-      String stateName = request.getParameter("state");
-      String actionName = request.getParameter("action");
+      String stateName = request.getParameter(STATE);
+      String actionName = request.getParameter(ACTION);
 
       // Get the associated form
       Form form = session.getActionForm(actionName);
@@ -578,27 +574,27 @@ public class ProcessManagerRequestRouter
 
         session.processAction(stateName, actionName, data, false, true);
 
-        request.setAttribute("From", "Action");
+        request.setAttribute("From", ACTION_FUNC);
 
         return listProcessHandler.getDestination(function, session, request);
       } else {
         // a form is associated to this action, display it to process action
-        request.setAttribute("state",
+        request.setAttribute(STATE,
             session.getState(session.getCurrentProcessInstance(), stateName));
-        request.setAttribute("action", session.getAction(actionName));
+        request.setAttribute(ACTION, session.getAction(actionName));
         request.setAttribute("form", form);
 
         // Set the form context
-        PagesContext context = getFormContext("actionForm", "0", session, true);
+        PagesContext context = getFormContext(ACTION_FORM, "0", session, true);
         context.setCreation(true);
-        request.setAttribute("context", context);
+        request.setAttribute(CONTEXT, context);
 
         // Get the form data
         DataRecord data = session.getActionRecord(actionName);
         request.setAttribute("data", data);
 
         // Set flag to indicate action record has never been saved as draft for this step
-        request.setAttribute("isFirstTimeSaved", "yes");
+        request.setAttribute(IS_FIRST_TIME_SAVED, "yes");
 
         // lock the process instance
         session.lock(stateName);
@@ -606,7 +602,7 @@ public class ProcessManagerRequestRouter
         // Set global attributes
         setSharedAttributes(session, request);
 
-        // Session Safe : Generate token Id
+        // Session Safe : Generate token id
         generateTokenId(session, request);
 
         return "/processManager/jsp/editAction.jsp";
@@ -622,18 +618,18 @@ public class ProcessManagerRequestRouter
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
 
       try {
-        // Session Safe : reset Token Id
+        // Session Safe : reset Token id
         resetTokenId(session, request);
 
-        String stateName = FileUploadUtil.getParameter(items, "state");
-        String actionName = FileUploadUtil.getParameter(items, "action");
+        String stateName = FileUploadUtil.getParameter(items, STATE);
+        String actionName = FileUploadUtil.getParameter(items, ACTION);
 
         boolean isDraft = StringUtil.getBooleanValue(FileUploadUtil.getParameter(items, "isDraft"));
         boolean isFirstTimeSaved =
-            StringUtil.getBooleanValue(FileUploadUtil.getParameter(items, "isFirstTimeSaved"));
+            StringUtil.getBooleanValue(FileUploadUtil.getParameter(items, IS_FIRST_TIME_SAVED));
 
         Form form = session.getActionForm(actionName);
-        PagesContext context = getFormContext("actionForm", "0", session);
+        PagesContext context = getFormContext(ACTION_FORM, "0", session);
         DataRecord data = session.getActionRecord(actionName);
 
         if (form != null) {
@@ -641,7 +637,7 @@ public class ProcessManagerRequestRouter
         }
         session.processAction(stateName, actionName, data, isDraft, isFirstTimeSaved);
 
-        request.setAttribute("From", "Action");
+        request.setAttribute("From", ACTION_FUNC);
 
         return listProcessHandler.getDestination(function, session, request);
       } catch (Exception e) {
@@ -656,7 +652,7 @@ public class ProcessManagerRequestRouter
   private static final FunctionHandler cancelActionHandler = new SessionSafeFunctionHandler() {
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
-      String stateName = request.getParameter("state");
+      String stateName = request.getParameter(STATE);
 
       // special case : a cancel occurred when resuming a precedent action (saved in draft)
       if (session.isResumingInstance()) {
@@ -676,7 +672,7 @@ public class ProcessManagerRequestRouter
   private static final FunctionHandler cancelResponseHandler = new SessionSafeFunctionHandler() {
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
-      String stateName = request.getParameter("state");
+      String stateName = request.getParameter(STATE);
 
       // unlock the process instance
       session.unlock(stateName);
@@ -685,27 +681,29 @@ public class ProcessManagerRequestRouter
     }
   };
 
+  private static final String QUESTION_FORM = "questionForm";
+  private static final String STEP_ID = "stepId";
   /**
    * The editQuestion handler
    */
   private static final FunctionHandler editQuestionHandler = new SessionSafeFunctionHandler() {
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
-      String stepId = request.getParameter("stepId");
+      String stepId = request.getParameter(STEP_ID);
 
-      request.setAttribute("stepId", stepId);
+      request.setAttribute(STEP_ID, stepId);
       request.setAttribute("step", session.getStep(stepId));
 
-      String state = request.getParameter("state");
-      request.setAttribute("state", state);
+      String state = request.getParameter(STATE);
+      request.setAttribute(STATE, state);
 
       // Get the question form
       Form form = session.getQuestionForm(false);
       request.setAttribute("form", form);
 
       // Set the form context
-      PagesContext context = getFormContext("questionForm", "0", session, true);
-      request.setAttribute("context", context);
+      PagesContext context = getFormContext(QUESTION_FORM, "0", session, true);
+      request.setAttribute(CONTEXT, context);
 
       // Get the form data
       DataRecord data = session.getEmptyQuestionRecord();
@@ -716,7 +714,7 @@ public class ProcessManagerRequestRouter
 
       setSharedAttributes(session, request);
 
-      // Session Safe : Generate token Id
+      // Session Safe : Generate token id
       generateTokenId(session, request);
 
       return "/processManager/jsp/editQuestion.jsp";
@@ -730,14 +728,14 @@ public class ProcessManagerRequestRouter
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
       try {
-        // Session Safe : reset Token Id
+        // Session Safe : reset Token id
         resetTokenId(session, request);
 
-        String stepId = FileUploadUtil.getParameter(items, "stepId");
-        String state = FileUploadUtil.getParameter(items, "state");
+        String stepId = FileUploadUtil.getParameter(items, STEP_ID);
+        String state = FileUploadUtil.getParameter(items, STATE);
 
         Form form = session.getQuestionForm(false);
-        PagesContext context = getFormContext("questionForm", "0", session);
+        PagesContext context = getFormContext(QUESTION_FORM, "0", session);
         DataRecord data = session.getEmptyQuestionRecord();
 
         form.update(items, data, context);
@@ -750,6 +748,7 @@ public class ProcessManagerRequestRouter
     }
   };
 
+  private static final String RESPONSE_FORM = "responseForm";
   /**
    * The editResponse handler
    */
@@ -762,15 +761,15 @@ public class ProcessManagerRequestRouter
 
       // Get the question form (readonly)
       Form questionForm = session.getQuestionForm(true);
-      request.setAttribute("questionForm", questionForm);
+      request.setAttribute(QUESTION_FORM, questionForm);
 
       // Get the response form (same as the question)
       Form responseForm = session.getQuestionForm(false);
-      request.setAttribute("responseForm", responseForm);
+      request.setAttribute(RESPONSE_FORM, responseForm);
 
       // Set the form context
-      PagesContext context = getFormContext("responseForm", "0", session, true);
-      request.setAttribute("context", context);
+      PagesContext context = getFormContext(RESPONSE_FORM, "0", session, true);
+      request.setAttribute(CONTEXT, context);
 
       // Get the question form data
       DataRecord questionData = session.getQuestionRecord(questionId);
@@ -786,7 +785,7 @@ public class ProcessManagerRequestRouter
 
       setSharedAttributes(session, request);
 
-      // Session Safe : Generate token Id
+      // Session Safe : Generate token id
       generateTokenId(session, request);
 
       return "/processManager/jsp/editResponse.jsp";
@@ -799,13 +798,13 @@ public class ProcessManagerRequestRouter
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
       try {
-        // Session Safe : reset Token Id
+        // Session Safe : reset Token id
         resetTokenId(session, request);
 
         String questionId = FileUploadUtil.getParameter(items, "questionId");
 
         Form responseForm = session.getQuestionForm(false);
-        PagesContext context = getFormContext("responseForm", "0", session);
+        PagesContext context = getFormContext(RESPONSE_FORM, "0", session);
         DataRecord responseData = session.getEmptyQuestionRecord();
 
         responseForm.update(items, responseData, context);
@@ -842,7 +841,7 @@ public class ProcessManagerRequestRouter
 
       // Set the form context
       PagesContext context = getFormContext("userSettingsForm", "0", session);
-      request.setAttribute("context", context);
+      request.setAttribute(CONTEXT, context);
 
       // Get the form data
       DataRecord data = session.getUserSettingsRecord();
@@ -878,7 +877,7 @@ public class ProcessManagerRequestRouter
   private static final FunctionHandler listQuestionsHandler = new SessionSafeFunctionHandler() {
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
-      String processId = request.getParameter("processId");
+      String processId = request.getParameter(PROCESS_ID);
 
       session.resetCurrentProcessInstance(processId);
 
@@ -887,8 +886,8 @@ public class ProcessManagerRequestRouter
       request.setAttribute("form", questionForm);
 
       // Set the form context
-      PagesContext context = getFormContext("responseForm", "0", session);
-      request.setAttribute("context", context);
+      PagesContext context = getFormContext(RESPONSE_FORM, "0", session);
+      request.setAttribute(CONTEXT, context);
 
       // Get tasks list
       Task[] tasks = session.getTasks();
@@ -935,7 +934,7 @@ public class ProcessManagerRequestRouter
     request.setAttribute("form", form);
 
     PagesContext context = getFormContext("filter", "1", session);
-    request.setAttribute("context", context);
+    request.setAttribute(CONTEXT, context);
     DataRecord data = filter.getCriteriaRecord();
     request.setAttribute("data", data);
   }
@@ -952,7 +951,7 @@ public class ProcessManagerRequestRouter
   /**
    * Inits the function handler
    */
-  synchronized private void initHandlers() {
+  private synchronized void initHandlers() {
     if (handlerMap != null) {
       return;
     }
@@ -1002,8 +1001,9 @@ public class ProcessManagerRequestRouter
 
   /**
    * Return a new ProcessManagerSessionController which will be used for each request made in the
-   * given componentContext. Returns a ill session controller when the a fatal error occurs. This
-   * ill session controller can only display an error page.
+   * given componentContext. Returns a session controller when a fatal error occurs. This ill
+   * session controller can only display an error page.
+   *
    * @param mainSessionCtrl the main session controller?
    * @param componentContext the component instance context.
    * @return the process manager session controller.
@@ -1021,6 +1021,7 @@ public class ProcessManagerRequestRouter
 
   /**
    * Process the request and returns the response url.
+   *
    * @param function the user request name
    * @param sessionController the user request context
    * @param request the user request params

@@ -27,20 +27,21 @@ import org.silverpeas.components.resourcesmanager.model.Category;
 import org.silverpeas.components.resourcesmanager.repository.CategoryRepository;
 import org.silverpeas.core.annotation.Service;
 
-import javax.inject.Inject;
-import javax.transaction.Transactional;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import java.util.List;
 
 @Service
-@Transactional
 public class CategoryService {
   @Inject
   private CategoryRepository repository;
 
+  @Transactional
   public void createCategory(Category category) {
     repository.saveAndFlush(category);
   }
 
+  @Transactional
   public void updateCategory(Category category) {
     repository.saveAndFlush(category);
   }
@@ -53,6 +54,7 @@ public class CategoryService {
     return repository.getById(Long.toString(id));
   }
 
+  @Transactional
   public void deleteCategory(Long id) {
     repository.deleteById(Long.toString(id));
   }

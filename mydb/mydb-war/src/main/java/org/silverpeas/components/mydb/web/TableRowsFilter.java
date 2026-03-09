@@ -69,7 +69,7 @@ public class TableRowsFilter {
   }
 
   /**
-   * Gets the symbol of all of the comparators supported by this filter.
+   * Gets the symbol of all the comparators supported by this filter.
    * @return a set of comparator symbols.
    */
   public static Set<String> getAllComparators() {

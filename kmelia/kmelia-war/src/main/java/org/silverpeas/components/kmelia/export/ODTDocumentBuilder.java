@@ -37,7 +37,7 @@ import org.silverpeas.components.kmelia.model.KmeliaPublication;
 import org.silverpeas.components.kmelia.service.KmeliaService;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.comment.model.Comment;
-import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Form;
@@ -91,6 +91,8 @@ public class ODTDocumentBuilder {
   private String language = "";
   private String topicIdToConsider;
   private LocalizationBundle messages;
+  private final AttachmentService attachmentService = AttachmentService.get();
+  private final KmeliaService kmeliaService = KmeliaService.get();
 
   /**
    * Gets an instance of a builder of ODT documents.
@@ -113,7 +115,7 @@ public class ODTDocumentBuilder {
   }
 
   /**
-   * Informs this builder the prefered language to use for the content of the documents to build.
+   * Informs this builder the preferred language to use for the content of the documents to build.
    * If
    * the publication doesn't have a content in the specified language, then it is the default
    * publication's text that will be taken (whatever the language in which it is written).
@@ -283,7 +285,7 @@ public class ODTDocumentBuilder {
       File odtConvertedHtmlFile = null;
       try {
         htmlFile = new File(
-            FileRepositoryManager.getTemporaryPath() + UUID.randomUUID().toString() + ".html");
+            FileRepositoryManager.getTemporaryPath() + UUID.randomUUID() + ".html");
         FileUtils.writeStringToFile(htmlFile, html, Charsets.UTF_8);
         HTMLConverter converter = DocumentFormatConverterProvider.getHTMLConverter();
         odtConvertedHtmlFile = converter.convert(htmlFile, inFormat(odt));
@@ -344,7 +346,7 @@ public class ODTDocumentBuilder {
 
   private void buildAttachmentsSection(final TextDocument odtDocument,
       final KmeliaPublication publication) {
-    List<SimpleDocument> attachments = AttachmentServiceProvider.getAttachmentService()
+    List<SimpleDocument> attachments = attachmentService
         .listDocumentsByForeignKey(publication.getIdentifier().toReference(), getLanguage());
     boolean hasNoAttachmentToDisplay = true;
     Table attachmentsTable = odtDocument.getTableByName(LIST_OF_ATTACHMENTS);
@@ -461,7 +463,7 @@ public class ODTDocumentBuilder {
         pathToRender.append(pathNode.getName(getLanguage())).append(pathSeparator);
       }
     }
-    if (!pathSeparator.equals(pathToRender.toString()) && pathToRender.length() > 0) {
+    if (!pathSeparator.contentEquals(pathToRender) && pathToRender.length() > 0) {
       ul.addItem(pathToRender.substring(0, pathToRender.length() - pathSeparator.length()));
     }
   }
@@ -487,7 +489,8 @@ public class ODTDocumentBuilder {
   private LocalizationBundle getMessagesBundle() {
     if (this.messages == null) {
       this.messages =
-          ResourceLocator.getLocalizationBundle("org.silverpeas.kmelia.multilang.kmeliaExport", getLanguage());
+          ResourceLocator.getLocalizationBundle("org.silverpeas.kmelia.multilang.kmeliaExport",
+              getLanguage());
     }
     return this.messages;
 
@@ -498,6 +501,6 @@ public class ODTDocumentBuilder {
    * @return an instance of KmeliaService.
    */
   protected KmeliaService getKmeliaService() {
-    return KmeliaService.get();
+    return kmeliaService;
   }
 }

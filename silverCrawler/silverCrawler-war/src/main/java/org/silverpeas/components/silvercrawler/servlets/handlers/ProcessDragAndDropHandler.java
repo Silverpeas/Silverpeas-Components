@@ -27,13 +27,17 @@ package org.silverpeas.components.silvercrawler.servlets.handlers;
 import org.silverpeas.components.silvercrawler.control.SilverCrawlerSessionController;
 import org.silverpeas.components.silvercrawler.control.UploadReport;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Handler for use case : files/folder have been dropped into dragNDrop area.
  * @author Ludovic Bertin
  */
 public class ProcessDragAndDropHandler extends FunctionHandler {
+
+  protected ProcessDragAndDropHandler(HandlerProvider provider) {
+    super(provider);
+  }
 
   @Override
   public String getDestination(SilverCrawlerSessionController sessionController,
@@ -44,7 +48,7 @@ public class ProcessDragAndDropHandler extends FunctionHandler {
     if (report.isForbiddenFolderDetected()) {
       request.setAttribute("errorMessage",
           sessionController.getString("silverCrawler.notAllowedToDropFolders"));
-      return HandlerProvider.getHandler("ViewDirectory").getDestination(sessionController, request);
+      return getHandlerProvider().getHandler("ViewDirectory").getDestination(sessionController, request);
     }
 
     if (!report.isConflictous()) {
@@ -53,7 +57,7 @@ public class ProcessDragAndDropHandler extends FunctionHandler {
       request.setAttribute("errorMessage", report.displayErrors());
       request.setAttribute("successMessage", report.displaySuccess());
 
-      return HandlerProvider.getHandler("ViewDirectory").getDestination(sessionController, request);
+      return getHandlerProvider().getHandler("ViewDirectory").getDestination(sessionController, request);
     }
 
     // redirect to "ViewDirectory" use case

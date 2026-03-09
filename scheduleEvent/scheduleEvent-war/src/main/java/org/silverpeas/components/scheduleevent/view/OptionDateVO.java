@@ -1,13 +1,12 @@
 package org.silverpeas.components.scheduleevent.view;
 
-import java.util.Date;
+import org.silverpeas.components.scheduleevent.service.model.beans.DateOption;
+import org.silverpeas.kernel.SilverpeasException;
 
-import org.silverpeas.components.scheduleevent.service.model.beans.DateOption;
-import org.silverpeas.components.scheduleevent.service.model.beans.DateOption;
+import java.util.Date;
 
 public class OptionDateVO implements Comparable<OptionDateVO> {
 
-  private static final int MORNING_HOUR_LIMIT = 12;
   private static final String MORNING_INDEX_MARKER = "AM";
   private static final String AFTERNOON_INDEX_MARKER = "PM";
 
@@ -29,20 +28,17 @@ public class OptionDateVO implements Comparable<OptionDateVO> {
     return date.equals(dateOption.getDay());
   }
 
-  public void setPartOfDayFromHour(DateOption dateOption) throws Exception {
+  public void setPartOfDayFromHour(DateOption dateOption) throws SilverpeasException {
     if (isSameDateAs(dateOption)) {
-      setPartOfDayFromHour(dateOption.getHour());
+      setPartOfDayFromHour();
     } else {
-      throw new Exception("Cannot assign a part of day for two different dates");
+      throw new SilverpeasException("Cannot assign a part of day for two different dates");
     }
   }
 
-  private void setPartOfDayFromHour(int hour) {
-    // if (hour > MORNING_HOUR_LIMIT) {
-      setAfternoon(true);
-    // } else {
-      setMorning(true);
-    // }
+  private void setPartOfDayFromHour() {
+    setAfternoon(true);
+    setMorning(true);
   }
 
   public Date getDate() {
@@ -95,11 +91,8 @@ public class OptionDateVO implements Comparable<OptionDateVO> {
       return false;
     OptionDateVO other = (OptionDateVO) obj;
     if (date == null) {
-      if (other.date != null)
-        return false;
-    } else if (!date.equals(other.date))
-      return false;
-    return true;
+      return other.date == null;
+    } else return date.equals(other.date);
   }
 
   @Override

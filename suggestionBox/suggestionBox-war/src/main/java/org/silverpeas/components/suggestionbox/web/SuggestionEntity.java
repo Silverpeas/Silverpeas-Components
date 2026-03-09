@@ -30,7 +30,7 @@ import org.silverpeas.core.web.rs.WebEntity;
 import org.silverpeas.core.webapi.rating.RaterRatingEntity;
 import org.silverpeas.core.webapi.validation.ContributionValidationEntity;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 import java.net.URI;
 import java.util.Date;
 

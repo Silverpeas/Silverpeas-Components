@@ -49,7 +49,7 @@ import static org.silverpeas.components.mydb.web.TableRowUIEntity.convertList;
 import static org.silverpeas.kernel.util.Mutable.empty;
 
 /**
- * A view on one given database table loaded from a data source. The view wraps the table and it
+ * A view on one given database table loaded from a data source. The view wraps the table, and it
  * provides filtering operations on its content. It is a container on zero or one table and hence
  * its single item can be changed.
  * @author mmoquillon
@@ -57,7 +57,7 @@ import static org.silverpeas.kernel.util.Mutable.empty;
 public class TableView {
 
   private final LocalizationBundle message;
-  private final Map<Integer, Pair<String, String>> orderBies = new HashMap<>(50);
+  private final Map<Integer, Pair<String, String>> orderByes = new HashMap<>(50);
   private DbTable table = null;
   private final TableRowsFilter filter = new TableRowsFilter();
   private String orderBy = null;
@@ -80,8 +80,8 @@ public class TableView {
     this.pagination = pagination;
   }
 
-  Map<Integer, Pair<String, String>> getOrderBies() {
-    return orderBies;
+  Map<Integer, Pair<String, String>> getOrderByes() {
+    return orderByes;
   }
 
   void setOrderBy(final String orderBy) {
@@ -109,7 +109,7 @@ public class TableView {
    * Clears this table view.
    */
   void clear() {
-    orderBies.clear();
+    orderByes.clear();
     table = null;
     filter.clear();
     orderBy = null;
@@ -125,7 +125,7 @@ public class TableView {
     this.table = table;
     int i = 1;
     for (final DbColumn column : getColumns()) {
-      orderBies.put(i++, Pair.of(column.getName() + " asc", column.getName() + " desc"));
+      orderByes.put(i++, Pair.of(column.getName() + " asc", column.getName() + " desc"));
     }
   }
 

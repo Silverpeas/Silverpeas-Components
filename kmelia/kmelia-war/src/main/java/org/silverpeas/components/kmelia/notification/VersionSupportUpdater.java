@@ -30,11 +30,11 @@ import org.silverpeas.core.notification.system.CDIResourceEventListener;
 import org.silverpeas.core.notification.system.StateTransition;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 /**
  * Listens for events about the update of component instances. When this component instance is a
- * Kmelia one and it is about an update of the versionning parameter, then applies this change to
+ * Kmelia one, and it is about an update of the versioning parameter, then applies this change to
  * all attachments of the publications managed by this instance of Kmelia.
  * @author mmoquillon
  */

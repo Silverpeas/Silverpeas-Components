@@ -24,6 +24,7 @@
 package org.silverpeas.components.blog.dao;
 
 import org.apache.commons.lang3.time.FastDateFormat;
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.kernel.util.Pair;
 
@@ -40,6 +41,7 @@ import static java.util.stream.Collectors.toMap;
 import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery.select;
 import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery.streamBySplittingOn;
 
+@Repository
 public class PostDAO {
 
   private static final FastDateFormat FORMATTER = FastDateFormat.getInstance("yyyy/MM/dd");
@@ -55,7 +57,7 @@ public class PostDAO {
   private PostDAO () {
   }
 
-  public static void create(Connection con, String pubId, Date dateEvent,
+  public void create(Connection con, String pubId, Date dateEvent,
       String instanceId) throws SQLException {
     // Création
     PreparedStatement prepStmt = null;
@@ -74,7 +76,7 @@ public class PostDAO {
     }
   }
 
-  public static Map<String, Date> getEventDateIndexedByPost(final Collection<String> pubIds)
+  public Map<String, Date> getEventDateIndexedByPost(final Collection<String> pubIds)
       throws SQLException {
     return streamBySplittingOn(pubIds,
             idBatch -> select(PUB_ID + ", dateEvent")
@@ -85,7 +87,7 @@ public class PostDAO {
         .collect(toMap(Pair::getFirst, Pair::getSecond));
   }
 
-  public static void delete(Connection con, String pubId) throws SQLException {
+  public void delete(Connection con, String pubId) throws SQLException {
     PreparedStatement prepStmt = null;
     try {
       String query = "delete from SC_Blog_Post where pubId = ? ";
@@ -98,7 +100,7 @@ public class PostDAO {
     }
   }
 
-  public static void update(Connection con, String pubId, Date dateEvent)
+  public void update(Connection con, String pubId, Date dateEvent)
       throws SQLException {
     PreparedStatement prepStmt = null;
     try {
@@ -115,7 +117,7 @@ public class PostDAO {
     }
   }
 
-  public static Collection<String> getAllPostIds(Connection con, String instanceId)
+  public Collection<String> getAllPostIds(Connection con, String instanceId)
       throws SQLException {
     return select(PUB_ID)
         .from(BLOG_POST_TABLE_NAME)
@@ -124,7 +126,7 @@ public class PostDAO {
         .executeWith(con, r -> String.valueOf(r.getInt(PUB_ID)));
   }
 
-  public static Collection<Date> getAllEventDates(Connection con, String instanceId)
+  public Collection<Date> getAllEventDates(Connection con, String instanceId)
       throws SQLException {
     return select("DISTINCT " + DATE_EVENT)
         .from(BLOG_POST_TABLE_NAME)
@@ -133,7 +135,7 @@ public class PostDAO {
         .executeWith(con, r -> new Date(Long.parseLong(r.getString(DATE_EVENT))));
   }
 
-  public static Collection<String> getPostInRange(Connection con, String instanceId,
+  public Collection<String> getPostInRange(Connection con, String instanceId,
       String beginDate, String endDate) throws SQLException, ParseException {
     return select(PUB_ID)
         .from(BLOG_POST_TABLE_NAME)

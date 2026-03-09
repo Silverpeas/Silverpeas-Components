@@ -42,7 +42,7 @@ public class FolderDetail implements java.io.Serializable {
   private Collection<NodeDetail> path;
 
   /**
-   * the informations of the Topic are in this object
+   * the information of the Topic are in this object
    */
   private NodeDetail nodeDetail;
 
@@ -52,7 +52,8 @@ public class FolderDetail implements java.io.Serializable {
   private Collection<PublicationDetail> publicationDetails;
 
   /**
-   * A int collection which contains the number of publication containing under each sub topics of
+   * An integer collection which contains the number of publication containing under each sub
+   * topics of
    * the topics
    */
   private Collection<Integer> nbPubByTopic;

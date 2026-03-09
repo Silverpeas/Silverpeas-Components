@@ -23,32 +23,23 @@
  */
 package org.silverpeas.components.forums.control;
 
+import jakarta.ejb.EJBException;
 import org.silverpeas.components.forums.bean.ForumModeratorBean;
-import org.silverpeas.components.forums.model.Forum;
-import org.silverpeas.components.forums.model.ForumDetail;
-import org.silverpeas.components.forums.model.ForumPK;
-import org.silverpeas.components.forums.model.Message;
-import org.silverpeas.components.forums.model.MessagePK;
+import org.silverpeas.components.forums.model.*;
 import org.silverpeas.components.forums.notification.ForumsForumSubscriptionUserNotification;
 import org.silverpeas.components.forums.notification.ForumsMessagePendingValidationUserNotification;
 import org.silverpeas.components.forums.notification.ForumsMessageSubscriptionUserNotification;
 import org.silverpeas.components.forums.notification.ForumsMessageValidationUserNotification;
 import org.silverpeas.components.forums.service.ForumService;
-import org.silverpeas.components.forums.service.ForumsException;
-import org.silverpeas.components.forums.service.ForumsServiceProvider;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.model.Attachments;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
-import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.exception.DecodingException;
 import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
-import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
@@ -56,23 +47,17 @@ import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
 import org.silverpeas.core.subscription.SubscriptionServiceProvider;
 import org.silverpeas.core.subscription.service.ComponentSubscription;
-import org.silverpeas.kernel.bundle.ResourceLocator;
-import org.silverpeas.kernel.bundle.SettingBundle;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
-import javax.ejb.EJBException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -90,15 +75,14 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   /**
    * ids of deployed forums
    */
-  private List<Integer> deployedForums;
+  private final List<Integer> deployedForums;
   /**
    * ids of deployed messages
    */
-  private List<Integer> deployedMessages;
+  private final List<Integer> deployedMessages;
   /**
    * Used to send notification
    */
-  private NotificationSender notifSender = null;
   private static final String TYPE_MESSAGES = "Messages";
   private static final String TYPE_SUBJECTS = "Subjects";
   private SettingBundle settings = null;
@@ -107,6 +91,8 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   private boolean resizeFrame = false;
   private List<PdcPosition> positions = null;
   private boolean componentSubscriptionInfoDisplayed = false;
+  private transient ForumService forumService;
+  private transient StatisticService statisticService;
 
   // Constructor
   public ForumsSessionController(MainSessionController mainSessionCtrl, ComponentContext context) {
@@ -116,42 +102,30 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     deployedForums = new ArrayList<>();
   }
 
-  public NotificationSender getNotificationSender() {
-    if (notifSender == null) {
-      notifSender = new NotificationSender(getComponentId());
-    }
-    return notifSender;
-  }
-
-  public Forum[] getForumsList() {
-    List<Forum> forums = getForumsService().getForums(new ForumPK(getComponentId(), getSpaceId()));
-    return forums.toArray(new Forum[forums.size()]);
-  }
-
   public Forum[] getForumsListByCategory(String categoryId) {
     ForumPK forumPK = new ForumPK(getComponentId(), getSpaceId());
-    List<Forum> forums = getForumsService().getForumsByCategory(forumPK, categoryId);
-    return forums.toArray(new Forum[forums.size()]);
+    List<Forum> forums = getForumService().getForumsByCategory(forumPK, categoryId);
+    return forums.toArray(new Forum[0]);
   }
 
   public Forum getForum(int forumId) {
-    return getForumsService().getForum(getForumPK(forumId));
+    return getForumService().getForum(getForumPK(forumId));
   }
 
   public String getForumName(int forumId) {
-    return getForumsService().getForumName(forumId);
+    return getForumService().getForumName(forumId);
   }
 
   public boolean isForumActive(int forumId) {
-    return getForumsService().isForumActive(forumId);
+    return getForumService().isForumActive(forumId);
   }
 
   public int getForumParentId(int forumId) {
-    return getForumsService().getForumParentId(forumId);
+    return getForumService().getForumParentId(forumId);
   }
 
   public int[] getForumSonsIds(int forumId) {
-    List<String> ids = getForumsService().getForumSonsIds(getForumPK(forumId));
+    List<String> ids = getForumService().getForumSonsIds(getForumPK(forumId));
     int[] sonsIds = new int[ids.size()];
     for (int i = 0; i < ids.size(); i++) {
       sonsIds[i] = Integer.parseInt(ids.get(i));
@@ -160,7 +134,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   }
 
   public int getForumSonsNb(int forumId) {
-    return getForumsService().getForumSonsIds(getForumPK(forumId)).size();
+    return getForumService().getForumSonsIds(getForumPK(forumId)).size();
   }
 
   public void deployForum(int id) {
@@ -184,27 +158,12 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   public void lockForum(int id, int level) {
     ForumPK forumPK = new ForumPK(getComponentId(), String.valueOf(id));
-    getForumsService().lockForum(forumPK, level);
+    getForumService().lockForum(forumPK, level);
   }
 
   public int unlockForum(int id, int level) {
     ForumPK forumPK = new ForumPK(getComponentId(), String.valueOf(id));
-    return getForumsService().unlockForum(forumPK, level);
-  }
-
-  /**
-   * Create a new forum and persist it inside datasource
-   * @param forumName forum name
-   * @param forumDescription forum description
-   * @param forumCreator creator user identifier
-   * @param forumParent parent forum identifier
-   * @param keywords the keywords.
-   * @return identifier of the new forum
-   * @author frageade
-   */
-  public int createForum(String forumName, String forumDescription, String forumCreator,
-      int forumParent, String keywords) {
-    return createForum(forumName, forumDescription, forumCreator, forumParent, "0", keywords);
+    return getForumService().unlockForum(forumPK, level);
   }
 
   public int createForum(String forumName, String forumDescription, String forumCreator,
@@ -214,48 +173,34 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     if (!StringUtil.isDefined(categoryId)) {
       currentCategoryId = null;
     }
-    int forumId = getForumsService()
+    int forumId = getForumService()
         .createForum(forumPK, truncateTextField(forumName), truncateTextArea(forumDescription),
             forumCreator, forumParent, currentCategoryId, keywords);
 
     // Send notification
-    sendForumNotification(getForumsService().getForumDetail(getForumPK(forumId)), NotifAction.CREATE);
+    sendForumNotification(getForumService().getForumDetail(getForumPK(forumId)), NotifAction.CREATE);
 
     // Classify content here
     classifyContent(forumPK);
     return forumId;
   }
 
-  /**
-   * Update Forum
-   * @param forumId l'ID du forum dans la datasource
-   * @param forumName forum name
-   * @param forumDescription forum description
-   * @param forumParent parent forum identifier
-   * @param keywords the keywords.
-   * @author frageade
-   */
-  public void updateForum(int forumId, String forumName, String forumDescription, int forumParent,
-      String keywords) {
-    updateForum(forumId, forumName, forumDescription, forumParent, null, keywords);
-  }
-
   public void updateForum(int forumId, String forumName, String forumDescription, int forumParent,
       String categoryId, String keywords) {
-    getForumsService().updateForum(getForumPK(forumId), truncateTextField(forumName),
+    getForumService().updateForum(getForumPK(forumId), truncateTextField(forumName),
         truncateTextArea(forumDescription), forumParent, categoryId, keywords);
 
     // Send notification
-    sendForumNotification(getForumsService().getForumDetail(getForumPK(forumId)), NotifAction.UPDATE);
+    sendForumNotification(getForumService().getForumDetail(getForumPK(forumId)), NotifAction.UPDATE);
   }
 
   /**
-   * Supprime un forum et tous ses sous-forums a partir de son ID
+   * Supprime un forum et tous ses sous-forums à partir de son ID
    * @param forumId l'ID du forum dans la datasource
    * @author frageade
    */
   public void deleteForum(int forumId) {
-    getForumsService().deleteForum(getForumPK(forumId));
+    getForumService().deleteForum(getForumPK(forumId));
   }
 
   /**
@@ -265,11 +210,11 @@ public class ForumsSessionController extends AbstractComponentSessionController 
    * @author frageade
    */
   public Message[] getMessagesList(int forumId) {
-    Collection<Message> messages = getForumsService().getMessages(getForumPK(forumId));
-    return messages.toArray(new Message[messages.size()]);
+    Collection<Message> messages = getForumService().getMessages(getForumPK(forumId));
+    return messages.toArray(new Message[0]);
   }
 
-  public Message[] getMessagesList(int forumId, int messageId) throws ForumsException {
+  public Message[] getMessagesList(int forumId, int messageId) {
     List<Message> messageList = new ArrayList<>();
     Message[] messages = getMessagesList(forumId);
     int i = 0;
@@ -284,15 +229,14 @@ public class ForumsSessionController extends AbstractComponentSessionController 
       i++;
     }
     fillMessageList(messageList, messages, messageId);
-    return messageList.toArray(new Message[messageList.size()]);
+    return messageList.toArray(new Message[0]);
   }
 
   protected boolean isVisible(String status, int forumId) {
     return isModerator(getUserId(), forumId) || Message.STATUS_VALIDATE.equals(status);
   }
 
-  private void fillMessageList(List<Message> messageList, Message[] messages, int messageId)
-      throws ForumsException {
+  private void fillMessageList(List<Message> messageList, Message[] messages, int messageId) {
     for (Message message : messages) {
       int forumId = message.getForumId();
       if (message.getParentId() == messageId && (isVisible(message.getStatus(), forumId) ||
@@ -317,9 +261,9 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   public Object[] getLastMessage(int forumId, int messageId) {
     Message message;
     if (messageId != -1) {
-      message = getForumsService().getLastMessage(getForumPK(forumId), messageId, Message.STATUS_VALIDATE);
+      message = getForumService().getLastMessage(getForumPK(forumId), messageId, Message.STATUS_VALIDATE);
     } else {
-      message = getForumsService().getLastMessage(getForumPK(forumId), Message.STATUS_VALIDATE);
+      message = getForumService().getLastMessage(getForumPK(forumId), Message.STATUS_VALIDATE);
     }
     if (message != null) {
       UserDetail user = getUserDetail(message.getAuthor());
@@ -335,7 +279,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
    * @author sfariello
    */
   public int getNbSubjects(int forumId) {
-    return getForumsService().getNbMessages(forumId, TYPE_SUBJECTS, Message.STATUS_VALIDATE);
+    return getForumService().getNbMessages(forumId, TYPE_SUBJECTS, Message.STATUS_VALIDATE);
   }
 
   /**
@@ -344,15 +288,15 @@ public class ForumsSessionController extends AbstractComponentSessionController 
    * @author sfariello
    */
   public int getNbMessages(int forumId) {
-    return getForumsService().getNbMessages(forumId, TYPE_MESSAGES, Message.STATUS_VALIDATE);
+    return getForumService().getNbMessages(forumId, TYPE_MESSAGES, Message.STATUS_VALIDATE);
   }
 
   public int getAuthorNbMessages(String userId) {
-    return getForumsService().getAuthorNbMessages(userId, Message.STATUS_VALIDATE);
+    return getForumService().getAuthorNbMessages(userId, Message.STATUS_VALIDATE);
   }
 
   public int getNbResponses(int forumId, int messageId) {
-    return getForumsService().getNbResponses(forumId, messageId, Message.STATUS_VALIDATE);
+    return getForumService().getNbResponses(forumId, messageId, Message.STATUS_VALIDATE);
   }
 
   /**
@@ -362,15 +306,15 @@ public class ForumsSessionController extends AbstractComponentSessionController 
    * @author frageade
    */
   public Message getMessage(int messageId) {
-    return getForumsService().getMessage(getMessagePK(messageId));
+    return getForumService().getMessage(getMessagePK(messageId));
   }
 
   public String getMessageTitle(int messageId) {
-    return getForumsService().getMessageTitle(messageId);
+    return getForumService().getMessageTitle(messageId);
   }
 
   public int getMessageParentId(int messageId) {
-    return getForumsService().getMessageParentId(messageId);
+    return getForumService().getMessageParentId(messageId);
   }
 
   /**
@@ -398,7 +342,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
         status = Message.STATUS_VALIDATE;
       }
       // creation du message dans la base
-      messageId = getForumsService()
+      messageId = getForumService()
           .createMessage(messagePK, truncateTextField(title), author, null, forumId, parentId, text,
               keywords, status);
     } catch (Exception e) {
@@ -441,7 +385,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
           currentStatus = Message.STATUS_VALIDATE;
         }
       }
-      getForumsService()
+      getForumService()
           .updateMessage(messagePK, truncateTextField(title), text, getUserId(), currentStatus);
     } catch (Exception e) {
       SilverpeasTransverseErrorUtil.stopTransverseErrorIfAny(new EJBException(e.getMessage(), e));
@@ -458,7 +402,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   }
 
   public void updateMessageKeywords(int messageId, String keywords) {
-    getForumsService().updateMessageKeywords(getMessagePK(messageId), keywords);
+    getForumService().updateMessageKeywords(getMessagePK(messageId), keywords);
   }
 
   public void setResizeFrame(boolean resizeFrame) {
@@ -501,12 +445,12 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   }
 
   /**
-   * Supprime un message et tous ses sous-messages a partir de son ID
+   * Supprime un message et tous ses sous-messages à partir de son ID
    * @param messageId l'ID du message dans la datasource
    * @author frageade
    */
   public void deleteMessage(int messageId) {
-    getForumsService().deleteMessage(getMessagePK(messageId));
+    getForumService().deleteMessage(getMessagePK(messageId));
   }
 
   public void deployMessage(int id) {
@@ -524,15 +468,6 @@ public class ForumsSessionController extends AbstractComponentSessionController 
         }
       }
     }
-  }
-
-  public boolean messageIsDeployed(int id) {
-    for (Integer value : deployedMessages) {
-      if (value == id) {
-        return true;
-      }
-    }
-    return false;
   }
 
   public boolean isReader() {
@@ -568,57 +503,53 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   }
 
   public boolean isModerator(String userId, int forumId) {
-    boolean result = getForumsService().isModerator(userId, getForumPK(forumId));
+    boolean result = getForumService().isModerator(userId, getForumPK(forumId));
     int parentId = getForumParentId(forumId);
     while ((!result) && (parentId != 0)) {
-      result = (getForumsService().isModerator(userId, getForumPK(parentId)));
+      result = (getForumService().isModerator(userId, getForumPK(parentId)));
       parentId = getForumParentId(parentId);
     }
     return result;
   }
 
   public void addModerator(int forumId, String userId) {
-    getForumsService().addModerator(getForumPK(forumId), userId);
-  }
-
-  public void removeModerator(int forumId, String userId) {
-    getForumsService().removeModerator(getForumPK(forumId), userId);
+    getForumService().addModerator(getForumPK(forumId), userId);
   }
 
   public void removeAllModerators(int forumId) {
-    getForumsService().removeAllModerators(getForumPK(forumId));
+    getForumService().removeAllModerators(getForumPK(forumId));
   }
 
   public ForumModeratorBean getModerators(int forumId) {
-    return ForumModeratorBean.from(forumId, getForumsService().getModerators(forumId));
+    return ForumModeratorBean.from(forumId, getForumService().getModerators(forumId));
   }
 
   public void moveMessage(int messageId, int forumId) {
-    getForumsService().moveMessage(getMessagePK(messageId), getForumPK(forumId));
+    getForumService().moveMessage(getMessagePK(messageId), getForumPK(forumId));
   }
 
   public Message subscribeMessage(int messageId) {
     MessagePK messagePK = getMessagePK(messageId);
-    getForumsService().subscribeMessage(messagePK, getUserId());
-    return getForumsService().getMessage(messagePK);
+    getForumService().subscribeMessage(messagePK, getUserId());
+    return getForumService().getMessage(messagePK);
   }
 
   public Message unsubscribeMessage(int messageId) {
     MessagePK messagePK = getMessagePK(messageId);
-    getForumsService().unsubscribeMessage(messagePK, getUserId());
-    return getForumsService().getMessage(messagePK);
+    getForumService().unsubscribeMessage(messagePK, getUserId());
+    return getForumService().getMessage(messagePK);
   }
 
   public Forum subscribeForum(int forumId) {
     ForumPK forumPK = getForumPK(forumId);
-    getForumsService().subscribeForum(forumPK, getUserId());
-    return getForumsService().getForum(forumPK);
+    getForumService().subscribeForum(forumPK, getUserId());
+    return getForumService().getForum(forumPK);
   }
 
   public Forum unsubscribeForum(int forumId) {
     ForumPK forumPK = getForumPK(forumId);
-    getForumsService().unsubscribeForum(forumPK, getUserId());
-    return getForumsService().getForum(forumPK);
+    getForumService().unsubscribeForum(forumPK, getUserId());
+    return getForumService().getForum(forumPK);
   }
 
   public void subscribeComponent() {
@@ -633,37 +564,37 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   }
 
   public boolean isMessageSubscriber(int messageId) {
-    return getForumsService().isSubscriber(getMessagePK(messageId), getUserId());
+    return getForumService().isSubscriber(getMessagePK(messageId), getUserId());
   }
 
   public boolean isMessageSubscriberByInheritance(int messageId) {
-    return getForumsService().isSubscriberByInheritance(getMessagePK(messageId), getUserId());
+    return getForumService().isSubscriberByInheritance(getMessagePK(messageId), getUserId());
   }
 
   public boolean isForumSubscriber(int forumId) {
-    return getForumsService().isSubscriber(getForumPK(forumId), getUserId());
+    return getForumService().isSubscriber(getForumPK(forumId), getUserId());
   }
 
   public boolean isForumSubscriberByInheritance(int forumId) {
-    return getForumsService().isSubscriberByInheritance(getForumPK(forumId), getUserId());
+    return getForumService().isSubscriberByInheritance(getForumPK(forumId), getUserId());
   }
 
   public boolean isComponentSubscriber() {
-    return getForumsService().isSubscriber(getComponentId(), getUserId());
+    return getForumService().isSubscriber(getComponentId(), getUserId());
   }
 
   public boolean isNewMessageByForum(String userId, int forumId) {
     return
-        getForumsService().isNewMessageByForum(userId, getForumPK(forumId), Message.STATUS_VALIDATE);
+        getForumService().isNewMessageByForum(userId, getForumPK(forumId), Message.STATUS_VALIDATE);
   }
 
   public boolean isNewMessage(String userId, int forumId, int messageId) {
     return
-        getForumsService().isNewMessage(userId, getForumPK(forumId), messageId, Message.STATUS_VALIDATE);
+        getForumService().isNewMessage(userId, getForumPK(forumId), messageId, Message.STATUS_VALIDATE);
   }
 
   public void setLastVisit(String userId, int messageId) {
-    getForumsService().setLastVisit(userId, messageId);
+    getForumService().setLastVisit(userId, messageId);
   }
 
   public List<UserDetail> listUsers() {
@@ -671,7 +602,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     UserDetail[] userDetailArray = getOrganisationController().getAllUsers(getComponentId());
     if (userDetailArray != null) {
       Collections.addAll(userDetailList, userDetailArray);
-      Collections.sort(userDetailList, new OnFirstNameAndLastName());
+      userDetailList.sort(new OnFirstNameAndLastName());
     }
     return userDetailList;
   }
@@ -701,47 +632,34 @@ public class ForumsSessionController extends AbstractComponentSessionController 
         s.substring(0, DBUtil.getTextAreaLength() - 1) : s);
   }
 
-  public boolean isPdcUsed() {
-    String value = getComponentParameterValue("usePdc");
-    return (value != null && "yes".equalsIgnoreCase(value));
-  }
-
-  public boolean isUseRss() {
-    return "yes".equalsIgnoreCase(getComponentParameterValue("rss"));
-  }
-
   public boolean isForumInsideForum() {
     String value = getComponentParameterValue("forumInsideForum");
-    return (value != null && "yes".equalsIgnoreCase(value));
-  }
-
-  public int getSilverObjectId(int objectId) {
-    return getForumsService().getSilverObjectId(getForumPK(objectId));
+    return ("yes".equalsIgnoreCase(value));
   }
 
   public Collection<NodeDetail> getAllCategories() {
-    return getForumsService().getAllCategories(getComponentId());
+    return getForumService().getAllCategories(getComponentId());
   }
 
   public synchronized void createCategory(NodeDetail category) {
     category.setCreationDate(new Date());
     category.setCreatorId(getUserId());
     category.getNodePK().setComponentName(getComponentId());
-    getForumsService().createCategory(category);
+    getForumService().createCategory(category);
   }
 
   public NodeDetail getCategory(String categoryId) {
     // rechercher la catégorie
     NodePK nodePK = new NodePK(categoryId, getComponentId());
-    return getForumsService().getCategory(nodePK);
+    return getForumService().getCategory(nodePK);
   }
 
   public synchronized void updateCategory(NodeDetail category) {
-    getForumsService().updateCategory(category);
+    getForumService().updateCategory(category);
   }
 
   public synchronized void deleteCategory(String categoryId) {
-    getForumsService().deleteCategory(categoryId, getComponentId());
+    getForumService().deleteCategory(categoryId, getComponentId());
   }
 
   @Override
@@ -750,10 +668,6 @@ public class ForumsSessionController extends AbstractComponentSessionController 
       settings = ResourceLocator.getSettingBundle("org.silverpeas.forums.settings.forumsSettings");
     }
     return settings;
-  }
-
-  public PublicationDetail getDetail(String id) {
-    return getPublicationService().getDetail(new PublicationPK(id, getSpaceId(), getComponentId()));
   }
 
   public void addMessageStat(int messageId, String userId) {
@@ -779,11 +693,11 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   }
 
   public String getForumKeywords(int forumId) {
-    return getForumsService().getForumTags(getForumPK(forumId));
+    return getForumService().getForumTags(getForumPK(forumId));
   }
 
   public String getMessageKeywords(int messageId) {
-    return getForumsService().getMessageTags(getMessagePK(messageId));
+    return getForumService().getMessageTags(getMessagePK(messageId));
   }
 
   public void validateMessage(int messageId) {
@@ -810,16 +724,18 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     return StringUtil.getBooleanValue(getComponentParameterValue("isValidationActive"));
   }
 
-  private PublicationService getPublicationService() {
-    return PublicationService.get();
-  }
-
   protected StatisticService getStatisticService() {
-    return StatisticService.get();
+    if (statisticService == null) {
+      statisticService = StatisticService.get();
+    }
+    return statisticService;
   }
 
-  protected ForumService getForumsService() {
-    return ForumsServiceProvider.getForumsService();
+  protected ForumService getForumService() {
+    if (forumService == null) {
+      forumService = ForumService.get();
+    }
+    return forumService;
   }
 
   private ForumPK getForumPK(int forumId) {
@@ -833,11 +749,11 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   public List<Forum> getForumAncestors(int forumId) {
     int currentForumId = forumId;
     List<Forum> ancestors = new ArrayList<>();
-    String instanceId = getForumsService().getForumInstanceId(forumId);
+    String instanceId = getForumService().getForumInstanceId(forumId);
     while (currentForumId > 0) {
-      currentForumId = getForumsService().getForumParentId(currentForumId);
+      currentForumId = getForumService().getForumParentId(currentForumId);
       ancestors.add(
-          getForumsService().getForum(new ForumPK(instanceId, String.valueOf(currentForumId))));
+          getForumService().getForum(new ForumPK(instanceId, String.valueOf(currentForumId))));
 
     }
     Collections.reverse(ancestors);
@@ -845,14 +761,14 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   }
 
   /**
-   * this method clasify content only when new forum is created. Check if a position has been
+   * this method classify content only when new forum is created. Check if a position has been
    * defined in header formulary then persist it
    * @param forumPK the current ForumDetail
    */
   private void classifyContent(ForumPK forumPK) {
     List<PdcPosition> pdcPositions = this.getPositions();
     if (pdcPositions != null && !pdcPositions.isEmpty()) {
-      ForumDetail forumDetail = getForumsService().getForumDetail(forumPK);
+      ForumDetail forumDetail = getForumService().getForumDetail(forumPK);
       PdcClassification classification =
           aPdcClassificationOfContent(forumDetail).withPositions(this.getPositions());
       classification.classifyContent(forumDetail);

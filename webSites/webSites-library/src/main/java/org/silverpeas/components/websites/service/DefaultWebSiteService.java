@@ -23,20 +23,11 @@
  */
 package org.silverpeas.components.websites.service;
 
-/**
- * This is the WebSite manager service controller of the MVC. It is implemented as a CDI Bean.
- * It controls all the activities that happen in a client session. It also provides mechanisms to
- * access other service layer.
- * @author Cecile BONIN
- */
-
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import org.silverpeas.components.websites.WebSitesContentManager;
 import org.silverpeas.components.websites.dao.SiteDAO;
-import org.silverpeas.components.websites.model.FolderDetail;
-import org.silverpeas.components.websites.model.IconDetail;
-import org.silverpeas.components.websites.model.SiteDetail;
-import org.silverpeas.components.websites.model.SitePK;
-import org.silverpeas.components.websites.model.WebSitesRuntimeException;
+import org.silverpeas.components.websites.model.*;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
@@ -47,8 +38,6 @@ import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 
-import javax.inject.Inject;
-import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -57,8 +46,14 @@ import java.util.List;
 
 import static org.silverpeas.core.contribution.publication.dao.PublicationCriteria.onComponentInstanceIds;
 
+/**
+ * This is the WebSite manager service controller of the MVC. It is implemented as a CDI Bean. It
+ * controls all the activities that happen in a client session. It also provides mechanisms to
+ * access other service layer.
+ *
+ * @author Cecile BONIN
+ */
 @Service
-@Transactional(Transactional.TxType.SUPPORTS)
 public class DefaultWebSiteService implements WebSiteService {
 
   private static final String NO_ID = "useless";
@@ -67,14 +62,12 @@ public class DefaultWebSiteService implements WebSiteService {
   private NodeService nodeService;
   @Inject
   private PublicationService publicationService;
+
   /**
    * use for the PDC utilization
    */
   @Inject
-  private WebSitesContentManager webSitesContentManager = null;
-
-  DefaultWebSiteService() {
-  }
+  private WebSitesContentManager webSitesContentManager;
 
   @Override
   public FolderDetail goTo(NodePK pk) {
@@ -148,6 +141,7 @@ public class DefaultWebSiteService implements WebSiteService {
     return newPath;
   }
 
+  @Transactional
   public void addToFolder(NodePK fatherId, NodeDetail subTopic) {
     try {
       NodeDetail father = nodeService.getDetail(fatherId);
@@ -157,12 +151,8 @@ public class DefaultWebSiteService implements WebSiteService {
     }
   }
 
-  /**
-   * @param subFolder
-   * @param fatherId
-   * @param currentUser
-   * @return
-   */
+
+  @Transactional
   @Override
   public void addFolder(NodeDetail subFolder, NodePK fatherId, UserDetail currentUser) {
     if (subFolder == null) {
@@ -178,11 +168,7 @@ public class DefaultWebSiteService implements WebSiteService {
     addToFolder(fatherId, subFolder);
   }
 
-  /**
-   * @param topic
-   * @param fatherPK
-   * @return a NodePK
-   */
+  @Transactional
   @Override
   public void updateFolder(NodeDetail topic, NodePK fatherPK) {
     try {
@@ -197,7 +183,7 @@ public class DefaultWebSiteService implements WebSiteService {
   }
 
   /**
-   * @param pk
+   * @param pk the topic identifier
    * @return a NodeDetail
    */
   @Override
@@ -238,11 +224,6 @@ public class DefaultWebSiteService implements WebSiteService {
 
   }
 
-  /**
-   * @param nodeId
-   * @param nodes
-   * @return
-   */
   private int getIndexOfNode(String nodeId, List<NodeDetail> nodes) {
     int index = 0;
     if (nodes != null) {
@@ -256,11 +237,7 @@ public class DefaultWebSiteService implements WebSiteService {
     return index;
   }
 
-  /**
-   * @param way
-   * @param topicPK
-   * @param fatherPK
-   */
+  @Transactional
   @Override
   public void changeTopicsOrder(String way, NodePK topicPK, NodePK fatherPK) {
 
@@ -298,10 +275,6 @@ public class DefaultWebSiteService implements WebSiteService {
     }
   }
 
-  /**
-   * @param pk
-   * @return
-   */
   @Override
   public PublicationDetail getPublicationDetail(PublicationPK pk) {
     try {
@@ -311,11 +284,6 @@ public class DefaultWebSiteService implements WebSiteService {
     }
   }
 
-  /**
-   * @param componentId
-   * @param pubDetail
-   * @return
-   */
   @Transactional(Transactional.TxType.REQUIRED)
   @Override
   public String createPublication(String componentId, PublicationDetail pubDetail) {
@@ -332,9 +300,7 @@ public class DefaultWebSiteService implements WebSiteService {
     }
   }
 
-  /**
-   * @param pubDetail
-   */
+  @Transactional
   @Override
   public void updatePublication(PublicationDetail pubDetail, String componentId) {
 
@@ -346,9 +312,6 @@ public class DefaultWebSiteService implements WebSiteService {
     }
   }
 
-  /**
-   * @param pubPK
-   */
   @Transactional(Transactional.TxType.REQUIRED)
   @Override
   public void deletePublication(PublicationPK pubPK) {
@@ -361,10 +324,7 @@ public class DefaultWebSiteService implements WebSiteService {
     }
   }
 
-  /**
-   * @param pubPK
-   * @param fatherPK
-   */
+  @Transactional
   @Override
   public void addPublicationToTopic(PublicationPK pubPK, NodePK fatherPK) {
     try {
@@ -374,6 +334,7 @@ public class DefaultWebSiteService implements WebSiteService {
     }
   }
 
+  @Transactional
   @Override
   public void removePublicationFromTopic(PublicationPK pubPK, NodePK fatherPK) {
     try {
@@ -383,10 +344,6 @@ public class DefaultWebSiteService implements WebSiteService {
     }
   }
 
-  /**
-   * @param pubPK
-   * @return
-   */
   @Override
   public Collection<NodePK> getAllFatherPK(PublicationPK pubPK) {
 
@@ -397,9 +354,6 @@ public class DefaultWebSiteService implements WebSiteService {
     }
   }
 
-  /**
-   * getIdPublication
-   */
   @Override
   public String getIdPublication(String componentId, String idSite) {
 
@@ -411,9 +365,11 @@ public class DefaultWebSiteService implements WebSiteService {
     }
   }
 
+  @Transactional
   @Override
   public void updateClassification(PublicationPK pubPK, List<String> arrayTopic) {
-    Collection<NodePK> oldFathersColl = publicationService.getAllFatherPKInSamePublicationComponentInstance(pubPK);
+    Collection<NodePK> oldFathersColl =
+        publicationService.getAllFatherPKInSamePublicationComponentInstance(pubPK);
 
     List<NodePK> oldFathers = new ArrayList<>();
     List<NodePK> newFathers = new ArrayList<>();
@@ -421,7 +377,7 @@ public class DefaultWebSiteService implements WebSiteService {
 
     // Compute the remove list
     for (NodePK nodePK : oldFathersColl) {
-      if (arrayTopic.indexOf(nodePK.getId()) == -1) {
+      if (!arrayTopic.contains(nodePK.getId())) {
         remFathers.add(new NodePK(nodePK.getId(), pubPK));
       }
       oldFathers.add(nodePK);
@@ -430,7 +386,7 @@ public class DefaultWebSiteService implements WebSiteService {
     // Compute the add and stay list
     for (String topicId : arrayTopic) {
       NodePK nodePK = new NodePK(topicId, pubPK);
-      if (oldFathers.indexOf(nodePK) == -1) {
+      if (!oldFathers.contains(nodePK)) {
         newFathers.add(nodePK);
       }
     }
@@ -443,20 +399,13 @@ public class DefaultWebSiteService implements WebSiteService {
     }
   }
 
-  /**
-   * @param pubPK
-   * @param nodePK
-   * @param direction
-   */
+  @Transactional
   @Override
   public void changePubsOrder(PublicationPK pubPK, NodePK nodePK, int direction) {
 
     publicationService.changePublicationOrder(pubPK, nodePK, direction);
   }
 
-  /**
-   * getAllWebSite
-   */
   @Override
   public Collection<SiteDetail> getAllWebSite(String componentId) {
 
@@ -468,11 +417,6 @@ public class DefaultWebSiteService implements WebSiteService {
     }
   }
 
-  /**
-   * getWebSite
-   * @param id
-   * @return
-   */
   public SiteDetail getWebSite(String componentId, String id) {
 
     SitePK pk = new SitePK(id, componentId);
@@ -484,10 +428,6 @@ public class DefaultWebSiteService implements WebSiteService {
     }
   }
 
-  /**
-   * @param ids
-   * @return
-   */
   public List<SiteDetail> getWebSites(String componentId, List<String> ids) {
 
     try {
@@ -498,9 +438,6 @@ public class DefaultWebSiteService implements WebSiteService {
     }
   }
 
-  /**
-   * getIcons
-   */
   public Collection<IconDetail> getIcons(String componentId, String id) {
 
     SitePK pk = new SitePK(id, componentId);
@@ -512,6 +449,7 @@ public class DefaultWebSiteService implements WebSiteService {
     }
   }
 
+  @Transactional
   @Override
   public String getNextId(String componentId) {
 
@@ -543,7 +481,7 @@ public class DefaultWebSiteService implements WebSiteService {
       dao.createWebSite(description);
       String pubPk = createPublication(componentId, description);
       // register the new publication as a new content to content manager
-      // connection usefull for content service
+      // connection usefully for content service
       createSilverContent(con, description, currentUser.getId());
       return pubPk;
     } catch (Exception e) {
@@ -551,6 +489,7 @@ public class DefaultWebSiteService implements WebSiteService {
     }
   }
 
+  @Transactional
   @Override
   public void associateIcons(String componentId, String id, Collection<String> liste) {
 
@@ -562,6 +501,7 @@ public class DefaultWebSiteService implements WebSiteService {
     }
   }
 
+  @Transactional
   @Override
   public void publish(String componentId, Collection<String> liste) {
 
@@ -578,9 +518,7 @@ public class DefaultWebSiteService implements WebSiteService {
     }
   }
 
-  /**
-   * dePublish
-   */
+  @Transactional
   public void dePublish(String componentId, Collection<String> liste) {
 
     try {
@@ -596,9 +534,7 @@ public class DefaultWebSiteService implements WebSiteService {
     }
   }
 
-  /**
-   * deleteWebSites
-   */
+  @Transactional
   public void deleteWebSites(String componentId, Collection<String> liste) {
 
     try (Connection con = getConnection()) {
@@ -612,10 +548,11 @@ public class DefaultWebSiteService implements WebSiteService {
         deleteSilverContent(con, sitePK);
       }
     } catch (Exception e) {
-      throw new WebSitesRuntimeException( e);
+      throw new WebSitesRuntimeException(e);
     }
   }
 
+  @Transactional
   public void index(String componentId) {
     try {
       // index all topics
@@ -635,9 +572,7 @@ public class DefaultWebSiteService implements WebSiteService {
     }
   }
 
-  /**
-   * updateWebSite
-   */
+  @Transactional
   public void updateWebSite(String componentId, SiteDetail description) {
 
     try {
@@ -649,7 +584,7 @@ public class DefaultWebSiteService implements WebSiteService {
   }
 
   /**
-   * ContentManager utilization to use PDC *
+   * ContentManager utilization to use PDC
    */
   public int getSilverObjectId(String componentId, String id) {
 
@@ -675,10 +610,6 @@ public class DefaultWebSiteService implements WebSiteService {
     }
   }
 
-  /**
-   * @param con
-   * @param sitePK
-   */
   private void deleteSilverContent(Connection con, SitePK sitePK) {
     try {
       getWebSitesContentManager().deleteSilverContent(con, sitePK);
@@ -687,10 +618,6 @@ public class DefaultWebSiteService implements WebSiteService {
     }
   }
 
-  /**
-   * @param siteDetail
-   *
-   */
   private void updateSilverContentVisibility(SiteDetail siteDetail) {
     try {
       getWebSitesContentManager().updateSilverContentVisibility(siteDetail);
@@ -699,16 +626,10 @@ public class DefaultWebSiteService implements WebSiteService {
     }
   }
 
-  /**
-   * @return a "singleton" instance of WebSitesContentManager
-   */
   private WebSitesContentManager getWebSitesContentManager() {
     return webSitesContentManager;
   }
 
-  /**
-   * Connection management methods used for the content service *
-   */
   private Connection getConnection() {
     try {
       return DBUtil.openConnection();

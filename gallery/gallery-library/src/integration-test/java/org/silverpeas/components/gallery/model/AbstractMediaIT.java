@@ -28,7 +28,7 @@ import org.silverpeas.core.web.SilverpeasWebResource;
 import java.util.Date;
 
 /**
- * @author: Yohann Chastagnier
+ * @author Yohann Chastagnier
  */
 public abstract class AbstractMediaIT {
 

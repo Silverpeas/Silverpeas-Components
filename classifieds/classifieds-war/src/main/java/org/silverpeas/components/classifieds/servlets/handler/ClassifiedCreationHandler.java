@@ -24,12 +24,12 @@
 
 package org.silverpeas.components.classifieds.servlets.handler;
 
-import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.classifieds.control.ClassifiedsRole;
 import org.silverpeas.components.classifieds.control.ClassifiedsSessionController;
 import org.silverpeas.components.classifieds.model.ClassifiedDetail;
 import org.silverpeas.components.classifieds.servlets.FunctionHandler;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.kernel.util.StringUtil;
 
@@ -70,7 +70,7 @@ public class ClassifiedCreationHandler extends FunctionHandler {
       Collection<FileItem> listImage = new ArrayList<>();
       for (int i = 1; i <= NB_IMAGES; i++) {
         FileItem fileImage = request.getFile("Image"+i);
-        if (fileImage != null && StringUtil.isDefined(fileImage.getName())) {
+        if (fileImage != null && StringUtil.isDefined(fileImage.getFileName())) {
           listImage.add(fileImage);
         }
       }

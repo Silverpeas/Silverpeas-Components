@@ -46,7 +46,7 @@ public interface YellowpagesService {
   }
 
   /**
-   * Return a the detail of a topic
+   * Return the detail of a topic
    * @param pk the id of the topic
    * @return a TopicDetail
    * @see TopicDetail
@@ -69,7 +69,7 @@ public interface YellowpagesService {
 
   /**
    * Update a subtopic to currentTopic. Does nothing if the topic to update is at the same level
-   * than another sibling topic.
+   * as another sibling topic.
    * @param topic the NodeDetail of the updated sub topic
    * @see NodeDetail
    * @see NodePK
@@ -89,7 +89,7 @@ public interface YellowpagesService {
   /**
    * Delete a topic and all descendants. Delete all links between descendants and contacts. This
    * contacts will be visible in the Declassified zone. Delete All subscriptions and favorites on
-   * this topics and all descendants
+   * these topics and all descendants
    * @param pkToDelete the id of the topic to delete
    * @since 1.0
    */
@@ -134,7 +134,7 @@ public interface YellowpagesService {
 
   /**
    * Delete a contact If this contact is in the basket or in the DZ, it's deleted from the database
-   * Else it only send to the basket
+   * Else it only sends to the basket
    * @param contactPK the id of the contact to delete
    * @see TopicDetail
    * @since 1.0

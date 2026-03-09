@@ -56,11 +56,12 @@ public class DelegatedNewsDaoIT {
 
   @Deployment
   public static WebArchive createTestArchive() {
-    return BasicWarBuilder.onWarForTestClass(DelegatedNewsDaoIT.class).testFocusedOn(warBuilder -> {
-      warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core");
-      warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud");
-      warBuilder.addPackages(true, "org.silverpeas.components.delegatednews");
-    }).build();
+    return BasicWarBuilder.onWarForTestClass(DelegatedNewsDaoIT.class).testFocusedOn(warBuilder ->
+            warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core")
+                .addMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud")
+                .addPackages(true, "org.silverpeas.components.delegatednews")
+                .addAsResource("org/silverpeas"))
+        .build();
   }
 
   @Before
@@ -88,7 +89,7 @@ public class DelegatedNewsDaoIT {
 
   @Test
   public void testGetDelegatedNews() {
-    Integer pubId = Integer.parseInt("1");
+    int pubId = Integer.parseInt("1");
     DelegatedNews detail = repo.getById(Integer.toString(pubId));
     assertThat(detail, notNullValue());
 

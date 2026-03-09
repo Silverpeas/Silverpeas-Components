@@ -25,7 +25,7 @@ package org.silverpeas.components.gallery.delegate;
 
 import org.silverpeas.components.gallery.constant.MediaType;
 import org.silverpeas.components.gallery.model.Media;
-import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.core.util.file.FileItem;
 
 import java.util.List;
 

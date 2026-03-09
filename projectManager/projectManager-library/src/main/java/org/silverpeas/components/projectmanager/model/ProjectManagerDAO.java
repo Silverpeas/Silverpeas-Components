@@ -28,7 +28,6 @@
  */
 package org.silverpeas.components.projectmanager.model;
 
-import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.util.DateUtil;
@@ -39,11 +38,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.function.UnaryOperator;
 
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
@@ -116,7 +111,7 @@ public class ProjectManagerDAO {
       throws SQLException {
 
     PreparedStatement prepStmt = null;
-    int id = -1;
+    int id;
     try {
       prepStmt = con.prepareStatement(insertStatement.toString());
 
@@ -164,7 +159,7 @@ public class ProjectManagerDAO {
     insertStatement
         .append("(id , taskid, resourceid, charge, instanceid) VALUES ( ? , ? , ? , ? , ? )");
     PreparedStatement prepStmt = null;
-    int id = -1;
+    int id;
     try {
       prepStmt = con.prepareStatement(insertStatement.toString());
       id = DBUtil.getNextId(PROJECTMANAGER_RESOURCES_TABLENAME, "id");
@@ -181,7 +176,7 @@ public class ProjectManagerDAO {
   }
 
   public static void updateTask(Connection con, TaskDetail task)
-      throws SQLException, UtilException {
+      throws SQLException {
     StringBuilder updateQuery = new StringBuilder();
     updateQuery.append("UPDATE ").append(PROJECTMANAGER_TASKS_TABLENAME);
     updateQuery.append(" SET nom = ? , description = ? , responsableId = ? , charge = ? , ");
@@ -216,9 +211,7 @@ public class ProjectManagerDAO {
       deleteAllResources(con, task.getId(), task.getInstanceId());
 
       if (task.getResources() != null) {
-        Iterator<TaskResourceDetail> it = task.getResources().iterator();
-        while (it.hasNext()) {
-          TaskResourceDetail resource = it.next();
+        for (TaskResourceDetail resource : task.getResources()) {
           resource.setTaskId(task.getId());
           resource.setInstanceId(task.getInstanceId());
           addResource(con, resource);
@@ -365,7 +358,7 @@ public class ProjectManagerDAO {
     query.append(" WHERE instanceId = ? ");
     if (filtre != null) {
       String filtreSQL = getSQL(filtre);
-      if (filtreSQL.length() > 0) {
+      if (!filtreSQL.isEmpty()) {
         query.append("AND ").append(filtreSQL);
       }
     }
@@ -423,7 +416,7 @@ public class ProjectManagerDAO {
    * @param con a Connection to database
    * @param actionId the root of the tree
    * @return the tree - a List of TaskDetail
-   * @throws SQLException
+   * @throws SQLException if there is a SQL error.
    */
   public static List<TaskDetail> getTree(Connection con, int actionId) throws SQLException {
     List<TaskDetail> tasks = new ArrayList<>();
@@ -569,10 +562,26 @@ public class ProjectManagerDAO {
     String path = rs.getString("path");
     int previousId = rs.getInt("previousId");
 
-    TaskDetail task = new TaskDetail(id, mereId, chrono, nom, description,
-        organisateurId, responsableId, charge, consomme, raf, statut,
-        dateDebut, dateFin, codeProjet, descriptionProjet, estDecomposee,
-        instanceId, path);
+    TaskDetail task = TaskDetail.builder()
+        .setId(id)
+        .setMereId(mereId)
+        .setChrono(chrono)
+        .setNom(nom)
+        .setDescription(description)
+        .setOrganisateurId(organisateurId)
+        .setResponsableId(responsableId)
+        .setCharge(charge)
+        .setConsomme(consomme)
+        .setRaf(raf)
+        .setStatut(statut)
+        .setDateDebut(dateDebut)
+        .setDateFin(dateFin)
+        .setCodeProjet(codeProjet)
+        .setDescriptionProjet(descriptionProjet)
+        .setEstDecomposee(estDecomposee)
+        .setInstanceId(instanceId)
+        .setPath(path)
+        .createTaskDetail();
     task.setPreviousTaskId(previousId);
     return task;
   }
@@ -679,7 +688,7 @@ public class ProjectManagerDAO {
 
   /**
    * Adds an AND clause (SQL) the given sql is not empty.
-   * @param sql the sql builder.
+   * @param sql the SQL builder.
    */
   private static void andClause(final StringBuilder sql) {
     if (sql.length() > 0) {
@@ -689,14 +698,14 @@ public class ProjectManagerDAO {
 
   public static Date dbDate2Date(String dbDate, String fieldName)
       throws SQLException {
-    Date date = null;
+    Date date;
     try {
       // the date format used in database to represent a date
       SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
       date = formatter.parse(dbDate);
     } catch (ParseException e) {
       throw new SQLException("ProjectManagerDAO : dbDate2Date(" + fieldName
-          + ") : format unknown " + e.toString(), e);
+           + ") : format unknown " + e, e);
     }
     return date;
   }

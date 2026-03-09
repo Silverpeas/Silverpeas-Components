@@ -23,30 +23,31 @@
  */
 package org.silverpeas.components.forums.servlets;
 
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.silverpeas.components.forums.service.ForumService;
+import org.silverpeas.components.forums.url.ActionUrl;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.util.servlet.GoTo;
-import org.silverpeas.components.forums.url.ActionUrl;
-import org.apache.commons.lang3.CharEncoding;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.net.URLEncoder;
-
-import static org.silverpeas.components.forums.service.ForumsServiceProvider
-    .getForumsService;
 
 public class GoToMessage extends GoTo {
 
   private static final long serialVersionUID = -2368464620933821332L;
 
+  @Inject
+  private ForumService forumService;
+
   @Override
-  public String getDestination(String objectId, HttpServletRequest req,
-      HttpServletResponse res) throws Exception {
+  public String getDestination(String objectId, HttpServletRequest req, HttpServletResponse res) {
     int forumId = Integer.parseInt(req.getParameter("ForumId"));
-    String componentName = getForumsService().getForumInstanceId(forumId);
+    String componentName = forumService.getForumInstanceId(forumId);
     String messageUrl = ActionUrl.getUrl("viewMessage", "viewForum", 1, Integer.parseInt(objectId),
         forumId);
     String gotoURL = URLUtil.getURL(null, componentName) + messageUrl;
-    return "goto=" + URLEncoder.encode(gotoURL, CharEncoding.UTF_8);
+    return "goto=" + URLEncoder.encode(gotoURL, Charsets.UTF_8);
   }
 }

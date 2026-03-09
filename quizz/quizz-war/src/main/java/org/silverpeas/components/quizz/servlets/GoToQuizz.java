@@ -23,38 +23,37 @@
  */
 package org.silverpeas.components.quizz.servlets;
 
+import jakarta.inject.Inject;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.util.servlet.GoTo;
 import org.silverpeas.core.questioncontainer.container.service.QuestionContainerService;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerHeader;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerPK;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.net.URLEncoder;
 
 public class GoToQuizz extends GoTo {
 
   private static final long serialVersionUID = -25530750219633841L;
 
+  @Inject
+  private QuestionContainerService service;
+
   @Override
-  public String getDestination(String objectId, HttpServletRequest req, HttpServletResponse res)
-      throws Exception {
+  public String getDestination(String objectId, HttpServletRequest req, HttpServletResponse res) {
     QuestionContainerPK questionContainerPK = new QuestionContainerPK(objectId);
-    QuestionContainerHeader quizz =
-        getQuestionContainerService().getQuestionContainerHeader(questionContainerPK);
+    QuestionContainerHeader quizz = service.getQuestionContainerHeader(questionContainerPK);
 
     if (quizz != null) {
       String componentId = quizz.getInstanceId();
 
 
       String gotoURL = URLUtil.getURL(null, componentId) + quizz.getURL();
-      return "goto=" + URLEncoder.encode(gotoURL, "UTF-8");
+      return "goto=" + URLEncoder.encode(gotoURL, Charsets.UTF_8);
     }
     return null;
-  }
-
-  private QuestionContainerService getQuestionContainerService() {
-    return QuestionContainerService.get();
   }
 }

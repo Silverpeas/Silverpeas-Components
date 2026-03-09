@@ -28,10 +28,11 @@ import org.silverpeas.components.kmelia.model.KmeliaPublication;
  * A producer of names of files used in the export process.
  * The producer of file names encapsulates the strategy used in the generation of file names for the
  * publications export.
- *
+ * <p>
  * The produce of file names depends not only on the publication to export in the file but also on
  * the context within which the export will occur. So that, a producer is get for a specific
  * Kmelia session controller that wraps that context.
+ * </p>
  */
 public interface ExportFileNameProducer {
 

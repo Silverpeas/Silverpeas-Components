@@ -25,10 +25,10 @@ package org.silverpeas.components.gallery.web;
 
 import org.silverpeas.components.gallery.model.Photo;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
 
 /**
@@ -47,7 +47,7 @@ public class PhotoEntity extends AbstractMediaEntity<PhotoEntity> {
 
   /**
    * Creates a new photo entity from the specified photo.
-   * @param photo
+   * @param photo photo from which the entity is constructed
    * @return the entity representing the specified photo.
    */
   public static PhotoEntity createFrom(final Photo photo) {

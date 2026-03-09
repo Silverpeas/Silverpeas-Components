@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.gallery.process;
 
-import org.apache.commons.fileupload.FileItem;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.silverpeas.components.gallery.Watermark;
 import org.silverpeas.components.gallery.constant.MediaMimeType;
 import org.silverpeas.components.gallery.delegate.MediaDataCreateDelegate;
@@ -47,6 +47,7 @@ import org.silverpeas.core.process.ProcessProvider;
 import org.silverpeas.core.process.management.ProcessExecutionContext;
 import org.silverpeas.core.process.util.ProcessList;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.kernel.util.StringUtil;
 
 import java.io.File;
@@ -109,7 +110,7 @@ public class GalleryProcessManagement {
       final MediaDataUpdateDelegate delegate) {
     processList.add(GalleryUpdateMediaDataProcess.getInstance(media, delegate));
     final FileItem fileItem = delegate.getFileItem();
-    if (fileItem != null && StringUtil.isDefined(fileItem.getName())) {
+    if (fileItem != null && StringUtil.isDefined(fileItem.getFileName())) {
       processList.add(GalleryUpdateMediaFileProcess
           .getInstance(media, fileItem, watermark));
       processList.add(GalleryUpdateMediaDataProcess.getInstance(media));
@@ -257,15 +258,7 @@ public class GalleryProcessManagement {
       // COPY & PASTE
 
       // Create new album
-      final AlbumDetail newAlbum = new AlbumDetail(new NodeDetail());
-      final NodePK newAlbumPK = new NodePK(UNKNOWN, componentInstanceId);
-      newAlbum.setNodePK(newAlbumPK);
-      newAlbum.setCreatorId(user.getId());
-      newAlbum.setName(fromAlbum.getName());
-      newAlbum.setDescription(fromAlbum.getDescription());
-      newAlbum.setTranslations(fromAlbum.getTranslations());
-      newAlbum.setCreationDate(fromAlbum.getCreationDate());
-      newAlbum.setRightsDependsOn(toAlbum.getRightsDependsOn());
+      final AlbumDetail newAlbum = createAlbumDetail(fromAlbum, toAlbum);
 
       // Persisting the new album
       getNodeService().createNode(newAlbum, toAlbum);
@@ -278,6 +271,19 @@ public class GalleryProcessManagement {
         addPasteAlbumProcesses(new AlbumDetail(subNode), newAlbum, false);
       }
     }
+  }
+
+  private @NonNull AlbumDetail createAlbumDetail(AlbumDetail source, AlbumDetail parent) {
+    final AlbumDetail newAlbum = new AlbumDetail(new NodeDetail());
+    final NodePK newAlbumPK = new NodePK(UNKNOWN, componentInstanceId);
+    newAlbum.setNodePK(newAlbumPK);
+    newAlbum.setCreatorId(user.getId());
+    newAlbum.setName(source.getName());
+    newAlbum.setDescription(source.getDescription());
+    newAlbum.setTranslations(source.getTranslations());
+    newAlbum.setCreationDate(source.getCreationDate());
+    newAlbum.setRightsDependsOn(parent.getRightsDependsOn());
+    return newAlbum;
   }
 
   private void addPasteMediaAlbumProcesses(final NodePK fromAlbumPk, final NodePK toAlbumPk,

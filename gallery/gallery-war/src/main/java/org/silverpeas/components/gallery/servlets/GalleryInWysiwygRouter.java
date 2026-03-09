@@ -40,13 +40,13 @@ import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.activation.FileDataSource;
-import javax.inject.Singleton;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.activation.FileDataSource;
+import jakarta.inject.Singleton;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -168,33 +168,30 @@ public class GalleryInWysiwygRouter extends HttpServlet {
     }
   }
 
-  private void displayImage(HttpServletResponse res, Photo image, String size, boolean useOriginal)
-      throws IOException {
+  private void displayImage(HttpServletResponse res, Photo image, String size, boolean useOriginal) {
     res.setContentType(image.getFileMimeType().getMimeType());
     res.setHeader("Cache-Control", "no-store"); //HTTP 1.1
     res.setHeader("Pragma", "no-cache");
     res.setDateHeader("Expires", -1);
-    OutputStream out2 = res.getOutputStream();
-    int read;
     final SilverpeasFile imageFile = getSilverpeasFile(image, size, useOriginal);
-    try (BufferedInputStream input = new BufferedInputStream(new FileInputStream(imageFile))) {
-      read = input.read();
-      while (read != -1) {
-        // writes bytes into the response
-        out2.write(read);
-        read = input.read();
-      }
-    } catch (Exception e) {
-      SilverLogger.getLogger(this).warn(e);
-    } finally {
-
-      // we must close the in and out streams
+    try (OutputStream out2 = res.getOutputStream();
+         BufferedInputStream input = new BufferedInputStream(new FileInputStream(imageFile))) {
       try {
-        out2.close();
+        int read;
+        read = input.read();
+        while (read != -1) {
+          // writes bytes into the response
+          out2.write(read);
+          read = input.read();
+        }
       } catch (Exception e) {
         SilverLogger.getLogger(this).warn(e);
       }
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).warn(e);
     }
+
+    // we must close the in and out streams
   }
 
   @Singleton

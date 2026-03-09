@@ -24,21 +24,16 @@
 
 package org.silverpeas.processmanager;
 
-import org.silverpeas.kernel.SilverpeasRuntimeException;
-import org.silverpeas.core.contribution.content.form.DataRecord;
-import org.silverpeas.core.contribution.content.form.Field;
-import org.silverpeas.core.contribution.content.form.FieldTemplate;
-import org.silverpeas.core.contribution.content.form.Form;
-import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.contribution.content.form.RecordTemplate;
+import org.silverpeas.core.contribution.content.form.*;
 import org.silverpeas.core.contribution.content.form.filter.FilterManager;
 import org.silverpeas.core.contribution.content.form.filter.RecordFilter;
 import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.instance.ProcessInstance;
 import org.silverpeas.core.workflow.api.model.ProcessModel;
 import org.silverpeas.core.workflow.api.model.State;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.util.List;
 import java.util.Map;
@@ -67,7 +62,7 @@ public class ProcessFilter {
       folderTemplate = model.getDataFolder().toRecordTemplate(role, lang, false);
     } catch (WorkflowException e1) {
       throw new ProcessManagerException(
-              "Fail to create criteria form of model " + model.getModelId(), e1);
+          "Fail to create criteria form of model " + model.getModelId(), e1);
     }
 
     try {
@@ -85,19 +80,19 @@ public class ProcessFilter {
       filter.addFieldParameter("instance.state", state);
 
       FieldTemplate[] fields = rowTemplate.getFieldTemplates();
-      for (int f = isProcessIdVisible?3:2; f < fields.length; f++) {
+      for (int f = isProcessIdVisible ? 3 : 2; f < fields.length; f++) {
         FieldTemplate field = fields[f];
         FieldTemplate folderField = folderTemplate.getFieldTemplate(field.getFieldName());
         Map<String, String> parameters = folderField.getParameters(lang);
         if (parameters != null &&
-                (parameters.containsKey("values") || parameters.containsKey("keys") ||
-                        "jdbc".equals(folderField.getTypeName()))) {
+            (parameters.containsKey("values") || parameters.containsKey("keys") ||
+             "jdbc".equals(folderField.getTypeName()))) {
           filter.addFieldParameter(field.getFieldName(), folderField);
         }
       }
     } catch (FormException e) {
       throw new ProcessManagerException(
-              "Fail to create criteria form of model " + model.getModelId(), e);
+          "Fail to create criteria form of model " + model.getModelId(), e);
     }
   }
 
@@ -180,7 +175,8 @@ public class ProcessFilter {
   /**
    * Returns only the process instance matching the filter.
    */
-  public List<DataRecord> filter(List<ProcessInstance> allInstances, String role, String lang)
+  public List<DataRecord> filter(List<? extends ProcessInstance> allInstances, String role,
+      String lang)
       throws ProcessManagerException {
     try {
       Stream<DataRecord> stream = allInstances.stream().map(p -> getDataRecord(p, role, lang));

@@ -36,7 +36,7 @@ import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.web.selection.SelectionUsersGroups;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -54,7 +54,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectM
    * This method has to be implemented in the component request rooter class. returns the session
    * control bean name to be put in the request object ex : for almanach, returns "almanach"
    *
-   * @return
+   * @return the session control bean name.
    */
   @Override
   public String getSessionControlBeanName() {
@@ -73,8 +73,8 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectM
    *
    *
    * @param function The entering request function (ex : "Main")
-   * @param projectManagerSC The component Session Control, build and initialised.
-   * @param request
+   * @param projectManagerSC The component Session Control, build and initialized.
+   * @param request the incoming HTTP request.
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
@@ -161,7 +161,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectM
         String id = request.getParameter("Id");
         TaskDetail task = projectManagerSC.getTask(id, false);
         request.setAttribute("Task", task);
-        request.setAttribute("AbleToAddSubTask", isOrganiteurOrResponsable(projectManagerSC, task));
+        request.setAttribute("AbleToAddSubTask", isOrganizerOrResponsable(projectManagerSC, task));
         destination = rootDestination + "taskView.jsp";
       } else if ("UnfoldTask".equals(function)) {
         String id = request.getParameter("Id");
@@ -270,7 +270,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectM
         }
         String startDate = request.getParameter("StartDate");
         TaskDetail actionMere = null;
-        if (id == null || id.length() == 0 || "-1".equals(id)) {
+        if (id == null || id.isEmpty() || "-1".equals(id)) {
           id = Integer.toString(projectManagerSC.getCurrentProject().getId());
         } else {
           actionMere = projectManagerSC.getTaskMere(id);
@@ -353,7 +353,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectM
       } else if (function.startsWith("searchResult")) {
         String id = request.getParameter("Id");
         String type = request.getParameter("Type");
-        if (type.indexOf("TodoDetail") != -1) {
+        if (type.contains("TodoDetail")) {
           destination = getDestination("ToUpdateTask", projectManagerSC, request);
         } else if (type.startsWith("Comment")) {
           if ("-1".equals(id)) {
@@ -392,7 +392,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectM
       task.setCharge(StringUtil.asFloat(request.getParameter("Charge")));
       task.setConsomme(StringUtil.asFloat(request.getParameter("Consomme")));
       task.setRaf(StringUtil.asFloat(request.getParameter("Raf")));
-      task.setStatut(Integer.valueOf(request.getParameter("Statut")));
+      task.setStatut(Integer.parseInt(request.getParameter("Statut")));
       task.setDescription(request.getParameter("Description"));
       task.setDateDebut(projectManagerSC.uiDate2Date(request.getParameter("DateDebut")));
       task.setDateFin(projectManagerSC.uiDate2Date(request.getParameter("DateFin")));
@@ -402,7 +402,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectM
     } else if ("responsable".equals(projectManagerSC.getRole())) {
       task.setConsomme(StringUtil.asFloat(request.getParameter("Consomme")));
       task.setRaf(StringUtil.asFloat(request.getParameter("Raf")));
-      task.setStatut(Integer.valueOf(request.getParameter("Statut")));
+      task.setStatut(Integer.parseInt(request.getParameter("Statut")));
       task.setResources(request2Resources(request));
     }
 
@@ -411,7 +411,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectM
 
   private TaskDetail request2TaskDetail(HttpServletRequest request,
       ProjectManagerSessionController projectManagerSC) throws ParseException {
-    TaskDetail task = new TaskDetail();
+    TaskDetail task = TaskDetail.builder().createTaskDetail();
 
     String id = request.getParameter("Id");
     if (id != null) {
@@ -423,7 +423,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectM
 
     String responsableId = request.getParameter("ResponsableId");
     if (StringUtil.isDefined(responsableId)) {
-      task.setResponsableId(Integer.valueOf(responsableId));
+      task.setResponsableId(Integer.parseInt(responsableId));
     }
 
     task.setNom(request.getParameter("Nom"));
@@ -446,9 +446,9 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectM
     String allResources = request.getParameter("allResources");
     if (StringUtil.isDefined(allResources)) {
       String[] tabResources = allResources.split(",");
-      for (int i = 0; i < tabResources.length; i++) {
+      for (String tabResource : tabResources) {
         TaskResourceDetail resource = new TaskResourceDetail();
-        String[] user = tabResources[i].split("_");
+        String[] user = tabResource.split("_");
         String userId = user[0];
         String charge = user[1];
         resource.setCharge(charge);
@@ -462,7 +462,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectM
 
   private TaskDetail request2Project(HttpServletRequest request,
       ProjectManagerSessionController projectManagerSC) throws ParseException {
-    TaskDetail task = new TaskDetail();
+    TaskDetail task = TaskDetail.builder().createTaskDetail();
     String id = request.getParameter("Id");
     if (id != null) {
       task.setId(Integer.parseInt(id));
@@ -483,13 +483,9 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectM
     projectManagerSC.updateCurrentProject();
   }
 
-  /**
-   * @param tasks
-   * @return the oldest task from a list of TaskDetail
-   */
   private TaskDetail getOldestTask(List<TaskDetail> tasks) {
     TaskDetail oldest = null;
-    TaskDetail task = null;
+    TaskDetail task;
     for (int a = 0; a < tasks.size(); a++) {
       task = tasks.get(a);
       if (a == 0) {
@@ -503,7 +499,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectM
     return oldest;
   }
 
-  private Boolean isOrganiteurOrResponsable(ProjectManagerSessionController projectManagerSC,
+  private Boolean isOrganizerOrResponsable(ProjectManagerSessionController projectManagerSC,
       TaskDetail task) {
     String role = projectManagerSC.getRole();
     return "admin".equals(role) || ("responsable".equals(role) && Integer.

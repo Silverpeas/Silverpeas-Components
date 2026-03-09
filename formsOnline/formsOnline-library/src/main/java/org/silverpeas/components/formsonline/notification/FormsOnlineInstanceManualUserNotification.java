@@ -28,15 +28,17 @@ import org.silverpeas.components.formsonline.model.FormDetail;
 import org.silverpeas.components.formsonline.model.FormPK;
 import org.silverpeas.components.formsonline.model.FormsOnlineException;
 import org.silverpeas.components.formsonline.model.FormsOnlineService;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.notification.user.AbstractComponentInstanceManualUserNotification;
 import org.silverpeas.core.notification.user.NotificationContext;
 import org.silverpeas.core.notification.user.UserNotification;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 
 /**
  * @author neysseri
  */
+@Bean
 @Named
 public class FormsOnlineInstanceManualUserNotification extends
     AbstractComponentInstanceManualUserNotification {

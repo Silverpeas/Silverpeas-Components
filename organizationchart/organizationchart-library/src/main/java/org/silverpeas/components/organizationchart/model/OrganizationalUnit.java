@@ -28,12 +28,10 @@ import java.util.Map;
 
 public class OrganizationalUnit {
 
-  private String name;
+  private final String name;
   private String specificCSSClass = "";
 
-  // case organizational unit is a category of personn
-  private String key;
-  private boolean otherCategory = false;
+  // case organizational unit is a category of person
 
   private boolean hasSubUnits = false;
   private boolean hasMembers = false;
@@ -42,13 +40,12 @@ public class OrganizationalUnit {
   // case organizational unit is a ldap unit
   private String parentName;
   private String parentOu;
-  private String completeName;
+  private final String completeName;
 
   private Map<String, String> detail;
 
   public OrganizationalUnit(String name, String completeName) {
     this.name = name;
-    this.key = null;
     this.completeName = completeName;
     this.parentName = null;
   }
@@ -75,18 +72,6 @@ public class OrganizationalUnit {
 
   public String getParentOu() {
     return parentOu;
-  }
-
-  public void setKey(String key) {
-    this.key = key;
-  }
-
-  public String getKey() {
-    return key;
-  }
-
-  public boolean isOtherCategory() {
-    return otherCategory;
   }
 
   public void setHasSubUnits(boolean hasSubUnits) {

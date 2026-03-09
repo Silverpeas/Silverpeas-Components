@@ -33,6 +33,7 @@ import org.silverpeas.core.contribution.model.WithAttachment;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
 import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.kernel.annotation.NonNull;
 
 import java.text.ParseException;
@@ -68,6 +69,7 @@ public class Reply extends SilverpeasBean implements Contribution, WithAttachmen
     return questionId;
   }
 
+  @Override
   public String getTitle() {
     return title;
   }
@@ -100,7 +102,7 @@ public class Reply extends SilverpeasBean implements Contribution, WithAttachmen
     try {
       return DateUtil.parse(this.getCreationDateAsString());
     } catch (ParseException e) {
-      throw new RuntimeException(e);
+      throw new SilverpeasRuntimeException(e);
     }
   }
 
@@ -178,7 +180,7 @@ public class Reply extends SilverpeasBean implements Contribution, WithAttachmen
 
   public String loadWysiwygContent() {
    this.wysiwygContent = WysiwygController.load(getPK().getInstanceId(), getPK().getId(),
-          I18NHelper.DEFAULT_LANGUAGE);
+          I18NHelper.getDefaultLanguage());
     return wysiwygContent;
   }
 

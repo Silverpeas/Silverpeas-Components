@@ -25,6 +25,7 @@ package org.silverpeas.components.kmelia.export;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.components.kmelia.model.KmeliaPublication;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.contribution.converter.DocumentFormat;
 import org.silverpeas.core.contribution.converter.DocumentFormatConverterProvider;
 import org.silverpeas.core.contribution.converter.ODTConverter;
@@ -34,7 +35,7 @@ import org.silverpeas.core.importexport.Exporter;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -54,6 +55,7 @@ import static org.silverpeas.core.contribution.converter.DocumentFormat.odt;
  * <li>the language with which the export of the publication has to be done.</li>
  * </ul>
  */
+@Bean
 @Singleton
 public class KmeliaPublicationExporter implements Exporter<KmeliaPublication> {
 
@@ -125,6 +127,6 @@ public class KmeliaPublicationExporter implements Exporter<KmeliaPublication> {
 
   private String getTemporaryExportFilePathFor(final KmeliaPublication publication) {
     return FileRepositoryManager.getTemporaryPath() + publication.getPk().getId() + "-"
-            + UUID.randomUUID().toString();
+            + UUID.randomUUID();
   }
 }

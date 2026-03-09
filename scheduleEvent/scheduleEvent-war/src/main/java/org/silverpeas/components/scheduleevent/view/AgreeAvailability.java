@@ -1,8 +1,8 @@
 package org.silverpeas.components.scheduleevent.view;
 
 public class AgreeAvailability implements AvailableVO {
-  private final static String HMTL_CLASS_ATTRIBUTE = "questionResults-Oui";
-  private final static AgreeAvailability instance = new AgreeAvailability();
+  private static final String HTML_CLASS_ATTRIBUTE = "questionResults-Oui";
+  private static final AgreeAvailability instance = new AgreeAvailability();
 
   private AgreeAvailability() {
   }
@@ -14,7 +14,7 @@ public class AgreeAvailability implements AvailableVO {
 
   @Override
   public String getHtmlClassAttribute() {
-    return HMTL_CLASS_ATTRIBUTE;
+    return HTML_CLASS_ATTRIBUTE;
   }
 
   @Override

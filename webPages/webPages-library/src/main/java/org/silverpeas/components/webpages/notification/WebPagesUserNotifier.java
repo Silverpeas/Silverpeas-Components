@@ -43,12 +43,6 @@ public class WebPagesUserNotifier extends AbstractWebPagesNotification
 
   private SubscriptionSubscriberMapBySubscriberType subscriberIdsByTypes;
 
-  /**
-   * Builds and sends a webpages notification. A warning message is logged when an exception is
-   * catched.
-   * @param resource
-   * @param userId
-   */
   public static void notify(final NodePK resource, final String userId) {
     try {
       UserNotificationHelper.buildAndSend(new WebPagesUserNotifier(resource, userId));
@@ -57,10 +51,6 @@ public class WebPagesUserNotifier extends AbstractWebPagesNotification
     }
   }
 
-  /**
-   * Default constructor
-   * @param resource
-   */
   public WebPagesUserNotifier(final NodePK resource, final String userId) {
     super(resource, User.getById(userId));
   }

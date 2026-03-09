@@ -23,9 +23,15 @@
  */
 package org.silverpeas.components.infoletter.implementation;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.transaction.Transactional;
 import org.silverpeas.components.infoletter.InfoLetterContentManager;
 import org.silverpeas.components.infoletter.InfoLetterException;
 import org.silverpeas.components.infoletter.model.*;
+import org.silverpeas.components.infoletter.service.InfoLetterContributionLocator;
 import org.silverpeas.core.ApplicationServiceProvider;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.WAPrimaryKey;
@@ -34,7 +40,6 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
@@ -49,7 +54,10 @@ import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.mail.MailAddress;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.persistence.jdbc.bean.*;
+import org.silverpeas.core.persistence.jdbc.bean.BeanCriteria;
+import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
+import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
+import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOFactory;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.subscription.Subscription;
 import org.silverpeas.core.subscription.SubscriptionServiceProvider;
@@ -61,10 +69,6 @@ import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.mail.internet.InternetAddress;
-import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -90,20 +94,21 @@ public class InfoLetterDataManager implements InfoLetterService {
   private static final String TABLE_EXTERNAL_EMAILS = "SC_IL_ExtSus";
   private static final String INSTANCE_ID = "instanceId";
 
-  private final SilverpeasBeanDAO<InfoLetter> infoLetterDAO;
-  private final SilverpeasBeanDAO<InfoLetterPublication> infoLetterPublicationDAO;
+  private SilverpeasBeanDAO<InfoLetter> infoLetterDAO;
+  private SilverpeasBeanDAO<InfoLetterPublication> infoLetterPublicationDAO;
 
   @Inject
   private InfoLetterContentManager infoLetterContentManager;
+
+  @Inject
+  private InfoLetterContributionLocator contributionLocator;
 
   @SuppressWarnings("unchecked")
   @Override
   public <T extends Contribution> Optional<T> getContributionById(
       final ContributionIdentifier contributionId) {
     if (InfoLetterPublicationPdC.TYPE.equals(contributionId.getType())) {
-      final String localId = contributionId.getLocalId();
-      final IdPK pk = new IdPK(localId);
-      return (Optional<T>) Optional.ofNullable(getInfoLetterPublication(pk));
+      return (Optional<T>) Optional.ofNullable(getInfoLetterPublication(contributionId));
     } else if (InfoLetter.TYPE.equals(contributionId.getType())) {
       return (Optional<T>) getInfoLetters(contributionId.getComponentInstanceId()).stream()
           .map(InfoLetterTemplateContributionWrapper::new)
@@ -128,7 +133,8 @@ public class InfoLetterDataManager implements InfoLetterService {
     return instanceId.startsWith("infoLetter");
   }
 
-  public InfoLetterDataManager() {
+  @PostConstruct
+  void initDAO() {
     try {
       infoLetterDAO = SilverpeasBeanDAOFactory.getDAO(InfoLetter.class);
       infoLetterPublicationDAO = SilverpeasBeanDAOFactory.getDAO(InfoLetterPublication.class);
@@ -172,11 +178,11 @@ public class InfoLetterDataManager implements InfoLetterService {
   }
 
   @Override
-  public List<InfoLetterPublication> getInfoLetterPublications(WAPrimaryKey letterPK) {
+  public List<InfoLetterPublication> getInfoLetterPublications(ContributionIdentifier id) {
     try {
-      InfoLetter letter = getInfoLetter(letterPK);
+      InfoLetter letter = getInfoLetter(id);
       BeanCriteria criteria = BeanCriteria.addCriterion(INSTANCE_ID, letter.getInstanceId())
-          .and("letterId", Integer.parseInt(letterPK.getId()));
+          .and("letterId", Integer.parseInt(id.getLocalId()));
       criteria.setDescOrderBy("id");
       return new ArrayList<>(infoLetterPublicationDAO.findBy(criteria));
     } catch (PersistenceException pe) {
@@ -203,12 +209,12 @@ public class InfoLetterDataManager implements InfoLetterService {
 
   @Transactional
   @Override
-  public void deleteInfoLetterPublication(WAPrimaryKey pk, String componentId) {
+  public void deleteInfoLetterPublication(ContributionIdentifier id) {
     try (Connection con = openConnection()) {
-      infoLetterPublicationDAO.remove(pk);
-      infoLetterContentManager.deleteSilverContent(con, pk.getId(), componentId);
+      infoLetterPublicationDAO.remove(id.toReference());
+      infoLetterContentManager.deleteSilverContent(con, id.getLocalId(), id.getComponentInstanceId());
       final InfoLetterPublication entity = new InfoLetterPublication(
-          new ResourceReference(pk.getId(), componentId), componentId, null, null, null, 0, 0);
+          id.toReference(), null, null, null, 0, 0);
       deleteIndex(entity);
       entity.deleteContent();
     } catch (Exception pe) {
@@ -231,10 +237,10 @@ public class InfoLetterDataManager implements InfoLetterService {
   }
 
   @Override
-  public InfoLetter getInfoLetter(WAPrimaryKey letterPK) {
+  public InfoLetter getInfoLetter(ContributionIdentifier id) {
     InfoLetter infoLetter;
     try {
-      infoLetter = infoLetterDAO.findByPrimaryKey(letterPK);
+      infoLetter = infoLetterDAO.findByPrimaryKey(id.toReference());
     } catch (PersistenceException pe) {
       throw new InfoLetterException(pe);
     }
@@ -242,14 +248,8 @@ public class InfoLetterDataManager implements InfoLetterService {
   }
 
   @Override
-  public InfoLetterPublicationPdC getInfoLetterPublication(WAPrimaryKey publiPK) {
-    InfoLetterPublicationPdC classifiedPublic;
-    try {
-      classifiedPublic = new InfoLetterPublicationPdC(infoLetterPublicationDAO.findByPrimaryKey(publiPK));
-    } catch (PersistenceException pe) {
-      throw new InfoLetterException(pe);
-    }
-    return classifiedPublic;
+  public InfoLetterPublicationPdC getInfoLetterPublication(ContributionIdentifier id) {
+    return contributionLocator.getInfoLetterContribution(id);
   }
 
   @Override
@@ -260,13 +260,14 @@ public class InfoLetterDataManager implements InfoLetterService {
     ie.setInstanceId(componentId);
     ie.setName(ci.getLabel());
     createInfoLetter(ie);
-    initTemplate(componentId, ie.getPK(), "0");
+    initTemplate(ie.getId(), "0");
     return ie;
   }
 
   /**
    * Deletes all the info letters (and then all the publications and external subscribers) in the
    * specified component instance.
+   *
    * @param componentId the unique identifier of the InfoLetter instance.
    */
   @Override
@@ -286,35 +287,17 @@ public class InfoLetterDataManager implements InfoLetterService {
   }
 
   @Override
-  public int getSilverObjectId(String pubId, String componentId) {
-
-    try {
-      int silverObjectId = infoLetterContentManager.getSilverContentId(pubId, componentId);
-      if (silverObjectId == -1) {
-        IdPK publiPK = new IdPK();
-        publiPK.setId(pubId);
-        InfoLetterPublicationPdC infoLetter = getInfoLetterPublication(publiPK);
-        silverObjectId = infoLetterContentManager
-            .createSilverContent(null, infoLetter, infoLetter.getCreatorId());
-      }
-      return silverObjectId;
-    } catch (Exception e) {
-      throw new InfoLetterException(e);
-    }
-  }
-
-  @Override
-  public SubscriptionSubscriberList getInternalSuscribers(final String componentId) {
+  public SubscriptionSubscriberList getInternalSubscribers(final String componentId) {
     return ResourceSubscriptionProvider.getSubscribersOfComponent(componentId);
   }
 
   @Override
-  public void setInternalSuscribers(final String componentId, final UserDetail[] users,
+  public void setInternalSubscribers(final String componentId, final User[] users,
       final Group[] groups) {
 
     // Initializing necessary subscriptions
     Collection<Subscription> subscriptions = new ArrayList<>(users.length + groups.length);
-    for (UserDetail user : users) {
+    for (User user : users) {
       subscriptions.add(
           new ComponentSubscription(UserSubscriptionSubscriber.from(user.getId()), componentId));
     }
@@ -337,15 +320,15 @@ public class InfoLetterDataManager implements InfoLetterService {
   }
 
   @Override
-  public Set<String> getEmailsExternalsSuscribers(WAPrimaryKey letterPK) {
+  public Set<String> getEmailsExternalsSubscribers(ContributionIdentifier id) {
     Set<String> emails = new LinkedHashSet<>();
     try (Connection con = openConnection()) {
-      InfoLetter letter = getInfoLetter(letterPK);
+      InfoLetter letter = getInfoLetter(id);
       String selectQuery =
           "SELECT * FROM " + TABLE_EXTERNAL_EMAILS + " where instanceId = ? and letter = ?";
       try (PreparedStatement selectStmt = con.prepareStatement(selectQuery)) {
         selectStmt.setString(1, letter.getInstanceId());
-        selectStmt.setInt(2, Integer.parseInt(letterPK.getId()));
+        selectStmt.setInt(2, Integer.parseInt(id.getLocalId()));
         try (ResultSet rs = selectStmt.executeQuery()) {
           while (rs.next()) {
             emails.add(rs.getString("email"));
@@ -360,10 +343,10 @@ public class InfoLetterDataManager implements InfoLetterService {
 
   @Transactional
   @Override
-  public void setEmailsExternalsSubscribers(WAPrimaryKey letterPK, Set<String> emails) {
+  public void setEmailsExternalsSubscribers(ContributionIdentifier id, Set<String> emails) {
     try (Connection con = openConnection()) {
-      final InfoLetter letter = getInfoLetter(letterPK);
-      final int letterId = Integer.parseInt(letterPK.getId());
+      final InfoLetter letter = getInfoLetter(id);
+      final int letterId = Integer.parseInt(id.getLocalId());
       JdbcSqlQuery.deleteFrom(TABLE_EXTERNAL_EMAILS)
           .where("instanceId = ?", letter.getInstanceId())
           .and("letter = ?", letterId)
@@ -381,7 +364,7 @@ public class InfoLetterDataManager implements InfoLetterService {
   }
 
   @Override
-  public void toggleSuscriber(String userId, String componentId, boolean isUserSubscribing) {
+  public void toggleSubscriber(String userId, String componentId, boolean isUserSubscribing) {
     Subscription subscription =
         new ComponentSubscription(UserSubscriptionSubscriber.from(userId), componentId);
     if (isUserSubscribing) {
@@ -392,18 +375,18 @@ public class InfoLetterDataManager implements InfoLetterService {
   }
 
   @Override
-  public boolean isUserSuscribed(String userId, String componentId) {
+  public boolean isUserSubscribed(String userId, String componentId) {
     return SubscriptionServiceProvider.getSubscribeService().existsSubscription(
         new ComponentSubscription(UserSubscriptionSubscriber.from(userId), componentId));
   }
 
   @Override
-  public void initTemplate(String componentId, WAPrimaryKey letterPK, String userId) {
+  public void initTemplate(ContributionIdentifier id, String userId) {
     try {
       String basicTemplate = "<body></body>";
       WysiwygController.createUnindexedFileAndAttachment(basicTemplate,
-          new ResourceReference(InfoLetter.TEMPLATE_ID + letterPK.getId(), componentId), userId,
-          I18NHelper.DEFAULT_LANGUAGE);
+          new ResourceReference(InfoLetter.TEMPLATE_ID + id.getLocalId(),
+              id.getComponentInstanceId()), userId, I18NHelper.getDefaultLanguage());
     } catch (Exception e) {
       throw new InfoLetterException(e);
     }
@@ -417,13 +400,6 @@ public class InfoLetterDataManager implements InfoLetterService {
       throw new InfoLetterException(e);
     }
     return con;
-  }
-
-  @Override
-  public Set<String> sendTemplateByMail(final InfoLetter il, final String mimeMultipart,
-      final Set<String> listEmailDest, final String subject, final String emailFrom) {
-    return sendContributionByMail(il.getTemplateIdentifier(), mimeMultipart, listEmailDest, subject,
-        emailFrom);
   }
 
   @Override
@@ -481,7 +457,7 @@ public class InfoLetterDataManager implements InfoLetterService {
 
   private void indexPublications(final InfoLetter infoLetter) {
     try {
-      Optional.ofNullable(getInfoLetterPublications(infoLetter.getPK())).stream()
+      Optional.ofNullable(getInfoLetterPublications(infoLetter.getId())).stream()
           .flatMap(Collection::stream)
           .forEach(this::processPublicationIndexation);
     } catch (Exception e) {

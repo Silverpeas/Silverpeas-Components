@@ -55,13 +55,13 @@ public class DrewMediaMetadataExtractor extends AbstractMediaMetadataExtractor {
 
   @Override
   public List<MetaData> extractImageExifMetaData(File image)
-      throws MediaMetadataException, IOException {
-    return extractImageExifMetaData(image, I18NHelper.DEFAULT_LANGUAGE);
+      throws MediaMetadataException {
+    return extractImageExifMetaData(image, I18NHelper.getDefaultLanguage());
   }
 
   @Override
   public List<MetaData> extractImageExifMetaData(File image, String lang)
-      throws MediaMetadataException, IOException {
+      throws MediaMetadataException {
     try {
       List<MetaData> result = new ArrayList<>();
       // lire le fichier des properties
@@ -144,7 +144,7 @@ public class DrewMediaMetadataExtractor extends AbstractMediaMetadataExtractor {
   @Override
   public List<MetaData> extractImageIptcMetaData(File image)
       throws MediaMetadataException, IOException {
-    return extractImageIptcMetaData(image, I18NHelper.DEFAULT_LANGUAGE);
+    return extractImageIptcMetaData(image, I18NHelper.getDefaultLanguage());
   }
 
   @Override

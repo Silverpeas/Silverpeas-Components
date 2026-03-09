@@ -28,8 +28,8 @@ import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.kernel.annotation.Technical;
 
-import javax.inject.Named;
-import javax.transaction.Transactional;
+import jakarta.inject.Named;
+import jakarta.transaction.Transactional;
 import java.util.List;
 
 /**

@@ -48,56 +48,39 @@ import org.silverpeas.kernel.logging.SilverLogger;
  */
 public abstract class AbstractGalleryDataProcess extends
     AbstractDataProcess<ProcessExecutionContext> {
+
   private final Media media;
   private GalleryContentManager galleryContentManager;
   private OrganizationController organizationController;
+  private GalleryService galleryService;
+  private PublicationTemplateManager templateManager;
 
-  /**
-   * Default constructor
-   * @param media
-   */
   protected AbstractGalleryDataProcess(final Media media) {
     this.media = media;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see SilverpeasProcess#process(org.silverpeas.process.management.
-   * ProcessExecutionContext, ProcessSession)
-   */
   @Override
   public final void process(final ProcessExecutionContext processExecutionContext,
       final ProcessSession session) throws Exception {
     processData(processExecutionContext, session);
   }
 
-  /**
-   * @param context
-   * @param session
-   * @throws Exception
-   */
   protected abstract void processData(final ProcessExecutionContext context,
       final ProcessSession session) throws Exception;
 
-  /**
-   * Access to the GalleryService
-   * @return
-   */
-  protected GalleryService getGalleryBm() {
-    return MediaServiceProvider.getMediaService();
+
+  protected GalleryService getGalleryService() {
+    if (galleryService == null) {
+      galleryService = MediaServiceProvider.getMediaService();
+    }
+    return galleryService;
   }
 
-  /**
-   * @return the media
-   */
+
   protected Media getMedia() {
     return media;
   }
 
-  /**
-   * Access to gallery content manager
-   * @return
-   */
   protected GalleryContentManager getGalleryContentManager() {
     if (galleryContentManager == null) {
       galleryContentManager = ServiceProvider.getService(GalleryContentManager.class);
@@ -118,13 +101,16 @@ public abstract class AbstractGalleryDataProcess extends
    * @return an instance of PublicationTemplateManager.
    */
   protected PublicationTemplateManager getPublicationTemplateManager() {
-    return PublicationTemplateManager.getInstance();
+    if (templateManager == null) {
+      templateManager = PublicationTemplateManager.getInstance();
+    }
+    return templateManager;
   }
 
   /**
    * Gets an XML form name if it exists for the media
-   * @param context
-   * @return
+   * @param context execution context
+   * @return the XML form name
    */
   protected String getXMLFormName(final ProcessExecutionContext context) {
     String formName =
@@ -145,12 +131,6 @@ public abstract class AbstractGalleryDataProcess extends
     return formName;
   }
 
-  /**
-   * Centralizes the media creation
-   * @param albumId
-   * @param context
-   * @throws Exception
-   */
   protected void createMedia(final String albumId, final ProcessExecutionContext context)
       throws Exception {
 
@@ -167,12 +147,6 @@ public abstract class AbstractGalleryDataProcess extends
     MediaDAO.saveMediaPath(getMedia(), albumId);
   }
 
-  /**
-   * Centralizes the media update
-   * @param updateTechnicalDataRequired
-   * @param context
-   * @throws Exception
-   */
   protected void updateMedia(final boolean updateTechnicalDataRequired,
       final ProcessExecutionContext context) throws Exception {
     if (getMedia() instanceof InternalMedia && !StringUtil.isDefined(getMedia().getTitle())) {
@@ -182,10 +156,6 @@ public abstract class AbstractGalleryDataProcess extends
         .setUpdatingInCaseOfCreation(!updateTechnicalDataRequired), getMedia());
   }
 
-  /**
-   * Access to the shared OrganizationController
-   * @return
-   */
   protected OrganizationController getOrganisationController() {
     if (organizationController == null) {
       organizationController = OrganizationControllerProvider.getOrganisationController();

@@ -33,7 +33,7 @@ import static org.silverpeas.kernel.util.StringUtil.like;
 public class Like extends Equality {
 
   @Override
-  public boolean compare(final Comparable value, final Comparable referenceValue) {
+  public <T> boolean compare(final Comparable<T> value, final Comparable<T> referenceValue) {
     boolean result = super.compare(value, referenceValue);
     if (!result && value != null && referenceValue != null) {
       return like(value.toString(), referenceValue.toString());

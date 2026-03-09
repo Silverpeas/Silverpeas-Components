@@ -28,7 +28,7 @@ import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,7 +72,7 @@ public class WebSitesUtil {
     if (StringUtil.isNotDefined(machine)) {
       machine = URLUtil.getServerURL(request);
     } else if (!machine.startsWith("http")) {
-      machine = request.getScheme() + "://" + machine.replaceFirst("^[/]+", "");
+      machine = request.getScheme() + "://" + machine.replaceFirst("^/+", "");
     }
     return machine + "/" + settings.getString("Context");
   }

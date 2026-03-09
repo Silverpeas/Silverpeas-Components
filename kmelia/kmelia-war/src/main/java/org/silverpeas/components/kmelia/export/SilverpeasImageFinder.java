@@ -45,13 +45,14 @@ import static org.silverpeas.core.contribution.attachment.AttachmentServiceProvi
 /**
  * A finder of images that were uploaded by a Silverpeas component instance, whatever this component
  * is.
- *
+ * <p>
  * Images in Silverpeas can be uploaded by different Silverpeas components. So, as each component
  * has its own way to refer an image that was upload through it, there is several ways to access an
  * image in Silverpeas. So, in the case a publication embeds one or more images coming from
- * different components, it is required to support the different mechanisme of finding an image. The
- * purpose of this class is to wrap theses different mechanismes for the export of Kmelia
+ * different components, it is required to support the different mechanism of finding an image. The
+ * purpose of this class is to wrap theses different mechanisms for the export of Kmelia
  * publications.
+ * </p>
  */
 public class SilverpeasImageFinder {
 

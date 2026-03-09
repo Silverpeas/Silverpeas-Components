@@ -26,22 +26,25 @@
  ---*/
 package org.silverpeas.components.forums;
 
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import org.silverpeas.components.forums.model.Forum;
 import org.silverpeas.components.forums.model.ForumPK;
+import org.silverpeas.components.forums.service.ForumService;
 import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
 import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
 
-import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static org.silverpeas.components.forums.service.ForumsServiceProvider.getForumsService;
-
 @Provider
 @Named("forums" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
 public class ForumsStatistics implements ComponentStatisticsProvider {
+
+  @Inject
+  private ForumService forumService;
 
   @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId) {
@@ -57,6 +60,6 @@ public class ForumsStatistics implements ComponentStatisticsProvider {
   }
 
   private List<Forum> getForums(String spaceId, String componentId) {
-    return getForumsService().getForums(new ForumPK(componentId, spaceId));
+    return forumService.getForums(new ForumPK(componentId, spaceId));
   }
 }

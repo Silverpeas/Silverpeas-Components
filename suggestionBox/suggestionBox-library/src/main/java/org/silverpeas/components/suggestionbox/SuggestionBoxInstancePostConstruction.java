@@ -28,13 +28,17 @@ import org.silverpeas.components.suggestionbox.model.SuggestionBoxService;
 import org.silverpeas.core.admin.component.ComponentInstancePostConstruction;
 import org.silverpeas.core.admin.user.model.User;
 
-import javax.inject.Named;
-import javax.transaction.Transactional;
+import jakarta.inject.Named;
+import jakarta.transaction.Transactional;
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.kernel.annotation.Technical;
 
 /**
  * Creates for the spawned SuggestionBox instance a new box to gathers user's suggestions.
  * @author mmoquillon
  */
+@Technical
+@Bean
 @Named
 public class SuggestionBoxInstancePostConstruction implements ComponentInstancePostConstruction {
 

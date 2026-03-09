@@ -20,11 +20,7 @@
  */
 package org.silverpeas.components.projectmanager.control;
 
-import org.silverpeas.components.projectmanager.model.Filtre;
-import org.silverpeas.components.projectmanager.model.HolidayDetail;
-import org.silverpeas.components.projectmanager.model.ProjectManagerRuntimeException;
-import org.silverpeas.components.projectmanager.model.TaskDetail;
-import org.silverpeas.components.projectmanager.model.TaskResourceDetail;
+import org.silverpeas.components.projectmanager.model.*;
 import org.silverpeas.components.projectmanager.service.ProjectManagerService;
 import org.silverpeas.components.projectmanager.vo.DayVO;
 import org.silverpeas.components.projectmanager.vo.MonthVO;
@@ -37,29 +33,22 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.kernel.bundle.LocalizationBundle;
-import org.silverpeas.kernel.util.Pair;
-import org.silverpeas.kernel.bundle.ResourceLocator;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.csv.CSVRow;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.export.ExportCSVBuilder;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.web.selection.SelectionUsersGroups;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.Pair;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Iterator;
-import java.util.List;
-import java.util.MissingResourceException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -81,7 +70,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
   private Collection<TaskResourceDetail> currentResources = null;
   private boolean filtreActif = false;
   private Filtre filtre = null;
-  private List<Integer> unfoldTasks = new ArrayList<>();
+  private final List<Integer> unfoldTasks = new ArrayList<>();
   private Calendar calendar = null;
   private static final int WORKING_DAY = 0;
 
@@ -198,9 +187,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
         motherId);
     // calcul de la date de debut de la nouvelle tache
     // par rapport à la date de fin de la tache precedente
-    TaskDetail previousTask = null;
-    for (int t = 0; t < previousTasks.size(); t++) {
-      previousTask = previousTasks.get(t);
+    for (TaskDetail previousTask : previousTasks) {
       previousTask.setCharge(previousTask.getCharge() + 1);
       previousTask.setUiDateDebutPlus1(date2UIDate(processEndDate(previousTask)));
       previousTask.setCharge(previousTask.getCharge() - 1);
@@ -257,11 +244,9 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     task.setUiDateDebut(date2UIDate(task.getDateDebut()));
     task.setUiDateFin(date2UIDate(task.getDateFin()));
 
-    // mettre les nom des user sur les resources
+    // mettre le nom des user sur les resources
     Collection<TaskResourceDetail> resources = task.getResources();
-    Iterator<TaskResourceDetail> it = resources.iterator();
-    while (it.hasNext()) {
-      TaskResourceDetail resource = it.next();
+    for (TaskResourceDetail resource : resources) {
       String userId = resource.getUserId();
       UserDetail user = getUserDetail(userId);
       resource.setUserName(getUserFullName(user));
@@ -340,9 +325,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     }
     // ajout des zones manquantes dans les resources
     Collection<TaskResourceDetail> resources = task.getResources();
-    Iterator<TaskResourceDetail> it = resources.iterator();
-    while (it.hasNext()) {
-      TaskResourceDetail resourceDetail = it.next();
+    for (TaskResourceDetail resourceDetail : resources) {
       resourceDetail.setInstanceId(getComponentId());
       resourceDetail.setTaskId(task.getId());
     }
@@ -391,9 +374,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
 
     String[] users = new String[currentResources.size()];
     int i = 0;
-    Iterator<TaskResourceDetail> it = currentResources.iterator();
-    while (it.hasNext()) {
-      TaskResourceDetail resource = it.next();
+    for (TaskResourceDetail resource : currentResources) {
       users[i] = resource.getUserId();
       i++;
     }
@@ -406,33 +387,18 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     return filtreActif;
   }
 
-  /**
-   * @param b
-   */
   public void setFiltreActif(boolean b) {
     filtreActif = b;
   }
 
-  /**
-   * @return
-   */
   public Filtre getFiltre() {
     return filtre;
   }
 
-  /**
-   * @param filtre
-   */
   public void setFiltre(Filtre filtre) {
     this.filtre = filtre;
   }
 
-  /**
-   * *************************************************************************
-   */
-  /**
-   * GESTION du projet / **************************************************************************
-   */
   public boolean isProjectDefined() {
     if (projectDefined == null) {
       List<TaskDetail> projects = getProjectManagerService().getProjects(getComponentId());
@@ -443,7 +409,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
         projectDefined = Boolean.FALSE;
       }
     }
-    return projectDefined.booleanValue();
+    return projectDefined;
   }
 
   /**
@@ -460,9 +426,6 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     projectDefined = Boolean.TRUE;
   }
 
-  /**
-   * @return
-   */
   public TaskDetail getCurrentProject() {
     return currentProject;
   }
@@ -484,13 +447,6 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     getProjectManagerService().updateTask(getCurrentProject(), getUserId());
   }
 
-  /**
-   * *************************************************************************
-   */
-  /**
-   * Gestion des jours non travaillés /
-   * **************************************************************************
-   */
   /**
    * Change le statut de la date
    *
@@ -554,13 +510,6 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
         getUserId());
   }
 
-  /**
-   * *************************************************************************
-   */
-  /**
-   * Méthodes utilitaires /
-   * **************************************************************************
-   */
   public Date uiDate2Date(String uiDate) throws ParseException {
     if (StringUtil.isDefined(uiDate)) {
       return DateUtil.stringToDate(uiDate, getLanguage());
@@ -609,8 +558,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
   public String getRole() {
     String[] roles = getUserRoles();
     String higherRole = "lecteur";
-    for (int i = 0; i < roles.length; i++) {
-      String role = roles[i];
+    for (String role : roles) {
       // if admin, return it, we won't find a better profile
       if (ADMIN_ROLE.equals(role)) {
         return role;
@@ -630,9 +578,6 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     return currentResources;
   }
 
-  /**
-   * @param task
-   */
   public void updateOccupation(TaskDetail task) {
     try {
       Date dateDeb = task.getDateDebut();
@@ -649,11 +594,6 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     }
   }
 
-  /**
-   * @param taskId
-   * @param userId
-   * @return
-   */
   public int checkOccupation(String taskId, String userId) {
     try {
       TaskDetail task = getTask(taskId);
@@ -665,13 +605,6 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     }
   }
 
-  /**
-   * @param taskId
-   * @param userId
-   * @param beginDate
-   * @param endDate
-   * @return
-   */
   public int checkOccupation(String taskId, String userId, Date beginDate, Date endDate) {
     try {
       return getProjectManagerService().getOccupationByUser(userId, beginDate, endDate,
@@ -681,12 +614,6 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     }
   }
 
-  /**
-   * @param userId
-   * @param beginDate
-   * @param endDate
-   * @return
-   */
   public int checkOccupation(String userId, Date beginDate, Date endDate) {
     try {
       return getProjectManagerService().getOccupationByUser(userId, beginDate, endDate);
@@ -746,7 +673,6 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
   /**
    * @param curDate If null parameter we get the current month system.
    * @return a quarter which contains 3 month value object starting from start date month
-   * @throws ParseException
    */
   public List<MonthVO> getQuarterMonth(Date curDate) {
     return getNbMonth(3, curDate);
@@ -755,7 +681,6 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
   /**
    * @param curDate If null parameter we get the current month system.
    * @return a quarter which contains 3 month value object starting from start date month
-   * @throws ParseException
    */
   public List<MonthVO> getYearMonth(Date curDate) {
     return getNbMonth(12, curDate);
@@ -766,7 +691,6 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
    * @param curDate the current starting month date. If null parameter we get the current month
    * system.
    * @return a list
-   * @throws ParseException
    */
   private List<MonthVO> getNbMonth(int nbMonth, Date curDate) {
     // Result list decaration
@@ -793,12 +717,12 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
    * @param startDate the string representation of the date. If null we will retrieve the most
    * relevant date in order to display current tasks
    * @return the most relevant date
-   * @throws ParseException
+   * @throws ParseException if the date cannot be parsed.
    */
   public Date getMostRelevantDate(String startDate) throws ParseException {
     Date curDate;
     if (startDate != null) {
-      curDate = DateUtil.stringToDate(startDate, I18NHelper.DEFAULT_LANGUAGE);
+      curDate = DateUtil.stringToDate(startDate, I18NHelper.getDefaultLanguage());
     } else {
       // Search for the most relevant date
       curDate = getProjectManagerRelevantDate();

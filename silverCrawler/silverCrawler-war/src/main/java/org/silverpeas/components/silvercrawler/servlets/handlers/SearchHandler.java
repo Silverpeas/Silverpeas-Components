@@ -29,7 +29,7 @@ import org.silverpeas.components.silvercrawler.model.FileDetail;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileUtil;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Collection;
 
 /**
@@ -37,6 +37,10 @@ import java.util.Collection;
  * @author Ludovic Bertin
  */
 public class SearchHandler extends FunctionHandler {
+
+  protected SearchHandler(HandlerProvider provider) {
+    super(provider);
+  }
 
   @Override
   public String getDestination(SilverCrawlerSessionController sessionController,
@@ -46,7 +50,7 @@ public class SearchHandler extends FunctionHandler {
     if (StringUtil.isDefined(searchResult)) {
       sessionController.setCurrentPathFromResult(searchResult);
       // Go back to main page
-      return HandlerProvider.getHandler("ViewDirectory").getDestination(sessionController, request);
+      return getHandlerProvider().getHandler("ViewDirectory").getDestination(sessionController, request);
     }
 
     // Retrieves search query

@@ -30,8 +30,8 @@ import org.silverpeas.components.kmelia.model.TopicSearch;
 import org.silverpeas.components.kmelia.repository.TopicSearchRepository;
 import org.silverpeas.core.annotation.Service;
 
-import javax.inject.Inject;
-import javax.transaction.Transactional;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import java.util.List;
 
 /**

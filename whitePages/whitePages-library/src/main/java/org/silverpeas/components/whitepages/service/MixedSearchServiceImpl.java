@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.whitepages.service;
 
+import jakarta.inject.Inject;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.index.indexing.model.FieldDescription;
 import org.silverpeas.core.index.search.model.QueryDescription;
@@ -36,6 +37,9 @@ import java.util.Map;
 
 @Service
 public class MixedSearchServiceImpl implements MixedSearchService {
+
+  @Inject
+  private SearchService searchService;
 
   @Override
   public List<SearchResult> search(SearchQuery searchQuery) throws SearchEngineException {
@@ -67,8 +71,6 @@ public class MixedSearchServiceImpl implements MixedSearchService {
     }
 
     query.setTaxonomyPosition(searchQuery.getTaxonomyPosition());
-
-    SearchService searchService = SearchService.get();
     return searchService.search(query);
   }
 }

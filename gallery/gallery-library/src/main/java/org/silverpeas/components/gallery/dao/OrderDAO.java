@@ -53,7 +53,7 @@ public class OrderDAO {
    * @param userId the identifier of the user that is creating the order.
    * @param instanceId the identifier of a component instance.
    * @return the identifier of the new order.
-   * @throws SQLException
+   * @throws SQLException if the creation fails
    */
   public static String createOrder(Collection<String> mediaIds, String userId, String instanceId)
       throws SQLException {
@@ -80,7 +80,7 @@ public class OrderDAO {
    * @param mediaId the identifier of a media.
    * @param orderId the identifier of an order.
    * @param instanceId the identifier of a component instance.
-   * @throws SQLException
+   * @throws SQLException if the creation fails
    */
   private static void addOrderMedia(String mediaId, String orderId, String instanceId)
       throws SQLException {
@@ -94,7 +94,7 @@ public class OrderDAO {
   /**
    * Updates an order and its details.
    * @param order an order.
-   * @throws SQLException
+   * @throws SQLException if the update fails
    */
   public static void updateOrder(Order order) throws SQLException {
     updateOrderStatus(order);
@@ -110,7 +110,7 @@ public class OrderDAO {
   /**
    * Updates the status of an order.
    * @param order an order.
-   * @throws SQLException
+   * @throws SQLException if the update fails
    */
   private static void updateOrderStatus(Order order) throws SQLException {
     JdbcSqlQuery update = update(GALLERY_ORDER_TABLE);
@@ -123,7 +123,7 @@ public class OrderDAO {
   /**
    * Deletes an order and its details.
    * @param order an order.
-   * @throws SQLException
+   * @throws SQLException if the deletion fails
    */
   public static void deleteOrder(Order order) throws SQLException {
     deleteFrom(GALLERY_ORDER_TABLE).where(ORDER_ID_CRITERION, order.getOrderId()).execute();
@@ -139,7 +139,7 @@ public class OrderDAO {
    * Deletes a media for an order.
    * @param mediaId the identifier of a media.
    * @param orderId the identifier of an order.
-   * @throws SQLException
+   * @throws SQLException if the deletion fails
    */
   private static void deleteMediaFromOrder(String mediaId, String orderId) throws SQLException {
     deleteFrom(GALLERY_ORDER_DETAIL_TABLE).where("mediaId = ? and orderId = ?", mediaId, orderId)
@@ -150,7 +150,7 @@ public class OrderDAO {
    * Gets all medias of an order.
    * @param orderId identifier of an order.
    * @return the list of details related of the given identifier of order.
-   * @throws SQLException
+   * @throws SQLException if the query fails
    */
   public static List<OrderRow> getAllOrderDetails(final String orderId) throws SQLException {
     return select(
@@ -168,7 +168,7 @@ public class OrderDAO {
   /**
    * Updates a row of an order.
    * @param row details of an order.
-   * @throws SQLException
+   * @throws SQLException if the update fails
    */
   public static void updateOrderRow(OrderRow row) throws SQLException {
     JdbcSqlQuery update = update(GALLERY_ORDER_DETAIL_TABLE);
@@ -182,7 +182,7 @@ public class OrderDAO {
    * Gets a unique result.
    * @param criteria the criteria that permits to filter the result.
    * @return the unique result of the query performed.
-   * @throws SQLException
+   * @throws SQLException if the query fails
    */
   public static Order getByCriteria(MediaOrderCriteria criteria) throws SQLException {
     return unique(findByCriteria(criteria));

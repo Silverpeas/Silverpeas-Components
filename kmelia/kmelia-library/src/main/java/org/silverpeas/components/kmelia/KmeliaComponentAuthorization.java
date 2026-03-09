@@ -20,7 +20,9 @@
  */
 package org.silverpeas.components.kmelia;
 
+import jakarta.inject.Inject;
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.security.authorization.AccessControlContext;
@@ -32,7 +34,7 @@ import org.silverpeas.core.security.authorization.PublicationAccessControl;
 import org.silverpeas.core.util.MapUtil;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 import java.io.Serializable;
 import java.util.*;
 import java.util.function.Function;
@@ -41,6 +43,7 @@ import java.util.stream.Stream;
 
 import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
+@Bean
 @Named
 public class KmeliaComponentAuthorization implements ComponentAuthorization {
 
@@ -48,6 +51,15 @@ public class KmeliaComponentAuthorization implements ComponentAuthorization {
   private static final String NODE_TYPE = "Node";
   private static final String ATTACHMENT_TYPE = "Attachment";
   private static final String VERSION_TYPE = "Version";
+
+  @Inject
+  private ComponentAccessControl componentAccessControl;
+
+  @Inject
+  private NodeAccessControl nodeAccessControl;
+
+  @Inject
+  private PublicationAccessControl publicationAccessControl;
 
   private KmeliaComponentAuthorization() {
     // Instantiated by IoC only.
@@ -88,15 +100,16 @@ public class KmeliaComponentAuthorization implements ComponentAuthorization {
         authorized.add(resourceRef);
       }
     });
-    PublicationAccessControl.get()
+    publicationAccessControl
         .filterAuthorizedByUser(ResourceRefHash.toPublicationPKs(pubPks.keySet()), userId,
             AccessControlContext.init().onOperationsOf(operations))
         .forEach(p -> authorized.addAll(pubPks.get(new ResourceRefHash(p))));
-    NodeAccessControl.get()
+    nodeAccessControl
         .filterAuthorizedByUser(ResourceRefHash.toNodePks(nodePks.keySet()), userId,
             AccessControlContext.init().onOperationsOf(operations))
         .forEach(p -> authorized.addAll(nodePks.get(new ResourceRefHash(p))));
-    ComponentAccessControl.get().filterAuthorizedByUser(instanceIds.keySet(), userId,
+    componentAccessControl
+        .filterAuthorizedByUser(instanceIds.keySet(), userId,
             AccessControlContext.init().onOperationsOf(operations))
         .forEach(p -> authorized.addAll(instanceIds.get(p)));
     return resources.stream().filter(r -> authorized.contains(converter.apply(r)));
@@ -108,12 +121,12 @@ public class KmeliaComponentAuthorization implements ComponentAuthorization {
   }
 
   /**
-   * Hash to use as key in Map. This class ensures the equality and hash computation is done on
+   * Hash for use as key in Map. It ensures the equality and hash computation is done on
    * both the local identifier of a resource and on the identifier of the component instance the
    * resource belongs to. Indeed, in the general case, a contribution is uniquely identified by
    * its local id and by the component instance it belongs to, but some contributions can be
-   * located in several component instances and in such a case they are uniquely identifier by
-   * their local id (that is also, in this case, their global id).
+   * located in several component instances and in such a case they are uniquely identified by
+   * their local id. In this case, their local id is in fact their global id.
    */
   private static class ResourceRefHash implements Serializable {
 

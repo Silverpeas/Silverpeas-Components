@@ -28,9 +28,9 @@ import org.silverpeas.core.personalization.service.PersonalizationServiceProvide
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 
 import static org.silverpeas.kernel.util.StringUtil.isDefined;
@@ -54,7 +54,7 @@ public class AuthorEntity implements Serializable {
   private String language;
 
   /**
-   * Creates an new comment author entity from the specified user.
+   * Creates a new comment author entity from the specified user.
    * @param user the user to entitify.
    * @return the comment writer.
    */
@@ -64,7 +64,7 @@ public class AuthorEntity implements Serializable {
 
   /**
    * Gets the relative path of the user avatar.
-   * @return the relative path of the URI refering the user avatar.
+   * @return the relative path of the URI referring the user avatar.
    */
   public String getAvatar() {
     return avatar;
@@ -95,9 +95,9 @@ public class AuthorEntity implements Serializable {
   }
 
   /**
-   * Gets the prefered language of the author.
-   * @return the language code of the author according to the ISO 639-1 standard (for example fr for
-   * french).
+   * Gets the preferred language of the author.
+   * @return the language code of the author according to the ISO 639-1 standard (for example "fr"
+   * for french).
    */
   public String getLanguage() {
     return this.language;

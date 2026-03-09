@@ -23,23 +23,27 @@
  */
 package org.silverpeas.processmanager;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.ComponentInstancePostConstruction;
 import org.silverpeas.core.workflow.api.Workflow;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
+import org.silverpeas.kernel.annotation.Technical;
 
 import static org.silverpeas.core.admin.component.ComponentInstancePostConstruction
     .WORKFLOW_POST_CONSTRUCTION;
 
 /**
  * Find and creates for the spawned ProcessManager instance a process model, id est instantiates the
- * workflow defined into an the XML descriptor associated with the ProcessManager instance. If an
+ * workflow defined into the XML descriptor associated with the ProcessManager instance. If an
  * error occurs while creating the workflow, a RuntimeException is thrown.
  * @author mmoquillon
  */
+@Technical
+@Bean
 @Named(WORKFLOW_POST_CONSTRUCTION)
 public class ProcessManagerInstancePostConstruction implements ComponentInstancePostConstruction {
 

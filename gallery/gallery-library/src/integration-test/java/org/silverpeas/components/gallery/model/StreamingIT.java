@@ -90,7 +90,7 @@ public class StreamingIT extends AbstractMediaIT {
     assertThat(streaming.getType(), is(MediaType.Streaming));
     assertThat(streaming.getWorkspaceSubFolderName(), is("streamingmediaId"));
     assertThat(streaming.getHomepageUrl(), is("anUrl"));
-    assertThat(streaming.getProvider().map(StreamingProvider::getName).orElse(null), is("youtube"));
+    assertThat(streaming.getProvider().map(StreamingProvider::getName).orElse(""), is("youtube"));
     assertThat(streaming.getApplicationOriginalUrl(),
         is(streaming.getApplicationThumbnailUrl(MediaResolution.PREVIEW)));
     assertThat(streaming.getFile(MediaResolution.ORIGINAL), is(SilverpeasFile.NO_FILE));

@@ -23,16 +23,13 @@
  */
 package org.silverpeas.components.infoletter.control;
 
-import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.components.infoletter.InfoLetterException;
-import org.silverpeas.components.infoletter.InfoLetterPeasTrappedException;
 import org.silverpeas.components.infoletter.model.InfoLetter;
 import org.silverpeas.components.infoletter.model.InfoLetterPublication;
 import org.silverpeas.components.infoletter.model.InfoLetterPublicationPdC;
 import org.silverpeas.components.infoletter.model.InfoLetterService;
 import org.silverpeas.components.infoletter.notification.InfoLetterSubscriptionPublicationUserNotification;
-import org.silverpeas.components.infoletter.service.InfoLetterServiceProvider;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.user.model.Group;
@@ -42,16 +39,18 @@ import org.silverpeas.core.contribution.content.ddwe.DragAndDropWbeFile;
 import org.silverpeas.core.contribution.content.ddwe.model.DragAndDropWebEditorStore;
 import org.silverpeas.core.contribution.content.renderer.ContributionContentRenderer;
 import org.silverpeas.core.contribution.model.ContributionContent;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.exception.DecodingException;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.exception.UtilTrappedException;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
-import org.silverpeas.core.persistence.jdbc.bean.IdPK;
 import org.silverpeas.core.subscription.constant.SubscriberType;
 import org.silverpeas.core.subscription.util.SubscriptionSubscriberMapBySubscriberType;
 import org.silverpeas.core.util.Charsets;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
@@ -84,10 +83,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
 
   private static final String EMAILS = "Emails";
 
-  /**
-   * Interface metier du composant
-   */
-  private transient InfoLetterService dataInterface = null;
+  private transient InfoLetterService service = null;
 
   public static final String EXPORT_CSV_NAME = "_emails.csv";
 
@@ -103,8 +99,8 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
         "org.silverpeas.infoLetter.settings.infoLetterIcons",
         "org.silverpeas.infoLetter.settings.infoLetterSettings");
     // Initialize business interface
-    if (dataInterface == null) {
-      dataInterface = InfoLetterServiceProvider.getInfoLetterData();
+    if (service == null) {
+      service = ServiceProvider.getService(InfoLetterService.class);
     }
   }
 
@@ -132,7 +128,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
 
     // Internal subscribers
     SubscriptionSubscriberMapBySubscriberType subscriberIdsByTypes =
-        dataInterface.getInternalSuscribers(getComponentId()).indexBySubscriberType();
+        service.getInternalSubscribers(getComponentId()).indexBySubscriberType();
     // Users
     sel.setSelectedElements(subscriberIdsByTypes.get(SubscriberType.USER).getAllIds());
     // Groups
@@ -148,17 +144,17 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     Selection sel = getSelection();
     UserDetail[] users = SelectionUsersGroups.getUserDetails(sel.getSelectedElements());
     Group[] groups = SelectionUsersGroups.getGroups(sel.getSelectedSets());
-    dataInterface.setInternalSuscribers(getComponentId(), users, groups);
+    service.setInternalSubscribers(getComponentId(), users, groups);
   }
 
-  // Mise a jour d'une lettre d'information
+  // Mise à jour d'une lettre d'information
   public void updateInfoLetter(InfoLetter ie) {
-    dataInterface.updateInfoLetter(ie);
+    service.updateInfoLetter(ie);
   }
 
   // Recuperation de la liste des lettres
   public List<InfoLetter> getInfoLetters() {
-    return dataInterface.getInfoLetters(getComponentId());
+    return service.getInfoLetters(getComponentId());
   }
 
   /**
@@ -191,7 +187,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
 
   // Recuperation de la liste des publications
   public List<InfoLetterPublication> getInfoLetterPublications() {
-    return dataInterface.getInfoLetterPublications(getInfoLetter().getPK());
+    return service.getInfoLetterPublications(getInfoLetter().getId());
   }
 
   public DragAndDropWbeFile getFileForEditionOf(final InfoLetterPublication ilp) {
@@ -227,7 +223,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   // Creation d'une publication
   public void createInfoLetterPublication(InfoLetterPublicationPdC ilp) {
     ilp.setInstanceId(getComponentId());
-    dataInterface.createInfoLetterPublication(ilp, getUserId());
+    service.createInfoLetterPublication(ilp, getUserId());
     // Classify content on PdC
     classifyInfoLetterPublication(ilp);
   }
@@ -257,30 +253,32 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
 
   // Suppression d'une publication
   public void deleteInfoLetterPublication(String id) {
-    dataInterface.deleteInfoLetterPublication(new IdPK(id), getComponentId());
+    service.deleteInfoLetterPublication(ContributionIdentifier.from(getComponentId(),
+        id, InfoLetterPublicationPdC.TYPE));
   }
 
-  // Mise a jour d'une publication
+  // Mise à jour d'une publication
   public void updateInfoLetterPublication(InfoLetterPublicationPdC ilp) {
     ilp.setInstanceId(getComponentId());
-    dataInterface.updateInfoLetterPublication(ilp);
+    service.updateInfoLetterPublication(ilp);
   }
 
   // Recuperation d'une publication par sa clef
   public InfoLetterPublicationPdC getInfoLetterPublication(String id) {
-    return dataInterface.getInfoLetterPublication(new IdPK(id));
+    return service.getInfoLetterPublication(ContributionIdentifier.from(getComponentId(), id,
+        InfoLetterPublicationPdC.TYPE));
   }
 
   /**
    * Notify the newsletter to internal subscribers
-   * @param ilp the infoletter to send
+   * @param ilp the info letter to send
    *
    */
   public void notifyInternalSubscribers(InfoLetterPublicationPdC ilp) {
     if (isNewsLetterSendByMail()) {
       //Send the newsletter by Mail to internal subscribers
       SubscriptionSubscriberMapBySubscriberType subscriberIdsByTypes =
-          dataInterface.getInternalSuscribers(getComponentId()).indexBySubscriberType();
+          service.getInternalSubscribers(getComponentId()).indexBySubscriberType();
       Set<String> internalSubscribersEmails = getEmailsInternalSubscribers(subscriberIdsByTypes);
       sendLetterByMail(ilp, internalSubscribersEmails);
     } else {
@@ -311,7 +309,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
 
       ilp.setInstanceId(getComponentId());
       emailErrors =
-          dataInterface.sendLetterByMail(ilp, mimeMultipart, emails, subject, emailFrom);
+          service.sendLetterByMail(ilp, mimeMultipart, emails, subject, emailFrom);
 
     }
     return emailErrors.toArray(new String[0]);
@@ -329,7 +327,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     if (isNewsLetterSendByMail()) {
       // Internal subscribers
       SubscriptionSubscriberMapBySubscriberType subscriberIdsByTypes =
-          dataInterface.getInternalSuscribers(getComponentId()).indexBySubscriberType();
+          service.getInternalSubscribers(getComponentId()).indexBySubscriberType();
       Set<String> internalSubscribersEmails = getEmailsInternalSubscribers(subscriberIdsByTypes);
       extmails.removeAll(internalSubscribersEmails);
     }
@@ -352,7 +350,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   }
 
   public Set<String> getEmailsExternalsSubscribers() {
-    return dataInterface.getEmailsExternalsSuscribers(getInfoLetter().getPK());
+    return service.getEmailsExternalsSubscribers(getInfoLetter().getId());
   }
 
   public void addExternalsSubscribers(String newMails) {
@@ -364,7 +362,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
         emails.add(mail);
       }
     }
-    dataInterface.setEmailsExternalsSubscribers(getInfoLetter().getPK(), emails);
+    service.setEmailsExternalsSubscribers(getInfoLetter().getId(), emails);
   }
 
   public void deleteExternalsSubscribers(String[] mails) {
@@ -373,7 +371,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
       for (String email : mails) {
         curExternalEmails.remove(email);
       }
-      dataInterface.setEmailsExternalsSubscribers(getInfoLetter().getPK(), curExternalEmails);
+      service.setEmailsExternalsSubscribers(getInfoLetter().getId(), curExternalEmails);
     }
   }
 
@@ -383,22 +381,22 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   public void deleteAllExternalsSubscribers() {
     Set<String> externalEmails = getEmailsExternalsSubscribers();
     externalEmails.clear();
-    dataInterface.setEmailsExternalsSubscribers(getInfoLetter().getPK(), externalEmails);
+    service.setEmailsExternalsSubscribers(getInfoLetter().getId(), externalEmails);
   }
 
   // Abonnement d'un utilisateur
   public void subscribeUser() {
-    dataInterface.toggleSuscriber(getUserId(), getComponentId(), true);
+    service.toggleSubscriber(getUserId(), getComponentId(), true);
   }
 
-  // Desabonnement d'un utilisateur
+  // Désabonnement d'un utilisateur
   public void unsubscribeUser() {
-    dataInterface.toggleSuscriber(getUserId(), getComponentId(), false);
+    service.toggleSubscriber(getUserId(), getComponentId(), false);
   }
 
   // test d'abonnement d'un utilisateur interne
   public boolean isSubscriber() {
-    return dataInterface.isUserSuscribed(getUserId(), getComponentId());
+    return service.isUserSubscribed(getUserId(), getComponentId());
   }
 
   public boolean isPdcUsed() {
@@ -409,17 +407,16 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
    * Import email addresses of external subscribers to newsletters.
    * @param filePart the uploaded CSV file.
    * @throws UtilTrappedException if an error occurs
-   * @throws InfoLetterPeasTrappedException if an error occurs during the import.
    * @throws InfoLetterException if an error occurs during the import
    */
   public void importCsvEmails(FileItem filePart)
-      throws UtilTrappedException, InfoLetterPeasTrappedException, InfoLetterException {
+      throws InfoLetterException, UtilTrappedException {
     InputStream is;
     try {
       is = filePart.getInputStream();
     } catch (IOException e) {
-      InfoLetterPeasTrappedException ie =
-          new InfoLetterPeasTrappedException("InfoLetterSessionController.importCsvEmails",
+      UtilTrappedException ie =
+          new UtilTrappedException("InfoLetterSessionController.importCsvEmails",
               SilverpeasException.ERROR, "infoLetter.EX_CSV_FILE", e);
       ie.setGoBackPage(EMAILS);
       throw ie;
@@ -458,8 +455,8 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     }
 
     if (listErrors.length() > 0) {
-      InfoLetterPeasTrappedException ie =
-          new InfoLetterPeasTrappedException("InfoLetterSessionController.importCsvEmails",
+      UtilTrappedException ie =
+          new UtilTrappedException("InfoLetterSessionController.importCsvEmails",
               SilverpeasException.ERROR, "infoLetter.EX_CSV_FILE", listErrors.toString());
       ie.setGoBackPage(EMAILS);
       throw ie;
@@ -473,7 +470,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
       emails.add(email);
     }
 
-    dataInterface.setEmailsExternalsSubscribers(this.getInfoLetter().getPK(), emails);
+    service.setEmailsExternalsSubscribers(this.getInfoLetter().getId(), emails);
   }
 
   /**
@@ -523,7 +520,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   }
 
   /**
-   * return true if Newsletter is send by mail to internal users
+   * return true if Newsletter is sent by mail to internal users
    * @return boolean
    */
   public boolean isNewsLetterSendByMail() {

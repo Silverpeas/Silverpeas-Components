@@ -23,77 +23,51 @@
  */
 package org.silverpeas.components.forums.servlets;
 
+import jakarta.inject.Inject;
+import org.silverpeas.components.forums.model.Message;
+import org.silverpeas.components.forums.service.ForumService;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.util.servlet.RssServlet;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
-import static org.silverpeas.components.forums.service.ForumsServiceProvider.getForumsService;
-
-public class ForumsRssServlet extends RssServlet {
+public class ForumsRssServlet extends RssServlet<Message> {
 
   private static final long serialVersionUID = -1153108746674900992L;
 
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.core.web.util.servlet.RssServlet#getListElements(java.lang.String, int)
-   */
+  @Inject
+  private ForumService forumService;
+
   @Override
-  public Collection getListElements(String instanceId, int nbReturned) {
-    return getForumsService().getLastMessageRSS(instanceId, nbReturned);
+  public Collection<Message> getListElements(String instanceId, int nbReturned) {
+    return forumService.getLastMessageRSS(instanceId, nbReturned);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.core.web.util.servlet.RssServlet#getElementTitle(java.lang.Object, java.lang.String)
-   */
   @Override
-  public String getElementTitle(Object element, String userId) {
-    List message = (List) element;
-    return (String) message.get(1);
+  public String getElementTitle(Message message, String userId) {
+    return message.getTitle();
   }
 
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.core.web.util.servlet.RssServlet#getElementLink(java.lang.Object, java.lang.String)
-   */
   @Override
-  public String getElementLink(Object element, String userId) {
-    List message = (List) element;
-    final int forumIdIndex = 4;
+  public String getElementLink(Message message, String userId) {
     return URLUtil.getApplicationURL() + "/ForumsMessage/"
-        + message.get(0) + "?ForumId="
-        + message.get(forumIdIndex);
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.core.web.util.servlet.RssServlet#getElementDescription(java.lang.Object,
-   * java.lang.String)
-   */
-  @Override
-  public String getElementDescription(Object element, String userId) {
-    List message = (List) element;
-    return (String) message.get(1);
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.core.web.util.servlet.RssServlet#getElementDate(java.lang.Object)
-   */
-  @Override
-  public Date getElementDate(Object element) {
-    List message = (List) element;
-    final int dateIndex = 3;
-    return  (Date) message.get(dateIndex);
+        + message.getId() + "?ForumId="
+        + message.getForumId();
   }
 
   @Override
-  public String getElementCreatorId(Object element) {
-    List message = (List) element;
-    final int creatorIdIndex = 2;
-    return (String) message.get(creatorIdIndex);
+  public String getElementDescription(Message message, String userId) {
+    return message.getDescription();
+  }
+
+  @Override
+  public Date getElementDate(Message message) {
+    return message.getDate();
+  }
+
+  @Override
+  public String getElementCreatorId(Message message) {
+    return message.getAuthor();
   }
 }

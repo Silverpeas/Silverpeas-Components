@@ -20,12 +20,11 @@
  */
 package org.silverpeas.components.kmelia.ui;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.contribution.content.form.DataRecord;
-import org.silverpeas.core.contribution.content.form.Form;
-import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.contribution.content.form.PagesContext;
-import org.silverpeas.core.contribution.content.form.RecordSet;
+import org.silverpeas.core.contribution.content.form.*;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
@@ -33,22 +32,19 @@ import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplates;
 import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.kernel.bundle.ResourceLocator;
-import org.silverpeas.kernel.bundle.SettingBundle;
-import org.silverpeas.kernel.util.StringUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.search.AbstractResultDisplayer;
 import org.silverpeas.core.web.search.SearchResultContentVO;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.inject.Named;
 import java.util.Iterator;
 import java.util.Properties;
 
@@ -67,6 +63,11 @@ public class ResultSearchRenderer extends AbstractResultDisplayer {
   private final Properties templateConfig = new Properties();
   private static final String TEMPLATE_FILENAME = "publication_result_template";
 
+  @Inject
+  private I18n i18n;
+  @Inject
+  private PublicationService publicationService;
+
   /**
    * Loads the template configuration.
    */
@@ -79,11 +80,6 @@ public class ResultSearchRenderer extends AbstractResultDisplayer {
     templateConfig.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, settings
         .getString("customersTemplatePath"));
   }
-  /**
-   * Attribute loaded with dependency injection
-   */
-  @Inject
-  private PublicationService publicationService;
 
   @Override
   public String getResultContent(SearchResultContentVO searchResult) {
@@ -200,7 +196,7 @@ public class ResultSearchRenderer extends AbstractResultDisplayer {
 
     // if content not found in specified language, check other ones
     if (!StringUtil.isDefined(content)) {
-      Iterator<String> languages = I18NHelper.getLanguages().iterator();
+      Iterator<String> languages = i18n.getSupportedLanguageCodes().iterator();
       while (languages.hasNext() && !StringUtil.isDefined(content)) {
         language = languages.next();
         content = WysiwygController.load(componentId, id, language);

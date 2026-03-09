@@ -29,9 +29,6 @@ package org.silverpeas.components.kmelia;
  */
 public final class KmeliaConstants {
 
-  /**
-   *
-   */
   private KmeliaConstants() {
   }
 

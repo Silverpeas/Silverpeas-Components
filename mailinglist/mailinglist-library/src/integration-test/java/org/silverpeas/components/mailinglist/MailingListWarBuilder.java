@@ -49,10 +49,12 @@ public class MailingListWarBuilder extends BasicWarBuilder{
   public static <T> MailingListWarBuilder onWarForTestClass(Class<T> test) {
     MailingListWarBuilder warBuilder = new MailingListWarBuilder(test);
     warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core");
-    warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud");
     warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-personalorganizer");
     warBuilder.addPackages(true, "org.silverpeas.components.mailinglist");
     warBuilder.addAsResource("org/silverpeas/index/indexing/Parser.properties");
+    warBuilder.addAsResource("org/silverpeas/util/logging/silverpeasLogging.properties");
+    warBuilder.addAsResource(
+        "org/silverpeas/jobStartPagePeas/settings/jobStartPagePeasSettings.properties");
     return warBuilder;
   }
 

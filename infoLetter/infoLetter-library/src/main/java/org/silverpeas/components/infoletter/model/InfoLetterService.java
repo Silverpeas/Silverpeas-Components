@@ -24,9 +24,9 @@
 package org.silverpeas.components.infoletter.model;
 
 import org.silverpeas.core.ApplicationService;
-import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.user.model.Group;
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
 import org.silverpeas.core.util.ServiceProvider;
 
@@ -35,7 +35,6 @@ import java.util.Set;
 
 /**
  * Contract to access info letter data
- * @author
  */
 public interface InfoLetterService extends ApplicationService {
 
@@ -64,10 +63,10 @@ public interface InfoLetterService extends ApplicationService {
 
   /**
    * Retrieve information letter publications
-   * @param letterPK the information letter primary key
+   * @param id the information letter unique identifier
    * @return the list of information letter publications of an information letter
    */
-  List<InfoLetterPublication> getInfoLetterPublications(WAPrimaryKey letterPK);
+  List<InfoLetterPublication> getInfoLetterPublications(ContributionIdentifier id);
 
   /**
    * Create information letter publication
@@ -78,10 +77,9 @@ public interface InfoLetterService extends ApplicationService {
 
   /**
    * Delete information letter publication
-   * @param pk the information letter publication primary key
-   * @param componentId the component identifier
+   * @param id the information letter publication unique identifier
    */
-  void deleteInfoLetterPublication(WAPrimaryKey pk, String componentId);
+  void deleteInfoLetterPublication(ContributionIdentifier id);
 
   /**
    * Update information letter publication
@@ -91,20 +89,20 @@ public interface InfoLetterService extends ApplicationService {
 
   /**
    * Retrieve an information letter from his primary key
-   * @param letterPK the letter primary key
+   * @param id the unique identifier of the info letter
    * @return the infirmation letter
    */
-  InfoLetter getInfoLetter(WAPrimaryKey letterPK);
+  InfoLetter getInfoLetter(ContributionIdentifier id);
 
   /**
    * Retrieve information letter publication from his key
-   * @param publiPK the information letter publication primary key
+   * @param identifier the unique information letter identifier
    * @return an Information Letter Publication PdC
    */
-  InfoLetterPublicationPdC getInfoLetterPublication(WAPrimaryKey publiPK);
+  InfoLetterPublicationPdC getInfoLetterPublication(ContributionIdentifier identifier);
 
   /**
-   * Create a default Info Letter when instanciated
+   * Create a default Info Letter when instantiated
    * @param componentId the component identifier
    * @return a default Info Letter
    */
@@ -119,9 +117,9 @@ public interface InfoLetterService extends ApplicationService {
 
   /**
    * @param componentId componentId component instance id
-   * @return map of subscriber ids indexed by type of subscriber
+   * @return a list of subscriber ids indexed by type of subscriber
    */
-  SubscriptionSubscriberList getInternalSuscribers(String componentId);
+  SubscriptionSubscriberList getInternalSubscribers(String componentId);
 
   /**
    * Update internal user subscribers list
@@ -129,29 +127,29 @@ public interface InfoLetterService extends ApplicationService {
    * @param users an array of User detail
    * @param groups an array of Group
    */
-  void setInternalSuscribers(String componentId, UserDetail[] users, Group[] groups);
+  void setInternalSubscribers(String componentId, User[] users, Group[] groups);
 
   /**
    * Retrieve external emails address
-   * @param letterPK the info letter identifier (letter primary key)
+   * @param id the info letter identifier
    * @return a set of external emails
    */
-  Set<String> getEmailsExternalsSuscribers(WAPrimaryKey letterPK);
+  Set<String> getEmailsExternalsSubscribers(ContributionIdentifier id);
 
   /**
    * Save external subscriber emails address
-   * @param letterPK the letter primary key
+   * @param id the letter unique identifier
    * @param emails the list of external emails to save
    */
-  void setEmailsExternalsSubscribers(WAPrimaryKey letterPK, Set<String> emails);
+  void setEmailsExternalsSubscribers(ContributionIdentifier id, Set<String> emails);
 
   /**
-   * Toggle subscription unsubscription of a user to the news letter
+   * Toggle subscription unsubscription of a user to the newsletter
    * @param userId the user identifier
    * @param componentId the info letter component instance identifier
    * @param isUserSubscribing true if user is subscribing, false else if
    */
-  void toggleSuscriber(String userId, String componentId, boolean isUserSubscribing);
+  void toggleSubscriber(String userId, String componentId, boolean isUserSubscribing);
 
   /**
    * Check if use is an internal subscriber of the information letter
@@ -159,29 +157,14 @@ public interface InfoLetterService extends ApplicationService {
    * @param componentId the info letter component instance identifier
    * @return true if user is a subscriber, false else if
    */
-  boolean isUserSuscribed(String userId, String componentId);
+  boolean isUserSubscribed(String userId, String componentId);
 
   /**
    * Initialize template
-   * @param componentId the info letter component instance identifier
-   * @param letterPK the info letter identifier
+   * @param id the info letter identifier
    * @param userId the user identifier
    */
-  void initTemplate(String componentId, WAPrimaryKey letterPK, String userId);
-
-  int getSilverObjectId(String pubId, String componentId);
-
-  /**
-   * Send letter by mail
-   * @param il the template
-   * @param mimeMultipart please have a look to https://en.wikipedia.org/wiki/MIME#Multipart_subtypes
-   * @param listEmailDest list of email
-   * @param subject subject of email
-   * @param emailFrom sender of email
-   * @return list of emails in error
-   */
-  Set<String> sendTemplateByMail(InfoLetter il, String mimeMultipart,
-      Set<String> listEmailDest, String subject, String emailFrom);
+  void initTemplate(ContributionIdentifier id, String userId);
 
   /**
    * Send letter by mail
@@ -190,7 +173,7 @@ public interface InfoLetterService extends ApplicationService {
    * @param listEmailDest list of email
    * @param subject subject of email
    * @param emailFrom sender of email
-   * @return list of emails in error
+   * @return set of emails in error
    */
   Set<String> sendLetterByMail(InfoLetterPublicationPdC ilp, String mimeMultipart,
       Set<String> listEmailDest, String subject, String emailFrom);

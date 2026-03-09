@@ -23,7 +23,6 @@
  */
 package org.silverpeas.components.classifieds.control;
 
-import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.classifieds.ClassifiedsComponentSettings;
 import org.silverpeas.components.classifieds.model.ClassifiedDetail;
 import org.silverpeas.components.classifieds.model.Subscribe;
@@ -50,6 +49,7 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.index.search.model.QueryDescription;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
@@ -135,7 +135,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
 
   /**
    * Gets the resources associated with this session controller.
-   * @return all of the resources (messages, settings, icons, ...)
+   * @return all the resources (messages, settings, icons, ...)
    */
   public synchronized MultiSilverpeasBundle getResources() {
     if (resources == null) {
@@ -589,7 +589,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
 
       // create SimpleDocument Object
       Date creationDate = new Date();
-      String fileName = FileUtil.getFilename(fileImage.getName());
+      String fileName = FileUtil.getFilename(fileImage.getFileName());
       long size = fileImage.getSize();
       String mimeType = FileUtil.getMimeType(fileName);
 
@@ -658,7 +658,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
 
     if (classifiedImage != null) {
       Date updateDate = new Date();
-      String fileName = FileUtil.getFilename(fileImage.getName());
+      String fileName = FileUtil.getFilename(fileImage.getFileName());
       long size = fileImage.getSize();
       String mimeType = FileUtil.getMimeType(fileName);
 

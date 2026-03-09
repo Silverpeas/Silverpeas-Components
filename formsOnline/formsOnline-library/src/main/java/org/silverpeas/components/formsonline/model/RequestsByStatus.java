@@ -249,7 +249,7 @@ public class RequestsByStatus {
    * @return the list which is the result of merge.
    */
   @SafeVarargs
-  private final SilverpeasList<FormInstance> merge(final SilverpeasList<FormInstance>... lists) {
+  private SilverpeasList<FormInstance> merge(final SilverpeasList<FormInstance>... lists) {
     int size = 0;
     long maxSize = 0;
     for (SilverpeasList<FormInstance> list : lists) {
@@ -266,7 +266,8 @@ public class RequestsByStatus {
     if (paginationPage != null) {
       resultStream = resultStream.limit(paginationPage.getPageSize());
     }
-    return PaginationList.from(resultStream.collect(Collectors.toList()), maxSize - (size - merge.values().size()));
+    return PaginationList.from(resultStream.collect(Collectors.toList()),
+        maxSize - (size - merge.size()));
   }
 
   public static class MergeRuleByStates {

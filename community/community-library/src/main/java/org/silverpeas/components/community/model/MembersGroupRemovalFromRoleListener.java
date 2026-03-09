@@ -36,13 +36,13 @@ import org.silverpeas.core.notification.system.CDIResourceEventListener;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.kernel.annotation.Technical;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 /**
  * A listener of events about the removing of a group of users from a space role profile. The goal
  * is to detect any attempts to remove a group of community members from its community in order to
  * restore it automatically. It is a workaround until such removal becomes impossible in Silverpeas
- * Core. The group of members are put by default in the reader role of a community space and hence
+ * Core. The group of members is put by default in the reader role of a community space and hence
  * the check is done for any update of this role for a community. Thus, any other roles aren't
  * considered even if the group of members has been added/removed in those roles.
  *
@@ -62,7 +62,7 @@ public class MembersGroupRemovalFromRoleListener extends CDIResourceEventListene
   public void onUpdate(SpaceProfileInstEvent event) {
     var spaceProfileBefore = event.getTransition().getBefore();
     // nothing to do if the role concerned by the update isn't the reader one. Indeed, the group
-    // of community members is put in this role by rule and it is from this role the group must
+    // of community members is put in this role by rule, and it is from this role the group must
     // not to be removed
     if (!spaceProfileBefore.getName().equals(SilverpeasRole.READER.getName())) {
       return;

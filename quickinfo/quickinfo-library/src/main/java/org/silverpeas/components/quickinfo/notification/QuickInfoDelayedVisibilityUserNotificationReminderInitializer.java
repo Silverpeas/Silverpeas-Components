@@ -24,6 +24,7 @@
 
 package org.silverpeas.components.quickinfo.notification;
 
+import jakarta.inject.Inject;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.components.quickinfo.model.QuickInfoService;
@@ -36,7 +37,6 @@ import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 
-import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -46,7 +46,9 @@ import java.time.ZoneId;
 import java.util.List;
 
 /**
- * In charge of initializing the reminder about news with a publish visibility set into the future.
+ * In charge of initializing the reminder about news with a publishing visibility set into the
+ * future.
+ *
  * @author silveryocha
  */
 @Service
@@ -57,7 +59,7 @@ public class QuickInfoDelayedVisibilityUserNotificationReminderInitializer
       "quickInfoDelayedVisibilityReminderInitialization");
 
   @Inject
-  private QuickInfoDelayedVisibilityUserNotificationReminder delayedVisibilityUserNotificationReminder;
+  private QuickInfoDelayedVisibilityUserNotificationReminder reminder;
 
   @Override
   public void init() throws PersistenceException {
@@ -70,10 +72,10 @@ public class QuickInfoDelayedVisibilityUserNotificationReminderInitializer
         } else {
           potentialNewsIds.forEach(i -> {
             final News potentialNews = QuickInfoService.get().getNews(i);
-            if (delayedVisibilityUserNotificationReminder.setAbout(potentialNews)) {
+            if (reminder.setAbout(potentialNews)) {
               report.append(MessageFormat.format(
                   "Reminder set for news with id {0}, located into instance {1}, linked to " +
-                      "publication {2}, with visibility set to {3} at {4}\n", potentialNews.getId(),
+                  "publication {2}, with visibility set to {3} at {4}\n", potentialNews.getId(),
                   potentialNews.getComponentInstanceId(), potentialNews.getPublicationId(),
                   LocalDateTime.ofInstant(potentialNews.getPublication().getBeginDate().toInstant(),
                       ZoneId.systemDefault()).toLocalDate(),

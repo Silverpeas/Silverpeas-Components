@@ -20,6 +20,7 @@
  */
 package org.silverpeas.components.scheduleevent.service;
 
+import jakarta.transaction.Transactional;
 import org.silverpeas.components.scheduleevent.service.model.beans.Contributor;
 import org.silverpeas.components.scheduleevent.service.model.beans.ScheduleEvent;
 import org.silverpeas.components.scheduleevent.service.model.dao.ScheduleEventDao;
@@ -29,8 +30,8 @@ import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Optional;
@@ -49,11 +50,13 @@ public class ScheduleEventServiceImpl implements ScheduleEventService {
   private ScheduleEventDao scheduleEventDao;
 
   @Override
+  @Transactional
   public void createScheduleEvent(ScheduleEvent scheduleEvent) {
     scheduleEventDao.createScheduleEvent(scheduleEvent);
   }
 
   @Override
+  @Transactional
   public void deleteScheduleEvent(ScheduleEvent scheduleEvent) {
     scheduleEventDao.deleteScheduleEvent(scheduleEvent);
   }
@@ -71,6 +74,7 @@ public class ScheduleEventServiceImpl implements ScheduleEventService {
   }
 
   @Override
+  @Transactional
   public void updateScheduleEventStatus(String scheduleEventId, int newStatus) {
     ScheduleEvent event = scheduleEventDao.getScheduleEvent(scheduleEventId);
     event.setStatus(newStatus);
@@ -78,17 +82,20 @@ public class ScheduleEventServiceImpl implements ScheduleEventService {
   }
 
   @Override
+  @Transactional
   public ScheduleEvent purgeOldResponseForUserId(ScheduleEvent scheduleEvent, int userId) {
     scheduleEventDao.purgeResponseScheduleEvent(scheduleEvent, userId);
     return scheduleEventDao.getScheduleEvent(scheduleEvent.getId());
   }
 
   @Override
+  @Transactional
   public void updateScheduleEvent(ScheduleEvent scheduleEvent) {
     scheduleEventDao.updateScheduleEvent(scheduleEvent);
   }
 
   @Override
+  @Transactional
   public void setLastVisited(ScheduleEvent event, int userId) {
     Set<Contributor> contributors = event.getContributors();
     Iterator<Contributor> iter = contributors.iterator();

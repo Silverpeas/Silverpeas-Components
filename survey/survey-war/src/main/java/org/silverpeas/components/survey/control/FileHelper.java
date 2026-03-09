@@ -52,8 +52,8 @@
  */
 package org.silverpeas.components.survey.control;
 
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.core.util.file.FileUploadUtil;
-import org.apache.commons.fileupload.FileItem;
 
 /**
  * @author ehugonnet
@@ -71,7 +71,7 @@ public class FileHelper {
       String logicalName = fileName.trim();
       if ((logicalName.length() >= 3) && (logicalName.indexOf('*') == -1) &&
           (logicalName.indexOf('.') != -1)) {
-        String type = logicalName.substring(logicalName.indexOf('.') + 1, logicalName.length());
+        String type = logicalName.substring(logicalName.indexOf('.') + 1);
         if (type.length() >= 3) {
           correctFile = true;
         }

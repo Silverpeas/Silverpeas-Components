@@ -105,7 +105,7 @@ public class MediaOrderCriteria {
   }
 
   /**
-   * Gets the indetifier of order instance.
+   * Gets the identifier of order instance.
    * {@link #fromComponentInstanceId(String)}
    * @return the criterion on the order instance to which the orders should belong.
    */
@@ -148,9 +148,9 @@ public class MediaOrderCriteria {
   }
 
   /**
-   * Processes this criteria with the specified processor.
+   * Processes these criteria with the specified processor.
    * It chains in a given order the different criterion to process.
-   * @param processor the processor to use for processing each criterion in this criteria.
+   * @param processor the processor to use for processing each criterion in these criteria.
    */
   public void processWith(final MediaOrderCriteriaProcessor processor) {
     processor.startProcessing();

@@ -60,7 +60,7 @@ public interface MediaCriteriaProcessor {
 
   /**
    * Informs the processor that there is a new criterion to process. This method must be used by
-   * the caller to chain the different criterion processings.
+   * the caller to chain the different criterion processing.
    * @return the processor itself.
    */
   MediaCriteriaProcessor then();
@@ -75,7 +75,7 @@ public interface MediaCriteriaProcessor {
   /**
    * Processes the criterion on the media visibility.
    * @param visibility the requested visibility.
-   * @param dateReference
+   * @param dateReference the date to use as reference
    * @param creator User Detail
    * @return the processor itself.
    */
@@ -121,7 +121,7 @@ public interface MediaCriteriaProcessor {
   /**
    * Processes the criterion on the nb of days before that a media is not visible.
    *
-   * @param referenceDate
+   * @param referenceDate the date to use as reference
    * @param nbDaysBeforeThatMediaIsNotVisible the nb of days before that a media is not visible.
    * @return the processor itself.
    */
@@ -147,7 +147,7 @@ public interface MediaCriteriaProcessor {
    * This method must be called after the media list is entirely loaded.
    * If an ordering was specified and if it was not possible to perform it by SQL clauses, then a
    * logical sort is performed.
-   * @param media
+   * @param media the list of media to sort
    */
   List<Media> orderingResult(List<Media> media);
 }

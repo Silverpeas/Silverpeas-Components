@@ -27,7 +27,7 @@ package org.silverpeas.components.classifieds.control;
 public enum ClassifiedsRole implements Comparable<ClassifiedsRole> {
   ANONYMOUS("anonymous"), READER("reader"), PUBLISHER("publisher"), MANAGER("admin");
 
-  private String name = null;
+  private final String name;
 
   /**
    * @return the name

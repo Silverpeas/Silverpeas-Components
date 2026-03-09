@@ -44,7 +44,7 @@ import java.util.List;
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.*;
 
 /**
- * Router class for SuestionReply component
+ * Router class for QuestionReply component
  */
 public class QuestionReplyRequestRouter
     extends ComponentRequestRouter<QuestionReplySessionController> {
@@ -63,11 +63,6 @@ public class QuestionReplyRequestRouter
     return "questionReply";
   }
 
-  /**
-   * @param mainSessionCtrl
-   * @param componentContext
-   * @return
-   */
   @Override
   public QuestionReplySessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
@@ -80,7 +75,7 @@ public class QuestionReplyRequestRouter
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    * @param function The entering request function (ex : "Main.jsp")
-   * @param scc The component Session Control, build and initialised.
+   * @param scc The component Session Control, build and initialized.
    * @param request The entering request. The request rooter need it to get parameters
    * @return The complete destination URL for a forward (ex :
    * "/questionReply/jsp/questionReply.jsp?flag=user")
@@ -340,7 +335,7 @@ public class QuestionReplyRequestRouter
           request.setAttribute(PARAM_QUESTION_ID, Long.toString(questionId));
         } else if (type.startsWith("Publication")) {
           // traitement des fichiers joints
-          Reply reply = scc.getReply(Long.valueOf(id));
+          Reply reply = scc.getReply(Long.parseLong(id));
           long questionId = reply.getQuestionId();
           request.setAttribute(PARAM_QUESTION_ID, Long.toString(questionId));
         } else if ("Node".equalsIgnoreCase(type)) {

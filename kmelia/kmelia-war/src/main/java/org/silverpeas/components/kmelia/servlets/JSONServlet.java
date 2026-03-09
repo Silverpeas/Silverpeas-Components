@@ -34,9 +34,10 @@ import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Collection;
@@ -127,7 +128,7 @@ public class JSONServlet extends HttpServlet {
     boolean notRootNotAnonymousNotGuest = !isRoot && !user.isAnonymous() && !user.isAccessGuest();
     boolean pasteNodeAllowed = kmeliaSC.isPasteNodeAllowed();
     boolean pastePublicationAllowed = kmeliaSC.isPastePublicationAllowed(isRoot);
-    boolean subscriptionAllowed =  isRoot && !user.isAnonymous() && !user.isAccessGuest();
+    boolean subscriptionAllowed = isRoot && !user.isAnonymous() && !user.isAccessGuest();
 
     operations.put("addPubli", publicationAddingAllowed);
     operations.put("addFiles", publicationAddingAllowed && kmeliaSC.isAttachmentsEnabled() &&
@@ -144,10 +145,11 @@ public class JSONServlet extends HttpServlet {
     operations.put("sortPublications", role.isAdmin() && publicationsInTopicAllowed
         && somePublicationsExist);
 
-    operations.put("updatePublications",operationsOnSelectionAllowed && oneTemplateUsed);
+    operations.put("updatePublications", operationsOnSelectionAllowed && oneTemplateUsed);
     operations.put(OP_DELETE_PUBLICATIONS, operationsOnSelectionAllowed);
 
-    boolean exportOnSelectionAllowed = kmeliaSC.isExportPublicationAllowed(kmeliaSC.getHighestSilverpeasUserRole());
+    boolean exportOnSelectionAllowed =
+        kmeliaSC.isExportPublicationAllowed(kmeliaSC.getHighestSilverpeasUserRole());
     operations.put(OP_EXPORT_PUBLICATIONS, exportOnSelectionAllowed && somePublicationsExist);
     operations.put("manageSubscriptions", role.isAdmin());
     operations.put("subscriptions", subscriptionAllowed);
@@ -179,13 +181,14 @@ public class JSONServlet extends HttpServlet {
     operations.put("wysiwygTopic", isAdmin && kmeliaSC.
         isWysiwygOnTopicsEnabled());
     operations.put("shareTopic", node.canBeSharedBy(user));
-    boolean exportOnTopicAllowed = kmeliaSC.isExportTopicAllowed(kmeliaSC.getHighestSilverpeasUserRole());
+    boolean exportOnTopicAllowed =
+        kmeliaSC.isExportTopicAllowed(kmeliaSC.getHighestSilverpeasUserRole());
     operations.put("exportTopic", exportOnTopicAllowed);
     if (isRoot) {
-      boolean exportOnApplicationAllowed = kmeliaSC.isExportApplicationAllowed(kmeliaSC.getHighestSilverpeasUserRole());
+      boolean exportOnApplicationAllowed =
+          kmeliaSC.isExportApplicationAllowed(kmeliaSC.getHighestSilverpeasUserRole());
       operations.put("exportPDFApplication", exportOnApplicationAllowed);
-    }
-    else {
+    } else {
       operations.put("exportPDFTopic", exportOnTopicAllowed);
     }
   }
@@ -203,14 +206,16 @@ public class JSONServlet extends HttpServlet {
     operations.put("predefinedPdcPositions", kmeliaSC.isPdcUsed() && role.isAdmin());
     operations.put("templates",
         kmeliaSC.isTemplatesSelectionEnabledForRole(SilverpeasRole.fromString(profile)));
-    boolean exportOnApplicationAllowed = kmeliaSC.isExportApplicationAllowed(kmeliaSC.getHighestSilverpeasUserRole());
+    boolean exportOnApplicationAllowed =
+        kmeliaSC.isExportApplicationAllowed(kmeliaSC.getHighestSilverpeasUserRole());
     operations.put("exportApplication", exportOnApplicationAllowed);
 
     if (isRoot && kmeliaSC.isStatisticAllowed()) {
       operations.put("statistics", true);
     }
     operations.put("mylinks", !user.isAnonymous() && !user.isAccessGuest());
-    operations.put("notify", !user.isAnonymous() && kmeliaSC.isNotificationAllowed() && !user.isAccessGuest());
+    operations.put("notify",
+        !user.isAnonymous() && kmeliaSC.isNotificationAllowed() && !user.isAccessGuest());
     operations.put("responsibles", !user.isAnonymous());
   }
 

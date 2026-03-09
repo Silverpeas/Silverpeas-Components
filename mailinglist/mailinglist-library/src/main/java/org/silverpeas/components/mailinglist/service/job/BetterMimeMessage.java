@@ -23,9 +23,9 @@
  */
 package org.silverpeas.components.mailinglist.service.job;
 
-import javax.mail.MessagingException;
-import javax.mail.Multipart;
-import javax.mail.internet.MimeMessage;
+import jakarta.mail.MessagingException;
+import jakarta.mail.Multipart;
+import jakarta.mail.internet.MimeMessage;
 import java.io.IOException;
 
 /**
@@ -44,9 +44,9 @@ public class BetterMimeMessage extends MimeMessage {
   }
 
   /**
-   * Looking for a X-Spam-Flag header in the message.
+   * Looking for an X-Spam-Flag header in the message.
    * @return true if the flag is set to YES, false otherwise.
-   * @throws MessagingException
+   * @throws MessagingException if the message parsing fails.
    */
   public boolean isSpam() throws MessagingException {
     String[] spamFlags = this.mimeMessage.getHeader(SPAM_FLAG_HEADER);
@@ -63,7 +63,7 @@ public class BetterMimeMessage extends MimeMessage {
   /**
    * Returning the content of the X-Spam-Score header.
    * @return the content of the X-Spam-Score header.
-   * @throws MessagingException
+   * @throws MessagingException if the message parsing fails.
    */
   public float getSpamLevel() throws MessagingException {
     String[] spamScores = this.mimeMessage.getHeader(SPAM_LEVEL_HEADER);
@@ -75,9 +75,9 @@ public class BetterMimeMessage extends MimeMessage {
 
   /**
    * Indicates if this email is automatic ou bounced .
-   * @return true  if this email is automatic ou bounced - false otherwise.
-   * @throws IOException
-   * @throws MessagingException
+   * @return true if this email is automatic ou bounced. False otherwise.
+   * @throws IOException if the message content access fails.
+   * @throws MessagingException if the message parsing fails.
    */
   public boolean isBounced() throws IOException, MessagingException {
     if (isAutomaticMessage()) {
@@ -115,15 +115,15 @@ public class BetterMimeMessage extends MimeMessage {
 
   /**
    * Indicates if the corresponding MimeType is a content-type for delivery status notifications
-   * (DSNs).  A DSN can be used to notify the sender of a message of any of several conditions:
-   * failed delivery, delayed delivery, successful delivery, or the gatewaying of a message into an
+   * (DSNs).  A DSN can be used to notify the sender of a message for several conditions:
+   * failed delivery, delayed delivery, successful delivery, or the gateway of a message into an
    * environment that may not support DSNs.  The "message/delivery-status" content-type defined
    * herein is intended for use within the framework of the "multipart/report" content type
    * defined.
    * Cf. RFC 1894
    * @param contentType the content-type for the mail part.
    * @return true if it is a content-type for delivery status.
-   * @see http://www.ietf.org/rfc/rfc1894.txt
+   * @see <a href="https://www.ietf.org/rfc/rfc1894.txt">RFC 1894</a>
    */
   protected boolean isDeliveryStatus(String contentType) {
     return "message/delivery-status".equalsIgnoreCase(contentType);
@@ -135,7 +135,7 @@ public class BetterMimeMessage extends MimeMessage {
    * report or a disposition notification report.
    * @param contentType the content-type for the mail part.
    * @return true if it is a content-type for delivery status.
-   * @see http://www.ietf.org/rfc/rfc3462.txt
+   * @see <a href="https://www.ietf.org/rfc/rfc3462.txt>RFC 3462</a>
    */
   protected boolean isMessageReport(String contentType) {
     return contentType.startsWith("multipart/report");

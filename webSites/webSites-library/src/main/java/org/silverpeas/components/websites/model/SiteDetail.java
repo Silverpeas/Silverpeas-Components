@@ -33,11 +33,12 @@ public class SiteDetail extends PublicationDetail {
   private SitePK sitePk = new SitePK("", "");
 
   /**
-   * page interne creee (0) ou externe (1) ou page interne uploadee (2)
+   * Page interne créée (0) ou externe (1) ou page interne téléversée (2)
    */
   private int siteType;
+
   /**
-   * site non publie (0) ou publie (1)
+   * Site non publie (0) ou publie (1)
    */
   private int state;
   private int popup = 1;

@@ -24,6 +24,8 @@
 
 package org.silverpeas.components.silvercrawler.statistic;
 
+import org.silverpeas.core.annotation.Repository;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -33,8 +35,10 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+@Repository
 public class HistoryDAO {
-  public static Collection<HistoryDetail> getHistoryDetails(ResultSet rs) throws SQLException {
+
+  public Collection<HistoryDetail> getHistoryDetails(ResultSet rs) throws SQLException {
     List<HistoryDetail> list = new ArrayList<>();
     while (rs.next()) {
       Date date = new Date(Long.parseLong(rs.getString(1)));
@@ -46,7 +50,7 @@ public class HistoryDAO {
     return list;
   }
 
-  public static void add(Connection con, String tableName, String userId, String path,
+  public void add(Connection con, String tableName, String userId, String path,
       String componentId, String objectType) throws SQLException {
 
 
@@ -62,7 +66,7 @@ public class HistoryDAO {
     }
   }
 
-  public static Collection<HistoryDetail> getHistoryDetailByObject(Connection con, String tableName,
+  public Collection<HistoryDetail> getHistoryDetailByObject(Connection con, String tableName,
       String path, String componentId) throws SQLException {
     String selectStatement = "select * from " + tableName + " where path = ? and componentId = ? ";
 
@@ -70,13 +74,12 @@ public class HistoryDAO {
       prepStmt.setString(1, path);
       prepStmt.setString(2, componentId);
       try (ResultSet rs = prepStmt.executeQuery()) {
-        Collection<HistoryDetail> list = getHistoryDetails(rs);
-        return list;
+        return getHistoryDetails(rs);
       }
     }
   }
 
-  public static Collection<HistoryDetail> getHistoryDetailByObjectAndUser(Connection con,
+  public Collection<HistoryDetail> getHistoryDetailByObjectAndUser(Connection con,
       String tableName, String path, String userId, String componentId) throws SQLException {
 
     String selectStatement =
@@ -88,13 +91,12 @@ public class HistoryDAO {
       prepStmt.setString(2, componentId);
       prepStmt.setString(3, userId);
       try (ResultSet rs = prepStmt.executeQuery()) {
-        Collection<HistoryDetail> list = getHistoryDetails(rs);
-        return list;
+        return getHistoryDetails(rs);
       }
     }
   }
 
-  public static void deleteHistoryByObject(Connection con, String tableName, String path,
+  public void deleteHistoryByObject(Connection con, String tableName, String path,
       String componentId) throws SQLException {
     String query = "delete from " + tableName + " where path = ? and componentId = ?";
     try (PreparedStatement prepStmt = con.prepareStatement(query)) {

@@ -30,8 +30,8 @@ import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.web.index.components.ComponentIndexation;
 import org.silverpeas.kernel.annotation.Technical;
 
-import javax.inject.Named;
-import javax.inject.Singleton;
+import jakarta.inject.Named;
+import jakarta.inject.Singleton;
 
 @Technical
 @Service

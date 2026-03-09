@@ -34,7 +34,7 @@ public class TopicComparator implements Comparator<NodeDetail> {
 
   private static final String DEFAULT_NAME = "*";
 
-  private boolean useCriteria;
+  private final boolean useCriteria;
   private Map<String, Integer> namesWeights;
 
   public TopicComparator() {
@@ -44,12 +44,12 @@ public class TopicComparator implements Comparator<NodeDetail> {
   public TopicComparator(String[] criteria) {
     if (criteria != null) {
       namesWeights = new HashMap<>();
-      int i = 0;
+      int i;
       for (i = 0; i < criteria.length; i++) {
         namesWeights.put(criteria[i].toLowerCase(), i);
       }
-      if (i > 0 && !namesWeights.containsKey(DEFAULT_NAME)) {
-        namesWeights.put(DEFAULT_NAME, i);
+      if (i > 0) {
+        namesWeights.putIfAbsent(DEFAULT_NAME, i);
       }
     }
     useCriteria = (namesWeights != null && !namesWeights.isEmpty());

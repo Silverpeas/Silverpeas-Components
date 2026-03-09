@@ -44,9 +44,6 @@ public abstract class ChartVO implements Serializable {
     this.rootOrganization = rootOrganization;
   }
 
-  /**
-   * @return
-   */
-  abstract public int getChartType();
+  public abstract int getChartType();
 
 }

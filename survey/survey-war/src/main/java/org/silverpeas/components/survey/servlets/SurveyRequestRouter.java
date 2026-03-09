@@ -9,30 +9,6 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-
-/*
- * Copyright (C) 2000 - 2024 Silverpeas
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "https://www.silverpeas.org/legal/floss_exception.html"
@@ -48,26 +24,25 @@
 
 package org.silverpeas.components.survey.servlets;
 
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.components.survey.SurveyException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import org.silverpeas.components.survey.control.SurveySessionController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerDetail;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerHeader;
-import org.silverpeas.kernel.bundle.ResourceLocator;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.web.export.ExportCSVBuilder;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.util.StringUtil;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Stream;
 
 public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionController> {
 
@@ -103,7 +78,7 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
    * @return boolean isParticipationMultipleUser
    */
   public boolean isParticipationMultipleUser(final String[] profiles) {
-    return Stream.of(profiles).anyMatch("userMultiple"::equals);
+    return Arrays.asList(profiles).contains("userMultiple");
   }
 
   @Override
@@ -122,7 +97,7 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
    * destination page
    * @param function The entering request function (ex : "Main.jsp")
    * @param surveySC The component Session Control, build and initialized.
-   * @param request
+   * @param request the HTTP request
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
@@ -211,7 +186,7 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
         String surveyId = request.getParameter(SURVEY_ID);
 
         if ("QuestionsUpdate".equals(function)) {
-          // vérouiller l'enquête
+          // verrouiller l'enquête
           surveySC.closeSurvey(surveyId);
           // supprimer les participations
           surveySC.deleteVotes(surveyId);
@@ -246,34 +221,21 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
             FileUploadUtil.getParameter(items, "removeSynthesisFile");  //yes | no
         FileItem fileSynthesis = FileUploadUtil.getFile(items, "synthesisNewFile");
         if (idSynthesisFile == null && fileSynthesis != null &&
-            StringUtil.isDefined(fileSynthesis.getName())) {//Create Document
+            StringUtil.isDefined(fileSynthesis.getFileName())) {//Create Document
           surveySC.saveSynthesisFile(fileSynthesis);
         } else if (idSynthesisFile != null && fileSynthesis != null &&
-            StringUtil.isDefined(fileSynthesis.getName())) {//Update Document
+            StringUtil.isDefined(fileSynthesis.getFileName())) {//Update Document
           surveySC.updateSynthesisFile(fileSynthesis, idSynthesisFile);
         } else if (idSynthesisFile != null && fileSynthesis != null &&
-            !StringUtil.isDefined(fileSynthesis.getName()) &&
+            !StringUtil.isDefined(fileSynthesis.getFileName()) &&
             "yes".equals(removeSynthesisFile)) {//Delete Document
           surveySC.removeSynthesisFile(idSynthesisFile);
         }
 
         QuestionContainerDetail survey = surveySC.getSessionSurvey();
         String surveyId = survey.getId();
-        QuestionContainerHeader surveyHeader = survey.getHeader();
-
-        if (checkedViewC == null && checkedViewD == null) {
-          surveyHeader.setResultView(QuestionContainerHeader.NOTHING_DISPLAY_RESULTS);
-        } else if ("on".equals(checkedViewC) && "on".equals(checkedViewD)) {
-          //C && D
-          surveyHeader.setResultView(QuestionContainerHeader.TWICE_DISPLAY_RESULTS);
-        } else {
-          //C || D
-          if ("on".equals(checkedViewC)) {
-            surveyHeader.setResultView(QuestionContainerHeader.CLASSIC_DISPLAY_RESULTS);
-          } else if ("on".equals(checkedViewD)) {
-            surveyHeader.setResultView(QuestionContainerHeader.DETAILED_DISPLAY_RESULTS);
-          }
-        }
+        QuestionContainerHeader surveyHeader =
+            getQuestionContainerHeader(survey, checkedViewC, checkedViewD);
         surveySC.updateSurveyHeader(surveyHeader, surveyId);
 
         if ("1".equals(notification)) {
@@ -307,6 +269,25 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
     return destination;
   }
 
+  private static QuestionContainerHeader getQuestionContainerHeader(QuestionContainerDetail survey, String checkedViewC, String checkedViewD) {
+    QuestionContainerHeader surveyHeader = survey.getHeader();
+
+    if (checkedViewC == null && checkedViewD == null) {
+      surveyHeader.setResultView(QuestionContainerHeader.NOTHING_DISPLAY_RESULTS);
+    } else if ("on".equals(checkedViewC) && "on".equals(checkedViewD)) {
+      //C && D
+      surveyHeader.setResultView(QuestionContainerHeader.TWICE_DISPLAY_RESULTS);
+    } else {
+      //C || D
+      if ("on".equals(checkedViewC)) {
+        surveyHeader.setResultView(QuestionContainerHeader.CLASSIC_DISPLAY_RESULTS);
+      } else if ("on".equals(checkedViewD)) {
+        surveyHeader.setResultView(QuestionContainerHeader.DETAILED_DISPLAY_RESULTS);
+      }
+    }
+    return surveyHeader;
+  }
+
   /**
    * Read cookie from anonymous user and set status of anonymous user to allow him to vote or not
    * @param request the current HttpServletRequest
@@ -329,7 +310,7 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
   }
 
   private void setCommonDataToDisplayResult(String surveyId, HttpServletRequest request,
-      SurveySessionController surveySC) throws SurveyException{
+      SurveySessionController surveySC) {
     if (StringUtil.isDefined(surveyId)) {
       request.setAttribute(LIST_DOCUMENT, surveySC.getAllSynthesisFile(surveyId));
     }

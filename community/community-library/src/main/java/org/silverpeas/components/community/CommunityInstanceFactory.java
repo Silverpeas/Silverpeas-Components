@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 /**
- * Implementation of the {@link CommunityFactory}. It will automatically creates an instance of this
+ * Implementation of the {@link CommunityFactory}. It will automatically create an instance of this
  * Silverpeas component for a given community space.
  *
  * @author mmoquillon

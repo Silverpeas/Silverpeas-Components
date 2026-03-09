@@ -4,9 +4,12 @@ import java.text.NumberFormat;
 
 public class ScheduleEventRessources {
 
-  private final static int PERCENT_FORMAT_DIGITS_PRECISION = 1;
+  private ScheduleEventRessources() {
+  }
 
-  public final static String formatInPercent(double rate) {
+  private static final int PERCENT_FORMAT_DIGITS_PRECISION = 1;
+
+  public static String formatInPercent(double rate) {
     NumberFormat percent = NumberFormat.getPercentInstance();
     percent.setMaximumFractionDigits(PERCENT_FORMAT_DIGITS_PRECISION);
     return percent.format(rate);

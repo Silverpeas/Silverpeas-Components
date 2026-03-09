@@ -24,12 +24,14 @@
 package org.silverpeas.components.yellowpages.service;
 
 import org.apache.commons.io.FilenameUtils;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.silverpeas.components.yellowpages.dao.GroupDAO;
 import org.silverpeas.components.yellowpages.model.TopicDetail;
 import org.silverpeas.components.yellowpages.model.UserContact;
 import org.silverpeas.components.yellowpages.model.YellowpagesRuntimeException;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contact.model.CompleteContact;
@@ -48,8 +50,8 @@ import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Inject;
-import javax.transaction.Transactional;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -78,6 +80,8 @@ public class DefaultYellowpagesService implements YellowpagesService {
   private NodeService nodeService;
   @Inject
   private ContactService contactService;
+  @Inject
+  private GroupDAO groupDAO;
 
   private OrganizationController getOrganisationController() {
     return this.organizationController;
@@ -127,14 +131,13 @@ public class DefaultYellowpagesService implements YellowpagesService {
   }
 
   /**
-   * Return a the detail of a topic
+   * Return a detail of a topic
    * @param pk the id of the topic
    * @return a TopicDetail
    * @see TopicDetail
    */
   @Override
   public TopicDetail goTo(NodePK pk, String userId) {
-
     Collection<NodeDetail> newPath = new ArrayList<>();
     List<ContactDetail> contactDetailsR = new ArrayList<>();
     try {
@@ -165,18 +168,12 @@ public class DefaultYellowpagesService implements YellowpagesService {
 
   private void fillContactDetails(final Collection<ContactDetail> contactDetails,
       final List<ContactDetail> contactDetailsR) {
-    OrganizationController orga = getOrganisationController();
     for (ContactDetail contactDetail : contactDetails) {
-      if (contactDetail.getUserId() != null) {// contact de type user Silverpeas
+      if (contactDetail.getUserId() != null) {
         try {
-          UserDetail userDetail = orga.getUserDetail(contactDetail.getUserId());
-          if (userDetail != null) {
-            setContactAttributes(contactDetail, userDetail, true);
+          User user = setContactInfo(contactDetail, true);
+          if (user != null) {
             contactDetailsR.add(contactDetail);
-          } else {
-            contactDetail.setUserId(null);
-            updateContact(contactDetail);
-            sendContactToBasket(contactDetail.getPK());
           }
         } catch (Exception e) {
           SilverLogger.getLogger(this).error("contactDetail = " + contactDetail, e);
@@ -187,14 +184,26 @@ public class DefaultYellowpagesService implements YellowpagesService {
     }
   }
 
+  private @Nullable User setContactInfo(ContactDetail contactDetail,
+      boolean filterExtraInfos) {
+    User user = User.getById(contactDetail.getUserId());
+    if (user != null) {
+      setContactAttributes(contactDetail, user, filterExtraInfos);
+    } else {
+      contactDetail.setUserId(null);
+      updateContact(contactDetail);
+      sendContactToBasket(contactDetail.getPK());
+    }
+    return user;
+  }
+
   @Override
   public List<NodeDetail> getTree(String instanceId) {
     final List<NodeDetail> result = new ArrayList<>();
     List<NodeDetail> tree = nodeService.getSubTree(new NodePK("0", instanceId));
-    // TODO :getting all groups linked in this component instance
     for (NodeDetail node : tree) {
       result.add(node);
-      // pour chaque node, recuperer les groupes associes
+      // pour chaque node, récupérer les groupes associés
       getGroups(node.getNodePK()).forEach(g -> addGroup(result, g, node.getLevel() + 1));
     }
     return result;
@@ -286,7 +295,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
   /**
    * Delete a topic and all descendants. Delete all links between descendants and contacts. This
    * contacts will be visible in the Declassified zone. Delete All subscriptions and favorites on
-   * this topics and all descendants
+   * these topics and all descendants
    * @param pkToDelete the id of the topic to delete
    */
   @Override
@@ -352,15 +361,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
       ContactDetail contactDetail = contactService.getDetail(contactPK);
       // contact de type user Silverpeas
       if (contactDetail.getUserId() != null) {
-        OrganizationController orga = getOrganisationController();
-        UserDetail userDetail = orga.getUserDetail(contactDetail.getUserId());
-        if (userDetail != null) {
-          setContactAttributes(contactDetail, userDetail, false);
-        } else {
-          contactDetail.setUserId(null);
-          updateContact(contactDetail);
-          sendContactToBasket(contactDetail.getPK());
-        }
+        setContactInfo(contactDetail, false);
       }
       return contactDetail;
     } catch (Exception re) {
@@ -368,7 +369,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
     }
   }
 
-  private void setContactAttributes(ContactDetail contactDetail, UserDetail userDetail,
+  private void setContactAttributes(ContactDetail contactDetail, User userDetail,
       boolean filterExtraInfos) {
     contactDetail.setFirstName(userDetail.getFirstName());
     contactDetail.setLastName(userDetail.getLastName());
@@ -389,8 +390,6 @@ public class DefaultYellowpagesService implements YellowpagesService {
   @Override
   public Collection<ContactDetail> getContactDetailsByLastNameOrFirstName(ContactPK pk,
       String query) {
-
-
     Collection<ContactDetail> contactDetails;
     try {
       contactDetails = contactService.getDetailsByLastNameOrFirstName(pk, query);
@@ -444,15 +443,9 @@ public class DefaultYellowpagesService implements YellowpagesService {
       // contact de type user Silverpeas
       if (contactDetail.getUserId() != null) {
         try {
-          OrganizationController orga = getOrganisationController();
-          UserDetail userDetail = orga.getUserDetail(contactDetail.getUserId());
-          if (userDetail != null) {
-            setContactAttributes(contactDetail, userDetail, true);
+          User user = setContactInfo(contactDetail, true);
+          if (user != null) {
             contactDetailsR.add(contactFatherDetail);
-          } else {
-            contactDetail.setUserId(null);
-            updateContact(contactDetail);
-            sendContactToBasket(contactDetail.getPK());
           }
         } catch (Exception e) {
           SilverLogger.getLogger(this).error("contactDetail = " + contactDetail, e);
@@ -474,7 +467,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
 
     Collection<NodePK> fatherPKs;
     try {
-      // get all nodePK whick contains this contact
+      // get all nodePK which contains this contact
       fatherPKs = contactService.getAllFatherPK(contactPK);
     } catch (Exception re) {
       throw new YellowpagesRuntimeException(re);
@@ -552,7 +545,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
 
   /**
    * Delete a contact If this contact is in the basket or in the DZ, it's deleted from the database
-   * Else it only send to the basket
+   * Else it only sends to the basket
    * @param contactPK the id of the contact to delete
    * @see TopicDetail
    */
@@ -629,7 +622,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
         }
       }
       contactService.addFather(contactPK, fatherPK);
-      // reindexe le contact si pas dans la corbeille
+      // reindex le contact si pas dans la corbeille
       if (!fatherPK.isTrash()) {
         contactService.index(contactPK);
       }
@@ -704,15 +697,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
     if (contactDetail.getUserId() != null) {
       // contact de type user Silverpeas
       try {
-        OrganizationController orga = getOrganisationController();
-        UserDetail userDetail = orga.getUserDetail(contactDetail.getUserId());
-        if (userDetail != null) {
-          setContactAttributes(contactDetail, userDetail, false);
-        } else {
-          contactDetail.setUserId(null);
-          updateContact(contactDetail);
-          sendContactToBasket(contactDetail.getPK());
-        }
+        setContactInfo(contactDetail, false);
       } catch (Exception e) {
         SilverLogger.getLogger(this).error("contactPK = " + contactDetail.getPK().toString(), e);
       }
@@ -720,7 +705,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
   }
 
   /**
-   * Return a collection of ContactDetail throught a collection of contact ids
+   * Return a collection of ContactDetail through a collection of contact ids
    * @param contactIds a collection of contact ids
    * @return a collection of ContactDetail
    * @see ContactDetail
@@ -777,7 +762,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
   @Override
   public List<Group> getGroups(NodePK pk) {
     try (Connection con = getConnection()) {
-      return GroupDAO.getGroupIds(con, pk.getId(), pk.getInstanceId()).stream()
+      return groupDAO.getGroupIds(con, pk.getId(), pk.getInstanceId()).stream()
           .map(getOrganisationController()::getGroup)
           .filter(Objects::nonNull)
           .map(Group.class::cast)
@@ -791,7 +776,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
   @Override
   public void addGroup(String groupId, NodePK nodePK) {
     try (Connection con = getConnection()) {
-      GroupDAO.addGroup(con, groupId, nodePK.getId(), nodePK.getInstanceId());
+      groupDAO.addGroup(con, groupId, nodePK.getId(), nodePK.getInstanceId());
     } catch (Exception e) {
       throw new YellowpagesRuntimeException(e);
     }
@@ -801,7 +786,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
   public void removeGroup(String groupId) {
     Connection con = getConnection();
     try {
-      GroupDAO.removeGroup(con, groupId);
+      groupDAO.removeGroup(con, groupId);
     } catch (Exception e) {
       throw new YellowpagesRuntimeException(e);
     } finally {

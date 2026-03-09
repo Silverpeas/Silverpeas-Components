@@ -30,10 +30,10 @@ import org.silverpeas.components.scheduleevent.service.model.beans.DateOption;
 
 public interface DateOptionDao {
 
-  public String createDateOption(DateOption dateOption);
+  String createDateOption(DateOption dateOption);
 
-  public Set<DateOption> listDateOptionsByScheduleEventId(String scheduleEventId);
+  Set<DateOption> listDateOptionsByScheduleEventId(String scheduleEventId);
 
-  public void deleteDatesOptionsByScheduleEventId(String scheduleEventId);
+  void deleteDatesOptionsByScheduleEventId(String scheduleEventId);
 
 }

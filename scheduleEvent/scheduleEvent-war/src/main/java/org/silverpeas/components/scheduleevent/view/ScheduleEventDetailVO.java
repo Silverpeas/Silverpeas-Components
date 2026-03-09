@@ -1,42 +1,39 @@
 package org.silverpeas.components.scheduleevent.view;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.silverpeas.components.scheduleevent.service.model.ScheduleEventBean;
 import org.silverpeas.components.scheduleevent.service.model.beans.Contributor;
 import org.silverpeas.components.scheduleevent.service.model.beans.DateOption;
 import org.silverpeas.components.scheduleevent.service.model.beans.Response;
 import org.silverpeas.components.scheduleevent.service.model.beans.ScheduleEvent;
-import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
+import org.silverpeas.kernel.SilverpeasException;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 public class ScheduleEventDetailVO {
-  private final static String USER_CONTRIBUTOR_HMTL_CLASS_ATTRIBUTE = "userVote";
+  private static final String USER_CONTRIBUTOR_HTML_CLASS_ATTRIBUTE = "userVote";
 
   int answers;
-  private List<DateVO> dates;
+  private final List<DateVO> dates;
   private String id;
   private String title;
   private String description;
   private boolean closed;
   private boolean allowedToChange;
   private ContributorVO currentUser;
-  private List<ContributorVO> otherSubscribers;
-  private List<ContributorVO> contributors;
-  private Map<TimeVO, AnswerVO> presentPercentageRates;
+  private final List<ContributorVO> otherSubscribers;
+  private final List<ContributorVO> contributors;
   private BestTimeVO selectionTime;
 
   public ScheduleEventDetailVO(AbstractComponentSessionController sessionController,
-      ScheduleEventBean currentEvent) throws Exception {
-    dates = new ArrayList<DateVO>();
-    otherSubscribers = new ArrayList<ContributorVO>();
-    contributors = new ArrayList<ContributorVO>();
-    presentPercentageRates = new HashMap<TimeVO, AnswerVO>();
+      ScheduleEventBean currentEvent) throws SilverpeasException {
+    dates = new ArrayList<>();
+    otherSubscribers = new ArrayList<>();
+    contributors = new ArrayList<>();
     answers = 0;
 
     setId(currentEvent);
@@ -47,7 +44,6 @@ public class ScheduleEventDetailVO {
     setDates(currentEvent);
     setContributors(sessionController, currentEvent);
     setEachContributorAvailabilities(currentEvent, getContributors());
-    setTimePresents(getTimes());
     setBestSelectionTime(getTimes());
   }
 
@@ -76,13 +72,13 @@ public class ScheduleEventDetailVO {
     }
   }
 
-  private void setDates(ScheduleEventBean currentEvent) throws Exception {
+  private void setDates(ScheduleEventBean currentEvent) throws SilverpeasException {
     for (DateOption date : currentEvent.getDates()) {
       updateOrAddDate(date);
     }
   }
 
-  private void updateOrAddDate(DateOption date) throws Exception {
+  private void updateOrAddDate(DateOption date) throws SilverpeasException {
     DateVO dateVO = find(date);
     if (dateVO != null) {
       dateVO.addTime(date);
@@ -91,7 +87,7 @@ public class ScheduleEventDetailVO {
     }
   }
 
-  private void addDateFrom(DateOption date) throws Exception {
+  private void addDateFrom(DateOption date) throws SilverpeasException {
     DateVO dateVO = createdDateFrom(date);
     dateVO.addTime(date);
     dates.add(dateVO);
@@ -106,7 +102,7 @@ public class ScheduleEventDetailVO {
     return null;
   }
 
-  private DateVO createdDateFrom(DateOption searchedDate) throws Exception {
+  private DateVO createdDateFrom(DateOption searchedDate) {
     return new HalfDayDateVO(searchedDate.getDay());
   }
 
@@ -119,22 +115,22 @@ public class ScheduleEventDetailVO {
 
   private void makeAndSetContributor(AbstractComponentSessionController sessionController,
       Contributor contributor) {
-    ContributorVO contribuorVO = makeAndSetContributorByRole(sessionController, contributor);
-    contributors.add(contribuorVO);
+    ContributorVO contributorVO = makeAndSetContributorByRole(sessionController, contributor);
+    contributors.add(contributorVO);
   }
 
   private ContributorVO makeAndSetContributorByRole(
       AbstractComponentSessionController sessionController, Contributor contributor) {
-    ContributorVO contribuorVO;
+    ContributorVO contributorVO;
     String name = getContributorDisplayedName(sessionController, contributor);
     if (isCurrentUser(sessionController.getUserId(), contributor)) {
-      contribuorVO = makeCurrentUser(name, contributor);
-      setCurrentUser(contribuorVO);
+      contributorVO = makeCurrentUser(name, contributor);
+      setCurrentUser(contributorVO);
     } else {
-      contribuorVO = makeContributor(name, contributor);
-      otherSubscribers.add(contribuorVO);
+      contributorVO = makeContributor(name, contributor);
+      otherSubscribers.add(contributorVO);
     }
-    return contribuorVO;
+    return contributorVO;
   }
 
   private String getContributorDisplayedName(AbstractComponentSessionController sessionController,
@@ -157,7 +153,7 @@ public class ScheduleEventDetailVO {
       return makeContributor(name, contributor);
     } else {
       ContributorImplVO contributorVO = new ContributorImplVO(name, contributor, AvailabilityUserFactory.getInstance());
-      contributorVO.setHtmlClassAttribute(USER_CONTRIBUTOR_HMTL_CLASS_ATTRIBUTE);
+      contributorVO.setHtmlClassAttribute(USER_CONTRIBUTOR_HTML_CLASS_ATTRIBUTE);
       return contributorVO;
     }
   }
@@ -167,7 +163,7 @@ public class ScheduleEventDetailVO {
   }
 
   private void setEachContributorAvailabilities(ScheduleEventBean currentEvent,
-      List<ContributorVO> contributors) throws Exception {
+      List<ContributorVO> contributors) {
     for (ContributorVO contributor : contributors) {
       if (contributor.hasAnswered()) {
         incrementAnswers();
@@ -196,7 +192,7 @@ public class ScheduleEventDetailVO {
   }
 
   private List<TimeVO> getTimes() {
-    List<TimeVO> times = new ArrayList<TimeVO>();
+    List<TimeVO> times = new ArrayList<>();
     for (DateVO date : getDates()) {
       times.addAll(date.getTimes());
     }
@@ -209,22 +205,15 @@ public class ScheduleEventDetailVO {
 
   private void addAvailabilities(ContributorVO contributor, TimeVO time, Set<Response> responses) {
     AvailableVO availability =
-        responses.isEmpty() ? contributor.makeAvailabilty(AvailabilityFactoryVO.Availability.DISAGREE) : contributor
-            .makeAvailabilty(AvailabilityFactoryVO.Availability.AGREE);
+        responses.isEmpty() ? contributor.makeAvailability(AvailabilityFactoryVO.Availability.DISAGREE) : contributor
+            .makeAvailability(AvailabilityFactoryVO.Availability.AGREE);
     time.addAvailability(contributor, availability);
   }
 
   private void addWaitingContributorAvailabilities(ContributorVO contributor) {
     for (TimeVO time : getTimes()) {
-      AvailableVO availability = contributor.makeAvailabilty(AvailabilityFactoryVO.Availability.AWAIT_ANSWER);
+      AvailableVO availability = contributor.makeAvailability(AvailabilityFactoryVO.Availability.AWAIT_ANSWER);
       time.addAvailability(contributor, availability);
-    }
-  }
-
-  private void setTimePresents(List<TimeVO> times) {
-    for (TimeVO time : times) {
-      AnswerVO answer = time.getPresents();
-      presentPercentageRates.put(time, answer);
     }
   }
 

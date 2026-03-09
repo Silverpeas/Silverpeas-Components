@@ -38,10 +38,6 @@ public class JdbcConnectorRuntimeException extends SilverpeasRuntimeException {
     super(message);
   }
 
-  public JdbcConnectorRuntimeException(final String message, final Throwable cause) {
-    super(message, cause);
-  }
-
   public JdbcConnectorRuntimeException(final Throwable cause) {
     super(cause);
   }

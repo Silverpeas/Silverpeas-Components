@@ -26,8 +26,8 @@ package org.silverpeas.components.whitepages.service;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.test.BasicWarBuilder;
 
@@ -40,23 +40,22 @@ import static org.hamcrest.Matchers.notNullValue;
 @RunWith(Arquillian.class)
 public class WhitePagesServiceProviderIT {
 
-  public WhitePagesServiceProviderIT() {
-  }
-
   @Deployment
   public static Archive<?> createTestArchive() {
     return BasicWarBuilder.onWarForTestClass(WhitePagesServiceProviderIT.class)
         .testFocusedOn(warBuilder -> {
           warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core");
-          warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core.services:silverpeas-core-pdc");
-          warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud");
+          warBuilder.addMavenDependenciesWithPersistence(
+              "org.silverpeas.core.services:silverpeas-core-search");
+          warBuilder.addMavenDependenciesWithPersistence(
+              "org.silverpeas.core.services:silverpeas-core-pdc");
           warBuilder.addAsResource("org/silverpeas/classifyEngine/ClassifyEngine.properties");
+          warBuilder.addAsResource("org/silverpeas/util/logging/silverpeasLogging.properties");
+          warBuilder.addAsResource(
+              "org/silverpeas/jobStartPagePeas/settings/jobStartPagePeasSettings.properties");
+          warBuilder.addAsResource("org/silverpeas/components/whitepages/service");
           warBuilder.addPackages(true, "org.silverpeas.components.whitepages");
         }).build();
-  }
-
-  @Before
-  public void generalSetup() throws Exception {
   }
 
   /**
@@ -64,8 +63,10 @@ public class WhitePagesServiceProviderIT {
    */
   @Test
   public void testGetWhitePagesService() {
-    WhitePagesService service = WhitePageServiceProvider.getWhitePagesService();
-    assertThat(service, notNullValue());
+    Assertions.assertDoesNotThrow(() -> {
+      WhitePagesService service = WhitePageServiceProvider.getWhitePagesService();
+      assertThat(service, notNullValue());
+    });
   }
 
   /**
@@ -73,7 +74,9 @@ public class WhitePagesServiceProviderIT {
    */
   @Test
   public void testGetMixedSearchService() {
-    MixedSearchService service = WhitePageServiceProvider.getMixedSearchService();
-    assertThat(service, notNullValue());
+    Assertions.assertDoesNotThrow(() -> {
+      MixedSearchService service = WhitePageServiceProvider.getMixedSearchService();
+      assertThat(service, notNullValue());
+    });
   }
 }

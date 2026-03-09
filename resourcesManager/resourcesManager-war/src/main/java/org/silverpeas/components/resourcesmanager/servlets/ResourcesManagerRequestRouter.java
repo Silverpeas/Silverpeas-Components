@@ -23,7 +23,6 @@
  */
 package org.silverpeas.components.resourcesmanager.servlets;
 
-import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.resourcesmanager.control.ResourceManagerDataViewType;
 import org.silverpeas.components.resourcesmanager.control.ResourcesManagerSessionController;
 import org.silverpeas.components.resourcesmanager.model.Category;
@@ -32,21 +31,16 @@ import org.silverpeas.components.resourcesmanager.model.Resource;
 import org.silverpeas.components.resourcesmanager.util.ResourceUtil;
 import org.silverpeas.core.admin.component.model.GlobalContext;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.contribution.content.form.DataRecord;
-import org.silverpeas.core.contribution.content.form.Form;
-import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.contribution.content.form.PagesContext;
-import org.silverpeas.core.contribution.content.form.RecordSet;
+import org.silverpeas.core.contribution.content.form.*;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.core.util.file.FileUploadUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.calendar.CalendarViewType;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
@@ -54,16 +48,11 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.web.selection.SelectionUsersGroups;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ResourcesManagerRequestRouter
     extends ComponentRequestRouter<ResourcesManagerSessionController> {
@@ -82,13 +71,6 @@ public class ResourcesManagerRequestRouter
     return "ResourcesManager";
   }
 
-  /**
-   * Method declaration
-   * @param mainSessionCtrl
-   * @param componentContext
-   * @return
-   *
-   */
   @Override
   public ResourcesManagerSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
@@ -360,9 +342,8 @@ public class ResourcesManagerRequestRouter
           }
 
           // Resources that are not available are removed from the list of resource reservation
-          if (resourcesOfReservation != null && !resourcesOfReservation.isEmpty() &&
-              unavailableReservationResources != null &&
-              !unavailableReservationResources.isEmpty()) {
+          if (!resourcesOfReservation.isEmpty() && unavailableReservationResources != null
+              && !unavailableReservationResources.isEmpty()) {
             resourcesOfReservation.removeAll(unavailableReservationResources);
           }
         }
@@ -381,7 +362,7 @@ public class ResourcesManagerRequestRouter
         }
 
         // on envoie l'id de la réservation et l'ensemble des resources
-        // associées à celles -ci
+        // associées à celles-ci
         request.setAttribute("objectView", request.getParameter("objectView"));
         request.setAttribute("idReservation", reservationId);
         request.setAttribute("listResourceEverReserved", resourcesOfReservation);
@@ -393,8 +374,8 @@ public class ResourcesManagerRequestRouter
       } else if ("FinalReservation".equals(function)) {
         // resourceIds est la liste complète des ressources réservées lors
         // d'une création ou d'une édition de réservation
-        // modifiedReservationId est l'id de la réservation à modifié lors d'une
-        // édition de réservation
+        // modifiedReservationId est l'id de la réservation à modifier lors d'une
+        // édition de réservation,
         // on doit vérifier que celles-ci n'ont pas été prises avant de mettre à
         // jour la réservation.
         Long modifiedReservationId = request.getParameterAsLong("modifiedReservationId");
@@ -411,11 +392,9 @@ public class ResourcesManagerRequestRouter
           if (listeResourcesProblemeReservationTotal.isEmpty()) {
             // regarder si les dates ont été modifiées
             Reservation resa = resourcesManagerSC.getReservation(modifiedReservationId);
-            boolean updateDate = false;
-            if (!resourcesManagerSC.getBeginDateReservation().equals(resa.getBeginDate()) ||
-                !resourcesManagerSC.getEndDateReservation().equals(resa.getEndDate())) {
-              updateDate = true;
-            }
+            boolean updateDate =
+                !resourcesManagerSC.getBeginDateReservation().equals(resa.getBeginDate()) ||
+                                 !resourcesManagerSC.getEndDateReservation().equals(resa.getEndDate());
             resourcesManagerSC.updateReservation(resa, resourceIds, updateDate);
 
             // redirection vers la réservation
@@ -444,7 +423,7 @@ public class ResourcesManagerRequestRouter
           }
         }
       } else if ("EditReservation".equals(function)) {
-        // listResources est la liste des ressources qui peuvent poser problème
+        // listResources est la liste des ressources qui peuvent poser un problème
         // quand on change la date de réservation
         List listResourcesProblem = null;
         reservationId = request.getParameterAsLong("id");
@@ -454,7 +433,7 @@ public class ResourcesManagerRequestRouter
         }
         Reservation reservation = resourcesManagerSC.getReservation(reservationId);
         // on envoie la réservation de l'id et la liste des ressources associées
-        // ainsi que la liste qui posent problème quand on change les dates
+        // ainsi que la liste qui posent un problème quand on change les dates
         request.setAttribute("reservation", reservation);
         request.setAttribute("listResourcesProblem", listResourcesProblem);
         destination = ROOT + "reservationManager.jsp";
@@ -464,8 +443,8 @@ public class ResourcesManagerRequestRouter
           reservationId = request.getAttributeAsLong("reservationId");
         }
         String objectView = getView(request, resourcesManagerSC);
-        // si on vient de resource.jsp, reservationId a été stocké dans le
-        // session controler
+        // si on vient de resource.jsp, reservationId a été stocké dans la
+        // session controller
         if (reservationId == null) {
           reservationId = resourcesManagerSC.getReservationIdForResource();
         }
@@ -537,13 +516,15 @@ public class ResourcesManagerRequestRouter
           chemin = "<a href=\"ViewCategories\">" + WebEncodeHelper.javaStringToHtmlString(resources.
               getString("resourcesManager.listCategorie")) + "</a>";
           String chemin2 = "<a href=\"ViewResources?id=" + myResource.getCategoryId() + "\">" +
-              WebEncodeHelper
-                  .javaStringToHtmlString(resources.getString("resourcesManager.categorie")) +
-              "</a>";
+                           WebEncodeHelper
+                               .javaStringToHtmlString(resources.getString("resourcesManager" +
+                                                                           ".categorie")) +
+                           "</a>";
           chemin = chemin + " > " + chemin2;
         } else if ("reservation".equals(provenance)) {
           // on vient du récapitulatif de la réservation
-          chemin = "<a href=\"ViewReservation\">" + WebEncodeHelper.javaStringToHtmlString(resources.
+          chemin =
+              "<a href=\"ViewReservation\">" + WebEncodeHelper.javaStringToHtmlString(resources.
               getString("resourcesManager.recapitulatifReservation")) + "</a>";
         }
         request.setAttribute("Path", chemin);
@@ -657,14 +638,15 @@ public class ResourcesManagerRequestRouter
   }
 
   /**
-   * on regarde soit : ses réservations -> myObjectView = myReservation les réservations d'une
-   * autre personne -> myObjectView = PlanningOtherUser le planning d'une catégorie -> myObjectView
-   * = l'id de la catégorie le planning d'une ressource -> myObjectView = l'id de la catégorie
-   * myObjectView représente ce qu'on est en train de visualiser, il est nul à l'initialisation.
-   * idUser sert à savoir l'id de la personne dont on regarde le calandrier
-   * @param request
-   * @param sessionController
-   * @return
+   * on regarde soit : ses réservations -> myObjectView = myReservation les réservations d'une autre
+   * personne -> myObjectView = PlanningOtherUser le planning d'une catégorie -> myObjectView = l'id
+   * de la catégorie le planning d'une ressource -> myObjectView = l'id de la catégorie myObjectView
+   * représente ce qu'on est en train de visualiser, il est nul à l'initialisation. idUser sert à
+   * savoir l'id de la personne dont on regarde le calandrier
+   *
+   * @param request la requête HTTP
+   * @param sessionController le contrôleur de session
+   * @return la vue calendaire
    */
   private String displayCalendarView(HttpRequest request,
       ResourcesManagerSessionController sessionController) {
@@ -867,6 +849,7 @@ public class ResourcesManagerRequestRouter
 
   /**
    * Gets an instance of PublicationTemplateManager.
+   *
    * @return an instance of PublicationTemplateManager.
    */
   private PublicationTemplateManager getPublicationTemplateManager() {

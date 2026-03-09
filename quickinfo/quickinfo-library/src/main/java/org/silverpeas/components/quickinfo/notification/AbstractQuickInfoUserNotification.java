@@ -31,7 +31,7 @@ import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotific
 public abstract class AbstractQuickInfoUserNotification<T> extends
     AbstractTemplateUserNotificationBuilder<T> {
 
-  public AbstractQuickInfoUserNotification(T resource) {
+  protected AbstractQuickInfoUserNotification(T resource) {
     super(resource);
   }
 
@@ -47,7 +47,7 @@ public abstract class AbstractQuickInfoUserNotification<T> extends
 
   /**
    * Gets the name of the sender.
-   * @return
+   * @return the sender name.
    */
   protected String getSenderName() {
     UserDetail sender = getSenderDetail();
@@ -59,7 +59,7 @@ public abstract class AbstractQuickInfoUserNotification<T> extends
 
   /**
    * Gets the {@link UserDetail} instance of the sender.
-   * @return
+   * @return the sender
    */
   protected final UserDetail getSenderDetail() {
     return UserDetail.getById(getSender());

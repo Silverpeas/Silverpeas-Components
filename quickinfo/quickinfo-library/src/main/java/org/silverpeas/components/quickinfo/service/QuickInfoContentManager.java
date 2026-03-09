@@ -24,6 +24,7 @@
 
 package org.silverpeas.components.quickinfo.service;
 
+import jakarta.inject.Inject;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.contentcontainer.content.AbstractSilverpeasContentManager;
@@ -44,6 +45,9 @@ import java.util.stream.Collectors;
 public class QuickInfoContentManager extends AbstractSilverpeasContentManager {
 
   private static final String CONTENT_ICON_FILE_NAME = "quickinfoSmall.gif";
+
+  @Inject
+  private PublicationService publicationService;
 
   /**
    * Hidden constructor as this implementation must be GET by CDI mechanism.
@@ -90,6 +94,6 @@ public class QuickInfoContentManager extends AbstractSilverpeasContentManager {
   }
 
   private PublicationService getPublicationService() {
-    return PublicationService.get();
+    return publicationService;
   }
 }

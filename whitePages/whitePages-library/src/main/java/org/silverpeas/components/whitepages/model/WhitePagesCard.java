@@ -84,7 +84,7 @@ public class WhitePagesCard implements Comparable<WhitePagesCard> {
   @Override
   public int hashCode() {
     int hash = 5;
-    hash = 29 * hash + (int) (this.userCardId ^ (this.userCardId >>> 32));
+    hash = 29 * hash + Long.hashCode(this.userCardId);
     hash = 29 * hash + (this.instanceLabel != null ? this.instanceLabel.hashCode() : 0);
     hash = 29 * hash + (this.instanceId != null ? this.instanceId.hashCode() : 0);
     return hash;

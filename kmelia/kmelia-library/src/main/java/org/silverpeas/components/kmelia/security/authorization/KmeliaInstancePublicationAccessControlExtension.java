@@ -24,16 +24,18 @@
 
 package org.silverpeas.components.kmelia.security.authorization;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.security.authorization.DefaultInstancePublicationAccessControlExtension;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
 
-import javax.inject.Named;
-import javax.inject.Singleton;
+import jakarta.inject.Named;
+import jakarta.inject.Singleton;
 
 /**
  * @author silveryocha
  */
+@Bean
 @Named
 @Singleton
 public class KmeliaInstancePublicationAccessControlExtension

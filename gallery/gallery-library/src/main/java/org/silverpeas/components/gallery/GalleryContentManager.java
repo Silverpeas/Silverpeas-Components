@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.gallery;
 
+import jakarta.inject.Inject;
 import org.silverpeas.components.gallery.model.MediaCriteria;
 import org.silverpeas.components.gallery.model.MediaPK;
 import org.silverpeas.components.gallery.service.GalleryService;
@@ -48,6 +49,9 @@ public class GalleryContentManager extends AbstractSilverpeasContentManager impl
 
   private static final String CONTENT_ICON_FILE_NAME = "gallerySmall.gif";
 
+  @Inject
+  private GalleryService galleryService;
+
   /**
    * Hidden constructor as this implementation must be GET by CDI mechanism.
    */
@@ -67,15 +71,16 @@ public class GalleryContentManager extends AbstractSilverpeasContentManager impl
             MediaCriteria.VISIBILITY.FORCE_GET_ALL));
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   protected List<Contribution> getAccessibleContributions(
       final List<ResourceReference> resourceReferences, final String currentUserId) {
-    return (List) resourceReferences.stream()
+    return resourceReferences.stream()
         .collect(groupingBy(ResourceReference::getComponentInstanceId,
                  mapping(ResourceReference::getLocalId, toList())))
         .entrySet().stream()
-        .flatMap(e -> getGalleryService().getMedia(e.getValue(), e.getKey(), MediaCriteria.VISIBILITY.FORCE_GET_ALL).stream())
+        .flatMap(e ->
+            getGalleryService().getMedia(e.getValue(), e.getKey(),
+                MediaCriteria.VISIBILITY.FORCE_GET_ALL).stream())
         .collect(toList());
   }
 
@@ -86,6 +91,6 @@ public class GalleryContentManager extends AbstractSilverpeasContentManager impl
   }
 
   private GalleryService getGalleryService() {
-    return ServiceProvider.getService(GalleryService.class);
+    return galleryService;
   }
 }

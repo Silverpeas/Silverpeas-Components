@@ -29,17 +29,14 @@ import org.silverpeas.components.gallery.model.MediaLogicalComparator;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
-import java.util.Collections;
-import java.util.EnumSet;
 import java.util.List;
-import java.util.Set;
 
 import static org.silverpeas.components.gallery.model.MediaCriteria.QUERY_ORDER_BY.*;
 
 /**
  * This enumeration defines functional sorting rules.
- * All the rule defines can defined as not exposed to the user (displayed parameter).
- * @author: Yohann Chastagnier
+ * All the rule defines can be defined as not exposed to the user (displayed parameter).
+ * @author Yohann Chastagnier
  */
 public enum MediaSort {
   CreationDateAsc(true, "gallery.dateCreatAsc", CREATE_DATE_ASC, IDENTIFIER_ASC),
@@ -49,26 +46,17 @@ public enum MediaSort {
   Author(true, "GML.author", AUTHOR_ASC_EMPTY_END, CREATE_DATE_DESC, IDENTIFIER_ASC),
   Definition(false, "gallery.dimension", DIMENSION_ASC, CREATE_DATE_DESC, IDENTIFIER_ASC);
 
-  @SuppressWarnings("unchecked")
-  public final static Set<MediaSort> ALL =
-      Collections.unmodifiableSet(EnumSet.allOf(MediaSort.class));
-
   private final boolean displayed;
   private final String bundleKey;
-  private final MediaCriteria.QUERY_ORDER_BY[] orderBies;
+  private final MediaCriteria.QUERY_ORDER_BY[] orderByes;
 
   MediaSort(final boolean displayed, final String bundleKey,
-      final MediaCriteria.QUERY_ORDER_BY... orderBies) {
+      final MediaCriteria.QUERY_ORDER_BY... orderByes) {
     this.displayed = displayed;
     this.bundleKey = bundleKey;
-    this.orderBies = orderBies;
+    this.orderByes = orderByes;
   }
 
-  /**
-   * Gets the enum instance according to the specified type.
-   * @param type
-   * @return
-   */
   @JsonCreator
   public static MediaSort from(String type) {
     try {
@@ -100,10 +88,10 @@ public enum MediaSort {
   }
 
   /**
-   * Performs the sort of the specified list.
-   * @param mediaList
+   * Sorts of the specified list.
+   * @param mediaList the list of media to sort
    */
   public void perform(List<Media> mediaList) {
-    Collections.sort(mediaList, MediaLogicalComparator.on(orderBies));
+    mediaList.sort(MediaLogicalComparator.on(orderByes));
   }
 }

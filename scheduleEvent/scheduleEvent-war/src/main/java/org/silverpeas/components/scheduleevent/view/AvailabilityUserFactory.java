@@ -2,13 +2,13 @@ package org.silverpeas.components.scheduleevent.view;
 
 public class AvailabilityUserFactory implements AvailabilityFactoryVO {
 
-private final static AvailabilityUserFactory instance = new AvailabilityUserFactory();
+  private static final AvailabilityUserFactory instance = new AvailabilityUserFactory();
 
   private AvailabilityUserFactory() {
   }
 
   @Override
-  public AvailableEditableVO makeAvailablity(Availability availability) {
+  public AvailableEditableVO makeAvailability(Availability availability) {
     switch (availability) {
       case AGREE:
         return AgreeEditableAvailability.getInstance();

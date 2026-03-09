@@ -106,7 +106,7 @@ public class QuestionTemplate implements RecordTemplate {
   public boolean checkDataRecord(DataRecord record) {
     try {
       String value = (String) (record.getField(CONTENT).getObjectValue());
-      return (value != null && value.length() > 0);
+      return (value != null && !value.isEmpty());
     } catch (FormException fe) {
       return false;
     }

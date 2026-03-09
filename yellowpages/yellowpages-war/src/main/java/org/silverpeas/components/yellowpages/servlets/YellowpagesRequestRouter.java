@@ -25,6 +25,7 @@ package org.silverpeas.components.yellowpages.servlets;
 
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.core.web.export.ExportCSVBuilder;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -37,21 +38,17 @@ import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.components.yellowpages.control.YellowpagesSessionController;
 import org.silverpeas.components.yellowpages.model.YellowPagesGroupDetail;
 import org.silverpeas.components.yellowpages.model.TopicDetail;
-import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 public class YellowpagesRequestRouter extends ComponentRequestRouter<YellowpagesSessionController> {
 
-  /**
-   *
-   */
   private static final long serialVersionUID = 1L;
 
   private final YellowpagesActionAccessController actionAccessController =
@@ -76,8 +73,8 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    * @param function The entering request function (ex : "Main.jsp")
-   * @param scc The component Session Control, build and initialised.
-   * @param request
+   * @param scc The component Session Control, build and initialized.
+   * @param request the HTTP request
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
@@ -142,7 +139,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
           request.setAttribute("CurrentTopic", currentTopic);
 
         } else {
-          id = id.substring(id.indexOf("_") + 1, id.length());
+          id = id.substring(id.indexOf("_") + 1);
           // remove "group_"
           YellowPagesGroupDetail group = scc.getGroup(id);
 
@@ -168,7 +165,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
         destination = "/yellowpages/jsp/topicManager.jsp?Profile=" + flag;
       } else if ("GoToGroup".equals(function)) {
         String id = request.getParameter("Id");
-        id = id.substring(id.indexOf("_") + 1, id.length());
+        id = id.substring(id.indexOf("_") + 1);
         // remove "group_"
         YellowPagesGroupDetail group = scc.getGroup(id);
         request.setAttribute("Group", group);
@@ -176,7 +173,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
         destination = "/yellowpages/jsp/groupManager.jsp";
       } else if ("RemoveGroup".equals(function)) {
         String id = request.getParameter("ToDeleteId");
-        id = id.substring(id.indexOf("_") + 1, id.length());
+        id = id.substring(id.indexOf("_") + 1);
         // remove "group_"
         scc.removeGroup(id);
         destination = getDestination("topicManager", scc, request);
@@ -194,7 +191,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
         String type = request.getParameter("Type");
 
         if ("Contact".equals(type)) {
-          // un contact peut-être dans plusieurs noeuds de l'annuaire
+          // un contact peut-être dans plusieurs nœuds de l'annuaire
           TopicDetail currentTopic = scc.getTopic("0");
           scc.setCurrentTopic(currentTopic);
 
@@ -412,7 +409,6 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
       if (StringUtil.isDefined(topicId)) {
         contact = ysc.getCompleteContactInNode(contactId, topicId);
       } else {
-        topicId = ysc.getCurrentTopic().getNodePK().getId();
         contact = ysc.getCompleteContact(contactId);
       }
       ysc.setCurrentContact(contact);

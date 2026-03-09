@@ -137,7 +137,7 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * Publish a news represented by the given identifier.
+   * Publish news represented by the given identifier.
    * @param id the identifier of the news that must be published.
    */
   public void publish(String id) {
@@ -146,9 +146,9 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * Prepare an instance of a news that will exists only in memory if no action persistence will be
+   * Prepare an instance of news that will exist only in memory if no action persistence will be
    * applied on.
-   * @return an in memory instance of a news.
+   * @return an in memory instance of news.
    */
   public News prepareEmptyNews() {
     News news = News.builder()
@@ -185,12 +185,12 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * Updates all the data of a news.
+   * Updates all the data of news.
    * @param id the identifier of the news (used to load previous data).
    * @param updatedNews the data to save.
    * @param pdcPositions the pdc positions.
    * @param uploadedFiles the files uploaded in the aim to be attached to the news.
-   * @param forcePublish true to indicate a publish action, false otherwise.
+   * @param forcePublish true to indicate a publishing action, false otherwise.
    */
   public void update(String id, News updatedNews, String pdcPositions,
       Collection<UploadedFile> uploadedFiles, boolean forcePublish) {
@@ -277,7 +277,7 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
   /**
    * Classify the info letter publication on the PdC. If the position parameter is filled it
    * means that the content must be unclassified.
-   * @param positions the string json positions.
+   * @param positions the string JSON positions.
    */
   private List<PdcPosition> getPositionsFromJSON(String positions) {
     return ofNullable(positions)

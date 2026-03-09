@@ -111,7 +111,7 @@ public class AlbumMediaNotificationManager {
     private final Object mutex;
 
     private NotificationAlbumJob(final User sender, final AlbumDetail album) {
-      super("JOB_NAME_" + UUID.randomUUID().toString());
+      super("JOB_NAME_" + UUID.randomUUID());
       this.mutex = creations;
       this.sender = sender;
       this.instanceId = album.getNodePK().getInstanceId();

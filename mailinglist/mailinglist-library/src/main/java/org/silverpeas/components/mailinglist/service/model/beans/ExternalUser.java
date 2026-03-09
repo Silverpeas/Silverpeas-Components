@@ -23,9 +23,10 @@
  */
 package org.silverpeas.components.mailinglist.service.model.beans;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import org.silverpeas.kernel.annotation.NonNull;
 
 @Entity
 @Table(name = "sc_mailinglist_external_user")
@@ -79,17 +80,12 @@ public class ExternalUser extends IdentifiableObject implements Comparable<Exter
       return false;
     }
     if (email == null) {
-      if (other.email != null) {
-        return false;
-      }
-    } else if (!email.equals(other.email)) {
-      return false;
-    }
-    return true;
+      return other.email == null;
+    } else return email.equals(other.email);
   }
 
   @Override
-  public int compareTo(ExternalUser user) {
+  public int compareTo(@NonNull ExternalUser user) {
     if (this.equals(user)) {
       return 0;
     }

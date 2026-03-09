@@ -30,10 +30,10 @@ import org.silverpeas.core.node.model.NodeDetail;
 
 public class Treeview {
 
-  private String path = null;
-  private List<NodeDetail> tree = null;
+  private String path;
+  private List<NodeDetail> tree;
   private int nbAliases = 0;
-  private String componentId = null;
+  private final String componentId;
 
   public Treeview(String path, List<NodeDetail> tree, String componentId) {
     this.path = path;

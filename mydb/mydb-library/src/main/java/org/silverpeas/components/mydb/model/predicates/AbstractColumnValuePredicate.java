@@ -44,7 +44,7 @@ public abstract class AbstractColumnValuePredicate implements ColumnValuePredica
    * @param column the column.
    * @param refValue a reference value.
    */
-  public AbstractColumnValuePredicate(final DbColumn column, final String refValue) {
+  protected AbstractColumnValuePredicate(final DbColumn column, final String refValue) {
     this.column = column;
     this.normalizedValue = normalizeValue(column, refValue);
   }

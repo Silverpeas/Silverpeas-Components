@@ -37,7 +37,7 @@ import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.io.InputStream;
 import java.net.http.HttpClient;
 import java.net.http.HttpResponse;

@@ -28,84 +28,43 @@ import java.util.Set;
 
 public class OrganizationalChart {
 
-  private OrganizationalUnit root = null;
-  private List<OrganizationalPerson> personns = null;
-  private Set<PersonCategory> categories = null;
-  private List<OrganizationalUnit> units = null;
-  private boolean silverpeasUserLinkable = false;
-
-  private OrganizationalChartType chartType;
-
-  public static final int UNITCHART = 0;
-  public static final int PERSONNCHART = 1;
+  private final OrganizationalUnit root;
+  private final List<OrganizationalPerson> persons;
+  private final Set<PersonCategory> categories;
+  private final List<OrganizationalUnit> units;
 
   public OrganizationalChart(OrganizationalUnit root, List<OrganizationalUnit> units,
-      List<OrganizationalPerson> personns, boolean silverpeasUserLinkable) {
-    // case unit chart: you needs personns and units
-    this.chartType = OrganizationalChartType.TYPE_UNITCHART;
+      List<OrganizationalPerson> persons) {
+    // case unit chart: you need persons and units
     this.root = root;
     this.units = units;
-    this.personns = personns;
+    this.persons = persons;
     this.categories = null;
-    this.silverpeasUserLinkable = silverpeasUserLinkable;
   }
 
-  public OrganizationalChart(OrganizationalUnit root, List<OrganizationalPerson> personns,
-      Set<PersonCategory> categories, boolean silverpeasUserLinkable) {
-    // case personns chart: needs personns and categories
-    this.chartType = OrganizationalChartType.TYPE_PERSONNCHART;
+  public OrganizationalChart(OrganizationalUnit root, List<OrganizationalPerson> persons,
+      Set<PersonCategory> categories) {
+    // case persons chart: needs persons and categories
     this.root = root;
     this.categories = categories;
-    this.personns = personns;
+    this.persons = persons;
     this.units = null;
-    this.silverpeasUserLinkable = silverpeasUserLinkable;
-  }
-
-  public void setRoot(OrganizationalUnit root) {
-    this.root = root;
   }
 
   public OrganizationalUnit getRoot() {
     return root;
   }
 
-  public void setChartType(OrganizationalChartType chartType) {
-    this.chartType = chartType;
-  }
-
-  public OrganizationalChartType getChartType() {
-    return chartType;
-  }
-
-  public void setPersonns(List<OrganizationalPerson> personns) {
-    this.personns = personns;
-  }
-
-  public List<OrganizationalPerson> getPersonns() {
-    return personns;
-  }
-
-  public void setUnits(List<OrganizationalUnit> units) {
-    this.units = units;
+  public List<OrganizationalPerson> getPersons() {
+    return persons;
   }
 
   public List<OrganizationalUnit> getUnits() {
     return units;
   }
 
-  public void setCategories(Set<PersonCategory> categories) {
-    this.categories = categories;
-  }
-
   public Set<PersonCategory> getCategories() {
     return categories;
   }
 
-  public void setSilverpeasUserLinkable(boolean silverpeasUserLinkable) {
-    this.silverpeasUserLinkable = silverpeasUserLinkable;
-  }
-
-  public boolean isSilverpeasUserLinkable() {
-    return silverpeasUserLinkable;
-  }
 }

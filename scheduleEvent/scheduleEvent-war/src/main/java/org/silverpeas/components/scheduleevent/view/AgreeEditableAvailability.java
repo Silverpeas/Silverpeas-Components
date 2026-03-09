@@ -2,7 +2,7 @@ package org.silverpeas.components.scheduleevent.view;
 
 public class AgreeEditableAvailability implements
     AvailableEditableVO {
-  private final static AgreeEditableAvailability instance = new AgreeEditableAvailability();
+  private static final AgreeEditableAvailability instance = new AgreeEditableAvailability();
 
   private AgreeEditableAvailability() {
   }

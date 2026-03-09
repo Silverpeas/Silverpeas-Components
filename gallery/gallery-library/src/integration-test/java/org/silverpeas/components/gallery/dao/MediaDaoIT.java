@@ -23,23 +23,17 @@
  */
 package org.silverpeas.components.gallery.dao;
 
+import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.time.DateUtils;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
-import org.junit.Rule;
+import org.junit.Assert;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.silverpeas.components.gallery.BaseGalleryIT;
 import org.silverpeas.components.gallery.constant.MediaMimeType;
 import org.silverpeas.components.gallery.constant.MediaType;
-import org.silverpeas.components.gallery.model.Media;
-import org.silverpeas.components.gallery.model.MediaCriteria;
-import org.silverpeas.components.gallery.model.Photo;
-import org.silverpeas.components.gallery.model.Sound;
-import org.silverpeas.components.gallery.model.Streaming;
-import org.silverpeas.components.gallery.model.Video;
+import org.silverpeas.components.gallery.model.*;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
-import org.silverpeas.core.cache.service.SessionCacheAccessor;
 import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.io.media.Definition;
 import org.silverpeas.core.media.streaming.StreamingProvider;
@@ -71,9 +65,6 @@ import static org.silverpeas.core.test.util.TestRuntime.awaitUntil;
  * This class of unit tests has been written during Entity and SGBD model migration.
  */
 public class MediaDaoIT extends BaseGalleryIT {
-
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
 
   @Test
   public void getAllMedia() throws Exception {
@@ -282,7 +273,7 @@ public class MediaDaoIT extends BaseGalleryIT {
     assertThat(media.get(0).getId(), is("stream_2"));
 
     // Simulating a connected publisher user
-    ((SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor())
+    CacheAccessorProvider.getSessionCacheAccessor()
         .newSessionCache(publisherUser);
 
     media = MediaDAO
@@ -291,7 +282,7 @@ public class MediaDaoIT extends BaseGalleryIT {
     assertMediaType(media, MediaType.Streaming, Streaming.class);
 
     // Simulating a connected writer user
-    ((SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor())
+    CacheAccessorProvider.getSessionCacheAccessor()
         .newSessionCache(writerUser);
 
     media = MediaDAO
@@ -321,7 +312,7 @@ public class MediaDaoIT extends BaseGalleryIT {
     assertThat(media.get(0).getId(), is("stream_2"));
 
     // Simulating a connected publisher user
-    ((SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor())
+    CacheAccessorProvider.getSessionCacheAccessor()
         .newSessionCache(publisherUser);
 
     media = MediaDAO.findByCriteria(
@@ -361,7 +352,7 @@ public class MediaDaoIT extends BaseGalleryIT {
     assertThat(nbMedia, is(1L));
 
     // Simulating a connected publisher user
-    ((SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor())
+    CacheAccessorProvider.getSessionCacheAccessor()
         .newSessionCache(publisherUser);
 
     nbMedia = MediaDAO
@@ -369,7 +360,7 @@ public class MediaDaoIT extends BaseGalleryIT {
     assertThat(nbMedia, is(2L));
 
     // Simulating a connected writer user
-    ((SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor())
+    CacheAccessorProvider.getSessionCacheAccessor()
         .newSessionCache(writerUser);
 
     nbMedia = MediaDAO
@@ -392,7 +383,7 @@ public class MediaDaoIT extends BaseGalleryIT {
     assertThat(nbMedia, is(1L));
 
     // Simulating a connected publisher user
-    ((SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor())
+    CacheAccessorProvider.getSessionCacheAccessor()
         .newSessionCache(publisherUser);
 
     nbMedia = MediaDAO.countByCriteria(
@@ -676,7 +667,7 @@ public class MediaDaoIT extends BaseGalleryIT {
     assertThat(streaming.getLastUpdater(), is(adminAccessUser));
 
     assertThat(streaming.getHomepageUrl(), is("url_1"));
-    assertThat(streaming.getProvider().map(StreamingProvider::getName).orElse(null), is("youtube"));
+    assertThat(streaming.getProvider().map(StreamingProvider::getName).orElse(""), is("youtube"));
   }
 
   @Test
@@ -825,7 +816,6 @@ public class MediaDaoIT extends BaseGalleryIT {
     assertThat(index, is(4));
   }
 
-  @SuppressWarnings("DataFlowIssue")
   @Test
   public void saveNewPhoto() throws Exception {
     Date now = DateUtil.getNow();
@@ -905,7 +895,6 @@ public class MediaDaoIT extends BaseGalleryIT {
     }
   }
 
-  @SuppressWarnings("DataFlowIssue")
   @Test
   public void saveExistingPhoto() throws Exception {
     Date now = DateUtil.getNow();
@@ -1032,12 +1021,10 @@ public class MediaDaoIT extends BaseGalleryIT {
   }
 
   @Test
+  @Transactional
   public void deleteMediaThatDoesNotExist() {
-    expectedException.expectCause(instanceOf(NullPointerException.class));
-    Transaction.performInOne(() -> {
-      MediaDAO.deleteMedia(null);
-      return null;
-    });
+    Assert.assertThrows(NullPointerException.class, () ->
+      MediaDAO.deleteMedia(null));
   }
 
   @Test
@@ -1114,7 +1101,6 @@ public class MediaDaoIT extends BaseGalleryIT {
     }
   }
 
-  @SuppressWarnings("DataFlowIssue")
   @Test
   public void saveNewVideo() throws Exception {
     Date now = DateUtil.getNow();
@@ -1194,7 +1180,6 @@ public class MediaDaoIT extends BaseGalleryIT {
     }
   }
 
-  @SuppressWarnings("DataFlowIssue")
   @Test
   public void saveExistingVideo() throws Exception {
     String mediaIdToUpdate = "v_2";
@@ -1217,7 +1202,6 @@ public class MediaDaoIT extends BaseGalleryIT {
       assertThat(pathTable.getRowCount(), is(MEDIA_PATH_ROW_COUNT));
 
       TableRow videoRow = getTableRowFor(videoTable, "mediaId", mediaIdToUpdate);
-      //noinspection DataFlowIssue
       assertThat(videoRow.getString("mediaId"), is(mediaIdToUpdate));
       assertThat(videoRow.getInteger("resolutionH"), is(720));
       assertThat(videoRow.getInteger("resolutionW"), is(1280));
@@ -1337,7 +1321,6 @@ public class MediaDaoIT extends BaseGalleryIT {
     }
   }
 
-  @SuppressWarnings("DataFlowIssue")
   @Test
   public void saveNewSound() throws Exception {
     Date now = DateUtil.getNow();
@@ -1412,7 +1395,6 @@ public class MediaDaoIT extends BaseGalleryIT {
     }
   }
 
-  @SuppressWarnings("DataFlowIssue")
   @Test
   public void saveExistingSound() throws Exception {
     String mediaIdToUpdate = "s_2";
@@ -1551,7 +1533,6 @@ public class MediaDaoIT extends BaseGalleryIT {
     }
   }
 
-  @SuppressWarnings("DataFlowIssue")
   @Test
   public void saveNewStreaming() throws Exception {
     Date now = DateUtil.getNow();
@@ -1654,7 +1635,6 @@ public class MediaDaoIT extends BaseGalleryIT {
     }
   }
 
-  @SuppressWarnings("DataFlowIssue")
   @Test
   public void saveExistingStreaming() throws Exception {
     String mediaIdToUpdate = "stream_1";
@@ -1793,7 +1773,6 @@ public class MediaDaoIT extends BaseGalleryIT {
     }
   }
 
-  @SuppressWarnings("DataFlowIssue")
   @Test
   public void saveStreamingPath() throws Exception {
 

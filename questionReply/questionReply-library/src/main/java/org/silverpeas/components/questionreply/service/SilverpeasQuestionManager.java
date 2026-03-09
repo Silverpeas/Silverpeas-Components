@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.questionreply.service;
 
+import jakarta.inject.Inject;
 import org.silverpeas.components.questionreply.QuestionReplyException;
 import org.silverpeas.components.questionreply.index.QuestionIndexer;
 import org.silverpeas.components.questionreply.model.Question;
@@ -36,13 +37,12 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.bean.*;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Inject;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -71,6 +71,8 @@ public class SilverpeasQuestionManager implements QuestionManager {
   private QuestionReplyContentManager contentManager;
   @Inject
   private OrganizationController controller;
+  @Inject
+  private I18n i18n;
 
   SilverpeasQuestionManager() {
     try {
@@ -112,15 +114,15 @@ public class SilverpeasQuestionManager implements QuestionManager {
   }
 
   /*
-   * enregistre une réponse à une question => met à jour publicReplyNumber et/ou privateReplyNumber
-   * et replyNumber de la question ainsi que le status à 1
+   * enregistre une réponse à une question : met à jour publicReplyNumber et/ou privateReplyNumber
+   * et replyNumber de la question ainsi que le status à 1.
    */
   @Override
   public long createReply(Reply reply, Question question) throws QuestionReplyException {
     try (Connection con = DBUtil.openConnection()) {
       IdPK pkR = (IdPK) replyDao.add(con, reply);
       WysiwygController.createFileAndAttachment(reply.readCurrentWysiwygContent(),
-          new ResourceReference(pkR), reply.getCreatorId(), I18NHelper.DEFAULT_LANGUAGE);
+          new ResourceReference(pkR), reply.getCreatorId(), i18n.getDefaultLanguage());
       long idR = pkR.getIdAsLong();
       if (question.hasNewStatus()) {
         question.waitForAnswer();
@@ -273,7 +275,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
   }
 
   /*
-   * Affecte le status public à 0 d'une liste de réponses : updateReply Décremente le nombre de
+   * Affecte le status public à 0 d'une liste de réponses : updateReply décrémente le nombre de
    * réponses publiques de la question d'autant : updateQuestion
    */
   @Override
@@ -297,7 +299,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
   }
 
   /*
-   * Affecte le status private à 0 d'une liste de réponses : updateReply Décremente le nombre de
+   * Affecte le status private à 0 d'une liste de réponses : updateReply décrémente le nombre de
    * réponses privées de la question d'autant : updateQuestion
    */
   @Override
@@ -321,8 +323,8 @@ public class SilverpeasQuestionManager implements QuestionManager {
   }
 
   /*
-   * Modifie une question => la question est supprimée si publicReplyNumber et privateReplyNumber
-   * sont à 0 et que la question est close => met à jour publicReplyNumber et/ou privateReplyNumber
+   * Modifie une question. La question est supprimée si publicReplyNumber et privateReplyNumber
+   * sont à 0 et que la question est fermée. Met à jour publicReplyNumber et/ou privateReplyNumber
    * et replyNumber de la question
    */
   private void updateQuestion(Connection con, Question question) throws QuestionReplyException {
@@ -345,8 +347,8 @@ public class SilverpeasQuestionManager implements QuestionManager {
   }
 
   /*
-   * Modifie une question => la question est supprimée si publicReplyNumber et privateReplyNumber
-   * sont à 0 et que la question est close => met à jour publicReplyNumber et/ou privateReplyNumber
+   * Modifie une question. La question est supprimée si publicReplyNumber et privateReplyNumber
+   * sont à 0 et que la question est fermée. Met à jour publicReplyNumber et/ou privateReplyNumber
    * et replyNumber de la question
    */
   @Override
@@ -370,8 +372,8 @@ public class SilverpeasQuestionManager implements QuestionManager {
   }
 
   /*
-   * Modifie une réponse => La réponse est supprimée si le status public et le status private sont à
-   * 0
+   * Modifie une réponse : la réponse est supprimée si le status public et le status private sont à
+   * 0.
    */
   private void updateReply(Connection con, Reply reply) throws QuestionReplyException {
     try {
@@ -391,8 +393,8 @@ public class SilverpeasQuestionManager implements QuestionManager {
   }
 
   /*
-   * Modifie une réponse => La réponse est supprimée si le status public et le status private sont à
-   * 0
+   * Modifie une réponse : la réponse est supprimée si le status public et le status private sont à
+   * 0.
    */
   @Override
   public void updateReply(Reply reply) throws QuestionReplyException {
@@ -508,7 +510,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
     try {
       replyDao.remove(con, replyId);
       WysiwygController
-          .deleteFile(replyId.getInstanceId(), replyId.getId(), I18NHelper.DEFAULT_LANGUAGE);
+          .deleteFile(replyId.getInstanceId(), replyId.getId(), i18n.getDefaultLanguage());
     } catch (PersistenceException e) {
 
       throw new QuestionReplyException(e);
@@ -516,7 +518,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
   }
 
   /*
-   * recupère une question
+   * récupère une question
    */
   @Override
   public Question getQuestion(long questionId) throws QuestionReplyException {
@@ -556,7 +558,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
   }
 
   /*
-   * recupère la liste des réponses d'une question
+   * récupère la liste des réponses d'une question
    */
   @Override
   public List<Reply> getQuestionReplies(long questionId, String instanceId)
@@ -576,7 +578,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
   }
 
   /*
-   * recupère la liste des réponses publiques d'une question
+   * récupère la liste des réponses publiques d'une question
    */
   @Override
   public List<Reply> getQuestionPublicReplies(long questionId, String instanceId)
@@ -596,7 +598,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
   }
 
   /*
-   * recupère la liste des réponses privées d'une question
+   * récupère la liste des réponses privées d'une question
    */
   @Override
   public List<Reply> getQuestionPrivateReplies(long questionId, String instanceId)
@@ -616,7 +618,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
   }
 
   /*
-   * recupère la liste des destinataires d'une question
+   * récupère la liste des destinataires d'une question
    */
   @Override
   public List<Recipient> getQuestionRecipients(long questionId) throws QuestionReplyException {
@@ -629,7 +631,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
   }
 
   /*
-   * recupère une réponse
+   * récupère une réponse
    */
   @Override
   public Reply getReply(long replyId) throws QuestionReplyException {
@@ -647,8 +649,8 @@ public class SilverpeasQuestionManager implements QuestionManager {
   }
 
   /*
-   * Recupère la liste des questions emises par un utilisateur => Q dont il est l'auteur qui ne sont
-   * pas closes ou closes avec réponses privées
+   * Récupère la liste des questions émises par un utilisateur et qui ne soient pas fermées ou
+   * fermées avec réponses privées
    */
   @Override
   public List<Question> getSendQuestions(String userId, String instanceId)
@@ -665,8 +667,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
   }
 
   /*
-   * Recupère la liste des questions recues par un utilisateur => Q dont il est le destinataire et
-   * qui ne sont pas closes
+   * Récupère la liste des questions recues par un utilisateur, et qui ne sont pas fermées
    */
   @Override
   public List<Question> getReceiveQuestions(String userId, String instanceId)
@@ -684,7 +685,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
   }
 
   /*
-   * Recupère la liste des questions qui ne sont pas closes ou closes avec réponses publiques
+   * Récupère la liste des questions qui ne sont pas closes ou closes avec réponses publiques
    */
   @Override
   public List<Question> getQuestions(String instanceId) throws QuestionReplyException {
@@ -700,7 +701,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
   }
 
   /*
-   * Recupère la liste de toutes les questions avec toutes ses réponses
+   * Récupère la liste de toutes les questions avec toutes ses réponses
    */
   @Override
   public List<Question> getAllQuestions(String instanceId) throws QuestionReplyException {
@@ -738,7 +739,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
   }
 
   /*
-   * Recupère la liste des questions publiques avec réponses
+   * Récupère la liste des questions publiques avec réponses
    */
   @Override
   public List<Question> getPublicQuestions(String instanceId) throws QuestionReplyException {
@@ -771,7 +772,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
       WAPrimaryKey pkR = replyDao.add(con, reply);
       reply.getPK().setId(pkR.getId());
       WysiwygController.createFileAndAttachment(reply.readCurrentWysiwygContent(),
-          new ResourceReference(pkR), reply.getCreatorId(), I18NHelper.DEFAULT_LANGUAGE);
+          new ResourceReference(pkR), reply.getCreatorId(), i18n.getDefaultLanguage());
       questionIndexer.createIndex(question, Collections.singletonList(reply));
       Question updatedQuestion = getQuestion(idQ);
       contentManager.createSilverContent(con, updatedQuestion);
@@ -785,7 +786,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
   }
 
   /*
-   * recupère le nombre de réponses d'une question
+   * récupère le nombre de réponses d'une question
    */
   private int getQuestionRepliesNumber(long questionId) throws QuestionReplyException {
     try {
@@ -798,7 +799,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
   }
 
   /*
-   * recupère le nombre de réponses publiques d'une question
+   * récupère le nombre de réponses publiques d'une question
    */
   private int getQuestionPublicRepliesNumber(long questionId) throws QuestionReplyException {
     try {
@@ -813,7 +814,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
   }
 
   /*
-   * recupère le nombre de réponses privées d'une question
+   * récupère le nombre de réponses privées d'une question
    */
   private int getQuestionPrivateRepliesNumber(long questionId) throws QuestionReplyException {
     try {
@@ -828,14 +829,14 @@ public class SilverpeasQuestionManager implements QuestionManager {
 
   protected void updateWysiwygContent(Reply reply) {
     if (WysiwygController.haveGotWysiwyg(reply.getPK().getInstanceId(), reply.getPK().getId(),
-        I18NHelper.DEFAULT_LANGUAGE)) {
+        i18n.getDefaultLanguage())) {
       WysiwygController
           .updateFileAndAttachment(reply.readCurrentWysiwygContent(), reply.getPK().getInstanceId(),
-              reply.getPK().getId(), reply.getCreatorId(), I18NHelper.DEFAULT_LANGUAGE);
+              reply.getPK().getId(), reply.getCreatorId(), i18n.getDefaultLanguage());
     } else {
       WysiwygController.createUnindexedFileAndAttachment(reply.readCurrentWysiwygContent(),
           new ResourceReference(reply.getPK()),
-              reply.getCreatorId(), I18NHelper.DEFAULT_LANGUAGE);
+              reply.getCreatorId(), i18n.getDefaultLanguage());
     }
   }
 

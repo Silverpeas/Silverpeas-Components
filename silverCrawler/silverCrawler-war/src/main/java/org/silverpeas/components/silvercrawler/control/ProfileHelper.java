@@ -30,6 +30,9 @@ package org.silverpeas.components.silvercrawler.control;
  */
 public class ProfileHelper {
 
+  private ProfileHelper() {
+  }
+
   /**
    * Extract best profile from given profiles.
    * @param profiles an array of profile

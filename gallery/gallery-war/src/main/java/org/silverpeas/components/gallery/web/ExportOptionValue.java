@@ -25,6 +25,5 @@
 package org.silverpeas.components.gallery.web;
 
 public enum ExportOptionValue {
-  YES_ALL, YES_PUBLISHER, NO;
-
+  YES_ALL, YES_PUBLISHER, NO
 }

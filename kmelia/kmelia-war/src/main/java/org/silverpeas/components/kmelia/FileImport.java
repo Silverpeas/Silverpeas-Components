@@ -20,29 +20,24 @@
  */
 package org.silverpeas.components.kmelia;
 
+import org.silverpeas.components.kmelia.control.KmeliaSessionController;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.importexport.control.ImportSettings;
 import org.silverpeas.core.importexport.control.MassiveDocumentImport;
 import org.silverpeas.core.importexport.model.ImportExportException;
 import org.silverpeas.core.importexport.report.ImportReport;
 import org.silverpeas.core.importexport.report.MassiveReport;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.components.kmelia.control.KmeliaSessionController;
-import org.apache.commons.io.IOUtils;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
-import org.silverpeas.kernel.bundle.ResourceLocator;
-import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.core.util.ZipUtil;
 import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
+import java.io.*;
 
 import static org.silverpeas.core.util.Charsets.UTF_8;
 
@@ -59,8 +54,9 @@ public class FileImport {
    * Private or Public (ie DocumentVersion)
    */
   private int versionType;
-  private File fileUploaded;
-  private KmeliaSessionController kmeliaScc;
+  private final File fileUploaded;
+  private final KmeliaSessionController kmeliaScc;
+  private final MassiveDocumentImport docImport = MassiveDocumentImport.get();
 
   public FileImport(KmeliaSessionController kmeliaScc, File uploadedFile) {
     this.kmeliaScc = kmeliaScc;
@@ -74,7 +70,7 @@ public class FileImport {
   /**
    * Import a single file for a unique publication
    * @return a report of the import
-   * @throws ImportExportException
+   * @throws ImportExportException if the import fails.
    */
   public ImportReport importFile(boolean draft) throws ImportExportException {
     ImportSettings importSettings = getImportSettings(fileUploaded.getParent(), draft);
@@ -93,10 +89,10 @@ public class FileImport {
 
       FileUtil.moveAllFilesAtRootFolder(tempFolder);
 
-      ImportSettings settings = getImportSettings(tempFolder.getPath(), draft);
-      settings.getPublicationForAllFiles()
-          .setName(settings.getPublicationName(fileUploaded.getName()));
-      importReport = MassiveDocumentImport.get().importDocuments(settings, new MassiveReport());
+      ImportSettings importSettings = getImportSettings(tempFolder.getPath(), draft);
+      importSettings.getPublicationForAllFiles()
+          .setName(importSettings.getPublicationName(fileUploaded.getName()));
+      importReport = docImport.importDocuments(importSettings, new MassiveReport());
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       SilverpeasTransverseErrorUtil.throwTransverseErrorIfAny(e,
@@ -106,7 +102,6 @@ public class FileImport {
   }
 
   private File unzipUploadedFile() {
-    int nbFiles = ZipUtil.getNbFiles(fileUploaded);
     String tempFolderName = Long.toString(System.currentTimeMillis()) + '_' + kmeliaScc.getUserId();
     File tempFolder = new File(FileRepositoryManager.getTemporaryPath(), tempFolderName);
     if (!tempFolder.exists()) {
@@ -129,8 +124,8 @@ public class FileImport {
         FileUtil.moveAllFilesAtRootFolder(tempFolder);
       }
 
-      ImportSettings settings = getImportSettings(tempFolder.getPath(), draft);
-      importReport = MassiveDocumentImport.get().importDocuments(settings, new MassiveReport());
+      ImportSettings importSettings = getImportSettings(tempFolder.getPath(), draft);
+      importReport = MassiveDocumentImport.get().importDocuments(importSettings, new MassiveReport());
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       SilverpeasTransverseErrorUtil.throwTransverseErrorIfAny(e,
@@ -146,27 +141,30 @@ public class FileImport {
     if (importReport != null) {
       String reportLogFile = settings.getString("importExportLogFile");
       File file = new File(reportLogFile);
-      Writer fileWriter = null;
       try {
         if (!file.exists()) {
-          file.createNewFile();
+          boolean created = file.createNewFile();
+          if (!created) {
+            SilverLogger.getLogger(this).error("Log file " + file.getName() + " cannot be created");
+            return;
+          }
         }
-        fileWriter = new OutputStreamWriter(new FileOutputStream(file.getPath(), true), UTF_8);
-        fileWriter.write(importReport.writeToLog(resource));
+        try (Writer fileWriter = new OutputStreamWriter(new FileOutputStream(file.getPath(), true)
+        , UTF_8)) {
+          fileWriter.write(importReport.writeToLog(resource));
+        }
       } catch (IOException ex) {
         SilverLogger.getLogger(this).error(ex.getMessage(), ex);
-      } finally {
-        IOUtils.closeQuietly(fileWriter);
       }
     }
   }
 
   private ImportSettings getImportSettings(String path, boolean draft) {
-    ImportSettings settings =
+    ImportSettings importSettings =
         new ImportSettings(path, kmeliaScc.getUserDetail(), kmeliaScc.getComponentId(),
             kmeliaScc.getCurrentFolderId(), draft, true, ImportSettings.FROM_MANUAL);
-    settings.setVersioningUsed(kmeliaScc.isVersionControlled());
-    settings.setVersionType(versionType);
-    return settings;
+    importSettings.setVersioningUsed(kmeliaScc.isVersionControlled());
+    importSettings.setVersionType(versionType);
+    return importSettings;
   }
 }

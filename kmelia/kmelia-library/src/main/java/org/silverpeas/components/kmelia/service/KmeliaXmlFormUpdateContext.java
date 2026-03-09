@@ -24,7 +24,6 @@
 
 package org.silverpeas.components.kmelia.service;
 
-import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.kmelia.model.KmaxRuntimeException;
 import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
 import org.silverpeas.core.contribution.content.form.DataRecord;
@@ -39,6 +38,7 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.util.MemoizedSupplier;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileUploadUtil;
@@ -121,7 +121,7 @@ public class KmeliaXmlFormUpdateContext {
             if (FileField.TYPE.equals(field.getTypeName())) {
               final String inputName = Util.getFieldOccurrenceName(field.getName(), field.getOccurrence());
               final FileItem item = FileUploadUtil.getFile(items, inputName);
-              if (item != null && !item.isFormField() && StringUtil.isDefined(item.getName())) {
+              if (item != null && !item.isFormField() && StringUtil.isDefined(item.getFileName())) {
                 return Pair.of(item, (FileField) field);
               } else {
                 return Pair.of((FileItem) null, (FileField) field);

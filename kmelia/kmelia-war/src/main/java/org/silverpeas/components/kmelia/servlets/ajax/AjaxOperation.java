@@ -26,7 +26,7 @@ package org.silverpeas.components.kmelia.servlets.ajax;
 import org.silverpeas.components.kmelia.control.KmeliaSessionController;
 import org.silverpeas.components.kmelia.servlets.ajax.handlers.*;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 public enum AjaxOperation {
 
@@ -48,8 +48,8 @@ public enum AjaxOperation {
   GetPublicationAuthorizations(new GetPublicationAuthorizationsHandler(), true),
   SELECTALLPUBLICATIONS(new SelectAllPublicationsHandler(), true);
 
-  private AjaxHandler handler;
-  private boolean controllerRequired;
+  private final AjaxHandler handler;
+  private final boolean controllerRequired;
 
   AjaxOperation(AjaxHandler handler, boolean controllerRequired) {
     this.handler = handler;

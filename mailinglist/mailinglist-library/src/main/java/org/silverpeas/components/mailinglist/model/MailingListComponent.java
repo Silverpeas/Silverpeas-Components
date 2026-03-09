@@ -33,7 +33,8 @@ import org.silverpeas.kernel.logging.SilverLogger;
 
 public class MailingListComponent implements MessageListener {
 
-  private String componentId;
+  private final String componentId;
+  private final MailingListServicesProvider provider = MailingListServicesProvider.get();
 
   public MailingListComponent(String componentId) {
     this.componentId = componentId;
@@ -41,8 +42,7 @@ public class MailingListComponent implements MessageListener {
 
   @Override
   public boolean checkSender(String email) {
-    MailingList list =
-        MailingListServicesProvider.getMailingListService().findMailingList(componentId);
+    MailingList list = provider.getMailingListService().findMailingList(componentId);
     return list.isOpen() || list.isEmailAuthorized(email);
   }
 
@@ -56,14 +56,13 @@ public class MailingListComponent implements MessageListener {
     if (event == null || event.getMessages() == null || event.getMessages().isEmpty()) {
       return;
     }
-    MailingList list =
-        MailingListServicesProvider.getMailingListService().findMailingList(componentId);
+    MailingList list = provider.getMailingListService().findMailingList(componentId);
     for (Message message : event.getMessages()) {
       message.setModerated(!list.isModerated());
-      MailingListServicesProvider.getMessageService().saveMessage(message);
+      provider.getMessageService().saveMessage(message);
     }
     if (list.isNotify() || list.isModerated()) {
-      NotificationHelper helper = MailingListServicesProvider.getNotificationHelper();
+      NotificationHelper helper = provider.getNotificationHelper();
       for (Message message : event.getMessages()) {
         try {
           helper.notify(message, list);
@@ -73,4 +72,5 @@ public class MailingListComponent implements MessageListener {
       }
     }
   }
+
 }

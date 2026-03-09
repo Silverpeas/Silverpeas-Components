@@ -28,9 +28,9 @@ import org.silverpeas.components.quickinfo.repository.NewsRepository;
 import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.kernel.annotation.Technical;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.transaction.Transactional;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.transaction.Transactional;
 
 /**
  * Deletes the data associated with the Quickinfo instance that is being deleted.

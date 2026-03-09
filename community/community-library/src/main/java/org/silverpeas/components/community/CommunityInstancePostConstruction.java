@@ -36,9 +36,9 @@ import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.transaction.Transactional;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.transaction.Transactional;
 
 /**
  * Once the Community application instance created, constructs an empty community of users for the

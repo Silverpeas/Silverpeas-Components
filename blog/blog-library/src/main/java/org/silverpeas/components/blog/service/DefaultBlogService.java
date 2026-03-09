@@ -67,10 +67,10 @@ import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.annotation.Nonnull;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.transaction.Transactional;
+import jakarta.annotation.Nonnull;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;
@@ -106,6 +106,8 @@ public class DefaultBlogService implements BlogService, Initialization {
   private NodeService nodeService;
   @Inject
   private PublicationService publicationService;
+  @Inject
+  private PostDAO postDAO;
 
   @Override
   public void init() {
@@ -139,7 +141,7 @@ public class DefaultBlogService implements BlogService, Initialization {
 
   private Map<String, Date> getEventDateIndexedByPost(Collection<String> pubIds) {
     try {
-      return PostDAO.getEventDateIndexedByPost(pubIds);
+      return postDAO.getEventDateIndexedByPost(pubIds);
     } catch (SQLException e) {
       throw new BlogRuntimeException(failureOnGetting(POST, pubIds), e);
     }
@@ -161,7 +163,7 @@ public class DefaultBlogService implements BlogService, Initialization {
       PublicationPK pk = publicationService.createPublication(pub);
 
       // Create post
-      PostDAO.create(con, pk.getId(), post.getDateEvent(), pk.getInstanceId());
+      postDAO.create(con, pk.getId(), post.getDateEvent(), pk.getInstanceId());
       if (StringUtil.isDefined(post.getCategoryId())) {
         setCategory(pk, post.getCategoryId());
       }
@@ -227,7 +229,7 @@ public class DefaultBlogService implements BlogService, Initialization {
       }
 
       // Update event date
-      PostDAO.update(con, pubPk.getId(), post.getDateEvent());
+      postDAO.update(con, pubPk.getId(), post.getDateEvent());
 
       // Save wysiwyg content and do not index it (cause it is already indexed as publication 
       // content)
@@ -262,10 +264,10 @@ public class DefaultBlogService implements BlogService, Initialization {
 
     try (Connection con = openConnection()) {
       PublicationPK pubPK = new PublicationPK(postId, instanceId);
-      // Delete link with categorie
+      // Delete link with category
       publicationService.removeAllFathers(pubPK);
       // Delete date event
-      PostDAO.delete(con, pubPK.getId());
+      postDAO.delete(con, pubPK.getId());
       // Delete comments
       ResourceReference resourceReference = new ResourceReference(postId, instanceId);
       getCommentService().deleteAllCommentsOnResource(PostDetail.getResourceType(),
@@ -335,7 +337,7 @@ public class DefaultBlogService implements BlogService, Initialization {
   public Collection<PostDetail> getLastPosts(final String instanceId, final BlogFilters filters) {
     try (Connection con = openConnection()) {
       // search publications sorted by event date
-      Collection<String> allPostIds = PostDAO.getAllPostIds(con, instanceId);
+      Collection<String> allPostIds = postDAO.getAllPostIds(con, instanceId);
       final Stream<PublicationDetail> publications = filterPublications(
           publicationService.getByIds(allPostIds).stream(), filters);
       return toPosts(instanceId, publications.collect(toList()));
@@ -353,7 +355,7 @@ public class DefaultBlogService implements BlogService, Initialization {
   public Collection<PostDetail> getLastValidPosts(String instanceId, BlogFilters filters) {
     try (Connection con = openConnection()) {
       // rechercher les publications classées par date d'évènement
-      final Collection<String> allPostIds = PostDAO.getAllPostIds(con, instanceId);
+      final Collection<String> allPostIds = postDAO.getAllPostIds(con, instanceId);
       final Stream<PublicationDetail> publications = publicationService.getByIds(allPostIds)
           .stream()
           .filter(p -> PublicationDetail.VALID_STATUS.equals(p.getStatus()));
@@ -369,7 +371,7 @@ public class DefaultBlogService implements BlogService, Initialization {
       final BlogFilters filters) {
     try (Connection con = openConnection()) {
       // looking for classified publications
-      final Collection<String> allPostIds = PostDAO.getAllPostIds(con, instanceId);
+      final Collection<String> allPostIds = postDAO.getAllPostIds(con, instanceId);
       final Map<String, PublicationDetail> categoryPublications =
           publicationService.getPublicationsByCriteria(
               onComponentInstanceIds(instanceId).onNodes(categoryId))
@@ -395,7 +397,7 @@ public class DefaultBlogService implements BlogService, Initialization {
       final BlogFilters filters) {
     try (Connection con = openConnection()) {
       // searching publications sorted by event date
-      final Collection<String> postIds = PostDAO.getPostInRange(con, instanceId, beginDate,
+      final Collection<String> postIds = postDAO.getPostInRange(con, instanceId, beginDate,
           endDate);
       final List<PublicationDetail> publications = publicationService.getByIds(postIds);
       return toPosts(instanceId,
@@ -421,8 +423,8 @@ public class DefaultBlogService implements BlogService, Initialization {
           .collect(toSet());
 
       // création des billets à partir des résultats
-      // rechercher la liste des posts trié par date
-      final Collection<String> searchedPostIds = PostDAO.getAllPostIds(con, instanceId)
+      // rechercher la liste des posts triée par date
+      final Collection<String> searchedPostIds = postDAO.getAllPostIds(con, instanceId)
           .stream()
           .filter(searchResult::contains)
           .collect(toList());
@@ -490,7 +492,7 @@ public class DefaultBlogService implements BlogService, Initialization {
   public Collection<Archive> getAllArchives(String instanceId) {
     try (Connection con = openConnection()) {
       final Calendar calendar = Calendar.getInstance(Locale.FRENCH);
-      return PostDAO.getAllEventDates(con, instanceId)
+      return postDAO.getAllEventDates(con, instanceId)
           .stream()
           .map(d -> {
             calendar.setTime(d);
@@ -506,7 +508,7 @@ public class DefaultBlogService implements BlogService, Initialization {
   private Archive createArchive(Calendar calendar) {
     Date beginDate = getMonthFirstDay(calendar);
     Date endDate = getMonthLastDay(calendar);
-    // regarder s'il y a des évenements sur cette période
+    // regarder s'il y a des événements sur cette période
     Archive archive =
         new Archive(USELESS, DateUtil.date2SQLDate(beginDate), DateUtil.date2SQLDate(endDate));
     archive.setYear(java.lang.Integer.toString(calendar.get(Calendar.YEAR)));

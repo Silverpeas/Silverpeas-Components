@@ -23,13 +23,17 @@
  */
 package org.silverpeas.components.websites;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.kernel.annotation.Technical;
 
 /**
  * Once an instance of the Bookmark application is spawned, creates for it an entry with the Node
- * service to refer the bookmarked web sites.
+ * service to refer the bookmarked websites.
  * @author mmoquillon
  */
+@Technical
+@Bean
 @Named
 public class BookmarkInstancePostConstruction extends WebSitesInstancePostConstruction {
 }

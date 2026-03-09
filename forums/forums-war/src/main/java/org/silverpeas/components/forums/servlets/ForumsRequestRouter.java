@@ -38,7 +38,7 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.webapi.rating.RaterRatingEntity;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 public class ForumsRequestRouter extends ComponentRequestRouter<ForumsSessionController> {
 
@@ -209,15 +209,15 @@ public class ForumsRequestRouter extends ComponentRequestRouter<ForumsSessionCon
 
   /**
    * Prepares data to view a forum and computes the right destination.
-   * @param request
-   * @param forumsSC
+   * @param request the incoming request
+   * @param forumsSC the session controller
    * @param forumId the forum identifier
    * @return destination page
    */
   private String displayForum(HttpServletRequest request, ForumsSessionController forumsSC,
       int forumId) {
     String destinationPage = "main.jsp";
-    int currentForumId = (forumId < 0 ? 0 : forumId);
+    int currentForumId = (Math.max(forumId, 0));
     if (currentForumId > 0) {
       Forum forum = forumsSC.getForum(currentForumId);
       if (forum == null) {

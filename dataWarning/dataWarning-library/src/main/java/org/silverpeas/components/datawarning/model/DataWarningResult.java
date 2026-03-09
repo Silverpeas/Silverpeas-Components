@@ -23,15 +23,15 @@ package org.silverpeas.components.datawarning.model;
 import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-public class DataWarningResult extends Object {
+public class DataWarningResult {
   // Trigger static values
 
-  private boolean triggerRequired = false;
+  private final boolean triggerRequired;
   private long trigger = 0;
   private int triggerCondition = DataWarningQuery.TRIGGER_CONDITION_SUP;
   // Trigger dynamic values
   private long triggerActualValue = 0;
-  private boolean triggerEnabled = false;
+  private boolean triggerEnabled;
   // Trigger Query
   private DataWarningQuery triggerQuery = null;
   // Trigger Result

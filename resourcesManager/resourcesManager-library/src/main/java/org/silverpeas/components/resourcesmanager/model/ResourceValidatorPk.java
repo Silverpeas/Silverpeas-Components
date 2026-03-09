@@ -25,7 +25,7 @@ package org.silverpeas.components.resourcesmanager.model;
 
 import org.silverpeas.core.persistence.datasource.model.CompositeEntityIdentifier;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 
 /**
  * @author ehugonnet
@@ -102,5 +102,10 @@ public class ResourceValidatorPk implements CompositeEntityIdentifier {
   @Override
   public String asString() {
     return resourceId + COMPOSITE_SEPARATOR + managerId;
+  }
+
+  @Override
+  public boolean isNull() {
+    return false;
   }
 }

@@ -28,13 +28,18 @@ import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import static org.silverpeas.core.cache.service.CacheAccessorProvider.getThreadCacheAccessor;
 
 /**
- * This class permits to get the some flags about the Kmelia Service context.
+ * This class allows to get and set information about the Kmelia Service context.
+ *
  * @author Yohann Chastagnier
  */
 class KmeliaServiceContext {
 
+  private KmeliaServiceContext() {
+  }
+
   /**
    * Marks that the given publication has been created into the current request context.
+   *
    * @param publication the publication to indicate created into current request context.
    */
   static void createdIntoRequestContext(final PublicationDetail publication) {
@@ -44,6 +49,7 @@ class KmeliaServiceContext {
 
   /**
    * Indicates if the given publication has been created into the context of the current request.
+   *
    * @param publication the publication to verify.
    * @return true if yes, false otherwise.
    */
@@ -55,6 +61,7 @@ class KmeliaServiceContext {
 
   /**
    * Marks that the given publication has been updated into the current request context.
+   *
    * @param publication the publication to indicate updated into current request context.
    */
   static void updatedIntoRequestContext(final PublicationDetail publication) {
@@ -64,6 +71,7 @@ class KmeliaServiceContext {
 
   /**
    * Indicates if the given publication has been updated into the context of the current request.
+   *
    * @param publication the publication to verify.
    * @return true if yes, false otherwise.
    */
@@ -74,6 +82,7 @@ class KmeliaServiceContext {
 
   /**
    * Common build of cache key from a publication.
+   *
    * @param prefix the prefix of the key.
    * @param publication the publication.
    * @return a cache key as string.

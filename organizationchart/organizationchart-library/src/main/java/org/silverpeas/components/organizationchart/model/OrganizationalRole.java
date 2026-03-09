@@ -26,9 +26,9 @@ package org.silverpeas.components.organizationchart.model;
 public class OrganizationalRole {
 
   // label or label to print in front
-  private String label = null;
-  // key wich is part of the "Title" ldap filed
-  private String ldapKey = null;
+  private final String label;
+  // key which is part of the "Title" ldap filed
+  private final String ldapKey;
 
   public OrganizationalRole(String label, String ldapKey) {
     this.label = label;

@@ -43,9 +43,9 @@ public class Forum implements Contribution, Rateable, Serializable {
   private int id;
   private String name;
   private String description;
-  private boolean active;
+  private final boolean active;
   private int parentId;
-  private String category;
+  private final String category;
   private Date creationDate;
   private String instanceId;
   private ForumPK pk;
@@ -102,10 +102,6 @@ public class Forum implements Contribution, Rateable, Serializable {
     return active;
   }
 
-  public void setActive(boolean active) {
-    this.active = active;
-  }
-
   public int getParentId() {
     return parentId;
   }
@@ -120,10 +116,6 @@ public class Forum implements Contribution, Rateable, Serializable {
 
   public String getCategory() {
     return category;
-  }
-
-  public void setCategory(String category) {
-    this.category = category;
   }
 
   public Date getCreationDate() {

@@ -27,6 +27,10 @@ package org.silverpeas.components.silvercrawler.control;
 import org.silverpeas.components.silvercrawler.util.IpAddressMatcher;
 
 public class IPMaskHelper {
+
+  private  IPMaskHelper() {
+  }
+
   public static boolean isIPElligible(String ipAddress, String networkMasks) {
     String[] masks = networkMasks.split(",");
     for (String mask : masks) {

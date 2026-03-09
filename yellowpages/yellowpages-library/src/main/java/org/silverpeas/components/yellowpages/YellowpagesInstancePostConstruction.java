@@ -23,16 +23,18 @@
  */
 package org.silverpeas.components.yellowpages;
 
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.transaction.Transactional;
 import org.silverpeas.core.admin.component.ComponentInstancePostConstruction;
-import org.silverpeas.core.admin.service.AdministrationServiceProvider;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.node.service.NodeService;
+import org.silverpeas.core.admin.service.Administration;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.node.service.NodeService;
+import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.kernel.util.StringUtil;
-
-import javax.inject.Named;
-import javax.transaction.Transactional;
 
 /**
  * Once an instance of the YellowPages application is created, creates for it an entry with the
@@ -40,14 +42,20 @@ import javax.transaction.Transactional;
  * declassified.
  * @author mmoquillon
  */
+@Technical
+@Bean
 @Named
 public class YellowpagesInstancePostConstruction implements ComponentInstancePostConstruction {
+
+  @Inject
+  private NodeService nodeService;
+
+  @Inject
+  private Administration admin;
 
   @Transactional
   @Override
   public void postConstruct(final String componentInstanceId) {
-    NodeService nodeService = NodeService.get();
-
     NodeDetail contacts = getContactsNodeFor(componentInstanceId);
     NodeDetail bin = getBinNodeFor(componentInstanceId, contacts);
     NodeDetail dz = getDzNodeFor(componentInstanceId, contacts);
@@ -64,11 +72,10 @@ public class YellowpagesInstancePostConstruction implements ComponentInstancePos
     root.setUseId(true);
     root.setName("Accueil");
     root.setDescription("");
-    root.setCreatorId(UserDetail.getCurrentRequester().getId());
+    root.setCreatorId(User.getCurrentRequester().getId());
     root.setLevel(1);
 
-    String xmlFilename = AdministrationServiceProvider.getAdminService()
-          .getComponentParameterValue(componentInstanceId, "xmlTemplate");
+    String xmlFilename = admin.getComponentParameterValue(componentInstanceId, "xmlTemplate");
     if (StringUtil.isDefined(xmlFilename)) {
       root.setModelId(xmlFilename);
     }
@@ -83,7 +90,7 @@ public class YellowpagesInstancePostConstruction implements ComponentInstancePos
     bin.setUseId(true);
     bin.setName("Corbeille");
     bin.setDescription("Vous trouvez ici les contacts que vous avez supprimé");
-    bin.setCreatorId(UserDetail.getCurrentRequester().getId());
+    bin.setCreatorId(User.getCurrentRequester().getId());
     bin.setLevel(2);
     return bin;
   }
@@ -95,7 +102,7 @@ public class YellowpagesInstancePostConstruction implements ComponentInstancePos
     dz.setUseId(true);
     dz.setName("Déclassées");
     dz.setDescription("Vos contacts inaccessibles se retrouvent ici");
-    dz.setCreatorId(UserDetail.getCurrentRequester().getId());
+    dz.setCreatorId(User.getCurrentRequester().getId());
     dz.setLevel(2);
     return dz;
   }

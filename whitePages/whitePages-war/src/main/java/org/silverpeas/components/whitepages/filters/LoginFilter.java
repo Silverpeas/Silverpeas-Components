@@ -33,14 +33,14 @@ import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 
 import static org.silverpeas.core.web.util.WebRedirection.REDIRECT_TO_COMPONENT;
@@ -49,7 +49,7 @@ import static org.silverpeas.core.web.util.WebRedirection.REDIRECT_TO_COMPONENT;
  * Ce filtre a pour effet de contrôler que l'utilisateur courant n'a pas une fiche à remplir dans
  * une instance de whitePages. Si c'est le cas, 2 attributs sont mis en sessions :
  * <ul>
- * <li>RedirectToComponentId : avec le componentId de l'instance pour que le mecanisme de
+ * <li>RedirectToComponentId : avec le componentId de l'instance pour que le mécanisme de
  * redirection le renvoie sur le composant</li>
  * <li>FicheNonRemplie : avec le componentId de l'instance pour que le filtre mappé sur tous les
  * routers des composants puisse intercepter au besoin et renvoyer sur la fiche.</li>
