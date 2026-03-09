@@ -36,23 +36,18 @@ public class DayVO implements Serializable {
   /**
    * Number of day in a month with two digits character
    */
-  private String number = null;
+  private String number;
 
   /**
    * First day character
    */
-  private String firstDayChar = null;
+  private String firstDayChar;
 
   /**
    * Date
    */
-  private Date day = null;
+  private Date day;
 
-  /**
-   * @param number
-   * @param firstDayChar
-   * @param day TODO
-   */
   public DayVO(String number, String firstDayChar, Date day) {
     super();
     this.number = number;

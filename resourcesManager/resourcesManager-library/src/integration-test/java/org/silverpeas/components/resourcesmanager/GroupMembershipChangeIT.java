@@ -37,7 +37,7 @@ import org.silverpeas.components.resourcesmanager.test.WarBuilder4ResourcesManag
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.test.integration.rule.DbUnitLoadingRule;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.List;
 
 /**

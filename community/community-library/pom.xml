@@ -29,7 +29,7 @@
   <parent>
     <groupId>org.silverpeas.components</groupId>
     <artifactId>community</artifactId>
-    <version>6.5-SNAPSHOT</version>
+    <version>6.5-ee-SNAPSHOT</version>
   </parent>
 
   <groupId>org.silverpeas.components.community</groupId>
@@ -38,11 +38,6 @@
   <name>Community Business Library</name>
 
   <dependencies>
-    <dependency>
-      <groupId>org.silverpeas.core</groupId>
-      <artifactId>silverpeas-core</artifactId>
-      <version>${core.version}</version>
-    </dependency>
     <dependency>
       <groupId>org.silverpeas.core</groupId>
       <artifactId>silverpeas-core-jcr</artifactId>

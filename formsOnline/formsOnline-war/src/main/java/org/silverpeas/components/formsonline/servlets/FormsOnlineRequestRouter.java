@@ -23,7 +23,6 @@
  */
 package org.silverpeas.components.formsonline.servlets;
 
-import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.formsonline.control.FormsOnlineSessionController;
 import org.silverpeas.components.formsonline.model.FormDetail;
 import org.silverpeas.components.formsonline.model.FormInstance;
@@ -31,6 +30,7 @@ import org.silverpeas.components.formsonline.model.FormInstanceValidationType;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.PagesContext;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.export.ExportCSVBuilder;
@@ -73,14 +73,13 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    * @param function The entering request function (ex : "Main.jsp")
-   * @param formsOnlineSC The component Session Control, build and initialised.
-   * @param request
-   * @return The complete destination URL for a forward (ex :
-   * "/almanach/jsp/almanach.jsp?flag=user")
+   * @param formsOnlineSC The component Session Control, build and initialized.
+   * @param request the incoming HTTP request
+   * @return The complete destination URL for a forward (ex: "/almanach/jsp/almanach.jsp?flag=user")
    */
   public String getDestination(String function, FormsOnlineSessionController formsOnlineSC,
       HttpRequest request) {
-    String destination = "";
+    String destination;
 
     try {
       if ("Main".equals(function)) {

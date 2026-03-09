@@ -23,27 +23,31 @@
  */
 package org.silverpeas.components.mailinglist.servlets;
 
-import org.silverpeas.components.mailinglist.service.MailingListServicesProvider;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.silverpeas.components.mailinglist.service.model.MessageService;
 import org.silverpeas.components.mailinglist.service.model.beans.Message;
-import org.silverpeas.core.web.util.servlet.GoTo;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.web.util.servlet.GoTo;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.net.URLEncoder;
 
 public class GoToMessage extends GoTo {
   private static final long serialVersionUID = 211910337214026040L;
 
+  @Inject
+  private MessageService messageService;
+
   @Override
-  public String getDestination(String id, HttpServletRequest request, HttpServletResponse response)
-      throws Exception {
-    Message message = MailingListServicesProvider.getMessageService().getMessage(id);
+  public String getDestination(String id, HttpServletRequest request, HttpServletResponse response) {
+    Message message = messageService.getMessage(id);
     String baseUrl = URLUtil.getURL(null, message.getComponentId());
     if (!baseUrl.endsWith("/")) {
       baseUrl = baseUrl + '/';
     }
     String gotoURL = baseUrl + "message/" + id;
-    return "goto=" + URLEncoder.encode(gotoURL, "UTF-8");
+    return "goto=" + URLEncoder.encode(gotoURL, Charsets.UTF_8);
   }
 }

@@ -53,9 +53,9 @@ class KmeliaValidationTest {
   private int counter = 0;
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     counter = 0;
-    kmeliaValidation = KmeliaValidation.by(VALIDATOR_ID);
+    kmeliaValidation = KmeliaValidation.by(VALIDATOR_ID).with(kmeliaService);
   }
 
   @Test

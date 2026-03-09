@@ -35,11 +35,4 @@ public class AlreadyMemberException extends SilverpeasRuntimeException {
     super(message);
   }
 
-  public AlreadyMemberException(final String message, final Throwable cause) {
-    super(message, cause);
-  }
-
-  public AlreadyMemberException(final Throwable cause) {
-    super(cause);
-  }
 }

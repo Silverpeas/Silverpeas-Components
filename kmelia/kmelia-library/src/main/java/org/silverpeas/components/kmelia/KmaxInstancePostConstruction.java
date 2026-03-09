@@ -23,13 +23,15 @@
  */
 package org.silverpeas.components.kmelia;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
+import org.silverpeas.core.annotation.Bean;
 
 /**
  * Once an instance of the Kmax application is created, creates for it the root folder, the bin
  * and the declassified child folders.
  * @author mmoquillon
  */
+@Bean
 @Named
 public class KmaxInstancePostConstruction extends KmeliaInstancePostConstruction {
 }

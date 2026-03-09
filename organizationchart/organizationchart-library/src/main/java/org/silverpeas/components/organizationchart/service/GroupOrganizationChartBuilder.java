@@ -23,24 +23,14 @@
  */
 package org.silverpeas.components.organizationchart.service;
 
-import org.silverpeas.components.organizationchart.model.OrganizationalChart;
-import org.silverpeas.components.organizationchart.model.OrganizationalChartType;
-import org.silverpeas.components.organizationchart.model.OrganizationalPerson;
-import org.silverpeas.components.organizationchart.model.OrganizationalPersonComparator;
-import org.silverpeas.components.organizationchart.model.OrganizationalUnit;
-import org.silverpeas.components.organizationchart.model.PersonCategory;
+import org.silverpeas.components.organizationchart.model.*;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.kernel.util.StringUtil;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 
 class GroupOrganizationChartBuilder extends AbstractOrganizationChartBuilder {
 
@@ -63,8 +53,7 @@ class GroupOrganizationChartBuilder extends AbstractOrganizationChartBuilder {
     Group group = OrganizationControllerProvider.getOrganisationController().getGroup(groupId);
 
     OrganizationalUnit root = new OrganizationalUnit(group.getName(), groupId);
-    if (!groupId.equals(config.getRoot())) {
-      if (!group.isRoot()) {
+    if (!groupId.equals(config.getRoot()) && !group.isRoot()) {
         Group parent = OrganizationControllerProvider.getOrganisationController().getGroup(group.
             getSuperGroupId());
         if (parent != null) {
@@ -72,28 +61,24 @@ class GroupOrganizationChartBuilder extends AbstractOrganizationChartBuilder {
           root.setParentOu(parent.getId());
         }
       }
-    }
 
-    List<OrganizationalPerson> ouMembers = getMembers(groupId, group.getUserIds(), type);
-    root.setHasMembers(ouMembers != null && !ouMembers.isEmpty());
+
+    List<OrganizationalPerson> ouMembers = getMembers(group.getUserIds(), type);
+    root.setHasMembers(!ouMembers.isEmpty());
 
     OrganizationalChart chart;
-    switch (type) {
-      case TYPE_UNITCHART:
-        List<OrganizationalUnit> units = getSubOrganizationUnits(group);
-        chart = new OrganizationalChart(root, units, ouMembers, true);
-        break;
-
-      default:
-        Set<PersonCategory> categories = getCategories(ouMembers);
-        chart = new OrganizationalChart(root, ouMembers, categories, true);
-        break;
+    if (Objects.requireNonNull(type) == OrganizationalChartType.TYPE_UNITCHART) {
+      List<OrganizationalUnit> units = getSubOrganizationUnits(group);
+      chart = new OrganizationalChart(root, units, ouMembers);
+    } else {
+      Set<PersonCategory> categories = getCategories(ouMembers);
+      chart = new OrganizationalChart(root, ouMembers, categories);
     }
 
     return chart;
   }
 
-  private List<OrganizationalPerson> getMembers(String groupId, String[] userIds,
+  private List<OrganizationalPerson> getMembers(String[] userIds,
       OrganizationalChartType type) {
 
     List<OrganizationalPerson> personList = new ArrayList<>(userIds.length);
@@ -104,7 +89,7 @@ class GroupOrganizationChartBuilder extends AbstractOrganizationChartBuilder {
         personList.add(person);
       }
     }
-    Collections.sort(personList, new OrganizationalPersonComparator());
+    personList.sort(new OrganizationalPersonComparator());
     return personList;
   }
 
@@ -121,17 +106,14 @@ class GroupOrganizationChartBuilder extends AbstractOrganizationChartBuilder {
 
     OrganizationalPerson person =
         new OrganizationalPerson(Integer.parseInt(id), -1, user.getDisplayedName(), userFunction,
-            userDescription, userService, null);
+            userService, null);
 
     // Determines attributes to be returned
     Map<String, String> attributesToReturn;
-    switch (type) {
-      case TYPE_UNITCHART:
-        attributesToReturn = config.getUnitsChartOthersInfosKeys();
-        break;
-
-      default:
-        attributesToReturn = config.getPersonnsChartOthersInfosKeys();
+    if (Objects.requireNonNull(type) == OrganizationalChartType.TYPE_UNITCHART) {
+      attributesToReturn = config.getUnitsChartOthersInfosKeys();
+    } else {
+      attributesToReturn = config.getPersonsChartOthersInfosKeys();
     }
 
     Map<String, String> details = new HashMap<>();
@@ -142,14 +124,10 @@ class GroupOrganizationChartBuilder extends AbstractOrganizationChartBuilder {
 
     // defined the boxes with persons inside
     if (userFunction != null) {
-      switch (type) {
-        case TYPE_UNITCHART:
-          defineUnitChartRoles(person, userFunction, config);
-          break;
-
-        default:
-          defineDetailledChartRoles(person, userFunction, config);
-          break;
+      if (type == OrganizationalChartType.TYPE_UNITCHART) {
+        defineUnitChartRoles(person, userFunction, config);
+      } else {
+        defineDetailedChartRoles(person, userFunction, config);
       }
     } else {
       person.setVisibleCategory(new PersonCategory("Personnel"));
@@ -172,8 +150,8 @@ class GroupOrganizationChartBuilder extends AbstractOrganizationChartBuilder {
       unit.setParentName(group.getName());
       unit.setParentOu(group.getId());
       unit.setHasSubUnits(!subgroup.getSubGroups().isEmpty());
-      // set responsible of subunit
-      List<OrganizationalPerson> users = getMembers(subgroup.getId(), subgroup.getUserIds(),
+      // set responsible for subunit
+      List<OrganizationalPerson> users = getMembers(subgroup.getUserIds(),
           OrganizationalChartType.TYPE_UNITCHART);
       List<OrganizationalPerson> mainActors = getMainActors(users);
       unit.setMainActors(mainActors);

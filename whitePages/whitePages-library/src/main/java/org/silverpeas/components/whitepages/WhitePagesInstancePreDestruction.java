@@ -31,8 +31,8 @@ import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 
-import javax.inject.Named;
-import javax.transaction.Transactional;
+import jakarta.inject.Named;
+import jakarta.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 

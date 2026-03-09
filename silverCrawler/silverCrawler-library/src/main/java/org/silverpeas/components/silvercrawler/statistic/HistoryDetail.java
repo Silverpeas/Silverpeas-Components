@@ -27,46 +27,27 @@ package org.silverpeas.components.silvercrawler.statistic;
 import java.io.Serializable;
 import java.util.Date;
 
-/**
- * Class declaration
- * @author
- */
 public class HistoryDetail implements Serializable {
 
   private static final long serialVersionUID = -8830352251652633749L;
-  private Date date;
-  private String userId;
-  private String path;
+  private final Date date;
+  private final String userId;
+  private final String path;
 
-  /**
-   * Default constructor
-   * @param date
-   * @param userId
-   * @param path
-   */
   public HistoryDetail(Date date, String userId, String path) {
     this.date = date;
     this.userId = userId;
     this.path = path;
   }
 
-  /**
-   * @return
-   */
   public Date getDate() {
     return date;
   }
 
-  /**
-   * @return
-   */
   public String getUserId() {
     return userId;
   }
 
-  /**
-   * @return
-   */
   public String getPath() {
     return path;
   }

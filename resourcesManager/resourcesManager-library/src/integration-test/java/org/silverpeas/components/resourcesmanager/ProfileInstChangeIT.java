@@ -38,7 +38,7 @@ import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.test.integration.rule.DbUnitLoadingRule;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.List;
 
 /**

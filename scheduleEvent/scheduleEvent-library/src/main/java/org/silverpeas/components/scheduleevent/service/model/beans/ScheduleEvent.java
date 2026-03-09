@@ -25,7 +25,7 @@ import org.silverpeas.components.scheduleevent.service.model.ScheduleEventBean;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.SilverpeasToolContent;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
@@ -48,7 +48,7 @@ public class ScheduleEvent implements SilverpeasToolContent, ScheduleEventBean, 
   private String id;
   private String title;
   private String description;
-  @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+  @Temporal(jakarta.persistence.TemporalType.TIMESTAMP)
   private Date creationDate;
   @Column(name = "creatorid")
   private int author;

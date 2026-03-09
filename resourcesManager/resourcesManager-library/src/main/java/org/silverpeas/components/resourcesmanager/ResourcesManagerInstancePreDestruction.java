@@ -32,9 +32,9 @@ import org.silverpeas.components.resourcesmanager.repository.ResourceValidatorRe
 import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.kernel.annotation.Technical;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.transaction.Transactional;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.transaction.Transactional;
 
 /**
  * Deletes all the resources and categories related to the ResourcesManager instance that is being

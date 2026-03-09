@@ -23,43 +23,40 @@
  */
 package org.silverpeas.components.mailinglist.servlets;
 
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
 import org.silverpeas.components.mailinglist.control.MailingListSessionController;
-import org.silverpeas.components.mailinglist.service.MailingListServicesProvider;
 import org.silverpeas.components.mailinglist.service.model.MailingListService;
 import org.silverpeas.components.mailinglist.service.model.beans.InternalSubscriber;
 import org.silverpeas.components.mailinglist.service.model.beans.MailingList;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.web.mvc.controller.ComponentSessionController;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.web.selection.SelectionUsersGroups;
-import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.util.Pair;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
+@Bean
 public class SubscribersProcessor implements MailingListRoutage {
 
-  public static String processSubscription(RestRequest rest, HttpServletRequest request,
+  @Inject
+  private MailingListService service;
+  
+  public String processSubscription(RestRequest rest, HttpServletRequest request,
       ComponentSessionController componentSC) {
-    MailingList mailingList =
-        MailingListServicesProvider.getMailingListService().findMailingList(rest.getComponentId());
+    MailingList mailingList = service.findMailingList(rest.getComponentId());
     MailingListSessionController controller = (MailingListSessionController) componentSC;
     Selection selection = controller.getSelection();
     switch (rest.getAction()) {
       case RestRequest.DELETE:
-        MailingListServicesProvider.getMailingListService()
-            .unsubscribe(rest.getComponentId(), componentSC.getUserId());
+        service.unsubscribe(rest.getComponentId(), componentSC.getUserId());
         return request.getScheme() + "://" + request.getServerName() + ':' +
             request.getServerPort() + request.getContextPath() + request.getServletPath() + '/' +
             rest.getComponentId() + '/' + DESTINATION_ACTIVITIES + '/' + rest.getComponentId();
       case RestRequest.FIND:
-        MailingListServicesProvider.getMailingListService()
-            .subscribe(rest.getComponentId(), componentSC.getUserId());
+        service.subscribe(rest.getComponentId(), componentSC.getUserId());
         return request.getScheme() + "://" + request.getServerName() + ':' +
             request.getServerPort() + request.getContextPath() + request.getServletPath() + '/' +
             rest.getComponentId() + '/' + DESTINATION_ACTIVITIES + '/' + rest.getComponentId();
@@ -70,10 +67,8 @@ public class SubscribersProcessor implements MailingListRoutage {
       default:
         List<String> userIds = Arrays.asList(selection.getSelectedElements());
         List<String> groupIds = Arrays.asList(selection.getSelectedSets());
-        MailingListServicesProvider.getMailingListService()
-            .setInternalSubscribers(rest.getComponentId(), userIds);
-        MailingListServicesProvider.getMailingListService()
-            .setGroupSubscribers(rest.getComponentId(), groupIds);
+        service.setInternalSubscribers(rest.getComponentId(), userIds);
+        service.setGroupSubscribers(rest.getComponentId(), groupIds);
         selection.resetAll();
         return request.getScheme() + "://" + request.getServerName() + ':' +
             request.getServerPort() + request.getContextPath() + request.getServletPath() + '/' +
@@ -83,12 +78,12 @@ public class SubscribersProcessor implements MailingListRoutage {
 
   private static void prepareSelection(Selection selection, MailingListSessionController controller,
       MailingList mailingList, String componentId) {
-    String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
+    String webContext = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
     String hostSpaceName = controller.getSpaceLabel();
     Pair<String, String> hostComponentName = new Pair<>(controller.getComponentLabel(),
-        m_context + "/Rmailinglist/" + componentId + "/activity/" + componentId);
+        webContext + "/Rmailinglist/" + componentId + "/activity/" + componentId);
     String hostUrl =
-        m_context + "/Rmailinglist/" + componentId + '/' + DESTINATION_SUBSCRIBERS + '/' +
+        webContext + "/Rmailinglist/" + componentId + '/' + DESTINATION_SUBSCRIBERS + '/' +
             componentId;
     selection.resetAll();
     selection.setHostSpaceName(hostSpaceName);
@@ -120,6 +115,6 @@ public class SubscribersProcessor implements MailingListRoutage {
         result.add(subscriber.getExternalId());
       }
     }
-    return result.toArray(new String[result.size()]);
+    return result.toArray(new String[0]);
   }
 }

@@ -26,12 +26,14 @@ package org.silverpeas.components.gallery;
 import org.silverpeas.components.gallery.service.GalleryService;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.web.index.components.ComponentIndexation;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.inject.Singleton;
 
+@Bean
 @Singleton
 @Named("gallery" + ComponentIndexation.QUALIFIER_SUFFIX)
 public class GalleryIndexer implements ComponentIndexation {

@@ -23,29 +23,34 @@
  */
 package org.silverpeas.components.infoletter;
 
-import org.silverpeas.core.admin.component.ComponentInstancePostConstruction;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.transaction.Transactional;
 import org.silverpeas.components.infoletter.model.InfoLetter;
 import org.silverpeas.components.infoletter.model.InfoLetterService;
-import org.silverpeas.components.infoletter.service.InfoLetterServiceProvider;
+import org.silverpeas.core.admin.component.ComponentInstancePostConstruction;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
-
-import javax.inject.Named;
-import javax.transaction.Transactional;
+import org.silverpeas.kernel.annotation.Technical;
 
 /**
  * Creates for each spawned InfoLetter instance a default letter and indexes it.
  * @author mmoquillon
  */
+@Technical
+@Bean
 @Named
 public class InfoLetterInstancePostConstruction implements ComponentInstancePostConstruction {
+
+  @Inject
+  private InfoLetterService service;
 
   @Transactional
   @Override
   public void postConstruct(final String componentInstanceId) {
-    InfoLetterService infoLetterService = InfoLetterServiceProvider.getInfoLetterData();
-    InfoLetter infoLetter = infoLetterService.createDefaultLetter(componentInstanceId);
+    InfoLetter infoLetter = service.createDefaultLetter(componentInstanceId);
     FullIndexEntry indexEntry =
         new FullIndexEntry(new IndexEntryKey(componentInstanceId, InfoLetter.TYPE,
             infoLetter.getPK().getId()));

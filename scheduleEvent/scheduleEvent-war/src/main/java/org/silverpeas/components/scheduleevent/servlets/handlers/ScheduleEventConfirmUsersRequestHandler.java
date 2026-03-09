@@ -24,16 +24,15 @@
 
 package org.silverpeas.components.scheduleevent.servlets.handlers;
 
-import javax.servlet.http.HttpServletRequest;
-
+import jakarta.servlet.http.HttpServletRequest;
 import org.silverpeas.components.scheduleevent.control.ScheduleEventSessionController;
-import org.silverpeas.components.scheduleevent.control.ScheduleEventSessionController;
+import org.silverpeas.kernel.SilverpeasException;
 
 public class ScheduleEventConfirmUsersRequestHandler implements
 		ScheduleEventRequestHandler {
 
 	private ScheduleEventRequestHandler forwardRequestHandler = null;
-	private boolean creationMode;
+	private final boolean creationMode;
 
 	public void setForwardRequestHandler(
 			ScheduleEventRequestHandler forwardRequestHandler) {
@@ -47,18 +46,18 @@ public class ScheduleEventConfirmUsersRequestHandler implements
 	@Override
 	public String getDestination(String function,
 			ScheduleEventSessionController scheduleeventSC,
-			HttpServletRequest request) throws Exception {
+			HttpServletRequest request) throws SilverpeasException {
 		if (forwardRequestHandler != null) {
 			return addUsersToCurrentScheduleEventAndForwardRequestHandler(
 					function, scheduleeventSC, request);
 		} else {
-			throw UndefinedForwardRequestHandlerException();
+			throw undefinedForwardRequestHandlerException();
 		}
 	}
 
 	private String addUsersToCurrentScheduleEventAndForwardRequestHandler(
 			String function, ScheduleEventSessionController scheduleeventSC,
-			HttpServletRequest request) throws Exception {
+			HttpServletRequest request) throws SilverpeasException {
 	  if (creationMode) {
 	    scheduleeventSC.setIdUsersAndGroups();
 	  } else {
@@ -68,8 +67,8 @@ public class ScheduleEventConfirmUsersRequestHandler implements
 				request);
 	}
 
-	private Exception UndefinedForwardRequestHandlerException() {
-		return new Exception("No forward request defines for" + this.getClass());
+	private SilverpeasException undefinedForwardRequestHandlerException() {
+		return new SilverpeasException("No forward request defines for" + this.getClass());
 	}
 
 }

@@ -1,8 +1,8 @@
 package org.silverpeas.components.quickinfo.web;
 
+import jakarta.inject.Inject;
 import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.components.quickinfo.model.QuickInfoService;
-import org.silverpeas.components.quickinfo.model.QuickInfoServiceProvider;
 import org.silverpeas.core.web.rs.RESTWebService;
 
 import java.util.List;
@@ -15,6 +15,9 @@ import java.util.stream.Stream;
 abstract class AbstractNewsResource extends RESTWebService {
 
   static final String PATH = "news";
+
+  @Inject
+  private QuickInfoService quickInfoService;
 
   @Override
   protected String getResourceBasePath() {
@@ -38,6 +41,6 @@ abstract class AbstractNewsResource extends RESTWebService {
   }
 
   QuickInfoService getService() {
-    return QuickInfoServiceProvider.getQuickInfoService();
+    return quickInfoService;
   }
 }

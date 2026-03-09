@@ -35,8 +35,8 @@ import org.silverpeas.core.webapi.rating.RaterRatingEntity;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.jsp.JspWriter;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.jsp.JspWriter;
 import java.io.IOException;
 import java.util.Date;
 
@@ -50,15 +50,7 @@ public class ForumHelper {
   public static final String IMAGE_LOCK = "../../util/icons/unlock.gif";
   public static final String IMAGE_DELETE = "../../util/icons/delete.gif";
   public static final String IMAGE_MOVE = "../../util/icons/moveMessage.gif";
-  public static final String IMAGE_ADD_FORUM = "../../util/icons/create-action/add-forum.png";
-  public static final String IMAGE_ADD_CATEGORY = "../../util/icons/create-action/add-folder.png";
   public static final String IMAGE_WORD = "icons/word.gif";
-  public static final String IMAGE_NOTATION_OFF = "../../util/icons/starEmpty.gif";
-  public static final String IMAGE_NOTATION_ON = "../../util/icons/starFilled.gif";
-  public static final String IMAGE_NOTATION_EMPTY = "../../util/icons/shim.gif";
-  public static final String STATUS_VALIDATE = "V";
-  public static final String STATUS_FOR_VALIDATION = "A";
-  public static final String STATUS_REFUSED = "R";
   private static final String LINK_TO = "<a href=\"";
   private static final String IMAGE_DEFAULT_ATTR = " align=\"middle\" border=\"0\" alt=\"";
   private static final String EDIT_MESSAGE = "editMessage";
@@ -105,22 +97,12 @@ public class ForumHelper {
       out.print("onload=\"");
       out.print(methodName);
       if (fsc.isResizeFrame()) {
-        if (methodName.length() > 0 && !methodName.endsWith(";")) {
+        if (!methodName.isEmpty() && !methodName.endsWith(";")) {
           out.print(";");
         }
         out.print("resizeFrame();");
       }
       out.print("\"");
-    } catch (IOException ioe) {
-      SilverLogger.getLogger(ForumHelper.class).warn(ioe);
-    }
-  }
-
-  public static void addJsResizeFrameCall(JspWriter out, ForumsSessionController fsc) {
-    try {
-      if (fsc.isResizeFrame()) {
-        out.print("resizeFrame();");
-      }
     } catch (IOException ioe) {
       SilverLogger.getLogger(ForumHelper.class).warn(ioe);
     }
@@ -248,13 +230,13 @@ public class ForumHelper {
     }
     out.println(SPAN_TD_END);
 
-    // Nombres de réponses
+    // Nombre de réponses
     out.print(TD_DEFAULT_ATTR);
     out.print(
         params.getSessionController().getNbResponses(params.getForumId(), params.getMessageId()));
     out.println(SPAN_TD_END);
 
-    // Nombres de vues
+    // Nombre de vues
     out.print(TD_DEFAULT_ATTR);
     out.print(params.getSessionController().getMessageStat(params.getMessageId()));
     out.println(SPAN_TD_END);
@@ -395,7 +377,7 @@ public class ForumHelper {
         out.println("<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"2\" " +
             "class=\"principal-message\">");
 
-        displayOneMessage(messages, params, roleMask, 0, isSubscriberByInheritance);
+        displayOneMessage(messages, params, roleMask, isSubscriberByInheritance);
         out.println(TABLE_END);
 
         if (messagesCount > 1) {
@@ -451,7 +433,7 @@ public class ForumHelper {
   }
 
   private static void displayOneMessage(Message[] messages, PrintOutParameters params,
-      RoleMask roleMask, int depth, boolean isSubscriberByInheritance) {
+      RoleMask roleMask, boolean isSubscriberByInheritance) {
     int i = 0;
     boolean loop = true;
     int currentMessageId = params.getMessageId();
@@ -459,7 +441,7 @@ public class ForumHelper {
       Message message = messages[i];
       int messageId = message.getId();
       if (messageId == currentMessageId) {
-        displayMessageLine(params, message, roleMask, depth, isSubscriberByInheritance);
+        displayMessageLine(params, message, roleMask, 0, isSubscriberByInheritance);
         loop = false;
       }
       i++;
@@ -478,7 +460,7 @@ public class ForumHelper {
   public static class RoleMask {
 
     private String userId;
-    private boolean[] rights = new boolean[] {false, false, false};
+    private final boolean[] rights = new boolean[] {false, false, false};
 
     public boolean isAbout(final String userId) {
       return this.userId.equals(userId);

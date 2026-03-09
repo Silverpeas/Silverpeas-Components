@@ -34,7 +34,7 @@ import org.silverpeas.components.resourcesmanager.test.WarBuilder4ResourcesManag
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;

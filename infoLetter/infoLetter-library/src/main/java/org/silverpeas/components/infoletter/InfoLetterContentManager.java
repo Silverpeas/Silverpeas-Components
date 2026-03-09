@@ -23,15 +23,15 @@
  */
 package org.silverpeas.components.infoletter;
 
+import jakarta.inject.Inject;
 import org.silverpeas.components.infoletter.model.InfoLetterPublicationPdC;
-import org.silverpeas.components.infoletter.model.InfoLetterService;
-import org.silverpeas.components.infoletter.service.InfoLetterServiceProvider;
+import org.silverpeas.components.infoletter.service.InfoLetterContributionLocator;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.contentcontainer.content.AbstractSilverpeasContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
 import org.silverpeas.core.contribution.model.Contribution;
-import org.silverpeas.core.persistence.jdbc.bean.IdPK;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 
 import java.util.List;
 import java.util.Optional;
@@ -47,6 +47,9 @@ public class InfoLetterContentManager extends AbstractSilverpeasContentManager {
 
   private static final String CONTENT_ICON_FILE_NAME = "infoLetterSmall.gif";
 
+  @Inject
+  private InfoLetterContributionLocator locator;
+
   /**
    * Hidden constructor as this implementation must be GET by CDI mechanism.
    */
@@ -61,7 +64,7 @@ public class InfoLetterContentManager extends AbstractSilverpeasContentManager {
   @Override
   protected Optional<Contribution> getContribution(final String resourceId,
       final String componentInstanceId) {
-    return Optional.ofNullable(getInfoLetterPublicationPdC(resourceId, componentInstanceId));
+    return Optional.of(getInfoLetterPublicationPdC(resourceId, componentInstanceId));
   }
 
   @Override
@@ -90,13 +93,7 @@ public class InfoLetterContentManager extends AbstractSilverpeasContentManager {
    * @return a list of publicationDetail
    */
   private Contribution getInfoLetterPublicationPdC(String resourceId, String componentId) {
-    InfoLetterPublicationPdC ilPub =
-        getDataInterface().getInfoLetterPublication(new IdPK(resourceId));
-    ilPub.setInstanceId(componentId);
-    return ilPub;
-  }
-
-  private InfoLetterService getDataInterface() {
-    return InfoLetterServiceProvider.getInfoLetterData();
+    return locator.getInfoLetterContribution(ContributionIdentifier.from(componentId, resourceId,
+        InfoLetterPublicationPdC.TYPE));
   }
 }

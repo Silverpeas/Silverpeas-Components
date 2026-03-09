@@ -24,7 +24,6 @@
 
 package org.silverpeas.components.gallery.notification.user;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -44,11 +43,11 @@ import org.silverpeas.core.scheduler.Scheduler;
 import org.silverpeas.core.scheduler.SchedulerException;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.test.unit.extention.JEETestContext;
-import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
-import org.silverpeas.kernel.test.extension.SettingBundleStub;
 import org.silverpeas.kernel.test.annotations.TestManagedBean;
 import org.silverpeas.kernel.test.annotations.TestManagedMock;
 import org.silverpeas.kernel.test.annotations.TestedBean;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.extension.SettingBundleStub;
 
 import java.time.OffsetDateTime;
 import java.util.Date;
@@ -71,13 +70,13 @@ import static org.mockito.Mockito.*;
 @EnableSilverTestEnv(context = JEETestContext.class)
 class AlbumMediaNotificationManagerTest {
 
-  private static final ComponentInstLight componentInstance = new ComponentInstLight();
-  private static final ComponentInstLight otherComponentInstance = new ComponentInstLight();
-  private static final AlbumDetail albumDetail1 = new AlbumDetail(new NodeDetail());
-  private static final AlbumDetail albumDetail2 = new AlbumDetail(new NodeDetail());
-  private static final AlbumDetail albumDetail3 = new AlbumDetail(new NodeDetail());
-  private static final User senderX = mock(User.class);
-  private static final User senderY = mock(User.class);
+  private ComponentInstLight componentInstance;
+  private ComponentInstLight otherComponentInstance;
+  private AlbumDetail albumDetail1;
+  private AlbumDetail albumDetail2;
+  private AlbumDetail albumDetail3;
+  private final User senderX = mock(User.class);
+  private final User senderY = mock(User.class);
 
   @RegisterExtension
   static SettingBundleStub gallerySettings = new SettingBundleStub(
@@ -100,12 +99,18 @@ class AlbumMediaNotificationManagerTest {
   private AlbumMedia albumMediaC;
   private AlbumMedia albumMediaD;
 
-  @BeforeAll
-  static void setupStaticData() throws IllegalAccessException {
+  @BeforeEach
+  void setupTestData() {
+    componentInstance = new ComponentInstLight();
+    otherComponentInstance = new ComponentInstLight();
     componentInstance.setLocalId(38);
     componentInstance.setName("gallery");
     otherComponentInstance.setLocalId(39);
     otherComponentInstance.setName("gallery");
+
+    albumDetail1 = new AlbumDetail(new NodeDetail());
+    albumDetail2 = new AlbumDetail(new NodeDetail());
+    albumDetail3 = new AlbumDetail(new NodeDetail());
     albumDetail1.setId(26);
     albumDetail1.getNodePK().setComponentName(componentInstance.getId());
     albumDetail2.setId(27);
@@ -117,7 +122,7 @@ class AlbumMediaNotificationManagerTest {
   }
 
   @BeforeEach
-  void setup(@TestManagedMock GalleryService galleryService) throws Exception {
+  void setupMock(@TestManagedMock GalleryService galleryService) throws Exception {
     getContextCache().clear();
     // settings
     gallerySettings.put("subscription.notification.delay", "0");
@@ -417,7 +422,8 @@ class AlbumMediaNotificationManagerTest {
 
   @SuppressWarnings("unchecked")
   private static Map<String, NotificationAlbumJob> getContextCache() throws IllegalAccessException {
-    return (Map) readDeclaredStaticField(AlbumMediaNotificationManager.class, "contextCache", true);
+    return (Map<String, NotificationAlbumJob>)
+        readDeclaredStaticField(AlbumMediaNotificationManager.class, "contextCache", true);
   }
 
   private Media aMedia() {

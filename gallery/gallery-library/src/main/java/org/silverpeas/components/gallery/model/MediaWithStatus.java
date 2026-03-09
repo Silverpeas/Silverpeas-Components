@@ -25,8 +25,8 @@ package org.silverpeas.components.gallery.model;
 
 public class MediaWithStatus {
 
-  private Media media;
-  private boolean update;
+  private final Media media;
+  private final boolean update;
 
   public MediaWithStatus(Media media, boolean update) {
     this.media = media;

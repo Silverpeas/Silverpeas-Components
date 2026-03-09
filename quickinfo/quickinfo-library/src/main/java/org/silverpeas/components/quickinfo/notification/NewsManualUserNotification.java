@@ -32,7 +32,7 @@ import java.util.Collections;
 
 public class NewsManualUserNotification extends AbstractNewsUserNotification {
 
-  private User sender;
+  private final User sender;
 
   public NewsManualUserNotification(News resource, final User sender) {
     super(resource, NotifAction.REPORT);

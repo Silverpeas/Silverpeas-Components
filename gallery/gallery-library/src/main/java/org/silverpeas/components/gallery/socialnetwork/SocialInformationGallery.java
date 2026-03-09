@@ -27,6 +27,8 @@ import org.silverpeas.core.socialnetwork.model.AbstractSocialInformation;
 import org.silverpeas.core.socialnetwork.model.SocialInformationType;
 import org.silverpeas.kernel.util.StringUtil;
 
+import java.util.Objects;
+
 public class SocialInformationGallery extends AbstractSocialInformation {
 
   public SocialInformationGallery(MediaWithStatus picture) {
@@ -75,14 +77,10 @@ public class SocialInformationGallery extends AbstractSocialInformation {
       return false;
     }
     SocialInformationGallery other = (SocialInformationGallery) obj;
-    if (type.toString() == null) {
-      if (other.type.toString() != null) {
-        return false;
-      }
-    } else if (!type.toString().equals(other.type.toString())) {
+    if (!type.equals(other.type)) {
       return false;
     }
-    return this.url == null ? other.url == null : this.url.equals(other.url);
+    return Objects.equals(this.url, other.url);
   }
 
   @Override

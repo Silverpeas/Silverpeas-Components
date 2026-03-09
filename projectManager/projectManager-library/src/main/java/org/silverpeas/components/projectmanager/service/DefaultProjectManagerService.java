@@ -52,8 +52,8 @@ import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Inject;
-import javax.transaction.Transactional;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;
@@ -62,7 +62,6 @@ import java.util.*;
  * CDI bean to manage the projectManager application
  */
 @Service
-@Transactional(Transactional.TxType.SUPPORTS)
 public class DefaultProjectManagerService implements ProjectManagerService {
 
   @Inject
@@ -187,11 +186,11 @@ public class DefaultProjectManagerService implements ProjectManagerService {
       task.setId(id);
 
       if (task.getMereId() != -1) {
-        // la tache mere est decomposée
+        // la tache mere est décomposée.
         ProjectManagerDAO.actionEstDecomposee(con, task.getMereId(), 1);
       }
 
-      // modification de sa tache mère s'il en existe une
+      // modification de sa tâche mère s'il en existe une
       updateChargesMotherTask(con, task);
       // insertion de la tache correspondante dans le gestionnaire de taches du responsable
       addTodo(task);
@@ -225,7 +224,7 @@ public class DefaultProjectManagerService implements ProjectManagerService {
         task = taskDetail;
         removeTask(con, task.getId(), task.getInstanceId());
       }
-      // La tâche mère a t-elle d'autres taches filles. Est-elle toujours décomposée ?
+      // La tâche mère a-t-elle d'autres taches filles. Est-elle toujours décomposée ?
       List<TaskDetail> actionsSoeur = ProjectManagerDAO.getTree(con, actionASupprimer.getMereId());
       if (actionsSoeur.size() == 1) {
         // La task mère n'a qu'une sous task. Celle que l'on va supprimer.
@@ -240,7 +239,7 @@ public class DefaultProjectManagerService implements ProjectManagerService {
         nextTask.setPreviousTaskId(-1);
         ProjectManagerDAO.updateTask(con, nextTask);
       }
-      // modification de sa tache mère s'il en existe une
+      // modification de sa tâche mère s'il en existe une
       Objects.requireNonNull(task);
       updateChargesMotherTask(con, task);
     } catch (Exception re) {
@@ -284,11 +283,12 @@ public class DefaultProjectManagerService implements ProjectManagerService {
 
       Calendar calendar = Calendar.getInstance();
 
-      // quelles sont les tâches liées à la tâche modifiée ? Ce sont :
-      // - soit des tâches suivantes (ie tâches qui ont comme précédence la
-      // tâche modifiée) - niveau N
-      // - soit des sous tâches (sans précédence) de la tâche modifiée - niveau
-      // N-1
+      // Quelles sont les tâches liées à la tâche modifiée ? Ce sont :
+      // * soit des tâches suivantes (ie tâches qui ont comme précédence la
+      // tâche modifiée)
+      // * niveau N
+      // * soit des sous tâches (sans précédence) de la tâche modifiée
+      // * niveau N-1.
 
       //traitement des tâches suivantes
       updateNextTasks(task, userId, con, endDate, holidays, calendar);
@@ -302,7 +302,7 @@ public class DefaultProjectManagerService implements ProjectManagerService {
       }
       ProjectManagerDAO.updateTask(con, task);
 
-      // modification de sa tache mère s'il en existe une
+      // modification de sa tâche mère s'il en existe une
       updateChargesMotherTask(con, task);
       // modification de la tache associée
       updateTodo(task);
@@ -346,7 +346,7 @@ public class DefaultProjectManagerService implements ProjectManagerService {
     if (beginDate.after(beginDateSub)) {
       // La date de début de la tâche mêre est supérieure à la sous tâche cette tâche doit être
       // décalée
-      // nouvelle date de début = date début mère
+      // nouvelle date de début = date début mère.
       beginDateSub = beginDate;
       subTask.setDateDebut(beginDate);
     }
@@ -435,7 +435,7 @@ public class DefaultProjectManagerService implements ProjectManagerService {
     if (endDateLinked.after(motherTask.getDateFin())) {
       // La date de fin de la tâche fille est supérieure à celle de la mère cette tâche doit être
       // décalée
-      // nouvelle date de fin de la mère = date fin fille
+      // nouvelle date de fin de la mère = date de fin de la fille
       motherTask.setDateFin(endDateLinked);
       updateMother = true;
     }
@@ -450,7 +450,7 @@ public class DefaultProjectManagerService implements ProjectManagerService {
         calendar.add(Calendar.DATE, 1);
       }
 
-      // recalcul les charges de la tache mère
+      // recalcule les charges de la tache mère
       motherTask.setCharge(charge);
 
       // modification de la tâche mère en BdD
@@ -480,7 +480,7 @@ public class DefaultProjectManagerService implements ProjectManagerService {
   private Date moveTask(final Date endDate, final List<Date> holidays, final Calendar calendar,
       final TaskDetail linkedTask) {
     final Date beginDateLinked;// La date de fin de la tâche précédente est supérieure ou égale à la
-    // tâche liéée
+    // tâche liée
     // cette tâche doit être décalée
 
     // calcul de la nouvelle date de début (= date fin + 1)
@@ -570,11 +570,10 @@ public class DefaultProjectManagerService implements ProjectManagerService {
 
   private Date getBeginDate(Calendar calendar, Date endDate, List<Date> holidays) {
     calendar.setTime(endDate);
-    calendar.add(Calendar.DATE, 1);
 
-    while (holidays.contains(calendar.getTime())) {
+    do {
       calendar.add(Calendar.DATE, 1);
-    }
+    } while (holidays.contains(calendar.getTime()));
 
     return calendar.getTime();
   }

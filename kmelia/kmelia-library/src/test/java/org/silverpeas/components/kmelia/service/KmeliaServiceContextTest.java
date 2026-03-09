@@ -47,7 +47,7 @@ class KmeliaServiceContextTest {
   private PublicationDetail publicationB;
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
     publication = PublicationDetail.builder()
         .setPk(new PublicationPK("id", "instanceId"))
@@ -62,7 +62,7 @@ class KmeliaServiceContextTest {
   }
 
   @AfterEach
-  public void tearDown() {
+  void tearDown() {
     CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
     assertClearedContext();
   }

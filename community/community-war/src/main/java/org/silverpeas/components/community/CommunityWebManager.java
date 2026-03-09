@@ -43,9 +43,9 @@ import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.ws.rs.WebApplicationException;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
+import jakarta.ws.rs.WebApplicationException;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;

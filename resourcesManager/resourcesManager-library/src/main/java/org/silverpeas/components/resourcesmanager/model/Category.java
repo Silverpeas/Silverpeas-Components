@@ -29,7 +29,7 @@ import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIde
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;

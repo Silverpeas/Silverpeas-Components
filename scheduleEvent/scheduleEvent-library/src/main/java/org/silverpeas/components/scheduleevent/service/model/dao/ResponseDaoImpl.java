@@ -22,26 +22,19 @@ package org.silverpeas.components.scheduleevent.service.model.dao;
 
 import org.silverpeas.components.scheduleevent.service.model.beans.Response;
 
-import javax.inject.Singleton;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.transaction.Transactional;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import org.silverpeas.core.annotation.Repository;
 
-@Singleton
-@Transactional
+@Repository
 public class ResponseDaoImpl implements ResponseDao {
 
   @PersistenceContext
-  private EntityManager theEntityManager;
-
-  private EntityManager getEntityManager() {
-    return theEntityManager;
-  }
+  private EntityManager entityManager;
 
   @Override
   public void deleteResponse(Response response) {
-    EntityManager entityManager = getEntityManager();
-    Response attachedResponse = theEntityManager.merge(response);
-    theEntityManager.remove(attachedResponse);
+    Response attachedResponse = entityManager.merge(response);
+    entityManager.remove(attachedResponse);
   }
 }

@@ -24,10 +24,12 @@
 
 package org.silverpeas.components.silvercrawler.statistic;
 
+import jakarta.inject.Inject;
 import org.silverpeas.components.silvercrawler.model.SilverCrawlerRuntimeException;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 
 import java.io.File;
@@ -38,11 +40,15 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 
+@Service
 public class Statistic {
   private static final String HISTORY_TABLE_NAME = "SC_SilverCrawler_Statistic";
 
   public static final String DIRECTORY = "Directory";
   public static final String FILE = "File";
+
+  @Inject
+  private HistoryDAO historyDAO;
 
   private Statistic() {
 
@@ -58,14 +64,12 @@ public class Statistic {
     return con;
   }
 
-  public static void addStat(String userId, File path, String componentId, String objectType) {
-
+  public void addStat(String userId, File path, String componentId, String objectType) {
     try (Connection con = getConnection()) {
       // ajout dans les stats de l'objet
-      HistoryDAO
-          .add(con, HISTORY_TABLE_NAME, userId, path.getAbsolutePath(), componentId, objectType);
+      historyDAO.add(con, HISTORY_TABLE_NAME, userId, path.getAbsolutePath(), componentId, objectType);
       if (objectType.equals(DIRECTORY)) {
-        // dans le cas d'un répertoire, on le parcours pour ajouter les stats
+        // dans le cas d'un répertoire, on le parcourt pour ajouter les stats
         // sur les sous répertoires et les fichiers
         processFileList(con, path, userId, componentId);
       }
@@ -74,7 +78,7 @@ public class Statistic {
     }
   }
 
-  private static void processFileList(Connection con, File path, String userId, String componentId)
+  private void processFileList(Connection con, File path, String userId, String componentId)
       throws SQLException {
     if (path.isDirectory()) {
       File[] fileList = path.listFiles();
@@ -82,14 +86,14 @@ public class Statistic {
         for (File currentFile : fileList) {
           if (currentFile.isDirectory()) {
             // ajout du répertoire dans les stats
-            HistoryDAO
+            historyDAO
                 .add(con, HISTORY_TABLE_NAME, userId, currentFile.getAbsolutePath(), componentId,
                     DIRECTORY);
             // et appel récursif de la fonction sur ce répertoire
             processFileList(con, currentFile, userId, componentId);
           } else {
             // ajout du fichier dans les stats
-            HistoryDAO
+            historyDAO
                 .add(con, HISTORY_TABLE_NAME, userId, currentFile.getAbsolutePath(), componentId,
                     FILE);
           }
@@ -98,14 +102,14 @@ public class Statistic {
     }
   }
 
-  public static Collection<HistoryByUser> getHistoryByObject(String path, String componentId) {
+  public Collection<HistoryByUser> getHistoryByObject(String path, String componentId) {
     Collection<HistoryDetail> list = getHistoryByAction(path, componentId);
 
     OrganizationController orga = OrganizationControllerProvider.getOrganisationController();
     Collection<HistoryByUser> statByUser = new ArrayList<>();
 
     for (final HistoryDetail historyObject : list) {
-      // rechercher si le user est déjà enregistré
+      // rechercher si l'utilisateur est déjà enregistré
       Iterator<HistoryByUser> itStat = statByUser.iterator();
       boolean trouve = false;
       while (itStat.hasNext()) {
@@ -133,30 +137,30 @@ public class Statistic {
     return statByUser;
   }
 
-  public static Collection<HistoryDetail> getHistoryByAction(String path, String componentId) {
+  public Collection<HistoryDetail> getHistoryByAction(String path, String componentId) {
 
     try (Connection con = getConnection()) {
       return
-          HistoryDAO.getHistoryDetailByObject(con, HISTORY_TABLE_NAME, path, componentId);
+          historyDAO.getHistoryDetailByObject(con, HISTORY_TABLE_NAME, path, componentId);
     } catch (Exception e) {
       throw new SilverCrawlerRuntimeException(e);
     }
   }
 
-  public static Collection<HistoryDetail> getHistoryByObjectAndUser(String path, String userId,
+  public Collection<HistoryDetail> getHistoryByObjectAndUser(String path, String userId,
       String componentId) {
 
     try (Connection con = getConnection()) {
-      return HistoryDAO
+      return historyDAO
           .getHistoryDetailByObjectAndUser(con, HISTORY_TABLE_NAME, path, userId, componentId);
     } catch (Exception e) {
       throw new SilverCrawlerRuntimeException(e);
     }
   }
 
-  public static void deleteHistoryByObject(String path, String componentId) {
+  public void deleteHistoryByObject(String path, String componentId) {
     try (Connection con = getConnection()) {
-      HistoryDAO.deleteHistoryByObject(con, HISTORY_TABLE_NAME, path, componentId);
+      historyDAO.deleteHistoryByObject(con, HISTORY_TABLE_NAME, path, componentId);
     } catch (Exception e) {
       throw new SilverCrawlerRuntimeException(e);
     }

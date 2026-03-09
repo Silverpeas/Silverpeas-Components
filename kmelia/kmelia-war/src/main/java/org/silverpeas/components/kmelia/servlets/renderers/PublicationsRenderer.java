@@ -479,7 +479,7 @@ public class PublicationsRenderer implements Renderer {
     }
     template.setAttribute("showDate", showPubDate);
 
-    // check if user name in the list must be display
+    // check if username in the list must be display
     boolean showUserName = kmeliaScc.showUserNameInList();
     if (fragmentSettings.isLinkAttachment()) {
       showUserName = showUserName && fragmentSettings.isFileStorageShowExtraInfoPub();
@@ -583,7 +583,7 @@ public class PublicationsRenderer implements Renderer {
     if (fragmentSettings.isToSearch() && fragmentSettings.isShowTopicPathNameinSearchResult()) {
       writer.write(getHTMLPublicationFullPath(pub, ctx));
     }
-    // check if user name in the list must be display
+    // check if username in the list must be display
     boolean showUserNameInList = kmeliaScc.showUserNameInList();
     if (fragmentSettings.isLinkAttachment()) {
       showUserNameInList = showUserNameInList && fragmentSettings.isFileStorageShowExtraInfoPub();
@@ -606,7 +606,7 @@ public class PublicationsRenderer implements Renderer {
       writer.write(END_SPAN);
     }
 
-    // check if he author name must be display
+    // check if the author name must be display
     boolean showAuthor = kmeliaScc.isAuthorUsed() && StringUtil.isDefined(pub.getAuthor());
     if (fragmentSettings.isLinkAttachment()) {
       showAuthor = showAuthor && fragmentSettings.isFileStorageShowExtraInfoPub();

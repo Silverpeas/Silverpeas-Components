@@ -24,7 +24,7 @@
 package org.silverpeas.components.quizz;
 
 import org.silverpeas.core.questioncontainer.answer.model.Answer;
-import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.kernel.util.StringUtil;
@@ -40,13 +40,16 @@ import java.util.List;
  */
 public class QuestionHelper {
 
+  private QuestionHelper() {
+  }
+
   public static boolean isCorrectFile(FileItem filePart) {
     String fileName = FileUploadUtil.getFileName(filePart);
     boolean correctFile = false;
     if (fileName != null) {
       String logicalName = fileName.trim();
       if ((logicalName.length() >= 3) && (logicalName.indexOf('.') != -1)) {
-        String type = logicalName.substring(logicalName.indexOf('.') + 1, logicalName.length());
+        String type = logicalName.substring(logicalName.indexOf('.') + 1);
         if (type.length() >= 3) {
           correctFile = true;
         }
@@ -72,12 +75,10 @@ public class QuestionHelper {
         String comment = FileUploadUtil.getOldParameter(items, "comment" + id, "");
         answer.setComment(comment);
         String value = FileUploadUtil.getOldParameter(items, "valueImageGallery" + id, "");
-        if (StringUtil.isDefined(value)) {
-          // traiter les images venant de la gallery si pas d'image externe
-          if (!form.isFile()) {
+        if (StringUtil.isDefined(value) && !form.isFile()) {
             answer.setImage(value);
           }
-        }
+
         FileItem image = FileUploadUtil.getFile(items, "image" + id);
         if (image != null) {
           addImageToAnswer(answer, image, form, componentId, subdir);
@@ -94,7 +95,7 @@ public class QuestionHelper {
     if (QuestionHelper.isCorrectFile(item)) {
       // the part actually contained a file
       String logicalName = FileUploadUtil.getFileName(item);
-      String type = logicalName.substring(logicalName.indexOf('.') + 1, logicalName.length());
+      String type = logicalName.substring(logicalName.indexOf('.') + 1);
       String physicalName =
           Long.toString(new Date().getTime()) + form.getAttachmentSuffix() + "." + type;
       form.setAttachmentSuffix(form.getAttachmentSuffix() + 1);

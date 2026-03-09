@@ -13,14 +13,14 @@
                         isPublic="1" isHidden="0" lang="fr" isInheritanceBlocked="0"/>
 
   <st_instance_data id="143" componentId="42" name="defaultDisplay"
-                    label="By default, display" value="allReservations"/>
+                    label="By default, display" val="allReservations"/>
   <st_instance_data id="144" componentId="42" name="comments"
-                    label="Comments" value="yes"/>
+                    label="Comments" val="yes"/>
   <st_instance_data id="145" componentId="42" name="weekendNotVisible"
-                    label="Hide week-ends" value="yes"/>
+                    label="Hide week-ends" val="yes"/>
 
   <st_instance_data id="666" componentId="666" name="Comments"
-                    label="Comments" value="true"/>
+                    label="Comments" val="true"/>
 
   <st_group id="1" domainId="-1" specificId="1" supergroupId="[NULL]" name="Tartempion"
             description="a Tartempion group"

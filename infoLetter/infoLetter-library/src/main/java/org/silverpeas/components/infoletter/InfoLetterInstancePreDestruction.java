@@ -28,9 +28,9 @@ import org.silverpeas.components.infoletter.model.InfoLetterService;
 import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.kernel.annotation.Technical;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.transaction.Transactional;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.transaction.Transactional;
 
 /**
  * A process to delete all the info letters data related to the application instance that is

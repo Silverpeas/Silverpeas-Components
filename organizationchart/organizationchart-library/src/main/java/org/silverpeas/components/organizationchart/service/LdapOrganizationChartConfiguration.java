@@ -31,7 +31,7 @@ import javax.naming.Context;
 import org.silverpeas.kernel.util.StringUtil;
 
 public class LdapOrganizationChartConfiguration extends AbstractOrganizationChartConfiguration {
-  private Map<String, String> env = null;
+  private final Map<String, String> env;
 
   private String ldapClassPerson = null;
   private String ldapClassUnit = null;

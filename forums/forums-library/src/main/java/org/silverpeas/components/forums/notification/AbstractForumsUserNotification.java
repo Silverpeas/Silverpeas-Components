@@ -25,7 +25,6 @@ package org.silverpeas.components.forums.notification;
 
 import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
 import org.silverpeas.components.forums.service.ForumService;
-import org.silverpeas.components.forums.service.ForumsServiceProvider;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
 
@@ -51,11 +50,7 @@ public abstract class AbstractForumsUserNotification<T>
     return "forums";
   }
 
-  /**
-   * Gets the services of forum.
-   * @return
-   */
   protected ForumService getForumsService() {
-    return ForumsServiceProvider.getForumsService();
+    return ForumService.get();
   }
 }

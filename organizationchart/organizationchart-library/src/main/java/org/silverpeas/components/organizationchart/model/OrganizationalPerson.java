@@ -29,16 +29,15 @@ import java.util.Map;
 
 public class OrganizationalPerson implements Comparable<OrganizationalPerson> {
 
-  private int id;
+  private final int id;
   private int parentId;
   // =cn
-  private String name;
+  private final String name;
   // =titre
-  private String fonction;
+  private final String fonction;
   // =tooltip
-  private String description;
   // ou
-  private String service;
+  private final String service;
   // sAMAccountName
   private String silverpeasAccount;
   private String firstName;
@@ -54,16 +53,15 @@ public class OrganizationalPerson implements Comparable<OrganizationalPerson> {
   // visible on the right unit (units organizational chart only)
   private boolean visibleOnLeft = false;
   private OrganizationalRole visibleLeftRole = null;
-  // visible category name (detailled organizational chart only)
+  // visible category name (detailed organizational chart only)
   private PersonCategory visibleCategory = null;
 
   public OrganizationalPerson(int id, int parentId, String name, String fonction,
-      String description, String service, String silverpeasAccount) {
+      String service, String silverpeasAccount) {
     this.id = id;
     this.parentId = parentId;
     this.name = name;
     this.fonction = fonction;
-    this.description = description;
     this.service = service;
     this.setSilverpeasAccount(silverpeasAccount);
     // root par défaut
@@ -72,10 +70,6 @@ public class OrganizationalPerson implements Comparable<OrganizationalPerson> {
 
   public String toString() {
     return "cn = " + this.name + ", service = " + this.service + ", fonction = " + this.fonction;
-  }
-
-  public void setParentId(int parentId) {
-    this.parentId = parentId;
   }
 
   public String getService() {
@@ -96,10 +90,6 @@ public class OrganizationalPerson implements Comparable<OrganizationalPerson> {
 
   public String getFonction() {
     return fonction;
-  }
-
-  public String getDescription() {
-    return description;
   }
 
   public void setDetail(Map<String, String> detail) {

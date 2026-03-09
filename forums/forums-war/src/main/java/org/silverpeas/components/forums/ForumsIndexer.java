@@ -23,24 +23,29 @@
  */
 package org.silverpeas.components.forums;
 
+import jakarta.inject.Inject;
 import org.silverpeas.components.forums.model.ForumPK;
 import org.silverpeas.components.forums.model.Message;
 import org.silverpeas.components.forums.model.MessagePK;
+import org.silverpeas.components.forums.service.ForumService;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.web.index.components.ComponentIndexation;
 
-import javax.inject.Named;
-import javax.inject.Singleton;
+import jakarta.inject.Named;
+import jakarta.inject.Singleton;
 import java.util.Collection;
 import java.util.List;
 
-import static org.silverpeas.components.forums.service.ForumsServiceProvider.getForumsService;
-
+@Bean
 @Singleton
 @Named("forums" + ComponentIndexation.QUALIFIER_SUFFIX)
 public class ForumsIndexer implements ComponentIndexation {
 
   private static final String ROOT_FORUM_ID = "0";
+
+  @Inject
+  private ForumService service;
 
   @Override
   public void index(SilverpeasComponentInstance componentInst) {
@@ -65,6 +70,10 @@ public class ForumsIndexer implements ComponentIndexation {
 
   private void indexMessageNoRecursive(String componentId, int messageId) {
     getForumsService().createIndex(new MessagePK(componentId, String.valueOf(messageId)));
+  }
+
+  private ForumService getForumsService() {
+    return service;
   }
 
 }

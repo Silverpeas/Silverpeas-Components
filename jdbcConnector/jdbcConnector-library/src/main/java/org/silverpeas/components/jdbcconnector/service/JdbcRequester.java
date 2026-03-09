@@ -38,14 +38,14 @@ import java.util.List;
 
 /**
  * A requester of a remote enterprise data source by using the yet configured
- * {@link org.silverpeas.components.jdbcconnector.model.DataSourceConnectionInfo} instance. If
- * no {@link org.silverpeas.components.jdbcconnector.model.DataSourceConnectionInfo} instance is
+ * {@link org.silverpeas.components.jdbcconnector.model.DataSourceConnectionInfo} instance. If no
+ * {@link org.silverpeas.components.jdbcconnector.model.DataSourceConnectionInfo} instance is
  * available, then no connection is established and no request can be done.
+ *
  * @author mmoquillon
  */
 public class JdbcRequester {
 
-  private final String instanceId;
   private final DataSourceConnectionInfo currentConnectionInfo;
 
   /**
@@ -54,20 +54,21 @@ public class JdbcRequester {
    * instance in order to establish a connection with a remote data source. If there is more than
    * one connection information registered, then we are in an unstable state for the given component
    * instance and a {@link JdbcConnectorRuntimeException} is then thrown.
+   *
    * @param componentInstanceId the unique identifier of a ConnecteurJDBC application instance.
    */
   public JdbcRequester(final String componentInstanceId) {
-    this.instanceId = componentInstanceId;
     final List<DataSourceConnectionInfo> availableConnectionInfo =
-        DataSourceConnectionInfo.getFromComponentInstance(this.instanceId);
+        DataSourceConnectionInfo.getFromComponentInstance(componentInstanceId);
     if (availableConnectionInfo.isEmpty()) {
       this.currentConnectionInfo =
-          new DataSourceConnectionInfo("", this.instanceId).withSqlRequest("");
+          new DataSourceConnectionInfo("", componentInstanceId).withSqlRequest("");
     } else {
       if (availableConnectionInfo.size() > 1) {
         throw new JdbcConnectorRuntimeException(
-            "There is more than one defined data source for the JDBC connector " + this.instanceId +
-                ": " + availableConnectionInfo.size() + " data sources found!");
+            "There is more than one defined data source for the JDBC connector " +
+                componentInstanceId + ": " + availableConnectionInfo.size() +
+                " data sources found!");
       }
       this.currentConnectionInfo = availableConnectionInfo.get(0);
     }
@@ -75,6 +76,7 @@ public class JdbcRequester {
 
   /**
    * Gets information about the current JDBC connection used to request the data source.
+   *
    * @return a {@link DataSourceConnectionInfo} instance with all the information about the
    * connection with the remote data source
    */
@@ -95,6 +97,7 @@ public class JdbcRequester {
    * <li>the connection information is correct but the connection with the data source fails at
    * this time.</li>
    * </ul>
+   *
    * @throws JdbcConnectorException if the connection cannot be established with the data source
    * referred by the {@link DataSourceConnectionInfo} instance used by this requester.
    */
@@ -114,6 +117,7 @@ public class JdbcRequester {
    * Is there is a data source set with this requester? A data source is set when there is a
    * {@link DataSourceConnectionInfo} instance defined for the component instance to which this
    * requester is related.
+   *
    * @return true if there is a {@link DataSourceConnectionInfo} instance set with this requester.
    * False otherwise.
    */
@@ -125,6 +129,7 @@ public class JdbcRequester {
    * Is there is any default SQL request set with this requester? A request is set when there is a
    * {@link DataSourceConnectionInfo} instance defined for the component instance to which this
    * request is related and a SQL query has been defined for that connection information.
+   *
    * @return true if there is a SQL query defined for the current underlying connection information.
    */
   public boolean isSQLRequestDefined() {
@@ -134,6 +139,7 @@ public class JdbcRequester {
   /**
    * Gets all the tables in the data source (only public tables and views are fetched). If an error
    * occurs while requesting the data source, a {@link JdbcConnectorRuntimeException} is thrown.
+   *
    * @return a list of table names.
    */
   public List<String> getTableNames() {
@@ -152,9 +158,10 @@ public class JdbcRequester {
 
   /**
    * Gets all the columns in the specified table.
+   *
    * @param tableName a name of a table. This name must have been get by invoking
-   * {@link #getTableNames()} method. If an error
-   * occurs while requesting the data source, a {@link JdbcConnectorRuntimeException} is thrown.
+   * {@link #getTableNames()} method. If an error occurs while requesting the data source, a
+   * {@link JdbcConnectorRuntimeException} is thrown.
    * @return a list of column names in the given table.
    */
   public List<String> getColumnNames(final String tableName) {
@@ -173,9 +180,10 @@ public class JdbcRequester {
 
   /**
    * Requests the data source by using the SQL query that was set with the current underlying
-   * {@link DataSourceConnectionInfo} instance. A {@link JdbcConnectorRuntimeException} is thrown
-   * if the data returned by the requesting fails to be read. If no request was set, then nothing
-   * is requested and hence nothing is returned.
+   * {@link DataSourceConnectionInfo} instance. A {@link JdbcConnectorRuntimeException} is thrown if
+   * the data returned by the requesting fails to be read. If no request was set, then nothing is
+   * requested and hence nothing is returned.
+   *
    * @return a list of rows, each of them represented by a {@link TableRow} instance. If no SQL
    * query is defined with the underlying {@link DataSourceConnectionInfo} instance, then an empty
    * list is returned.
@@ -190,9 +198,9 @@ public class JdbcRequester {
   }
 
   /**
-   * Requests the data source with the specified SQL query. A
-   * {@link JdbcConnectorRuntimeException} is thrown if the data returned by the requesting fails
-   * to be read.
+   * Requests the data source with the specified SQL query. A {@link JdbcConnectorRuntimeException}
+   * is thrown if the data returned by the requesting fails to be read.
+   *
    * @return a list of rows, each of them represented by a {@link TableRow} instance.
    * @throws JdbcConnectorException if either no connection can be established or the requesting
    * failed.

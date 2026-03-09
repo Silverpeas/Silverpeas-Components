@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class BestTimeVO {
-  private List<TimeVO> times = new ArrayList<TimeVO>();
+  private final List<TimeVO> times = new ArrayList<>();
   private AvailabilityVisitorPresenceCounter bestPresence =
       new AvailabilityVisitorPresenceCounter();
 

@@ -26,15 +26,15 @@ package org.silverpeas.components.community.web;
 import org.silverpeas.components.community.model.CommunityOfUsers;
 import org.silverpeas.core.annotation.WebService;
 
-import javax.transaction.Transactional;
-import javax.ws.rs.BadRequestException;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
+import jakarta.transaction.Transactional;
+import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 import java.net.URI;
 
 import static java.util.Optional.ofNullable;
@@ -72,8 +72,8 @@ public class CommunityOfUsersResource extends CommunityWebResource {
   /**
    * Updates the community of users with the properties of the specified web entity representing the
    * new state of the community. Because the space for which the community has been defined is
-   * permanent and because the memberships of the community is handled by another resource (referred
-   * by a URI), only data on the home page and the charter can be modified.
+   * permanent, and because the memberships of the community is handled by another resource
+   * (referred by a URI), only data on the home page and the charter can be modified.
    * @param entity the new state of the community of users.
    * @return the JSON representation of the updated state of the community of users.
    */

@@ -44,8 +44,8 @@ public class QuestionForm {
     this.file = file;
   }
 
-  private boolean file = false;
-  private int attachmentSuffix = 0;
+  private boolean file;
+  private int attachmentSuffix;
 
   public QuestionForm(boolean file, int attachmentSuffix) {
     this.file = file;

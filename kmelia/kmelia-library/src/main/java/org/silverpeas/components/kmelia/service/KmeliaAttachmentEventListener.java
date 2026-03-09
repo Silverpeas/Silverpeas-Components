@@ -31,7 +31,7 @@ import org.silverpeas.core.contribution.attachment.notification.AttachmentRef;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 /**
  * @author neysseri

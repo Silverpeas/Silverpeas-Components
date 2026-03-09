@@ -23,12 +23,11 @@
  */
 package org.silverpeas.components.websites.model;
 
+import java.io.Serializable;
+
 /**
  * @author cbonin
  */
-
-import java.io.Serializable;
-
 public class IconDetail implements Serializable {
   private static final long serialVersionUID = -6326569229864803541L;
 

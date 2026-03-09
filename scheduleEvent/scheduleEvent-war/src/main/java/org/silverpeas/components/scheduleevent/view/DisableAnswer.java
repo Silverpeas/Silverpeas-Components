@@ -1,9 +1,9 @@
-package org.silverpeas.components.scheduleevent.view;;
+package org.silverpeas.components.scheduleevent.view;
 
 public class DisableAnswer implements AnswerVO {
-  private final static String DISABLE_LABEL = "-";
-  private final static String HMTL_CLASS_ATTRIBUTE = "participation inactif";
-  private final static DisableAnswer instance = new DisableAnswer();
+  private static final String DISABLE_LABEL = "-";
+  private static final String HTML_CLASS_ATTRIBUTE = "participation inactif";
+  private static final DisableAnswer instance = new DisableAnswer();
 
   private DisableAnswer() {
   }
@@ -15,7 +15,7 @@ public class DisableAnswer implements AnswerVO {
 
   @Override
   public String getHtmlClassAttribute() {
-    return HMTL_CLASS_ATTRIBUTE;
+    return HTML_CLASS_ATTRIBUTE;
   }
 
   public static AnswerVO getInstance() {

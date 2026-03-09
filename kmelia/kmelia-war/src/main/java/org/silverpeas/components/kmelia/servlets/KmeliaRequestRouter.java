@@ -23,7 +23,6 @@
  */
 package org.silverpeas.components.kmelia.servlets;
 
-import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.kmelia.KmeliaConstants;
 import org.silverpeas.components.kmelia.SearchContext;
 import org.silverpeas.components.kmelia.control.KmeliaSessionController;
@@ -67,10 +66,7 @@ import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.WAAttributeValuePair;
 import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
-import org.silverpeas.core.util.file.FileFolderManager;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.file.FileUploadUtil;
-import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.util.file.*;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -84,7 +80,7 @@ import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -125,7 +121,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
    * destination page
    *
    * @param function The entering request function ( : "Main.jsp")
-   * @param kmelia The component Session Control, build and initialised.
+   * @param kmelia The component Session Control, build and initialized.
    * @param request The entering request. The request rooter need it to get parameters
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
@@ -1562,7 +1558,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
       final KmeliaSessionController kmelia) {
     if (function.startsWith("Main")) {
       // take the case the user go back to the kmelia instance after accessing a topic for which
-      // he doesn't have access right. In this case, we accept to lost the last accessed folder.
+      // he doesn't have access right. In this case, we accept to lose the last accessed folder.
       kmelia.setSessionTopic(null);
     }
     KmeliaActionAccessController actionAccessController =
@@ -1679,7 +1675,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
       fileItem = FileUploadUtil.getFile(items, "file_name");
 
       if (fileItem != null) {
-        logicalName = fileItem.getName();
+        logicalName = fileItem.getFileName();
         if (logicalName != null) {
           boolean runOnUnix = !FileUtil.isWindows();
           if (runOnUnix) {
@@ -1708,7 +1704,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
               FileRepositoryManager.getAbsolutePath(kmeliaScc.getComponentId()) +
                   ResourceLocator.getGeneralSettingBundle().getString("RepositoryTypeTemp") + File.separator +
                   tempFolderName + File.separator + logicalName);
-          fileItem.write(fileUploaded);
+          fileItem.saveTo(fileUploaded);
 
           // Is a real file ?
           if (fileSize <= 0L) {
@@ -1946,7 +1942,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
   }
 
   /**
-   * Setup the request to manager some behaviors around validation of modifications.
+   * Set up the request to manager some behaviors around validation of modifications.
    *
    * @param request the current request.
    * @param highestSilverpeasUserRoleOnCurrentTopic the highest role the user has on the current
@@ -1976,7 +1972,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
   }
 
   /**
-   * Setup the request to manager some behaviors around validation of modifications.
+   * Set up the request to manager some behaviors around validation of modifications.
    *
    * @param request the current request.
    * @param publications the current handled publications.
@@ -2004,7 +2000,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
    * Converts the specified identifier into a Silverpeas content primary key.
    *
    * @param instanceId the unique identifier of the component instance to which the contents
-   * belongs.
+   * belong.
    * @param ids one or several identifiers of Silverpeas contents.
    * @return a list of one or several Silverpeas primary keys, each of them corresponding to one
    * specified identifier.

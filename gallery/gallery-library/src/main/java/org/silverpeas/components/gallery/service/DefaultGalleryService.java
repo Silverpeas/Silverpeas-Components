@@ -60,9 +60,9 @@ import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.kernel.bundle.SettingBundle;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.transaction.Transactional;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.transaction.Transactional;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -80,7 +80,6 @@ import static org.silverpeas.components.gallery.model.MediaCriteria.QUERY_ORDER_
  */
 @Service
 @Named("galleryService")
-@Transactional(Transactional.TxType.SUPPORTS)
 public class DefaultGalleryService implements GalleryService {
 
   @Inject

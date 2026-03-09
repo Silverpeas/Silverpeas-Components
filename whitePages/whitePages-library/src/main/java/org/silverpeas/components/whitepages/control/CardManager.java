@@ -53,7 +53,7 @@ import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -103,7 +103,7 @@ public class CardManager {
       indexCard(card);
       con.commit();
 
-      // classify the contribution on the PdC if its classification is defined
+      // classify the contribution to the PdC if its classification is defined
       if (classification != null && !classification.isEmpty()) {
         SilverCard silverCard = new SilverCard(card, silverContentId);
         classification.classifyContent(silverCard);
@@ -145,7 +145,7 @@ public class CardManager {
           }
           dao.remove(con, pk);
 
-          // suppression de la reference par le content maneger.
+          // suppression de la reference par le content manager.
           pk.setComponentName(peasId);
           getWhitePagesContentManager().deleteSilverContent(con, pk);
 

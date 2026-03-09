@@ -23,20 +23,22 @@
  */
 package org.silverpeas.components.questionreply.web;
 
+import jakarta.inject.Inject;
 import org.silverpeas.components.questionreply.model.Question;
+import org.silverpeas.components.questionreply.service.QuestionManager;
 import org.silverpeas.components.questionreply.service.QuestionManagerProvider;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.web.rs.annotation.Authorized;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response.Status;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,7 +47,7 @@ import java.util.Set;
 
 /**
  * A REST Web resource representing a given question.
- * It is a web service that provides an access to a question referenced by its URL.
+ * It is a web service that provides access to a question referenced by its URL.
  */
 @WebService
 @Path(QuestionReplyBaseWebService.PATH + "/{componentId}/questions")
@@ -54,6 +56,9 @@ public class QuestionResource extends QuestionReplyBaseWebService {
 
   @PathParam("componentId")
   protected String componentId;
+
+  @Inject
+  private QuestionManager questionManager;
 
   @Override
   public String getComponentId() {
@@ -74,7 +79,7 @@ public class QuestionResource extends QuestionReplyBaseWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public QuestionEntity getQuestion(@PathParam("questionId") String onQuestionId) {
     try {
-      Question theQuestion = QuestionManagerProvider.getQuestionManager().getQuestion(Long.parseLong(
+      Question theQuestion = questionManager.getQuestion(Long.parseLong(
           onQuestionId));
       URI questionURI = getUri().getRequestUri();
       if (extractVisibleQuestions(Collections.singletonList(theQuestion)).isEmpty()) {
@@ -90,8 +95,7 @@ public class QuestionResource extends QuestionReplyBaseWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public QuestionEntity[] getQuestions(@QueryParam("ids") Set<String> ids) {
     try {
-      List<Question> questions =
-          QuestionManagerProvider.getQuestionManager().getQuestionsByIds(new ArrayList<>(ids));
+      List<Question> questions = questionManager.getQuestionsByIds(new ArrayList<>(ids));
       return asWebEntities(extractVisibleQuestions(questions));
     } catch (Exception ex) {
       throw encapsulateException(ex);
@@ -103,8 +107,7 @@ public class QuestionResource extends QuestionReplyBaseWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public QuestionEntity[] getAllQuestions() {
     try {
-      List<Question> questions = QuestionManagerProvider.getQuestionManager().getAllQuestions(
-          componentId);
+      List<Question> questions = questionManager.getAllQuestions(componentId);
       return asWebEntities(extractVisibleQuestions(questions));
     } catch (Exception ex) {
       throw encapsulateException(ex);
@@ -116,8 +119,7 @@ public class QuestionResource extends QuestionReplyBaseWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public QuestionEntity[] getAllQuestionsByCategory(@PathParam("categoryId") String categoryId) {
     try {
-      List<Question> questions = QuestionManagerProvider.getQuestionManager().
-          getAllQuestionsByCategory(componentId, categoryId);
+      List<Question> questions = questionManager.getAllQuestionsByCategory(componentId, categoryId);
       return asWebEntities(extractVisibleQuestions(questions));
     } catch (Exception ex) {
       throw encapsulateException(ex);
@@ -128,7 +130,7 @@ public class QuestionResource extends QuestionReplyBaseWebService {
     SilverpeasRole profile = getUserProfile();
     List<Question> visibleQuestions;
     if (profile == SilverpeasRole.USER) {
-      visibleQuestions = new ArrayList<Question>(questions.size());
+      visibleQuestions = new ArrayList<>(questions.size());
       for (Question question : questions) {
         if (question.getPublicReplyNumber() > 0) {
           visibleQuestions.add(question);

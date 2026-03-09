@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.silverpeas.components</groupId>
     <artifactId>quickinfo</artifactId>
-    <version>6.5-SNAPSHOT</version>
+    <version>6.5-ee-SNAPSHOT</version>
   </parent>
 
   <groupId>org.silverpeas.components.quickinfo</groupId>
@@ -13,6 +13,12 @@
   <name>Quickinfo Web Application</name>
 
   <dependencies>
+    <dependency>
+      <groupId>org.silverpeas.components.quickinfo</groupId>
+      <artifactId>silverpeas-quickinfo</artifactId>
+      <version>${project.version}</version>
+      <scope>compile</scope>
+    </dependency>
     <dependency>
       <groupId>org.silverpeas.core</groupId>
       <artifactId>silverpeas-core-rs</artifactId>
@@ -24,26 +30,6 @@
       <artifactId>silverpeas-core-web</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.servlet.jsp.jstl</groupId>
-      <artifactId>javax.servlet.jsp.jstl-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.glassfish.web</groupId>
-      <artifactId>javax.servlet.jsp.jstl</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.silverpeas.core</groupId>
-      <artifactId>silverpeas-core</artifactId>
-      <version>${core.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.silverpeas.components.quickinfo</groupId>
-      <artifactId>silverpeas-quickinfo</artifactId>
-      <version>${project.version}</version>
-      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
@@ -58,13 +44,14 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>javax.portlet</groupId>
-      <artifactId>portlet-api</artifactId>
+      <groupId>com.fasterxml.jackson.module</groupId>
+      <artifactId>jackson-module-jakarta-xmlbind-annotations</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.fasterxml.jackson.module</groupId>
-      <artifactId>jackson-module-jaxb-annotations</artifactId>
+      <groupId>org.silverpeas.jakarta</groupId>
+      <artifactId>portlet</artifactId>
+      <classifier>jakarta</classifier>
       <scope>provided</scope>
     </dependency>
     <dependency>

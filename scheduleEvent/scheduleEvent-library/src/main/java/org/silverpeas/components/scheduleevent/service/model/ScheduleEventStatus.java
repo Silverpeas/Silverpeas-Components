@@ -26,7 +26,7 @@ package org.silverpeas.components.scheduleevent.service.model;
 
 public interface ScheduleEventStatus {
 
-  public static final int CLOSED = 0;
-  public static final int OPEN = 1;
+  int CLOSED = 0;
+  int OPEN = 1;
 
 }

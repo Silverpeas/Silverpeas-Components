@@ -36,7 +36,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -87,10 +87,10 @@ public class InfoLetterInstancePreDestructionIT {
     List<InfoLetter> otherInfoLetters = infoLetterService.getInfoLetters(OTHER_COMPONENT_INSTANCE_ID);
     List<InfoLetterPublication> publications = infoLetters.stream()
         .flatMap(
-            infoLetter -> infoLetterService.getInfoLetterPublications(infoLetter.getPK()).stream())
+            infoLetter -> infoLetterService.getInfoLetterPublications(infoLetter.getId()).stream())
         .collect(Collectors.toList());
     Set<String> subscribers = infoLetters.stream()
-        .flatMap(infoLetter -> infoLetterService.getEmailsExternalsSuscribers(infoLetter.getPK())
+        .flatMap(infoLetter -> infoLetterService.getEmailsExternalsSubscribers(infoLetter.getId())
             .stream())
         .collect(Collectors.toSet());
     assertThat(infoLetters.isEmpty(), is(false));
@@ -103,10 +103,10 @@ public class InfoLetterInstancePreDestructionIT {
     infoLetters = infoLetterService.getInfoLetters(COMPONENT_INSTANCE_ID);
     publications = infoLetters.stream()
         .flatMap(
-            infoLetter -> infoLetterService.getInfoLetterPublications(infoLetter.getPK()).stream())
+            infoLetter -> infoLetterService.getInfoLetterPublications(infoLetter.getId()).stream())
         .collect(Collectors.toList());
     subscribers = infoLetters.stream()
-        .flatMap(infoLetter -> infoLetterService.getEmailsExternalsSuscribers(infoLetter.getPK())
+        .flatMap(infoLetter -> infoLetterService.getEmailsExternalsSubscribers(infoLetter.getId())
             .stream())
         .collect(Collectors.toSet());
     assertThat(infoLetters.isEmpty(), is(true));

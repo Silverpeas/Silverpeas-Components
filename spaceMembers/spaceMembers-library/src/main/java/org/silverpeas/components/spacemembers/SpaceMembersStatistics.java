@@ -28,7 +28,7 @@ import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
 import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 import java.util.Collection;
 import java.util.Collections;
 

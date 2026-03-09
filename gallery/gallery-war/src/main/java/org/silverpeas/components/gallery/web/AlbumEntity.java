@@ -26,12 +26,12 @@ package org.silverpeas.components.gallery.web;
 import org.silverpeas.components.gallery.model.AlbumDetail;
 import org.silverpeas.core.web.rs.WebEntity;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -63,7 +63,7 @@ public class AlbumEntity implements WebEntity {
   private String description;
 
   @XmlElement
-  private final Map<String, AbstractMediaEntity> mediaList = new LinkedHashMap<>();
+  private final Map<String, AbstractMediaEntity<?>> mediaList = new LinkedHashMap<>();
 
   @XmlElement(defaultValue = "0")
   private int maxWidth = 0;
@@ -73,8 +73,8 @@ public class AlbumEntity implements WebEntity {
 
   /**
    * Creates a new album entity from the specified album.
-   * @param album
-   * @param language
+   * @param album the album from which the entity is constructed.
+   * @param language the language in which it is created
    * @return the entity representing the specified album.
    */
   public static AlbumEntity createFrom(final AlbumDetail album, final String language) {
@@ -151,15 +151,15 @@ public class AlbumEntity implements WebEntity {
     // for JSON deserialization
   }
 
-  protected Map<String, AbstractMediaEntity> getMediaList() {
+  protected Map<String, AbstractMediaEntity<?>> getMediaList() {
     return mediaList;
   }
 
   /**
-   * Adding a media the the album.
-   * @param mediaEntity
+   * Adding a media in the album.
+   * @param mediaEntity the media to add
    */
-  public void addMedia(final AbstractMediaEntity mediaEntity) {
+  public void addMedia(final AbstractMediaEntity<?> mediaEntity) {
     mediaList.put(mediaEntity.getId(), mediaEntity);
     maxWidth = Math.max(maxWidth, mediaEntity.getWidth());
     maxHeight = Math.max(maxHeight, mediaEntity.getHeight());

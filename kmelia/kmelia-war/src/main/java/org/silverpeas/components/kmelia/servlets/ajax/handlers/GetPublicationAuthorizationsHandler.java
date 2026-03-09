@@ -31,7 +31,7 @@ import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.util.JSONCodec;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import static org.silverpeas.components.kmelia.KmeliaPublicationHelper.isCanBeCut;
 import static org.silverpeas.components.kmelia.KmeliaPublicationHelper.isRemovable;

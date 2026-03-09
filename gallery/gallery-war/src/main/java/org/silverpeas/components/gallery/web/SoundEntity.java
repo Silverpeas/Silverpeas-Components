@@ -26,10 +26,10 @@ package org.silverpeas.components.gallery.web;
 import org.silverpeas.components.gallery.constant.MediaResolution;
 import org.silverpeas.components.gallery.model.Sound;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
 
 /**
@@ -45,17 +45,13 @@ public class SoundEntity extends AbstractMediaEntity<SoundEntity> {
 
   /**
    * Creates a new sound entity from the specified sound.
-   * @param sound
+   * @param sound the sound from which the entity is created.
    * @return the entity representing the specified sound.
    */
   public static SoundEntity createFrom(final Sound sound) {
     return new SoundEntity(sound);
   }
 
-  /**
-   * Get embed URL.
-   * @return
-   */
   public URI getEmbedUrl() {
     return embedUrl;
   }

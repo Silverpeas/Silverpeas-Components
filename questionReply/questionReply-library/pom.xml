@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.silverpeas.components</groupId>
     <artifactId>questionreply</artifactId>
-    <version>6.5-SNAPSHOT</version>
+    <version>6.5-ee-SNAPSHOT</version>
   </parent>
 
   <groupId>org.silverpeas.components.questionreply</groupId>
@@ -13,11 +13,6 @@
   <name>QuestionReply Library</name>
 
   <dependencies>
-    <dependency>
-      <groupId>org.silverpeas.core</groupId>
-      <artifactId>silverpeas-core</artifactId>
-      <version>${core.version}</version>
-    </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
       <artifactId>silverpeas-core-silverstatistics</artifactId>
@@ -29,17 +24,6 @@
       <artifactId>silverpeas-core-pdc</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.silverpeas.components.whitepages</groupId>
-      <artifactId>silverpeas-whitepages</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.silverpeas.core</groupId>
-      <artifactId>silverpeas-core-web-test</artifactId>
-      <version>${core.version}</version>
-      <scope>test</scope>
     </dependency>
   </dependencies>
 

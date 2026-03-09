@@ -33,9 +33,9 @@ public interface NotificationFormatter {
     return ServiceProvider.getService(NotificationFormatter.class);
   }
 
-  public String formatTitle(Message message, String mailingListName, String lang, boolean moderate);
+  String formatTitle(Message message, String mailingListName, String lang, boolean moderate);
 
-  public String formatMessage(Message message, String lang, boolean moderate);
+  String formatMessage(Message message, String lang, boolean moderate);
 
-  public String prepareUrl(Message message, boolean moderate);
+  String prepareUrl(Message message, boolean moderate);
 }

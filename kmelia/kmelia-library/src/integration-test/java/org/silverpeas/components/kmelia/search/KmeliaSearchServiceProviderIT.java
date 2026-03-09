@@ -27,8 +27,6 @@ package org.silverpeas.components.kmelia.search;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.components.kmelia.stats.StatisticService;
@@ -42,8 +40,6 @@ import static org.junit.Assert.assertNotNull;
 @RunWith(Arquillian.class)
 public class KmeliaSearchServiceProviderIT {
 
-  public KmeliaSearchServiceProviderIT() {
-  }
 
   @Deployment
   public static Archive<?> createTestArchive() {
@@ -51,15 +47,8 @@ public class KmeliaSearchServiceProviderIT {
         .testFocusedOn(warBuilder -> {
           warBuilder.addPackages(true, "org.silverpeas.components.kmelia");
           warBuilder.addAsResource("org/silverpeas/publication/publicationSettings.properties");
+          warBuilder.addAsResource("org/silverpeas/components/kmelia/search");
         }).build();
-  }
-
-  @Before
-  public void setUp() {
-  }
-
-  @After
-  public void tearDown() {
   }
 
   /**

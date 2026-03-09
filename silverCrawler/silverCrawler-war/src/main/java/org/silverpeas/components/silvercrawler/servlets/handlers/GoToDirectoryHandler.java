@@ -27,13 +27,17 @@ package org.silverpeas.components.silvercrawler.servlets.handlers;
 import org.silverpeas.components.silvercrawler.control.SilverCrawlerSessionController;
 import org.silverpeas.core.util.file.FileUtil;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Handler for use case : user clicks on a permalink and come into silvercrawler.
  * @author Ludovic Bertin
  */
 public class GoToDirectoryHandler extends FunctionHandler {
+
+  protected GoToDirectoryHandler(HandlerProvider provider) {
+    super(provider);
+  }
 
   @Override
   public String getDestination(SilverCrawlerSessionController sessionController,
@@ -44,7 +48,7 @@ public class GoToDirectoryHandler extends FunctionHandler {
     sessionController.goToDirectory(newPath);
 
     // redirect to "ViewDirectory" use case
-    return HandlerProvider.getHandler("ViewDirectory")
+    return getHandlerProvider().getHandler("ViewDirectory")
         .computeDestination(sessionController, request);
   }
 

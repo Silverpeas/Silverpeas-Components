@@ -23,22 +23,18 @@
  */
 package org.silverpeas.components.rssaggregator.web;
 
+import jakarta.inject.Inject;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response.Status;
 import org.silverpeas.components.rssaggregator.model.RSSItem;
 import org.silverpeas.components.rssaggregator.model.RssAgregatorException;
-import org.silverpeas.components.rssaggregator.service.RSSServiceProvider;
+import org.silverpeas.components.rssaggregator.service.RSSService;
 import org.silverpeas.core.annotation.WebService;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.annotation.Authorized;
+import org.silverpeas.kernel.util.StringUtil;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.Status;
 import java.util.List;
 
 @WebService
@@ -47,6 +43,9 @@ import java.util.List;
 public class RSSResource extends RESTWebService {
 
   static final String PATH = "rss";
+
+  @Inject
+  private RSSService service;
 
   @PathParam("componentId")
   protected String componentId;
@@ -79,8 +78,7 @@ public class RSSResource extends RESTWebService {
     boolean isAggregated = StringUtil.getBooleanValue(aggregate);
     // Retrieve rss aggregate content
     try {
-      return
-          RSSServiceProvider.getRSSService().getApplicationItems(getComponentId(), isAggregated);
+      return service.getApplicationItems(getComponentId(), isAggregated);
     } catch (RssAgregatorException e) {
       throw encapsulateException(e);
     }

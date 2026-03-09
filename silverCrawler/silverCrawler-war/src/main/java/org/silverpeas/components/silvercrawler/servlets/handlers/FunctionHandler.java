@@ -26,7 +26,7 @@ package org.silverpeas.components.silvercrawler.servlets.handlers;
 import org.silverpeas.components.silvercrawler.control.ProfileHelper;
 import org.silverpeas.components.silvercrawler.control.SilverCrawlerSessionController;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * A function handler is associated to a peas function and is called by the request router when
@@ -36,6 +36,15 @@ import javax.servlet.http.HttpServletRequest;
 public abstract class FunctionHandler {
 
   protected static final String ROOT_DESTINATION = "/silverCrawler/jsp/";
+  private final HandlerProvider handlerProvider;
+
+  protected FunctionHandler(HandlerProvider provider) {
+    this.handlerProvider = provider;
+  }
+
+  protected HandlerProvider getHandlerProvider() {
+    return handlerProvider;
+  }
 
   public String computeDestination(SilverCrawlerSessionController session,
       HttpServletRequest request) {
@@ -60,11 +69,6 @@ public abstract class FunctionHandler {
   public abstract String getDestination(SilverCrawlerSessionController session,
       HttpServletRequest request) throws Exception;
 
-  /**
-   * Return user's highest role
-   * @param sessionController
-   * @return
-   */
   protected String getUserHighestRole(SilverCrawlerSessionController sessionController) {
     String[] profiles = sessionController.getUserRoles();
     return ProfileHelper.getBestProfile(profiles);

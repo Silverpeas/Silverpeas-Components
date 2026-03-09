@@ -23,29 +23,29 @@
  */
 package org.silverpeas.components.blog.servlets;
 
-import org.silverpeas.components.blog.service.BlogService;
-import org.silverpeas.components.blog.service.BlogServiceFactory;
-
-import java.net.URLEncoder;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.silverpeas.components.blog.model.PostDetail;
-import org.silverpeas.kernel.exception.NotFoundException;
+import org.silverpeas.components.blog.service.BlogService;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.util.Charsets;
-import org.silverpeas.core.web.util.servlet.GoTo;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.web.util.servlet.GoTo;
+import org.silverpeas.kernel.exception.NotFoundException;
+
+import java.net.URLEncoder;
 
 public class GoToPost extends GoTo {
 
   private static final long serialVersionUID = 4824194822323955033L;
 
+  @Inject
+  private BlogService blogService;
+
   @Override
   public String getDestination(String objectId, HttpServletRequest req, HttpServletResponse res) {
-    BlogService service = BlogServiceFactory.getBlogService();
-    PostDetail post = service.getContributionById(
+    PostDetail post = blogService.getContributionById(
             ContributionIdentifier.from("", objectId, PostDetail.getResourceType()))
         .orElseThrow(() -> new NotFoundException("No post with id " + objectId));
     String componentId = post.getPublication().getInstanceId();

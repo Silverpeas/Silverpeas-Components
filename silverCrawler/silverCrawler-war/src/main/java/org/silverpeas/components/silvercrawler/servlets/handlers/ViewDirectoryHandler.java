@@ -27,13 +27,17 @@ package org.silverpeas.components.silvercrawler.servlets.handlers;
 import org.silverpeas.components.silvercrawler.control.SilverCrawlerSessionController;
 import org.silverpeas.components.silvercrawler.model.FileFolder;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Handler for use case : View Directory.
  * @author Ludovic Bertin
  */
 public class ViewDirectoryHandler extends FunctionHandler {
+
+  protected ViewDirectoryHandler(HandlerProvider provider) {
+    super(provider);
+  }
 
   @Override
   public String getDestination(SilverCrawlerSessionController sessionController,

@@ -23,20 +23,18 @@
  */
 package org.silverpeas.components.whitepages.dao;
 
+import jakarta.inject.Named;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 import org.silverpeas.components.whitepages.model.SearchField;
 import org.silverpeas.core.annotation.Repository;
 
-import javax.inject.Named;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.transaction.Transactional;
 import java.util.HashSet;
 import java.util.Set;
 
 @Repository
 @Named("searchFieldDao")
-@Transactional
 public class SearchFieldDaoImpl implements SearchFieldDao {
 
   @PersistenceContext

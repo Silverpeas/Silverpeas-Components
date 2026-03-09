@@ -56,8 +56,13 @@ public class InfoLetterPublicationPdC extends InfoLetterPublication
    * @param ilp InfoLetterPublication
    */
   public InfoLetterPublicationPdC(InfoLetterPublication ilp) {
-    super(ilp.getPK(), ilp.getInstanceId(), ilp.getTitle(), ilp.getDescription(),
+    super(ilp.getPK().toResourceReference(), ilp.getTitle(), ilp.getDescription(),
         ilp.getParutionDate(), ilp.getPublicationState(), ilp.getLetterId());
+  }
+
+  @Override
+  public ContributionIdentifier getIdentifier() {
+    return super.getIdentifier();
   }
 
   /**
@@ -132,17 +137,12 @@ public class InfoLetterPublicationPdC extends InfoLetterPublication
     if (this.silverObjectId == null) {
       InfoLetterContentManager contentManager =
           ServiceProvider.getService(InfoLetterContentManager.class);
-      int objectId = contentManager.getSilverContentId(getId(), getComponentInstanceId());
+      int objectId = contentManager.getSilverContentId(getId(), getInstanceId());
       if (objectId >= 0) {
         this.silverObjectId = String.valueOf(objectId);
       }
     }
     return this.silverObjectId;
-  }
-
-  @Override
-  public ContributionIdentifier getIdentifier() {
-    return super.getIdentifier();
   }
 
   @Override

@@ -23,28 +23,27 @@
  */
 package org.silverpeas.components.silvercrawler.servlets;
 
+import jakarta.inject.Inject;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.components.silvercrawler.statistic.Statistic;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.exception.RelativeFileAccessException;
 import org.silverpeas.core.util.Charsets;
-import org.silverpeas.kernel.bundle.LocalizationBundle;
-import org.silverpeas.kernel.bundle.ResourceLocator;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Inject;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -58,6 +57,9 @@ public class SilverCrawlerFileServer extends SilverpeasAuthenticatedHttpServlet 
 
   @Inject
   private OrganizationController organizationController;
+
+  @Inject
+  private Statistic statistic;
 
   @Override
   public void init(ServletConfig config) {
@@ -91,8 +93,7 @@ public class SilverCrawlerFileServer extends SilverpeasAuthenticatedHttpServlet 
     String userId = mainSessionCtrl.getUserId();
 
     // Check user rights on identified component
-    if (!OrganizationControllerProvider.getOrganisationController()
-        .isComponentAvailableToUser(componentId, userId)) {
+    if (!organizationController.isComponentAvailableToUser(componentId, userId)) {
       throwHttpForbiddenError();
     }
 
@@ -100,7 +101,7 @@ public class SilverCrawlerFileServer extends SilverpeasAuthenticatedHttpServlet 
         .getFile(organizationController.getComponentParameterValue(componentId, "directory"));
 
     // 2 cas :
-    // - téléchargement d'un zip dans répertoire temporaire
+    // - téléchargement d'un zip dans le répertoire temporaire
     // - téléchargement d'un fichier depuis le répertoire crawlé
     File fileToSend;
     String type;
@@ -122,7 +123,7 @@ public class SilverCrawlerFileServer extends SilverpeasAuthenticatedHttpServlet 
 
     sendFile(res, fileToSend);
     // ajout dans la table des téléchargements
-    Statistic.addStat(userId, fileStat, componentId, type);
+    statistic.addStat(userId, fileStat, componentId, type);
   }
 
   private void sendFile(HttpServletResponse response, File file) {

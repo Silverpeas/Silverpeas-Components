@@ -31,7 +31,7 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.web.WebResourceUri;
 import org.silverpeas.core.webapi.profile.ProfileResourceBaseURIs;
 
-import javax.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.UriBuilder;
 import java.net.URI;
 
 /**

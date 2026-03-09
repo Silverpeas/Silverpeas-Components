@@ -27,10 +27,10 @@ import org.silverpeas.components.gallery.model.Streaming;
 import org.silverpeas.core.media.streaming.StreamingProvider;
 import org.silverpeas.core.media.streaming.StreamingProvidersRegistry;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * @author Yohann Chastagnier
@@ -45,7 +45,7 @@ public class StreamingEntity extends AbstractMediaEntity<StreamingEntity> {
 
   /**
    * Creates a new streaming entity from the specified streaming.
-   * @param streaming
+   * @param streaming the media streaming from which the entity is constructed.
    * @return the entity representing the specified streaming.
    */
   public static StreamingEntity createFrom(final Streaming streaming) {

@@ -29,7 +29,7 @@ import java.util.List;
 
 
 /**
- * A processor of a order criteria. The aim of a such processor is to process each
+ * A processor of an order criteria. The aim of a such processor is to process each
  * criterion of the criteria in the order expected by the caller in order to perform some specific
  * works.
  * @author mmoquillon
@@ -56,7 +56,7 @@ public interface MediaOrderCriteriaProcessor {
 
   /**
    * Informs the processor that there is a new criterion to process. This method must be used by
-   * the caller to chain the different criterion processings.
+   * the caller to chain the different criterion processing.
    * @return the processor itself.
    */
   MediaOrderCriteriaProcessor then();
@@ -84,8 +84,8 @@ public interface MediaOrderCriteriaProcessor {
   MediaOrderCriteriaProcessor processOrderer(final String ordererId);
 
   /**
-   * Processes the criterion on the nb of days after that an order should be deleted.
-   * @param referenceDate
+   * Processes the criterion on the number of days after that an order should be deleted.
+   * @param referenceDate the date used as reference for number of days.
    * @param nbDaysAfterThatDeleteAnOrder the nb of days after that an order should be deleted.
    * @return the processor itself.
    */
@@ -103,7 +103,7 @@ public interface MediaOrderCriteriaProcessor {
    * This method must be called after the order list is entirely loaded.
    * If an ordering was specified and if it was not possible to perform it by SQL clauses, then a
    * logical sort is performed.
-   * @param order
+   * @param order the list of orders to apply on the result.
    */
   List<Order> orderingResult(List<Order> order);
 }

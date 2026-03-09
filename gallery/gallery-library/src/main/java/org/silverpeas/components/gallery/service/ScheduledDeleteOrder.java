@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.gallery.service;
 
+import jakarta.inject.Inject;
 import org.silverpeas.components.gallery.model.GalleryRuntimeException;
 import org.silverpeas.components.gallery.model.Order;
 import org.silverpeas.core.scheduler.Scheduler;
@@ -31,7 +32,6 @@ import org.silverpeas.core.scheduler.SchedulerEventListener;
 import org.silverpeas.core.scheduler.SchedulerProvider;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.kernel.bundle.ResourceLocator;
-import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.logging.SilverLogger;
 
@@ -40,6 +40,9 @@ import java.util.List;
 public class ScheduledDeleteOrder implements SchedulerEventListener {
 
   public static final String GALLERYENGINE_JOB_NAME = "GalleryEngineJobOrder";
+
+  @Inject
+  private GalleryService galleryService;
 
   public void initialize() {
     try {
@@ -74,7 +77,7 @@ public class ScheduledDeleteOrder implements SchedulerEventListener {
   }
 
   private GalleryService getGalleryService() {
-    return ServiceProvider.getService(GalleryService.class);
+    return galleryService;
   }
 
   @Override
@@ -90,6 +93,6 @@ public class ScheduledDeleteOrder implements SchedulerEventListener {
   @Override
   public void jobFailed(SchedulerEvent anEvent) {
     SilverLogger.getLogger(this).error("The job '"
-        + anEvent.getJobExecutionContext().getJobName() + "' was not successfull");
+        + anEvent.getJobExecutionContext().getJobName() + "' was not successful");
   }
 }

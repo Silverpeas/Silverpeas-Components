@@ -75,7 +75,7 @@ public class HandlerProvider {
   }
 
   private HandlerProvider() {
-    throw new IllegalAccessError("Utility class must not be instanciated");
+    throw new IllegalAccessError("Utility class must not be instantiated");
   }
 
   /**

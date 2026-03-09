@@ -23,12 +23,14 @@
  */
 package org.silverpeas.components.resourcesmanager;
 
+import jakarta.inject.Inject;
 import org.silverpeas.components.resourcesmanager.model.Reservation;
+import org.silverpeas.components.resourcesmanager.service.ResourcesManager;
 import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
 import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -37,10 +39,12 @@ import java.util.List;
 @Named("resourcesManager" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
 public class ResourcesManagerStatistics implements ComponentStatisticsProvider {
 
+  @Inject
+  private ResourcesManager resourcesManager;
+
   @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId) {
-    List<Reservation> allReservations =
-        ResourcesManagerProvider.getResourcesManager().getReservations(componentId);
+    List<Reservation> allReservations = resourcesManager.getReservations(componentId);
 
     List<UserIdCountVolumeCouple> volumes = new ArrayList<>(allReservations.size());
     for (Reservation reservationDetail : allReservations) {

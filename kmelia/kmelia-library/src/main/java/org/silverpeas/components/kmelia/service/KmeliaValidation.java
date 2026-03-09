@@ -31,42 +31,50 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * This method handles the validation of a batch of publications. Given publications could be clone
+ * This method handles the validation of a batch of publications. Given publications could be cloned
  * or not, there is no matter, the performer will handle it.
  * <p/>
  * TODO in the future, this class must handle the entire process of validation instead of calling
  * services from Kmelia.
  * <p/>
+ *
  * @author Yohann Chastagnier
  */
 class KmeliaValidation {
 
   private final String validatorId;
+  private final KmeliaService kmeliaService;
   private boolean force = false;
   private boolean validatorHasNoMoreRight = false;
 
-  private Set<PublicationPK> pubPkOfPerformedValidations = new HashSet<PublicationPK>(500);
+  private final Set<PublicationPK> pubPkOfPerformedValidations = new HashSet<>(500);
 
   /**
-   * Hidden constructor.
+   * Con,structs a new validation for the specified validator and by using the given
+   * {@link KmeliaService} object to perform the validation.
+   *
    * @param validatorId the identifier of the validator.
+   * @param kmeliaService a {@link KmeliaService} instance.
    */
-  private KmeliaValidation(final String validatorId) {
+  private KmeliaValidation(final String validatorId, final KmeliaService kmeliaService) {
     this.validatorId = validatorId;
+    this.kmeliaService = kmeliaService;
   }
 
   /**
    * Initializing an instance by giving the identifier of user which is or has been a validator.
+   *
    * @param validatorId a user identifier as string.
    * @return the new {@link KmeliaValidation} instance.
    */
-  public static KmeliaValidation by(final String validatorId) {
-    return new KmeliaValidation(validatorId);
+  public static KmeliaValidation.Builder by(final String validatorId) {
+    return KmeliaValidation.Builder.by(validatorId);
   }
 
   /**
    * Calling this method indicates that the validation must be performed even if the state is not
    * into validation request.
+   *
    * @return the instance itself.
    */
   KmeliaValidation forceValidation() {
@@ -81,6 +89,7 @@ class KmeliaValidation {
   /**
    * Calling this method indicates that the given validatorId has no more validation right on given
    * publications.
+   *
    * @return the instance itself.
    */
   KmeliaValidation validatorHasNoMoreRight() {
@@ -94,10 +103,11 @@ class KmeliaValidation {
   }
 
   /**
-   * Handles the validation of given publications.<br>
-   * Be CAREFUL, the context of validation instance is not reset, so if the method is called
-   * several times, the treatment will take into account the previous calls.
-   * @param publications
+   * Handles the validation of given publications.<br> Be CAREFUL, the context of validation
+   * instance is not reset, so if the method is called several times, the treatment will take into
+   * account the previous calls.
+   *
+   * @param publications list of publications to validate
    */
   void validate(final List<PublicationDetail> publications) {
     for (PublicationDetail publication : publications) {
@@ -106,9 +116,10 @@ class KmeliaValidation {
   }
 
   /**
-   * Handles the validation of given publication.<br>
-   * Be CAREFUL, the context of validation instance is not reset, so if the method is called
-   * several times, the treatment will take into account the previous calls.
+   * Handles the validation of given publication.<br> Be CAREFUL, the context of validation instance
+   * is not reset, so if the method is called several times, the treatment will take into account
+   * the previous calls.
+   *
    * @param publication a publication to validate.
    */
   void validate(final PublicationDetail publication) {
@@ -119,7 +130,7 @@ class KmeliaValidation {
 
     PublicationPK publicationPkToValidate = null;
     if (publication.isClone()) {
-      PublicationDetail clone = getKmeliaService().getPublicationDetail(publication.getPK());
+      PublicationDetail clone = kmeliaService.getPublicationDetail(publication.getPK());
       if (clone != null && (force || clone.isValidationRequired())) {
         publicationPkToValidate = publication.getClonePK();
       }
@@ -130,8 +141,9 @@ class KmeliaValidation {
     if (publicationPkToValidate != null &&
         !pubPkOfPerformedValidations.contains(publicationPkToValidate)) {
       // The publication is not a clone and its state indicates a validation request.
-      getKmeliaService()
-          .validatePublication(publicationPkToValidate, validatorId, force, validatorHasNoMoreRight);
+      kmeliaService
+          .validatePublication(publicationPkToValidate, validatorId, force,
+              validatorHasNoMoreRight);
 
       // Register into an internal cache the identifier of the publication for which the validation
       // has been performed.
@@ -139,7 +151,20 @@ class KmeliaValidation {
     }
   }
 
-  private KmeliaService getKmeliaService() {
-    return KmeliaService.get();
+  static class Builder {
+    private String validatorId;
+
+    private Builder() {
+    }
+
+    static Builder by(String validatorId) {
+      Builder builder = new Builder();
+      builder.validatorId = validatorId;
+      return builder;
+    }
+
+    KmeliaValidation with(KmeliaService service) {
+      return new KmeliaValidation(validatorId, service);
+    }
   }
 }

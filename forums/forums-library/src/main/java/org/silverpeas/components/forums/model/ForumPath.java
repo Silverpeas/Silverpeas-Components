@@ -27,7 +27,7 @@ package org.silverpeas.components.forums.model;
 import org.silverpeas.core.util.ContributionPath;
 
 import java.util.Collection;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 /**
  * List of {@link Forum} which represents a path.

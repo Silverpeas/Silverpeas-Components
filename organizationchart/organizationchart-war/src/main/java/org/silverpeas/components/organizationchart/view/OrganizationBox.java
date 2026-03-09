@@ -23,10 +23,9 @@
  */
 package org.silverpeas.components.organizationchart.view;
 
-import org.apache.commons.lang3.CharEncoding;
+import org.silverpeas.core.util.Charsets;
 
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
@@ -60,10 +59,9 @@ public class OrganizationBox implements Serializable {
 
   /**
    * @return the dn
-   * @throws UnsupportedEncodingException
    */
-  public String getUrl() throws UnsupportedEncodingException {
-    return "Main?baseOu=" + URLEncoder.encode(dn, "UTF-8");
+  public String getUrl() {
+    return "Main?baseOu=" + URLEncoder.encode(dn, Charsets.UTF_8);
   }
 
   /**
@@ -122,15 +120,11 @@ public class OrganizationBox implements Serializable {
     this.parentDn = parentDn;
   }
 
-  /**
-   * @return the parentUrk
-   * @throws UnsupportedEncodingException
-   */
-  public String getParentUrl() throws UnsupportedEncodingException {
+  public String getParentUrl() {
     if (parentDn == null) {
       return "";
     }
-    return "Main?baseOu=" + URLEncoder.encode(parentDn, CharEncoding.UTF_8);
+    return "Main?baseOu=" + URLEncoder.encode(parentDn, Charsets.UTF_8);
   }
 
   public void setSpecificCSSClass(String specificCSSClass) {

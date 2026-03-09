@@ -33,7 +33,7 @@ import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.datasource.model.identifier.ExternalIntegerIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.time.ZoneId;
 import java.util.Date;

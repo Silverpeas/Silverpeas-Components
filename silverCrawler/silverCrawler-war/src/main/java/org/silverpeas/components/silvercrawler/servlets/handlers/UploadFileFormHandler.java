@@ -27,13 +27,17 @@ package org.silverpeas.components.silvercrawler.servlets.handlers;
 import org.silverpeas.components.silvercrawler.control.SilverCrawlerSessionController;
 import org.silverpeas.components.silvercrawler.model.SilverCrawlerForbiddenActionException;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Handler for use case : admin/publisher request new file upload.
  * @author Ludovic Bertin
  */
 public class UploadFileFormHandler extends FunctionHandler {
+
+  protected UploadFileFormHandler(HandlerProvider provider) {
+    super(provider);
+  }
 
   @Override
   public String getDestination(SilverCrawlerSessionController sessionController,

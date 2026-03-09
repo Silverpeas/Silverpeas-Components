@@ -280,7 +280,7 @@ public class ClassifiedDetail implements SilverpeasContent {
   }
 
   /**
-   * A classified is indexable only and only it has been validated. So, a classified in draft, or
+   * A classified is indexable only, and only it has been validated. So, a classified in draft, or
    * a classified in validation, or a removed classified isn't indexable.
    * @return true if the classified is indexable, that is to say it is validated. False otherwise.
    */

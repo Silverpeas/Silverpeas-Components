@@ -24,13 +24,15 @@
 package org.silverpeas.components.mailinglist.service.notification;
 
 import org.silverpeas.components.mailinglist.service.model.beans.Message;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 
-import javax.enterprise.inject.Alternative;
-import javax.inject.Singleton;
+import jakarta.enterprise.inject.Alternative;
+import jakarta.inject.Singleton;
 import java.text.MessageFormat;
 
+@Bean
 @Singleton
 @Alternative
 public class SimpleNotificationFormatter extends AbstractNotificationFormatter {
@@ -39,10 +41,10 @@ public class SimpleNotificationFormatter extends AbstractNotificationFormatter {
   public static final String TITLE_MODERATION_KEY = "mailinglist.notification.moderation.title";
   public static final String BODY_KEY = "mailinglist.notification.body";
   public static final String BODY_MODERATION_KEY = "mailinglist.notification.moderation.body";
-  private MessageFormat titleFormatter;
-  private MessageFormat titleModerationFormatter;
-  private MessageFormat bodyFormatter;
-  private MessageFormat bodyModerationFormatter;
+  private final MessageFormat titleFormatter;
+  private final MessageFormat titleModerationFormatter;
+  private final MessageFormat bodyFormatter;
+  private final MessageFormat bodyModerationFormatter;
 
   public SimpleNotificationFormatter() {
     LocalizationBundle resources = ResourceLocator.getLocalizationBundle(

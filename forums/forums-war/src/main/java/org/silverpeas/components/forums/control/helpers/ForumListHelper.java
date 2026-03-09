@@ -34,7 +34,7 @@ import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.webapi.rating.RaterRatingEntity;
 
-import javax.servlet.jsp.JspWriter;
+import jakarta.servlet.jsp.JspWriter;
 import java.io.IOException;
 import java.util.Date;
 
@@ -45,30 +45,30 @@ public class ForumListHelper {
 
   public static String navigationBar(int forumId, ForumsSessionController fsc) {
     boolean loop = false;
-    String result = "";
+    StringBuilder result = new StringBuilder();
     int currentId = forumId;
     String base = "";
 
     if (forumId != 0) {
-      result = "<a href=\"" + ActionUrl.getUrl("viewForum", -1, forumId) + "\">" +
-          WebEncodeHelper.javaStringToHtmlString(fsc.getForumName(forumId)) + "</a>";
+      result = new StringBuilder("<a href=\"" + ActionUrl.getUrl("viewForum", -1, forumId) + "\">" +
+          WebEncodeHelper.javaStringToHtmlString(fsc.getForumName(forumId)) + "</a>");
       loop = true;
     }
 
     while (loop) {
       int forumParent = fsc.getForumParentId(currentId);
       if (forumParent == 0) {
-        result = base + result;
+        result.insert(0, base);
         loop = false;
       } else {
         String parentName = fsc.getForumName(forumParent);
         String line = "<a href=\"" + ActionUrl.getUrl("viewForum", -1, forumParent) + "\">" +
             WebEncodeHelper.javaStringToHtmlString(parentName) + "</a> &gt; ";
-        result = line + result;
+        result.insert(0, line);
         currentId = forumParent;
       }
     }
-    return result;
+    return result.toString();
   }
 
   private static void displayForumLine(Forum forum, MultiSilverpeasBundle resources, JspWriter out,
@@ -95,7 +95,7 @@ public class ForumListHelper {
 
       out.println("<tr>");
 
-      // 1ère colonne : état des messages (lus / non lus)
+      // 1ᵉ colonne : état des messages (lus / non lus)
       out.print("<td class=\"ArrayCell\">");
 
       if (!fsc.isExternal() || !reader) {
@@ -105,7 +105,7 @@ public class ForumListHelper {
             "<img src=\"icons/" + (isNewMessage ? "newMessage" : "noNewMessage") + ".gif\"/>");
       }
 
-      // Icone de deploiement
+      // Icône de déploiement
       out.print("<img src=\"icons/1px.gif\">");
       if (depth > 0) {
         out.print("<img src=\"icons/1px.gif\" width=\"" + (depth * 10) + "\" height=\"1\"/>");
@@ -186,21 +186,21 @@ public class ForumListHelper {
       if (admin || moderator) {
         out.print("<td class=\"ArrayCell\" nowrap>");
 
-        // icone de modification
+        // icône de modification
         out.print("<a href=\"");
         out.print(ActionUrl.getUrl("editForumInfo", call, 2, forumId, currentPage));
         out.println("\"><img src=\"" + ForumHelper.IMAGE_UPDATE +
             "\" border=\"0\" align=\"middle\" alt=\"" + resources.getString("editForum") +
             "\" title=\"" + resources.getString("editForum") + "\"/></a>");
         out.print("&nbsp;");
-        // icone de suppression
+        // icône de suppression
         out.print("<a href=\"javascript:confirmDeleteForum('" + forumId + "');\">");
         out.print(
             "<img src=\"" + ForumHelper.IMAGE_DELETE + "\" border=\"0\" align=\"middle\" alt=\"" +
                 resources.getString("deleteForum") + "\" title=\"" +
                 resources.getString("deleteForum") + "\"/></a>");
         out.print("&nbsp;");
-        // icone de verrouillage
+        // icône de verrouillage
         out.print("<a href=\"");
         out.print(ActionUrl
             .getUrl((currentPage > 0 ? "viewForum" : "main"), call, (forumActive ? 5 : 6), forumId,
@@ -237,7 +237,7 @@ public class ForumListHelper {
       if (forums != null) {
         out.println("<tr>");
         out.print("<td colspan=\"7\" class=\"titreCateg\">" + nom);
-        if (description != null && description.length() > 0) {
+        if (description != null && !description.isEmpty()) {
           out.print(" - <i>" + description + "<i>");
         }
         out.println("</td>");
@@ -252,8 +252,7 @@ public class ForumListHelper {
                 resources.getString("forums.editCategory") + "\" title=\"" +
                 resources.getString("forums.editCategory") + "\"/></a>");
             out.print("&nbsp;&nbsp;");
-            out.print("<a href=\"javascript:confirmDeleteCategory('" + String.valueOf(categoryId) +
-                "');\">");
+            out.print("<a href=\"javascript:confirmDeleteCategory('" + categoryId + "');\">");
             out.print("<img src=\"" + ForumHelper.IMAGE_DELETE +
                 "\" border=\"0\" align=\"middle\" alt=\"" +
                 resources.getString("forums.deleteCategory") + "\" title=\"" +

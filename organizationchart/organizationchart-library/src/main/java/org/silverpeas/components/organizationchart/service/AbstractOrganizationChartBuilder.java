@@ -86,17 +86,17 @@ abstract class AbstractOrganizationChartBuilder {
 
   /**
    * Determine if person has a specific Role in organization person Chart.
-   * @param pers the oraganizational person
+   * @param pers the organizational person
    * @param function person's function
    */
-  void defineDetailledChartRoles(OrganizationalPerson pers, String function,
+  void defineDetailedChartRoles(OrganizationalPerson pers, String function,
       AbstractOrganizationChartConfiguration config) {
 
     // Priority to avoid conflicted syntaxes : central then categories
     boolean roleDefined = false;
 
     // central
-    for (OrganizationalRole role : config.getPersonnsChartCentralLabel()) {
+    for (OrganizationalRole role : config.getPersonsChartCentralLabel()) {
       if (isFunctionMatchingRole(function, role)) {
         pers.setVisibleOnCenter(true);
         pers.setVisibleCenterRole(role);
@@ -108,7 +108,7 @@ abstract class AbstractOrganizationChartBuilder {
     // categories
     if (!roleDefined) {
       int order = 0;
-      for (OrganizationalRole role : config.getPersonnsChartCategoriesLabel()) {
+      for (OrganizationalRole role : config.getPersonsChartCategoriesLabel()) {
         if (isFunctionMatchingRole(function, role)) {
           pers.setVisibleCategory(new PersonCategory(role.getLabel(), role.getLdapKey(), order));
           roleDefined = true;

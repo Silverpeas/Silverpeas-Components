@@ -49,16 +49,11 @@ public class GalleryCreateMediaDataProcess extends AbstractGalleryDataProcess {
 
   private final String albumId;
 
-  /**
+  /*
    * Delegate in charge of creating media data
    */
   private final MediaDataCreateDelegate delegate;
 
-  /**
-   * Default hidden constructor
-   * @param media
-   * @param delegate
-   */
   protected GalleryCreateMediaDataProcess(final Media media, final String albumId,
       final MediaDataCreateDelegate delegate) {
     super(media);
@@ -66,23 +61,11 @@ public class GalleryCreateMediaDataProcess extends AbstractGalleryDataProcess {
     this.albumId = albumId;
   }
 
-  /**
-   * Gets an instance
-   * @param media
-   * @param delegate
-   * @return
-   */
   public static GalleryCreateMediaDataProcess getInstance(final Media media, final String albumId,
       final MediaDataCreateDelegate delegate) {
     return new GalleryCreateMediaDataProcess(media, albumId, delegate);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * AbstractGalleryDataProcess#processData(com.silverpeas.gallery
-   * .process.GalleryProcessExecutionContext, ProcessSession)
-   */
   @Override
   protected void processData(final ProcessExecutionContext context,
       final ProcessSession session) throws Exception {

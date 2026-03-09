@@ -43,8 +43,8 @@ import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Inject;
-import javax.transaction.Transactional;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
@@ -52,7 +52,6 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-@Transactional
 public class SimpleResourcesManager implements ResourcesManager, Serializable {
 
   private static final long serialVersionUID = -8053955818376554252L;
@@ -71,6 +70,7 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
    * @param category the category to create
    */
   @Override
+  @Transactional
   public void createCategory(Category category) {
     categoryService.createCategory(category);
     createCategoryIndex(category);
@@ -87,11 +87,13 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
   }
 
   @Override
+  @Transactional
   public void updateCategory(Category category) {
     categoryService.updateCategory(category);
   }
 
   @Override
+  @Transactional
   public void deleteCategory(Long id, String componentId) {
     // First delete all resources of category
     List<Resource> resources = getResourcesByCategory(id);
@@ -105,6 +107,7 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
   }
 
   @Override
+  @Transactional
   public void createResource(Resource resource) {
     resourceService.createResource(resource);
     createResourceIndex(resource);
@@ -126,6 +129,7 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
   }
 
   @Override
+  @Transactional
   public void deleteResource(Long id, String componentId) {
     resourceService.deleteResource(id);
     deleteIndex(id, TYPE, componentId);
@@ -143,6 +147,7 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
   }
 
   @Override
+  @Transactional
   public void updateReservation(Reservation reservation, List<Long> resourceIds,
       boolean updateDate) {
     List<ReservedResource> reservedResources = reservedResourceService.
@@ -263,6 +268,7 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
   }
 
   @Override
+  @Transactional
   public void deleteReservation(Long id, String componentId) {
     deleteIndex(id, "Reservation", componentId);
     List<SimpleDocument> documents = AttachmentServiceProvider.getAttachmentService()
@@ -380,8 +386,7 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
       RecordSet set = pubTemplate.getRecordSet();
       set.indexRecord(String.valueOf(resource.getIdAsLong()), xmlFormName, indexEntry);
     } catch (Exception e) {
-      throw new ResourcesManagerRuntimeException("ResourceManagerBmEJB.createIndex_Resource()",
-          SilverpeasRuntimeException.ERROR, "resourcesManager.EX_CREATE_INDEX_FAILED", e);
+      throw new ResourcesManagerRuntimeException(e);
     }
   }
 
@@ -414,8 +419,7 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
         try {
           createReservationIndex(reservation);
         } catch (Exception e) {
-          throw new ResourcesManagerRuntimeException("ResourcesManagerBmEJB.indexResourceManager()",
-              SilverpeasRuntimeException.ERROR, "resourcesManager.MSG_INDEXRESERVATIONS", e);
+          throw new ResourcesManagerRuntimeException(e);
         }
       }
     }
@@ -427,12 +431,14 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
   }
 
   @Override
+  @Transactional
   public void saveReservation(Reservation reservation, List<Long> resourceIds) {
     reservationService.createReservation(reservation, resourceIds);
     createReservationIndex(reservation);
   }
 
   @Override
+  @Transactional
   public void updateReservedResourceStatus(long reservationId, long resourceId, String status) {
     ReservedResource reservedResource =
         reservedResourceService.getReservedResource(resourceId, reservationId);
@@ -451,6 +457,7 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
   }
 
   @Override
+  @Transactional
   public void updateResource(Resource updatedResource, List<Long> managerIds) {
     Resource resource = getResource(updatedResource.getIdAsLong());
     resource.merge(updatedResource);

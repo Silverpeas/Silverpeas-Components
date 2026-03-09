@@ -32,7 +32,7 @@ import org.silverpeas.core.notification.system.CDIResourceEventListener;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.kernel.annotation.Technical;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 /**
  * When a community space is removed, id est moved into the administrative bin, all the user

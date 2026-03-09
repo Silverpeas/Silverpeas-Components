@@ -33,7 +33,7 @@ import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
 import org.silverpeas.core.subscription.ResourceSubscriptionService;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 /**
  * @author mmoquillon
@@ -60,11 +60,10 @@ public class WebPagesWysiwygEventListener extends CDIResourceEventListener<Wysiw
 
     // If parameter useSubscription is used
     if ("yes".equals(organisationController.getComponentParameterValue(componentId,
-        ResourceSubscriptionService.Constants.SUBSCRIPTION_PARAMETER))) {
-      if (isAboutWebPage(content)) {
+        ResourceSubscriptionService.Constants.SUBSCRIPTION_PARAMETER)) && isAboutWebPage(content)) {
         WebPagesUserNotifier.notify(new NodePK("0", componentId), userId);
       }
-    }
+
   }
 
   private boolean isAboutWebPage(WysiwygContent content) {

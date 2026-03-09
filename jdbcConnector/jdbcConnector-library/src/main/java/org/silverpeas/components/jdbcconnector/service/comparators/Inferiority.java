@@ -30,13 +30,13 @@ package org.silverpeas.components.jdbcconnector.service.comparators;
  */
 public class Inferiority implements FieldValueComparator {
 
-  @SuppressWarnings("unchecked")
   @Override
-  public boolean compare(final Comparable value, final Comparable referenceValue) {
+  public <T> boolean compare(final Comparable<T> value, final Comparable<T> referenceValue) {
     if (value == null || !value.getClass().equals(referenceValue.getClass())) {
       return false;
     }
-    return value.compareTo(referenceValue) <= 0;
+    //noinspection unchecked
+    return value.compareTo((T)referenceValue) <= 0;
   }
 }
   

@@ -5,5 +5,5 @@ public interface AvailabilityFactoryVO {
     DISABLE, AGREE, DISAGREE, AWAIT_ANSWER
   }
 
-  AvailableVO makeAvailablity(Availability availability);
+  AvailableVO makeAvailability(Availability availability);
 }

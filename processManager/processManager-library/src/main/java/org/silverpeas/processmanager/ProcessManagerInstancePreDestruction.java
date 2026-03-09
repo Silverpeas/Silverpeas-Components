@@ -23,24 +23,22 @@
  */
 package org.silverpeas.processmanager;
 
-import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.kernel.SilverpeasRuntimeException;
+import jakarta.inject.Named;
 import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.workflow.api.UpdatableProcessInstanceManager;
 import org.silverpeas.core.workflow.api.Workflow;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.instance.ProcessInstance;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.kernel.annotation.Technical;
-
-import javax.inject.Named;
-import java.util.List;
 
 import static org.silverpeas.core.admin.component.ComponentInstancePreDestruction
     .WORKFLOW_PRE_DESTRUCTION;
 
 /**
- * Removes all the process instances defined for the ProcessManager instance that is being
- * deleted.
+ * Removes all the process instances defined for the ProcessManager instance that is being deleted.
+ *
  * @author mmoquillon
  */
 @Technical
@@ -50,13 +48,15 @@ public class ProcessManagerInstancePreDestruction implements ComponentInstancePr
 
   /**
    * Performs pre destruction tasks in the behalf of the specified ProcessManager instance.
+   *
    * @param componentInstanceId the unique identifier of the ProcessManager instance.
    */
   @Override
   public void preDestroy(final String componentInstanceId) {
     try {
-      List<ProcessInstance> processInstances = Workflow.getProcessInstanceManager()
-          .getProcessInstances(componentInstanceId, null, "supervisor");
+      var processInstances =
+          Workflow.getProcessInstanceManager().getProcessInstances(componentInstanceId, null,
+              "supervisor");
       for (ProcessInstance instance : processInstances) {
         ((UpdatableProcessInstanceManager) Workflow.getProcessInstanceManager()).
             removeProcessInstance(instance.getInstanceId());

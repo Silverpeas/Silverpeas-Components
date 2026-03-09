@@ -34,7 +34,7 @@ import org.silverpeas.core.test.BasicWarBuilder;
 import org.silverpeas.core.util.MemoizedSupplier;
 import org.silverpeas.core.util.SilverpeasList;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -68,6 +68,7 @@ public class FormsOnlineDAOJdbcIT extends AbstractFormsOnlineIT {
           warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core");
           warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud");
           warBuilder.addPackages(true, "org.silverpeas.components.formsonline");
+          warBuilder.addAsResource("org/silverpeas");
         }).build();
   }
 

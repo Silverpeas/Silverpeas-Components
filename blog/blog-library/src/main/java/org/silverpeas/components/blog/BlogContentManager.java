@@ -33,7 +33,7 @@ import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.util.ArrayList;

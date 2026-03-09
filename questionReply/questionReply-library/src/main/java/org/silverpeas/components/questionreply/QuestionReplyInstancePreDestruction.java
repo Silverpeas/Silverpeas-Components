@@ -26,10 +26,11 @@ package org.silverpeas.components.questionreply;
 import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
 import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.kernel.annotation.Technical;
 
-import javax.inject.Named;
-import javax.transaction.Transactional;
+import jakarta.inject.Named;
+import jakarta.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -68,7 +69,7 @@ public class QuestionReplyInstancePreDestruction implements ComponentInstancePre
         }
       }
     } catch(SQLException e) {
-      throw new RuntimeException(e.getMessage(), e);
+      throw new SilverpeasRuntimeException(e.getMessage(), e);
     }
   }
 }

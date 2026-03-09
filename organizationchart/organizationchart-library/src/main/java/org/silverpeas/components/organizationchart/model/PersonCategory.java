@@ -32,24 +32,12 @@ public class PersonCategory implements Comparable<PersonCategory> {
     return order;
   }
 
-  /**
-   * @param order the order to set
-   */
-  public void setOrder(int order) {
-    this.order = order;
-  }
-
-  private String name;
-  private String key;
+  private final String name;
+  private final String key;
   private int order;
-  private boolean otherCategory = false;
-
-  private boolean underOrganizationalUnitExists = false;
-  private boolean underPersonnsExists = false;
 
   public PersonCategory(String name) {
     this.name = name;
-    this.otherCategory = true;
     this.key = null;
   }
 
@@ -63,32 +51,8 @@ public class PersonCategory implements Comparable<PersonCategory> {
     return name;
   }
 
-  public void setKey(String key) {
-    this.key = key;
-  }
-
   public String getKey() {
     return key;
-  }
-
-  public boolean isOtherCategory() {
-    return otherCategory;
-  }
-
-  public void setUnderOrganizationalUnitExists(boolean underOrganizationalUnitExists) {
-    this.underOrganizationalUnitExists = underOrganizationalUnitExists;
-  }
-
-  public boolean isUnderOrganizationalUnitExists() {
-    return underOrganizationalUnitExists;
-  }
-
-  public void setUnderPersonnsExists(boolean underPersonnsExists) {
-    this.underPersonnsExists = underPersonnsExists;
-  }
-
-  public boolean isUnderPersonnsExists() {
-    return underPersonnsExists;
   }
 
   @Override
@@ -112,18 +76,13 @@ public class PersonCategory implements Comparable<PersonCategory> {
     }
     PersonCategory other = (PersonCategory) obj;
     if (key == null) {
-      if (other.key != null) {
-        return false;
-      }
-    } else if (!key.equals(other.key)) {
-      return false;
-    }
-    return true;
+      return other.key == null;
+    } else return key.equals(other.key);
   }
 
   @Override
   public int compareTo(PersonCategory otherCategory) {
-    return Integer.valueOf(this.order).compareTo(otherCategory.getOrder());
+    return Integer.compare(this.order, otherCategory.getOrder());
   }
 
 }

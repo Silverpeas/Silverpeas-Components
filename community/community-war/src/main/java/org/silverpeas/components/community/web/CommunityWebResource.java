@@ -32,9 +32,9 @@ import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.annotation.Authorized;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.ws.rs.NotFoundException;
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.NotFoundException;
 import java.util.Collection;
 
 /**
@@ -85,7 +85,7 @@ public abstract class CommunityWebResource extends RESTWebService {
 
   /**
    * Gets the Web Manager to use to fulfill the incoming request. The web manager centralizes all
-   * the behaviour provided in the website, both by the Web GUI and the REST web resources.
+   * the behavior provided in the website, both by the Web GUI and the REST web resources.
    * @return a community web manager.
    */
   protected CommunityWebManager getWebManager() {
@@ -117,7 +117,7 @@ public abstract class CommunityWebResource extends RESTWebService {
    * @return a builder of URIS to identify the web resources handled in a community application
    * instance.
    */
-  protected CommunityWebResourceURIBuilder getCommunityUriBuilder() {
+  CommunityWebResourceURIBuilder getCommunityUriBuilder() {
     return uriBuilder;
   }
 

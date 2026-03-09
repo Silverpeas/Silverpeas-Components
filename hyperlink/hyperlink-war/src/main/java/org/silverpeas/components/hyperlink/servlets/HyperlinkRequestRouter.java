@@ -33,9 +33,9 @@ import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import javax.ws.rs.core.UriBuilder;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+import jakarta.ws.rs.core.UriBuilder;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
@@ -81,7 +81,7 @@ public class HyperlinkRequestRouter extends ComponentRequestRouter<HyperlinkSess
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    * @param function The entering request function (ex : "Main.jsp")
-   * @param hyperlinkSCC The component Session Control, build and initialised.
+   * @param hyperlinkSCC The component Session Control, build and initialized.
    * @param request the HttpRequest
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
@@ -176,7 +176,7 @@ public class HyperlinkRequestRouter extends ComponentRequestRouter<HyperlinkSess
   /**
    * Parse destination to manage Silverpeas internal links
    * @param urlParameter the target URL as mentioned in instance parameter
-   * @param isInternalLink flag to indicate if the URL is insternal or not
+   * @param isInternalLink flag to indicate if the URL is internal or not
    * @param request the HTTP servlet request
    * @return the computed destination
    */
@@ -185,7 +185,7 @@ public class HyperlinkRequestRouter extends ComponentRequestRouter<HyperlinkSess
     String destination;
     // Special case : www, just add http://
     if (urlParameter.startsWith("www")) {
-      destination = "http://" + urlParameter;
+      destination = (request.isSecure() ? "https://" : "http://")  + urlParameter;
     } else {
       //Http://xxxx url
       if (isInternalLink) {
@@ -216,7 +216,7 @@ public class HyperlinkRequestRouter extends ComponentRequestRouter<HyperlinkSess
       String sParsed = destination.substring(0, nLoginIndex);
       sParsed += sValue;
       if (destination.length() > nLoginIndex + sKeyword.length()) {
-        sParsed += destination.substring(nLoginIndex + sKeyword.length(), destination.length());
+        sParsed += destination.substring(nLoginIndex + sKeyword.length());
       }
       destination = sParsed;
       nLoginIndex = destination.indexOf(sKeyword);

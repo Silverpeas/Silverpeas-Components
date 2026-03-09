@@ -24,15 +24,14 @@
 
 package org.silverpeas.components.gallery.servlets;
 
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.silverpeas.components.gallery.control.GallerySessionController;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -45,24 +44,21 @@ public class AjaxServlet extends HttpServlet {
 
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-      throws ServletException, IOException {
-    // TODO Auto-generated method stub
+      throws IOException {
     doPost(req, resp);
   }
 
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-      throws ServletException, IOException {
+      throws IOException {
 
     String action = getAction(req);
-    String result = null;
-
+    String result;
     if ("Sort".equals(action)) {
       result = sort(req);
+      Writer writer = resp.getWriter();
+      writer.write(result);
     }
-
-    Writer writer = resp.getWriter();
-    writer.write(result);
   }
 
   private String getAction(HttpServletRequest req) {
@@ -75,7 +71,7 @@ public class AjaxServlet extends HttpServlet {
     String componentId = (String) session.getAttribute("Silverpeas_Album_ComponentId");
 
     StringTokenizer tokenizer = new StringTokenizer(orderedList, ",");
-    List<NodePK> albumPKs = new ArrayList<NodePK>();
+    List<NodePK> albumPKs = new ArrayList<>();
     while (tokenizer.hasMoreTokens()) {
       albumPKs.add(new NodePK(tokenizer.nextToken(), componentId));
     }

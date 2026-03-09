@@ -31,7 +31,7 @@ import org.silverpeas.core.io.media.Definition;
 /**
  * This class represents a Photo.
  */
-public class Photo extends InternalMedia {
+public class Photo extends InternalMedia implements VisualMedia {
   private static final long serialVersionUID = 262504401033860860L;
 
   private Definition definition = Definition.fromZero();
@@ -54,6 +54,7 @@ public class Photo extends InternalMedia {
    * Gets the definition of the photo.
    * @return the definition of the photo.
    */
+  @Override
   public Definition getDefinition() {
     return definition;
   }
@@ -62,6 +63,7 @@ public class Photo extends InternalMedia {
    * Sets the definition of the resolution.
    * @param definition the definition of the resolution.
    */
+  @Override
   public void setDefinition(Definition definition) {
     this.definition = definition != null ? definition : Definition.fromZero();
   }

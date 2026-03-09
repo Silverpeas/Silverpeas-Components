@@ -23,28 +23,26 @@
 */
 package org.silverpeas.components.community.test;
 
+import jakarta.annotation.Priority;
+import jakarta.enterprise.inject.Default;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionValidationContext;
+import org.silverpeas.kernel.annotation.NonNull;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Priority;
-import javax.enterprise.inject.Default;
-import javax.inject.Singleton;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import static javax.interceptor.Interceptor.Priority.APPLICATION;
+import static jakarta.interceptor.Interceptor.Priority.APPLICATION;
 
 @Service
-@Singleton
 @Default
 @Priority(APPLICATION + 10)
 public class SessionManagementService implements SessionManagement {
@@ -67,7 +65,7 @@ public class SessionManagementService implements SessionManagement {
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public SessionInfo getSessionInfo(final String sessionId) {
     SessionInfo session = userDataSessions.get(sessionId);
     if (session == null) {

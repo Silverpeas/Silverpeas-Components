@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.mailinglist.servlets;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -34,11 +34,11 @@ public class RestRequest implements MailingListRoutage {
   public static final int FIND = 3;
   public static final int CREATE = 4;
   private String componentId;
-  private Map<String, String> elements;
+  private final Map<String, String> elements;
   private int action;
 
   public RestRequest(HttpServletRequest request) {
-    elements = new HashMap<String, String>(10);
+    elements = new HashMap<>(10);
     if ("POST".equalsIgnoreCase(request.getMethod())) {
       action = CREATE;
     } else if ("GET".equalsIgnoreCase(request.getMethod())) {

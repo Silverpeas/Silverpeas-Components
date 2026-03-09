@@ -26,11 +26,11 @@ package org.silverpeas.components.gallery.notification;
 import org.silverpeas.components.gallery.model.AlbumMedia;
 import org.silverpeas.core.notification.system.AbstractResourceEvent;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * An event about {@link AlbumMedia} instances. Such an event is triggered when a change occurred for
- * a media and it is sent by the system notification bus.
+ * a media, and it is sent by the system notification bus.
  * @author silveryocha
  */
 public class AlbumMediaEvent extends AbstractResourceEvent<AlbumMedia> {

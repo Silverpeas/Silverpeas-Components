@@ -30,8 +30,8 @@ import org.silverpeas.components.classifieds.service.ClassifiedService;
 import org.silverpeas.components.classifieds.service.ClassifiedServiceProvider;
 import org.silverpeas.kernel.annotation.Technical;
 
-import javax.inject.Named;
-import javax.transaction.Transactional;
+import jakarta.inject.Named;
+import jakarta.transaction.Transactional;
 
 /**
  * Deletes all the subscriptions and classifieds of the Classifieds instance that is being deleted.

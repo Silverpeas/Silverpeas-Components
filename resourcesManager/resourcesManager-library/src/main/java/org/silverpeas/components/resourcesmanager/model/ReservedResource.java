@@ -26,7 +26,7 @@ package org.silverpeas.components.resourcesmanager.model;
 import org.silverpeas.core.persistence.datasource.model.CompositeEntityIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
 

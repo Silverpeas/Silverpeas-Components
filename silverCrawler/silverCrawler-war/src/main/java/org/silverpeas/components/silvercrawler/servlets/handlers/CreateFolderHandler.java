@@ -27,13 +27,17 @@ package org.silverpeas.components.silvercrawler.servlets.handlers;
 import org.silverpeas.components.silvercrawler.control.SilverCrawlerSessionController;
 import org.silverpeas.core.util.file.FileUtil;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Handler for use case : new folder name (for creation) has been submitted.
  * @author Ludovic Bertin
  */
 public class CreateFolderHandler extends FunctionHandler {
+
+  protected CreateFolderHandler(HandlerProvider provider) {
+    super(provider);
+  }
 
   @Override
   public String getDestination(SilverCrawlerSessionController sessionController,

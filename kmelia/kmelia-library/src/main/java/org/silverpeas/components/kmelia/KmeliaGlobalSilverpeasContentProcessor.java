@@ -23,12 +23,14 @@
  */
 package org.silverpeas.components.kmelia;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.contribution.publication.PublicationGlobalSilverpeasContentProcessor;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 
 import static org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContentProcessor.Constants.PROCESSOR_NAME_SUFFIX;
 
+@Bean
 @Named("kmelia" + PROCESSOR_NAME_SUFFIX)
 public class KmeliaGlobalSilverpeasContentProcessor
     extends PublicationGlobalSilverpeasContentProcessor {

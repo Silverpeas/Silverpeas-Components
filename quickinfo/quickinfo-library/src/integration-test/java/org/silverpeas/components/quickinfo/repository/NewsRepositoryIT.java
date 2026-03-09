@@ -40,11 +40,13 @@ public class NewsRepositoryIT {
       warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core.services:silverpeas-core-pdc");
       warBuilder.addMavenDependenciesWithPersistence(
           "org.silverpeas.components.delegatednews:silverpeas-delegatednews");
-      warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud");
       warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-silverstatistics");
       warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-comment");
+      warBuilder.addAsResource("org/silverpeas/util/logging/silverpeasLogging.properties");
+      warBuilder.addAsResource(
+          "org/silverpeas/jobStartPagePeas/settings/jobStartPagePeasSettings.properties");
+      warBuilder.addAsResource("org/silverpeas/components/quickinfo/repository");
       warBuilder.addPackages(true, "org.silverpeas.components.quickinfo");
-      warBuilder.addPackages(true, "com.stratelia.webactiv.quickinfo");
     }).build();
   }
 

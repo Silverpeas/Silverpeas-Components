@@ -86,324 +86,186 @@ public class Filtre implements Serializable {
   private String responsableName = null;
   private String visibleMOA = null;
 
-  /**
-   * @return
-   */
   public String getActionFrom() {
     return actionFrom;
   }
 
-  /**
-   * @return
-   */
   public String getActionNom() {
     return actionNom;
   }
 
-  /**
-   * @return
-   */
   public String getActionTo() {
     return actionTo;
   }
 
-  /**
-   * @return
-   */
   public String getAvancement() {
     return avancement;
   }
 
-  /**
-   * @return
-   */
   public String getCodeProjet() {
     return codeProjet;
   }
 
-  /**
-   * @return
-   */
   public Date getDateDebutFrom() {
     return dateDebutFrom;
   }
 
-  /**
-   * @return
-   */
   public Date getDateDebutTo() {
     return dateDebutTo;
   }
 
-  /**
-   * @return
-   */
   public Date getDateFinFrom() {
     return dateFinFrom;
   }
 
-  /**
-   * @return
-   */
   public Date getDateFinTo() {
     return dateFinTo;
   }
 
-  /**
-   * @return
-   */
   public Date getDatePVFrom() {
     return datePVFrom;
   }
 
-  /**
-   * @return
-   */
   public Date getDatePVTo() {
     return datePVTo;
   }
 
-  /**
-   * @return
-   */
   public String getDescProjet() {
     return descProjet;
   }
 
-  /**
-   * @return
-   */
   public String getResponsableId() {
     return responsableId;
   }
 
-  /**
-   * @return
-   */
   public String getRetard() {
     return retard;
   }
 
-  /**
-   * @return
-   */
   public String getStatut() {
     return statut;
   }
 
-  /**
-   * @return
-   */
   public String getVisibleMOA() {
     return visibleMOA;
   }
 
-  /**
-   * @param string
-   */
   public void setActionFrom(String string) {
     actionFrom = string;
   }
 
-  /**
-   * @param string
-   */
   public void setActionNom(String string) {
     actionNom = string;
   }
 
-  /**
-   * @param string
-   */
   public void setActionTo(String string) {
     actionTo = string;
   }
 
-  /**
-   * @param string
-   */
   public void setAvancement(String string) {
     avancement = string;
   }
 
-  /**
-   * @param string
-   */
   public void setCodeProjet(String string) {
     codeProjet = string;
   }
 
-  /**
-   * @param date
-   */
   public void setDateDebutFrom(Date date) {
     dateDebutFrom = date;
   }
 
-  /**
-   * @param date
-   */
   public void setDateDebutTo(Date date) {
     dateDebutTo = date;
   }
 
-  /**
-   * @param date
-   */
   public void setDateFinFrom(Date date) {
     dateFinFrom = date;
   }
 
-  /**
-   * @param date
-   */
   public void setDateFinTo(Date date) {
     dateFinTo = date;
   }
 
-  /**
-   * @param date
-   */
   public void setDatePVFrom(Date date) {
     datePVFrom = date;
   }
 
-  /**
-   * @param date
-   */
   public void setDatePVTo(Date date) {
     datePVTo = date;
   }
 
-  /**
-   * @param string
-   */
   public void setDescProjet(String string) {
     descProjet = string;
   }
 
-  /**
-   * @param string
-   */
   public void setResponsableId(String string) {
     responsableId = string;
   }
 
-  /**
-   * @param string
-   */
   public void setRetard(String string) {
     retard = string;
   }
 
-  /**
-   * @param string
-   */
   public void setStatut(String string) {
     statut = string;
   }
 
-  /**
-   * @param string
-   */
   public void setVisibleMOA(String string) {
     visibleMOA = string;
   }
 
-  /**
-   * @return
-   */
   public String getDateDebutFromUI() {
     return dateDebutFromUI;
   }
 
-  /**
-   * @return
-   */
   public String getDateDebutToUI() {
     return dateDebutToUI;
   }
 
-  /**
-   * @return
-   */
   public String getDateFinFromUI() {
     return dateFinFromUI;
   }
 
-  /**
-   * @return
-   */
   public String getDateFinToUI() {
     return dateFinToUI;
   }
 
-  /**
-   * @return
-   */
   public String getDatePVFromUI() {
     return datePVFromUI;
   }
 
-  /**
-   * @return
-   */
   public String getDatePVToUI() {
     return datePVToUI;
   }
 
-  /**
-   * @param string
-   */
   public void setDateDebutFromUI(String string) {
     dateDebutFromUI = string;
   }
 
-  /**
-   * @param string
-   */
   public void setDateDebutToUI(String string) {
     dateDebutToUI = string;
   }
 
-  /**
-   * @param string
-   */
   public void setDateFinFromUI(String string) {
     dateFinFromUI = string;
   }
 
-  /**
-   * @param string
-   */
   public void setDateFinToUI(String string) {
     dateFinToUI = string;
   }
 
-  /**
-   * @param string
-   */
   public void setDatePVFromUI(String string) {
     datePVFromUI = string;
   }
 
-  /**
-   * @param string
-   */
   public void setDatePVToUI(String string) {
     datePVToUI = string;
   }
 
-  /**
-   * @return
-   */
   public String getResponsableName() {
     return responsableName;
   }
 
-  /**
-   * @param string
-   */
   public void setResponsableName(String string) {
     responsableName = string;
   }
@@ -437,7 +299,7 @@ public class Filtre implements Serializable {
     addFromStringFilter(predicates, getCodeProjet(), PROJECT_CODE);
     addFromStringFilter(predicates, getDescProjet(), PROJECT_DESCRIPTION);
     addFromStringFilter(predicates, getActionNom(), ACTION_NAME);
-    addFromIntegerFilter(predicates, getStatut(), STATUS);
+    addFromIntegerFilter(predicates, getStatut());
     if (getDateDebutFrom() != null) {
       predicates.add(FROM_START_DATE);
     }
@@ -465,7 +327,7 @@ public class Filtre implements Serializable {
       }
     }
     addFromStringFilter(predicates, getResponsableId(), TASK_MANAGER);
-    return predicates.stream().map(MATCHING_PREDICATES::get).noneMatch(p -> !p.test(this, task));
+    return predicates.stream().map(MATCHING_PREDICATES::get).allMatch(p -> p.test(this, task));
   }
 
   private void addFromStringFilter(final List<String> predicates, final String filter,
@@ -475,10 +337,9 @@ public class Filtre implements Serializable {
     }
   }
 
-  private void addFromIntegerFilter(final List<String> predicates, final String filter,
-      final String predicateKey) {
+  private void addFromIntegerFilter(final List<String> predicates, final String filter) {
     if (isNotEmpty(filter) && !"-1".equals(filter)) {
-      predicates.add(predicateKey);
+      predicates.add(Filtre.STATUS);
     }
   }
 }

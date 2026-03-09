@@ -36,17 +36,13 @@ public class WeekVO implements Serializable {
   /**
    * List of days inside a week
    */
-  private List<DayVO> days = null;
+  private List<DayVO> days;
 
   /**
    * Number of week in a year
    */
-  private String number = null;
+  private String number;
 
-  /**
-   * @param days
-   * @param number
-   */
   public WeekVO(List<DayVO> days, String number) {
     super();
     this.days = days;

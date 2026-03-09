@@ -5,16 +5,16 @@ VALUES ('1', 'st_domain'),
        ('6', 'st_user'),
        ('13', 'st_spaceuserrole');
 
+UPDATE st_space set lang = 'fr', isCommunity = 1 WHERE id = 1;
 INSERT INTO st_space (id, domainFatherId, name, lang, firstPageType, isInheritanceBlocked, isCommunity)
-VALUES (1, NULL, 'Space 1', 'fr', 0, 0, 1),
-       (2, 1, 'Space 1-2', 'fr', 0, 0, 1),
+VALUES (2, 1, 'Space 1-2', 'fr', 0, 0, 1),
        (3, NULL, 'Space 2', 'fr', 0, 0, 1),
        (4, NULL, 'Space 3', 'fr', 0, 0, 1);
 
 INSERT INTO st_componentinstance (id, spaceId, name, componentName, isPublic, isInheritanceBlocked)
-VALUES (1, 1, 'Community 1', 'community', 1, 0),
-       (2, 2, 'Community 2', 'community', 1, 0),
-       (3, 3, 'community 3', 'community', 1, 0);
+VALUES (2, 1, 'Community 1', 'community', 1, 0),
+       (3, 2, 'Community 2', 'community', 1, 0),
+       (4, 3, 'community 3', 'community', 1, 0);
 
 INSERT INTO st_user (id, domainId, specificId, lastName, firstName, login, accessLevel, state, stateSaveDate)
 VALUES (1, 0, '1', 'Simpson', 'Lisa', 'lisa.simpson', 'U', 'VALID', '2012-01-01 00:00:00.000'),
@@ -43,9 +43,10 @@ VALUES (1, 0), (1, 1), (2, 1), (3, 2), (5, 3),
        (11, 2), (12, 3);
 
 INSERT INTO sc_community(id, instanceId, spaceId, homePage, homePageType, charterURL)
-VALUES ('45d42847-2009-4ca8-86bb-1918909dc094', 'community1', 'WA1', 'kmelia42', 1, 'https://www.silverpeas.org'),
-       ('a58d70b9-84c7-484a-9102-03eca8e54ea5', 'community2', 'WA2', NULL, NULL, NULL),
-       ('4aaf4587-fa14-4acf-ac04-e63fb57b87ec', 'community3', 'WA3', NULL, NULL, NULL);
+VALUES ('45d42847-2009-4ca8-86bb-1918909dc094', 'community2', 'WA1', 'kmelia42', 1, 'https://www' ||
+                                                                                    '.silverpeas.org'),
+       ('a58d70b9-84c7-484a-9102-03eca8e54ea5', 'community3', 'WA2', NULL, NULL, NULL),
+       ('4aaf4587-fa14-4acf-ac04-e63fb57b87ec', 'community4', 'WA3', NULL, NULL, NULL);
 
 INSERT INTO sc_community_membership
 (id, community, userId, status, createDate, createdBy, joiningDate, lastUpdateDate, lastUpdatedBy, version)

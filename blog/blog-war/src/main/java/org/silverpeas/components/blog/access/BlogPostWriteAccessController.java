@@ -31,8 +31,7 @@ import org.silverpeas.core.security.authorization.AbstractAccessController;
 import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
 
 /**
  * A controller of write access on a blog. It controls the user can access the blog and have enough
@@ -42,7 +41,6 @@ import javax.inject.Singleton;
  * @author mmoquillon
  */
 @Service
-@Singleton
 public class BlogPostWriteAccessController extends AbstractAccessController<String>
     implements BlogPostWriteAccessControl {
 

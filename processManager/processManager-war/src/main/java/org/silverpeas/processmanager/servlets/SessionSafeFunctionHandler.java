@@ -24,23 +24,23 @@
 
 package org.silverpeas.processmanager.servlets;
 
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.kernel.util.StringUtil;
+import jakarta.servlet.http.HttpServletRequest;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.core.util.file.FileUploadUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.processmanager.ProcessManagerException;
 import org.silverpeas.processmanager.ProcessManagerSessionController;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 /**
- * A SessionSafeFunctionHandler must be used to prevent conflicts in HTTP Session when user
- * navigate
+ * A SessionSafeFunctionHandler must be used to prevent conflicts in HTTP Session when user navigate
  * using several windows sharing the same session.
+ *
  * @author Ludovic Bertin
  */
 public abstract class SessionSafeFunctionHandler implements FunctionHandler {
@@ -54,7 +54,7 @@ public abstract class SessionSafeFunctionHandler implements FunctionHandler {
     HttpRequest request = HttpRequest.decorate(req);
     List<FileItem> items = null;
 
-    // Retrieves current token Id
+    // Retrieves current token id
     String currentTokenId = session.getCurrentTokenId();
 
     // Retrieves items in case of multipart request
@@ -75,15 +75,16 @@ public abstract class SessionSafeFunctionHandler implements FunctionHandler {
       return "/processManager/jsp/multiWindowDetected.jsp";
     }
 
-    // No weird usage detected, let's the handler do its stuff.
+    // No weird usage detected, let the handler do its stuff.
     return computeDestination(function, session, request, items);
   }
 
   /**
    * Checks if a parameter named "processManagertokenId" is present in request and equal to given
    * tokenId.
+   *
    * @param session ProcessManager Session Controller
-   * @param currentTokenId the current token Id to compare to parameter's value
+   * @param currentTokenId the current token id to compare to parameter's value
    * @param request the HTTP request
    * @param items FileItems list to be completed if request is multipart
    * @return false is parameter is not present or different from given token id
@@ -144,15 +145,16 @@ public abstract class SessionSafeFunctionHandler implements FunctionHandler {
    * <dt>CASE 4: conflict detection</dt>
    * <dd><ul>
    *   <li>scenario: an action is being processed, user open another window and logged in =>
-   * previous Silverpeas session data is lost, then user open a instance procedure from same
-   * workflow and at least try submit action form from the first window</li>
+   * previous Silverpeas session data is lost, then user open an instance procedure from same
+   * workflow and at least try to submit action form from the first window</li>
    *  <li>how to detect: a token ID is present in request but different from current token ID stored
    * in session controller</li>
    * </ul></dd>
    * <dt>CASE 5: conflict detection</dt>
    * <dd><ul>
    *   <li>scenario: an action is being processed, user open another window and logged in =>
-   * previous Silverpeas session data is lost then try submit action form from the first window</li>
+   * previous Silverpeas session data is lost then try to submit action form from the first
+   * window</li>
    *  <li>how to detect: a token ID is present in request but no current token ID stored in session
    * controller</li>
    * </ul></dd>
@@ -164,6 +166,7 @@ public abstract class SessionSafeFunctionHandler implements FunctionHandler {
    *  request</li>
    * </ul></dd>
    * </dl>
+   *
    * @param currentTokenId the current token identifier
    * @param givenTokenId the given token identifier
    * @param isCancellation is a cancellation asked
@@ -182,8 +185,9 @@ public abstract class SessionSafeFunctionHandler implements FunctionHandler {
       if (!StringUtil.isDefined(givenTokenId)) {
         SilverLogger.getLogger(this)
             .error("Provided token empty! " +
-                "CASE 2: an action is being processed, user open another window and try to access" +
-                " same workflow");
+                   "CASE 2: an action is being processed, user open another window and try to " +
+                   "access" +
+                   " same workflow");
         return false;
       } else {
         // CASE 3 : user submits action form correctly
@@ -194,22 +198,24 @@ public abstract class SessionSafeFunctionHandler implements FunctionHandler {
         // CASE 4 :
         // an action is being processed, user open another window and logged in => previous
         // Silverpeas session data is lost
-        // then user open a instance procedure from same workflow
-        // and at least try submit action form from the first window
+        // then user open an instance procedure from same workflow
+        // and at least try to submit action form from the first window
         else {
           SilverLogger.getLogger(this)
               .error("Bad token " + givenTokenId +
-                  "CASE 4: an action is being processed, user open another window and logged in");
+                     "CASE 4: an action is being processed, user open another window and logged " +
+                     "in");
           return false;
         }
       }
     } else {
       // CASE 5 : an action is being processed, user open another window and logged in =>
-      // previous Silverpeas session data is lost then try submit action form from the first window
+      // previous Silverpeas session data is lost then try to submit action form from the first
+      // window
       if (StringUtil.isDefined(givenTokenId)) {
         SilverLogger.getLogger(this)
             .error("No current token" +
-                "CASE 5: an action is being processed, user open another window and logged in");
+                   "CASE 5: an action is being processed, user open another window and logged in");
         return false;
       }
       // CASE 6 : user navigates in only one window, or in several windows but only in read-only
@@ -223,6 +229,7 @@ public abstract class SessionSafeFunctionHandler implements FunctionHandler {
   /**
    * Generate random UUID and store it in request as attribute and in process manager session
    * controller
+   *
    * @param session the process manager session controller
    * @param request the http servlet request
    */
@@ -235,7 +242,8 @@ public abstract class SessionSafeFunctionHandler implements FunctionHandler {
   }
 
   /**
-   * Reset token Id.
+   * Reset token identifier.
+   *
    * @param session the process manager session controller
    * @param request the http servlet request
    */
@@ -246,6 +254,7 @@ public abstract class SessionSafeFunctionHandler implements FunctionHandler {
 
   /**
    * Main scenario to be implemented by handler.
+   *
    * @param function the name of use case to realize
    * @param session the process manager session controller
    * @param request the http servlet request

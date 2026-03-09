@@ -24,9 +24,9 @@
 
 package org.silverpeas.processmanager;
 
-import java.util.Date;
-
 import org.silverpeas.core.workflow.api.user.User;
+
+import java.util.Date;
 
 /**
  * A LockVO represents a lock let by a user.

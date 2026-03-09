@@ -24,7 +24,7 @@ import org.silverpeas.components.kmelia.control.KmeliaSessionController;
 import org.silverpeas.core.clipboard.ClipboardException;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 public class CopyPublicationsHandler extends OperationOnPublicationsHandler {
 

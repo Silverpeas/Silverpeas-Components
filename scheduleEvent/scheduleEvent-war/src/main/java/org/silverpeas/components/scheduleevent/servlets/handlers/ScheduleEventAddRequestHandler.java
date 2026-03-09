@@ -24,14 +24,12 @@
 
 package org.silverpeas.components.scheduleevent.servlets.handlers;
 
-import javax.servlet.http.HttpServletRequest;
-
+import jakarta.servlet.http.HttpServletRequest;
 import org.silverpeas.components.scheduleevent.control.ScheduleEventSessionController;
 import org.silverpeas.components.scheduleevent.service.model.ScheduleEventBean;
-import org.silverpeas.components.scheduleevent.control.ScheduleEventSessionController;
 
 public class ScheduleEventAddRequestHandler implements ScheduleEventBackableRequestHandler {
-  private String jspDestination;
+  private final String jspDestination;
 
   public ScheduleEventAddRequestHandler(String jspDestination) {
     this.jspDestination = jspDestination;

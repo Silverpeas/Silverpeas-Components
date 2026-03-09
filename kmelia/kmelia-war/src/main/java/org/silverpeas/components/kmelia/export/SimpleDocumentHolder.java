@@ -31,7 +31,7 @@ import static org.silverpeas.core.util.DateUtil.getOutputDate;
 
 /**
  * Holder of a simple document for the ODTDocumentBuilder. It provides useful operation on the
- * holden simple document for the ODTDocumentBuilder instances.
+ * hold simple document for the ODTDocumentBuilder instances.
  */
 class SimpleDocumentHolder {
 
@@ -45,9 +45,9 @@ class SimpleDocumentHolder {
   }
 
   /**
-   * Gets the name of the creator or of each validators of the version of the holden
-   * attachment. If the version isn't well defined (it is a dummy version or the document
-   * corresponding to the version is empty), then the creator of the holden attachment itself is
+   * Gets the name of the creator or of each validator of the version of the hold
+   * attachment. If the version isn't well-defined (it is a dummy version or the document
+   * corresponding to the version is empty), then the creator of the hold attachment itself is
    * returned.
    * @return the display name of the creator or of the validators. In the case of validators, each
    * of their name is separated by a comma.
@@ -72,7 +72,7 @@ class SimpleDocumentHolder {
   }
 
   /**
-   * Gets the version number of the version of the holden attachment.
+   * Gets the version number of the version of the hold attachment.
    * @return the version number (major number plus minor number) of the specified version.
    */
   public String getVersionNumber() {

@@ -32,7 +32,7 @@ import org.junit.runner.RunWith;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.test.BasicWarBuilder;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -54,6 +54,7 @@ public class FormsOnlineServiceTestIT extends AbstractFormsOnlineIT {
           warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core");
           warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud");
           warBuilder.addPackages(true, "org.silverpeas.components.formsonline");
+          warBuilder.addAsResource("org/silverpeas");
         }).build();
   }
 

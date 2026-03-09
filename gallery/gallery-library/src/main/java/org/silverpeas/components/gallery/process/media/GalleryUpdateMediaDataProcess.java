@@ -52,32 +52,15 @@ public class GalleryUpdateMediaDataProcess extends AbstractGalleryDataProcess {
   private final Media mediaBeforeChanges;
   private Collection<String> albumIds;
 
-  /**
-   * Gets an instance
-   * @param media
-   * @return
-   */
   public static GalleryUpdateMediaDataProcess getInstance(final Media media) {
     return new GalleryUpdateMediaDataProcess(media, null, false);
   }
 
-  /**
-   * Gets an instance
-   * @param media
-   * @param delegate
-   * @return
-   */
   public static GalleryUpdateMediaDataProcess getInstance(final Media media,
       final MediaDataUpdateDelegate delegate) {
     return new GalleryUpdateMediaDataProcess(media, delegate, true);
   }
 
-  /**
-   * Default hidden constructor
-   * @param media
-   * @param delegate
-   * @param updateTechnicalData
-   */
   protected GalleryUpdateMediaDataProcess(final Media media, final MediaDataUpdateDelegate delegate,
       final boolean updateTechnicalData) {
     super(media);
@@ -86,12 +69,6 @@ public class GalleryUpdateMediaDataProcess extends AbstractGalleryDataProcess {
     this.mediaBeforeChanges = media.getCopy();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * AbstractGalleryDataProcess#processData(com.silverpeas.gallery
-   * .process.GalleryProcessExecutionContext, ProcessSession)
-   */
   @Override
   protected void processData(final ProcessExecutionContext context,
       final ProcessSession session) throws Exception {

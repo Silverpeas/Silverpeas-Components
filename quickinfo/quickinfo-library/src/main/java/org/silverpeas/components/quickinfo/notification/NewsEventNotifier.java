@@ -29,7 +29,7 @@ import org.silverpeas.core.notification.system.CDIResourceEventNotifier;
 import org.silverpeas.core.notification.system.ResourceEvent;
 
 /**
- * An synchronous notifier of change on a news in Silverpeas.
+ * A synchronous notifier of change on news in Silverpeas.
  * @author silveryocha
  */
 @Bean

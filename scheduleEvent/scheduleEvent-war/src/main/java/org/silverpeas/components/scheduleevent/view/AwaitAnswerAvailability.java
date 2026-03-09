@@ -1,8 +1,8 @@
 package org.silverpeas.components.scheduleevent.view;
 
 public class AwaitAnswerAvailability implements AvailableVO {
-  private final static String HMTL_CLASS_ATTRIBUTE = "questionResults-NC";
-  private final static AwaitAnswerAvailability instance = new AwaitAnswerAvailability();
+  private static final String HTML_CLASS_ATTRIBUTE = "questionResults-NC";
+  private static final AwaitAnswerAvailability instance = new AwaitAnswerAvailability();
 
   private AwaitAnswerAvailability() {
   }
@@ -14,7 +14,7 @@ public class AwaitAnswerAvailability implements AvailableVO {
 
   @Override
   public String getHtmlClassAttribute() {
-    return HMTL_CLASS_ATTRIBUTE;
+    return HTML_CLASS_ATTRIBUTE;
   }
 
   @Override

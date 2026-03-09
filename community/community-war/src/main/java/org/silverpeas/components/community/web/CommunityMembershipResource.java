@@ -34,13 +34,13 @@ import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.WebResourceUri;
 import org.silverpeas.core.web.rs.annotation.Authorized;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.MediaType;
 
 /**
  * The memberships to a community of users exposed as a resource through the Web. If the community

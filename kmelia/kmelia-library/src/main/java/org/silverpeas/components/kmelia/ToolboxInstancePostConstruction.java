@@ -23,12 +23,10 @@
  */
 package org.silverpeas.components.kmelia;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
+import org.silverpeas.core.annotation.Bean;
 
-/**
- *
- * @author mmoquillon
- */
+@Bean
 @Named
 public class ToolboxInstancePostConstruction extends KmeliaInstancePostConstruction {
 }

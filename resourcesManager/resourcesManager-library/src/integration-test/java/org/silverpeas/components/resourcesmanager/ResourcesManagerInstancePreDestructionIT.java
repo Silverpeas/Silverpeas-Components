@@ -35,7 +35,7 @@ import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

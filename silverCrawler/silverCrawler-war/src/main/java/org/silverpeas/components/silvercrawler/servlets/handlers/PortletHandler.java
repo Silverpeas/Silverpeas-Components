@@ -26,13 +26,17 @@ package org.silverpeas.components.silvercrawler.servlets.handlers;
 
 import org.silverpeas.components.silvercrawler.control.SilverCrawlerSessionController;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Handler for use case : main view for portlet usage.
  * @author Ludovic Bertin
  */
 public class PortletHandler extends FunctionHandler {
+
+  protected PortletHandler(HandlerProvider provider) {
+    super(provider);
+  }
 
   @Override
   public String getDestination(SilverCrawlerSessionController sessionController,

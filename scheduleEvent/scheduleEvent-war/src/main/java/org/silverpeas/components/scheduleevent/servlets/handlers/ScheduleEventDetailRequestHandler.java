@@ -20,17 +20,16 @@
  */
 package org.silverpeas.components.scheduleevent.servlets.handlers;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.silverpeas.components.scheduleevent.constant.ScheduleEventConstant;
 import org.silverpeas.components.scheduleevent.control.ScheduleEventSessionController;
 import org.silverpeas.components.scheduleevent.service.model.beans.ScheduleEvent;
 import org.silverpeas.components.scheduleevent.view.ScheduleEventDetailVO;
-import org.silverpeas.components.scheduleevent.control.ScheduleEventSessionController;
-
-import javax.servlet.http.HttpServletRequest;
+import org.silverpeas.kernel.SilverpeasException;
 
 public class ScheduleEventDetailRequestHandler implements ScheduleEventRequestHandler {
 
-  private String jspDestination;
+  private final String jspDestination;
 
   public ScheduleEventDetailRequestHandler(String jspDestination) {
     this.jspDestination = jspDestination;
@@ -38,7 +37,7 @@ public class ScheduleEventDetailRequestHandler implements ScheduleEventRequestHa
 
   @Override
   public String getDestination(String function, ScheduleEventSessionController scheduleeventSC,
-      HttpServletRequest request) throws Exception {
+      HttpServletRequest request) throws SilverpeasException {
 
     String scheduleEventId = request.getParameter("scheduleEventId");
     if (scheduleEventId != null) {

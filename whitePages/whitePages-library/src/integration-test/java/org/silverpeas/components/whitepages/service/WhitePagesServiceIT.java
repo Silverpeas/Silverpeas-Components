@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.whitepages.service;
 
+import jakarta.inject.Inject;
 import org.silverpeas.components.whitepages.model.SearchField;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -34,8 +35,8 @@ import org.junit.runner.RunWith;
 import org.silverpeas.core.test.BasicWarBuilder;
 import org.silverpeas.core.test.integration.rule.DbUnitLoadingRule;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.*;
@@ -47,10 +48,8 @@ import static org.hamcrest.Matchers.*;
 @RunWith(Arquillian.class)
 public class WhitePagesServiceIT {
 
+  @Inject
   private WhitePagesService whitePagesService;
-
-  public WhitePagesServiceIT() {
-  }
 
   @Rule
   public DbUnitLoadingRule dbUnitLoadingRule =
@@ -65,15 +64,17 @@ public class WhitePagesServiceIT {
         .testFocusedOn(warBuilder -> {
           warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core");
           warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core.services:silverpeas-core-pdc");
-          warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud");
           warBuilder.addAsResource("org/silverpeas/classifyEngine/ClassifyEngine.properties");
+          warBuilder.addAsResource("org/silverpeas/util/logging/silverpeasLogging.properties");
+          warBuilder.addAsResource(
+              "org/silverpeas/jobStartPagePeas/settings/jobStartPagePeasSettings.properties");
+          warBuilder.addAsResource("org/silverpeas/components/whitepages/service");
           warBuilder.addPackages(true, "org.silverpeas.components.whitepages");
         }).build();
   }
 
   @Before
-  public void loadTestContext() throws Exception {
-    whitePagesService = WhitePagesService.get();
+  public void loadTestContext() {
     assertThat(whitePagesService, notNullValue());
   }
 
@@ -81,14 +82,14 @@ public class WhitePagesServiceIT {
    * Tests the creation of several fields belonging to an application instance.
    */
   @Test
-  public void testCreateSearchFields() throws Exception {
+  public void testCreateSearchFields() {
     final String instanceId = "whitePages32";
     String[] fields = new String[]{"field10", "field11", "field12"};
     whitePagesService.createSearchFields(fields, instanceId);
 
     Set<SearchField> searchFields = whitePagesService.getSearchFields(instanceId);
     for (SearchField searchField : searchFields) {
-      assertThat(searchField.getFieldId(), isIn(fields));
+      assertThat(searchField.getFieldId(), is(in(fields)));
       assertThat(searchField.getInstanceId(), is(instanceId));
     }
   }
@@ -97,7 +98,7 @@ public class WhitePagesServiceIT {
    * Tests the getting of the fields in a given application instance.
    */
   @Test
-  public void testGetSearchFields() throws Exception {
+  public void testGetSearchFields() {
     Set<SearchField> searchFields = whitePagesService.getSearchFields("whitePages1");
     assertThat(searchFields.size(), is(1));
     SearchField actualSearchField = searchFields.iterator().next();
@@ -110,7 +111,7 @@ public class WhitePagesServiceIT {
    * Tests the deletion of the fields in a given instance.
    */
   @Test
-  public void testDeleteFields() throws Exception {
+  public void testDeleteFields() {
     whitePagesService.deleteFields("whitePages1");
     SearchField actual = entityManager.find(SearchField.class, "0");
     assertThat(actual, nullValue());

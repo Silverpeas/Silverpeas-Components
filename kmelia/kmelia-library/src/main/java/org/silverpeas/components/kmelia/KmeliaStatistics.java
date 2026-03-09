@@ -20,44 +20,11 @@
  */
 package org.silverpeas.components.kmelia;
 
+import jakarta.inject.Named;
 import org.silverpeas.core.annotation.Provider;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.contribution.publication.service.PublicationService;
-import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
 import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
-
-import javax.inject.Named;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 @Provider
 @Named("kmelia" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
-public class KmeliaStatistics implements ComponentStatisticsProvider {
-
-  private PublicationService publicationService = null;
-
-  @Override
-  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId) {
-    Collection<PublicationDetail> details = getElements(componentId);
-    List<UserIdCountVolumeCouple> myArrayList = new ArrayList<>(details.size());
-    for (PublicationDetail detail : details) {
-      UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
-      myCouple.setUserId(detail.getCreatorId());
-      myCouple.setCountVolume(1);
-      myArrayList.add(myCouple);
-    }
-    return myArrayList;
-  }
-
-  private PublicationService getPublicationService() {
-    if (publicationService == null) {
-        publicationService = PublicationService.get();
-    }
-    return publicationService;
-  }
-
-  private Collection<PublicationDetail> getElements(String componentId) {
-    return getPublicationService().getAllPublications(componentId);
-  }
+public class KmeliaStatistics extends AbstractKmeliaStatistics {
 }

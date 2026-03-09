@@ -23,19 +23,18 @@
  */
 package org.silverpeas.components.kmelia.servlets;
 
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import jakarta.ws.rs.core.MediaType;
 import org.silverpeas.components.kmelia.control.KmeliaSessionController;
 import org.silverpeas.components.kmelia.servlets.ajax.AjaxOperation;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
-import javax.inject.Inject;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.io.Writer;
 
@@ -48,13 +47,13 @@ public class AjaxServlet extends HttpServlet {
 
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-      throws ServletException, IOException {
+      throws IOException {
     doPost(req, resp);
   }
 
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-      throws ServletException, IOException {
+      throws IOException {
     resp.setContentType(MediaType.TEXT_HTML);
     HttpSession session = req.getSession(true);
     String componentId = req.getParameter("ComponentId");

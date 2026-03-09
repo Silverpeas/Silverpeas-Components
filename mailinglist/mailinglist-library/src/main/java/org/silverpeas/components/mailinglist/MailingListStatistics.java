@@ -23,14 +23,16 @@
  */
 package org.silverpeas.components.mailinglist;
 
-import org.silverpeas.components.mailinglist.service.MailingListServicesProvider;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import org.silverpeas.components.mailinglist.service.model.MailingListService;
+import org.silverpeas.components.mailinglist.service.model.MessageService;
 import org.silverpeas.components.mailinglist.service.model.beans.MailingList;
 import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
 import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -41,16 +43,19 @@ public class MailingListStatistics implements ComponentStatisticsProvider {
 
   private static final String UNKNOWN_USER_ID = "-2";
 
+  @Inject
+  private MailingListService mailingListService;
+  @Inject
+  private MessageService messageService;
+
   @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId) {
     List<UserIdCountVolumeCouple> myArrayList = new ArrayList<>();
     UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
     myCouple.setUserId(UNKNOWN_USER_ID);
-    MailingList ml =
-        MailingListServicesProvider.getMailingListService().findMailingList(componentId);
+    MailingList ml = mailingListService.findMailingList(componentId);
     if (ml != null) {
-      long totalNumberOfMessages =
-          MailingListServicesProvider.getMessageService().getTotalNumberOfMessages(ml);
+      long totalNumberOfMessages = messageService.getTotalNumberOfMessages(ml);
       myCouple.setCountVolume(totalNumberOfMessages);
     } else {
       SilverLogger.getLogger(this)

@@ -20,7 +20,6 @@
  */
 package org.silverpeas.components.quickinfo.servlets;
 
-import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.quickinfo.NewsByStatus;
 import org.silverpeas.components.quickinfo.control.QuickInfoSessionController;
 import org.silverpeas.components.quickinfo.model.News;
@@ -30,6 +29,7 @@ import org.silverpeas.core.date.Period;
 import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailController;
 import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.file.FileUploadUtil;
@@ -67,7 +67,7 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    * @param function The entering request function (ex : "Main.jsp")
-   * @param quickInfo The component Session Control, build and initialised.
+   * @param quickInfo The component Session Control, build and initialized.
    * @param request The entering request. The request rooter need it to get parameters
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
@@ -231,7 +231,8 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
    * @param quickInfo the QuickInfoSessionController
    * @param request the HttpServletRequest
    * @param publish true if publish action, false otherwise.
-   * @throws Exception
+   * @throws ParseException if the file items cannot be parsed
+   * @throws IOException if the file saving fails.
    */
   private String saveQuickInfo(QuickInfoSessionController quickInfo, HttpRequest request,
       boolean publish) throws ParseException, IOException {

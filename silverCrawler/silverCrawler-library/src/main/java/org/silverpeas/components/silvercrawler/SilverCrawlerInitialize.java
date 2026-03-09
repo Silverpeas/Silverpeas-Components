@@ -32,8 +32,6 @@ import org.silverpeas.core.initialization.Initialization;
  */
 @Service
 public class SilverCrawlerInitialize implements Initialization {
-  public SilverCrawlerInitialize() {
-  }
 
   @Override
   public void init() {

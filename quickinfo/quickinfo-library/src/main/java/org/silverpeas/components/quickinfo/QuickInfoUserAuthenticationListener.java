@@ -24,17 +24,15 @@
 
 package org.silverpeas.components.quickinfo;
 
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.components.quickinfo.model.QuickInfoService;
-import org.silverpeas.components.quickinfo.model.QuickInfoServiceProvider;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.security.authentication.UserAuthenticationListener;
 
-import javax.inject.Singleton;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.util.List;
 
 /**
@@ -42,8 +40,10 @@ import java.util.List;
  * Just after a successful user authentication, blocking news are displayed to the user if any.
  */
 @Service
-@Singleton
 public class QuickInfoUserAuthenticationListener implements UserAuthenticationListener {
+
+  @Inject
+  private QuickInfoService quickInfoService;
 
   @Override
   public String firstHomepageAccessAfterAuthentication(HttpServletRequest request, User user,
@@ -75,6 +75,6 @@ public class QuickInfoUserAuthenticationListener implements UserAuthenticationLi
   }
 
   private QuickInfoService getService() {
-    return QuickInfoServiceProvider.getQuickInfoService();
+    return quickInfoService;
   }
 }

@@ -33,42 +33,42 @@ import org.silverpeas.core.util.ServiceProvider;
 
 public interface MailingListService {
 
-  public static final String PARAM_RSS = "rss";
-  public static final String PARAM_OPEN = "open";
-  public static final String PARAM_NOTIFY = "notify";
-  public static final String PARAM_MODERATE = "moderated";
-  public static final String PARAM_ADDRESS = "subscribedAddress";
-  public static final String ROLE_MODERATOR = "moderator";
-  public static final String ROLE_ADMINISTRATOR = "admin";
-  public static final String ROLE_READER = "reader";
-  public static final String ROLE_SUBSCRIBER = "subscriber";
+  String PARAM_RSS = "rss";
+  String PARAM_OPEN = "open";
+  String PARAM_NOTIFY = "notify";
+  String PARAM_MODERATE = "moderated";
+  String PARAM_ADDRESS = "subscribedAddress";
+  String ROLE_MODERATOR = "moderator";
+  String ROLE_ADMINISTRATOR = "admin";
+  String ROLE_READER = "reader";
+  String ROLE_SUBSCRIBER = "subscriber";
 
   static MailingListService get() {
     return ServiceProvider.getService(MailingListService.class);
   }
 
-  public String createMailingList(MailingList mailingList);
+  String createMailingList(MailingList mailingList);
 
-  public void addExternalUser(String componentId, ExternalUser user);
+  void addExternalUser(String componentId, ExternalUser user);
 
-  public void addExternalUsers(String componentId, Collection<ExternalUser> users);
+  void addExternalUsers(String componentId, Collection<ExternalUser> users);
 
-  public void removeExternalUser(String componentId, ExternalUser user);
+  void removeExternalUser(String componentId, ExternalUser user);
 
-  public void removeExternalUsers(String componentId, Collection<ExternalUser> users);
+  void removeExternalUsers(String componentId, Collection<ExternalUser> users);
 
-  public void setInternalSubscribers(String componentId, Collection<String> userIds);
+  void setInternalSubscribers(String componentId, Collection<String> userIds);
 
-  public void setGroupSubscribers(String componentId, Collection<String> groups);
+  void setGroupSubscribers(String componentId, Collection<String> groups);
 
-  public void deleteMailingList(String componentId);
+  void deleteMailingList(String componentId);
 
-  public MailingList findMailingList(String componentId);
+  MailingList findMailingList(String componentId);
 
-  public List<MailingList> listAllMailingLists();
+  List<MailingList> listAllMailingLists();
 
-  public void subscribe(String componentId, String userId);
+  void subscribe(String componentId, String userId);
 
-  public void unsubscribe(String componentId, String userId);
+  void unsubscribe(String componentId, String userId);
 
 }

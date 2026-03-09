@@ -60,7 +60,7 @@ public class PhotoDAO {
    * Method to call in order to retrieve a unique photo.
    * @param criteria the media criteria.
    * @return the aimed photo if any, null otherwise.
-   * @throws SQLException
+   * @throws SQLException if the query fails
    */
   private static Photo getByCriteria(MediaCriteria criteria) throws SQLException {
     return unique(findByCriteria(criteria.withVisibility(MediaCriteria.VISIBILITY.FORCE_GET_ALL)));
@@ -70,7 +70,7 @@ public class PhotoDAO {
    * Method to call in order to retrieve photos.
    * @param criteria the media criteria.
    * @return the list of photo media according to given criteria.
-   * @throws SQLException
+   * @throws SQLException if the query fails
    */
   private static List<Photo> findByCriteria(MediaCriteria criteria) throws SQLException {
     criteria.mediaTypeIsOneOf(MediaType.Photo);

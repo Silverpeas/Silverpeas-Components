@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.silverpeas.components</groupId>
     <artifactId>whitepages</artifactId>
-    <version>6.5-SNAPSHOT</version>
+    <version>6.5-ee-SNAPSHOT</version>
   </parent>
 
   <groupId>org.silverpeas.components.whitepages</groupId>
@@ -14,13 +14,14 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.silverpeas.core</groupId>
-      <artifactId>silverpeas-core</artifactId>
+      <groupId>org.silverpeas.core.services</groupId>
+      <artifactId>silverpeas-core-silverstatistics</artifactId>
       <version>${core.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>silverpeas-core-silverstatistics</artifactId>
+      <artifactId>silverpeas-core-search</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -35,18 +36,6 @@
       <artifactId>silverpeas-core-search</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.silverpeas.core</groupId>
-      <artifactId>silverpeas-core-test</artifactId>
-      <version>${core.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>silverpeas-core-tagcloud</artifactId>
-      <version>${core.version}</version>
-      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

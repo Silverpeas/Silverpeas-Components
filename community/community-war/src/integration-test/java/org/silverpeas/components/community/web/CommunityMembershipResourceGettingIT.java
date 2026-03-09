@@ -55,7 +55,7 @@ public class CommunityMembershipResourceGettingIT extends ResourceGettingTest {
 
   private static final String DATASET_SCRIPT = "/community-dataset.sql";
 
-  private static final String EXPECTED_COMMUNITY = "community1";
+  private static final String EXPECTED_COMMUNITY = "community2";
 
   private static final String EXPECTED_ID = "fdf8ec9c-650f-43aa-905e-d5289648a008";
 
@@ -282,7 +282,7 @@ public class CommunityMembershipResourceGettingIT extends ResourceGettingTest {
 
   @Override
   public String[] getExistingComponentInstances() {
-    return new String[]{EXPECTED_COMMUNITY, "community2"};
+    return new String[]{EXPECTED_COMMUNITY, "community3"};
   }
 
   static class ExpectedMembershipValue {

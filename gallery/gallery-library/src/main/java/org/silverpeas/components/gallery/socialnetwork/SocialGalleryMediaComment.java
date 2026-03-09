@@ -24,18 +24,13 @@
 
 package org.silverpeas.components.gallery.socialnetwork;
 
+import jakarta.inject.Inject;
 import org.silverpeas.components.gallery.GalleryComponentSettings;
-import org.silverpeas.components.gallery.model.Media;
-import org.silverpeas.components.gallery.model.MediaPK;
-import org.silverpeas.components.gallery.model.Photo;
-import org.silverpeas.components.gallery.model.Sound;
-import org.silverpeas.components.gallery.model.Streaming;
-import org.silverpeas.components.gallery.model.Video;
-import org.silverpeas.components.gallery.service.MediaServiceProvider;
+import org.silverpeas.components.gallery.model.*;
+import org.silverpeas.components.gallery.service.GalleryService;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.annotation.Provider;
-import org.silverpeas.core.comment.service.CommentServiceProvider;
+import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.comment.socialnetwork.SocialInformationComment;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
@@ -47,7 +42,14 @@ import java.util.Date;
 import java.util.List;
 
 @Provider
-public class SocialGalleryMediaComment implements SocialMediaCommentProvider {
+public class SocialGalleryMediaComment implements SocialMediaCommentProvider<SocialInformation> {
+
+  @Inject
+  private GalleryService mediaService;
+  @Inject
+  private CommentService commentService;
+  @Inject
+  private OrganizationController oc;
 
   private List<String> getListResourceType() {
     List<String> listResourceType = new ArrayList<>(); //gallery components
@@ -65,7 +67,7 @@ public class SocialGalleryMediaComment implements SocialMediaCommentProvider {
       String instanceId = socialInformation.getComment().getComponentInstanceId();
 
       MediaPK mediaPk = new MediaPK(resourceId, instanceId);
-      Media media = MediaServiceProvider.getMediaService().getMedia(mediaPk);
+      Media media = mediaService.getMedia(mediaPk);
 
       // Set URL and title of the media comment
       socialInformation.setUrl("/Rgallery/" + media.getInstanceId() + "/" + media.getURL());
@@ -81,7 +83,7 @@ public class SocialGalleryMediaComment implements SocialMediaCommentProvider {
   public List<SocialInformation> getSocialInformationList(String userId, Date begin,
       Date end) {
     List<SocialInformationComment> listSocialInformation =
-        CommentServiceProvider.getCommentService()
+        commentService
             .getSocialInformationCommentsListByUserId(getListResourceType(), userId,
                 Period.between(begin.toInstant(), end.toInstant()));
 
@@ -91,13 +93,11 @@ public class SocialGalleryMediaComment implements SocialMediaCommentProvider {
   @Override
   public List<SocialInformation> getSocialInformationListOfMyContacts(
       final String myId, final List<String> myContactsIds, final Date begin, final Date end) {
-    OrganizationController oc = OrganizationControllerProvider.getOrganisationController();
-    List<String> instanceIds = new ArrayList<>();
-    instanceIds.addAll(
+    List<String> instanceIds = new ArrayList<>(
         Arrays.asList(oc.getComponentIdsForUser(myId, GalleryComponentSettings.COMPONENT_NAME)));
 
     List<SocialInformationComment> listSocialInformation =
-        CommentServiceProvider.getCommentService()
+        commentService
             .getSocialInformationCommentsListOfMyContacts(getListResourceType(), myContactsIds,
                 instanceIds, Period.between(begin.toInstant(), end.toInstant()));
 

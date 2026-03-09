@@ -34,25 +34,14 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
  */
 public class Moderator {
 
-  private String userId;
-  private int forumId;
+  private final String userId;
+  private final int forumId;
   boolean byInheritance = false;
 
-  /**
-   * Intanciate a moderator object.
-   * @param userId
-   * @param forumId
-   * @return
-   */
   public static Moderator from(String userId, int forumId) {
     return new Moderator(userId, forumId);
   }
 
-  /**
-   * Default constructor
-   * @param userId
-   * @param forumId
-   */
   private Moderator(String userId, int forumId) {
     this.userId = userId;
     this.forumId = forumId;

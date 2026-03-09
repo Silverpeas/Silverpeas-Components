@@ -23,7 +23,6 @@
  */
 package org.silverpeas.components.yellowpages.control;
 
-import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.yellowpages.ImportReport;
 import org.silverpeas.components.yellowpages.model.TopicDetail;
 import org.silverpeas.components.yellowpages.model.UserContact;
@@ -54,6 +53,7 @@ import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.csv.CSVReader;
 import org.silverpeas.core.util.csv.CSVRow;
 import org.silverpeas.core.util.csv.Variant;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.core.web.export.ExportCSVBuilder;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
@@ -304,7 +304,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
       for (ContactFatherDetail contact : contacts) {
         if (contact.getNodeId() != null && contact.getNodeId().startsWith(GROUP_REFERENTIEL_PREFIX) &&
             contact.getContactDetail().getUserId() != null) {
-          // contact de type user appartenant a un groupe Silverpeas
+          // contact de type user appartenant à un groupe Silverpeas
           UserFull userFull = getOrganisationController().getUserFull(contact.getContactDetail().
               getUserId());
           if (userFull != null) {
@@ -969,7 +969,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     String newValue = value;
     if (StringUtil.isDefined(value) && value.startsWith("\"") && value.endsWith("\"")) {
       newValue = value.substring(1, value.length() - 1);
-      newValue = newValue.replaceAll("\"\"", "\"");
+      newValue = newValue.replace("\"\"", "\"");
     }
     return newValue;
   }

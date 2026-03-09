@@ -329,7 +329,7 @@ public abstract class Media implements SilverContentInterface, Serializable, Wit
 
   /**
    * Gets the Application URL thumbnail of the media according the specified media resolution.
-   * @param mediaResolution
+   * @param mediaResolution the media resolution
    * @return the URL of media thumbnail.
    */
   public String getApplicationEmbedUrl(MediaResolution mediaResolution) {
@@ -350,7 +350,7 @@ public abstract class Media implements SilverContentInterface, Serializable, Wit
   /**
    * Gets the Silverpeas file.
    * @param mediaResolution the aimed resolution.
-   * @return a {@link SilverpeasFile} instance which could represents also an non existing file.
+   * @return a {@link SilverpeasFile} instance which could represents also a non-existing file.
    */
   public SilverpeasFile getFile(final MediaResolution mediaResolution) {
     return getFile(mediaResolution, null);
@@ -360,7 +360,7 @@ public abstract class Media implements SilverContentInterface, Serializable, Wit
    * Gets the Silverpeas file.
    * @param mediaResolution the aimed resolution.
    * @param size a specific size applied on the aimed resolution, ignored if not defined.
-   * @return a {@link SilverpeasFile} instance which could represents also an non existing file.
+   * @return a {@link SilverpeasFile} instance which could represents also a non-existing file.
    */
   public abstract SilverpeasFile getFile(final MediaResolution mediaResolution, final String size);
 
@@ -544,7 +544,7 @@ public abstract class Media implements SilverContentInterface, Serializable, Wit
   }
 
   /**
-   * Retrieve highest user role
+   * Retrieve the highest user role
    * @param user the current user detail
    * @return the highest user role
    */

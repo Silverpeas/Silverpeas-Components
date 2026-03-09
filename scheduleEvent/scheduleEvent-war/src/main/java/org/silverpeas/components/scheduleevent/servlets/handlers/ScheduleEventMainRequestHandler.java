@@ -25,13 +25,13 @@
 package org.silverpeas.components.scheduleevent.servlets.handlers;
 
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.silverpeas.components.scheduleevent.control.ScheduleEventSessionController;
 import org.silverpeas.components.scheduleevent.service.model.beans.ScheduleEvent;
 
 public class ScheduleEventMainRequestHandler implements ScheduleEventRequestHandler {
-  private String jspDestination;
+  private final String jspDestination;
 
   public ScheduleEventMainRequestHandler(String jspDestination) {
     this.jspDestination = jspDestination;

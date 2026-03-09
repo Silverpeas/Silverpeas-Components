@@ -58,13 +58,13 @@ public class DataWarningSchedulerImpl {
 
   public static final String DATAWARNING_JOB_NAME = "DataWarning";
   private static final String MAIL_TITLE_KEY = "titreMail";
-  private String instanceId = "";
+  private final String instanceId;
   private DataWarningEngine dataWarningEngine = null;
   private String[] idAllUniqueUsers = new String[0];
   private ScheduledJob theJob = null;
   private Scheduler scheduler = null;
-  private String jobName = null;
-  private LocalizationBundle messages =
+  private String jobName;
+  private final LocalizationBundle messages =
       ResourceLocator.getLocalizationBundle("org.silverpeas.dataWarning.multilang.dataWarning");
 
   public DataWarningSchedulerImpl(String instanceId) {
@@ -178,10 +178,9 @@ public class DataWarningSchedulerImpl {
         }
 
         // Notification for the Managers:
-        for (int i = 0; i < managerDestIds.size(); i++) {
-
+        for (String managerDestId : managerDestIds) {
           sendMessage(messages.getString(MAIL_TITLE_KEY),
-              msgToSend.toString() + msgForManager.toString(), managerDestIds.get(i));
+              msgToSend.toString() + msgForManager.toString(), managerDestId);
         }
 
         // Re-init the WakeUp time to the next wake time

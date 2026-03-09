@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.silverpeas.components</groupId>
     <artifactId>quizz</artifactId>
-    <version>6.5-SNAPSHOT</version>
+    <version>6.5-ee-SNAPSHOT</version>
   </parent>
 
   <groupId>org.silverpeas.components.quizz</groupId>
@@ -14,9 +14,9 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.silverpeas.core</groupId>
-      <artifactId>silverpeas-core</artifactId>
-      <version>${core.version}</version>
+      <groupId>jakarta.inject</groupId>
+      <artifactId>jakarta.inject-api</artifactId>
+      <version>2.0.1</version>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>

@@ -23,24 +23,15 @@
  */
 package org.silverpeas.components.websites.control;
 
-/**
- * This is the webSite manager main interface It contains all of the methods to be accessible to the
- * client
- *
- * @author Cécile BONIN
- */
-
-import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FilenameUtils;
-import org.silverpeas.components.websites.service.WebSiteService;
-import org.silverpeas.components.websites.service.WebSitesException;
 import org.silverpeas.components.websites.model.FolderDetail;
 import org.silverpeas.components.websites.model.IconDetail;
 import org.silverpeas.components.websites.model.SiteDetail;
+import org.silverpeas.components.websites.service.WebSiteService;
+import org.silverpeas.components.websites.service.WebSitesException;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.exception.DecodingException;
-import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
@@ -49,27 +40,29 @@ import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.ZipUtil;
 import org.silverpeas.core.util.file.FileFolderManager;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
+/**
+ * This is the webSite manager main interface It contains all the methods to be accessible to the
+ * client
+ *
+ * @author Cécile BONIN
+ */
 public class WebSiteSessionController extends AbstractComponentSessionController {
 
   private FolderDetail sessionTopic = null;
@@ -161,8 +154,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
     try {
       return getWebSiteService().goTo(new NodePK(id, getComponentId()));
     } catch (Exception re) {
-      throw new WebSitesException("WebSiteSessionController.getFolder()", SilverpeasException.ERROR,
-          "webSites.EX_GET_FOLDER_FAILED", "id = " + id, re);
+      throw new WebSitesException(re);
     }
   }
 
@@ -171,8 +163,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
     try {
       getWebSiteService().updateFolder(nd, sessionTopic.getNodePK());
     } catch (Exception re) {
-      throw new WebSitesException("WebSiteSessionController.updateFolderHeader()",
-          SilverpeasException.ERROR, "webSites.EX_UPDATE_FOLDER_HEADER_FAILED", re);
+      throw new WebSitesException(re);
     }
   }
 
@@ -180,8 +171,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
     try {
       return getWebSiteService().getFolderDetail(new NodePK(id, getComponentId()));
     } catch (Exception re) {
-      throw new WebSitesException("WebSiteSessionController.getFolderDetail()",
-          SilverpeasException.ERROR, "webSites.EX_GET_FOLDER_DETAIL_FAILED", "id = " + id, re);
+      throw new WebSitesException(re);
     }
   }
 
@@ -189,8 +179,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
     try {
       getWebSiteService().addFolder(nd, sessionTopic.getNodePK(), getUserDetail());
     } catch (Exception re) {
-      throw new WebSitesException("WebSiteSessionController.addFolder()", SilverpeasException.ERROR,
-          "webSites.EX_ADD_FOLDER_FAILED", re);
+      throw new WebSitesException(re);
     }
   }
 
@@ -198,8 +187,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
     try {
       getWebSiteService().deleteFolder(new NodePK(id, getComponentId()));
     } catch (Exception re) {
-      throw new WebSitesException("WebSiteSessionController.deleteFolder()",
-          SilverpeasException.ERROR, "webSites.EX_DELETE_FOLDER_FAILED", "id = " + id, re);
+      throw new WebSitesException(re);
     }
   }
 
@@ -214,8 +202,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
     try {
       return getWebSiteService().getPublicationDetail(new PublicationPK(pubId, getComponentId()));
     } catch (Exception re) {
-      throw new WebSitesException("WebSiteSessionController.getPublicationDetail()",
-          SilverpeasException.ERROR, "root.EX_GET_PUBLICATION_FAILED", "pubId = " + pubId, re);
+      throw new WebSitesException(re);
     }
   }
 
@@ -223,8 +210,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
     try {
       getWebSiteService().deletePublication(new PublicationPK(pubId, getComponentId()));
     } catch (Exception re) {
-      throw new WebSitesException("WebSiteSessionController.deletePublication()",
-          SilverpeasException.ERROR, "root.EX_DELETE_PUBLICATION_FAILED", "pubId = " + pubId, re);
+      throw new WebSitesException(re);
     }
   }
 
@@ -232,9 +218,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
     try {
       return getWebSiteService().getAllFatherPK(new PublicationPK(pubId, getComponentId()));
     } catch (Exception re) {
-      throw new WebSitesException("WebSiteSessionController.getPublicationFather()",
-          SilverpeasException.ERROR, "webSites.EX_GET_PUBLICATION_FATHER_FAILED",
-          "pubId = " + pubId, re);
+      throw new WebSitesException(re);
     }
   }
 
@@ -244,9 +228,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
       getWebSiteService().addPublicationToTopic(new PublicationPK(pubId, getComponentId()),
           new NodePK(folderId, getComponentId()));
     } catch (Exception re) {
-      throw new WebSitesException("WebSiteSessionController.addPublicationToFolder()",
-          SilverpeasException.ERROR, "webSites.EX_PUBLICATION_ADD_TO_NODE_FAILED",
-          "pubId = " + pubId + ", folderId = " + folderId, re);
+      throw new WebSitesException(re);
     }
   }
 
@@ -256,23 +238,15 @@ public class WebSiteSessionController extends AbstractComponentSessionController
       getWebSiteService().removePublicationFromTopic(new PublicationPK(pubId, getComponentId()),
           new NodePK(folderId, getComponentId()));
     } catch (Exception re) {
-      throw new WebSitesException("WebSiteSessionController.removePublicationToFolder()",
-          SilverpeasException.ERROR, "webSites.EX_PUBLICATION_DELETE_TO_NODE_FAILED",
-          "pubId = " + pubId + ", folderId = " + folderId, re);
+      throw new WebSitesException(re);
     }
   }
 
-  /**
-   * @param siteId
-   * @return
-   * @throws WebSitesException
-   */
   public synchronized String getIdPublication(String siteId) throws WebSitesException {
     try {
       return getWebSiteService().getIdPublication(getComponentId(), siteId);
     } catch (Exception re) {
-      throw new WebSitesException("WebSiteSessionController.getIdPublication()",
-          SilverpeasException.ERROR, "webSites.EX_GET_PUBLICATION_FAILED", "siteId =" + siteId, re);
+      throw new WebSitesException(re);
     }
   }
 
@@ -302,8 +276,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
     try {
       return getWebSiteService().getAllWebSite(getComponentId());
     } catch (Exception re) {
-      throw new WebSitesException("WebSiteSessionController.getAllWebSite()",
-          SilverpeasException.ERROR, "webSites.EX_GET_ALL_WEBSITES_FAILED", "", re);
+      throw new WebSitesException(re);
     }
   }
 
@@ -314,8 +287,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
     try {
       return getWebSiteService().getWebSite(getComponentId(), id);
     } catch (Exception re) {
-      throw new WebSitesException("WebSiteSessionController.getWebSite", SilverpeasException.ERROR,
-          "webSites.EX_GET_WEBSITE_FAILED", "siteId =" + id, re);
+      throw new WebSitesException(re);
     }
   }
 
@@ -326,8 +298,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
     try {
       return getWebSiteService().getIcons(getComponentId(), id);
     } catch (Exception re) {
-      throw new WebSitesException("WebSiteSessionController.getIcons(id)",
-          SilverpeasException.ERROR, "webSites.EX_GET_ICONS_FAILED", "siteId =" + id, re);
+      throw new WebSitesException(re);
     }
   }
 
@@ -338,8 +309,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
     try {
       return getWebSiteService().getNextId(getComponentId());
     } catch (Exception re) {
-      throw new WebSitesException("WebSiteSessionController.getNextId()", SilverpeasException.ERROR,
-          "root.EX_GET_NEXTID_FAILED", "", re);
+      throw new WebSitesException(re);
     }
   }
 
@@ -350,8 +320,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
     try {
       return getWebSiteService().getAllIcons(getComponentId());
     } catch (Exception re) {
-      throw new WebSitesException("WebSiteSessionController.getAllIcons()",
-          SilverpeasException.ERROR, "webSites.EX_GET_ALL_ICONS_FAILED", "", re);
+      throw new WebSitesException(re);
     }
   }
 
@@ -363,8 +332,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
       String fullPath = getFullPath(chemin);
       return FileFolderManager.getAllSubFolder(fullPath);
     } catch (Exception e) {
-      throw new WebSitesException("WebSiteSessionController.getAllSubFolder()",
-          SilverpeasException.ERROR, "webSites.EX_GET_ALL_SUB_FOLDERS_FAIL", e);
+      throw new WebSitesException(e);
     }
   }
 
@@ -375,8 +343,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
     try {
       return FileFolderManager.getAllFile(getFullPath(chemin));
     } catch (Exception e) {
-      throw new WebSitesException("WebSiteSessionController.getAllFile()",
-          SilverpeasException.ERROR, "webSites.EX_GET_ALL_FILES_FAIL", e);
+      throw new WebSitesException(e);
     }
   }
 
@@ -387,8 +354,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
     try {
       return FileFolderManager.getAllImages(getFullPath(chemin));
     } catch (Exception e) {
-      throw new WebSitesException("WebSiteSessionController.getAllImages()",
-          SilverpeasException.ERROR, "webSites.EX_GET_ALL_IMAGES_FAIL", e);
+      throw new WebSitesException(e);
     }
   }
 
@@ -399,8 +365,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
     try {
       return FileFolderManager.getAllHTMLWebPages(getFullPath(chemin));
     } catch (Exception e) {
-      throw new WebSitesException("WebSiteSessionController.getAllHTMLWebPages()",
-          SilverpeasException.ERROR, "webSites.EX_GET_ALL_WEB_PAGES_FAIL", e);
+      throw new WebSitesException(e);
     }
   }
 
@@ -415,15 +380,10 @@ public class WebSiteSessionController extends AbstractComponentSessionController
       classifyWebSites(description);
       return pubPK;
     } catch (Exception re) {
-      throw new WebSitesException("WebSiteSessionController.createWebSite(description)",
-          SilverpeasException.ERROR, "webSites.EX_CREATE_WEBSITE_FAILED",
-          "siteDetail =" + description.toString(), re);
+      throw new WebSitesException(re);
     }
   }
 
-  /**
-   * @param siteDetail
-   */
   private void classifyWebSites(SiteDetail siteDetail) {
     String positions = siteDetail.getPositions();
     if (StringUtil.isDefined(positions)) {
@@ -450,8 +410,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
     try {
       getWebSiteService().associateIcons(getComponentId(), id, listeIcones);
     } catch (Exception re) {
-      throw new WebSitesException("WebSiteSessionController.associateIcons(id, listeIcones)",
-          SilverpeasException.ERROR, "webSites.EX_ASSOCIATE_ICONS_FAILED", "siteId =" + id, re);
+      throw new WebSitesException(re);
     }
   }
 
@@ -463,9 +422,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
     try {
       getWebSiteService().publish(getComponentId(), listeSite);
     } catch (Exception re) {
-      throw new WebSitesException("WebSiteSessionController.publish(listeSite)",
-          SilverpeasException.ERROR, "webSites.EX_PUBLISH_SELECTED_FAILED",
-          "listeSite =" + listeSite.toString(), re);
+      throw new WebSitesException(re);
     }
   }
 
@@ -476,9 +433,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
     try {
       getWebSiteService().dePublish(getComponentId(), listeSite);
     } catch (Exception re) {
-      throw new WebSitesException("WebSiteSessionController.dePublish(listeSite)",
-          SilverpeasException.ERROR, "webSites.EX_DEPUBLISH_SELECTED_FAILED",
-          "listeSite =" + listeSite.toString(), re);
+      throw new WebSitesException(re);
     }
   }
 
@@ -489,8 +444,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
     try {
       FileFolderManager.createFolder(getFullPath(path));
     } catch (Exception e) {
-      throw new WebSitesException("WebSiteSessionController.createFolder()",
-          SilverpeasException.ERROR, "webSites.EX_CREATE_FOLDER_FAIL", e);
+      throw new WebSitesException(e);
     }
   }
 
@@ -505,8 +459,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
     try {
       FileFolderManager.moveFolder(getFullPath(oldPath), getFullPath(newPath));
     } catch (Exception e) {
-      throw new WebSitesException("WebSiteSessionController.renameFolder()",
-          SilverpeasException.ERROR, "webSites.EX_RENAME_FOLDER_FAIL", e);
+      throw new WebSitesException(e);
     }
   }
 
@@ -517,8 +470,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
     try {
       FileFolderManager.deleteFolder(getFullPath(folderPath));
     } catch (Exception e) {
-      throw new WebSitesException("WebSiteSessionController.delFolder()", SilverpeasException.ERROR,
-          "webSites.EX_DELETE_FOLDER_FAIL", e);
+      throw new WebSitesException(e);
     }
   }
 
@@ -530,8 +482,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
     try {
       FileFolderManager.createFile(getFullPath(filePath), fileName, fileContent);
     } catch (org.silverpeas.core.util.UtilException e) {
-      throw new WebSitesException("WebSiteSessionController.createFile()",
-          SilverpeasException.ERROR, "webSites.EX_CREATE_FILE_FAIL", e);
+      throw new WebSitesException(e);
     }
   }
 
@@ -544,28 +495,18 @@ public class WebSiteSessionController extends AbstractComponentSessionController
       File dest = new File(destPath);
       ZipUtil.extract(zip, dest);
     } catch (Exception e) {
-      throw new WebSitesException("WebSiteSessionController.unzip()", SilverpeasException.ERROR,
-          "webSites.EX_UNZIP_FILE_FAIL", e);
+      throw new WebSitesException(e);
     }
   }
 
-  /**
-   * deleteWebSites
-   */
   public synchronized void deleteWebSites(Collection<String> liste) throws WebSitesException {
     try {
       getWebSiteService().deleteWebSites(getComponentId(), liste);
     } catch (Exception re) {
-      throw new WebSitesException("WebSiteSessionController.deleteWebSites(liste)",
-          SilverpeasException.ERROR, "webSites.EX_DELETE_WEBSITES_FAILED", "listeSite =" + liste,
-          re);
+      throw new WebSitesException(re);
     }
   }
 
-  /**
-   * @param siteDetail the site detail to update
-   * @throws WebSitesException
-   */
   public synchronized void updateWebSite(SiteDetail siteDetail) throws WebSitesException {
     try {
       siteDetail.setCreatorId(getUserId());
@@ -578,15 +519,10 @@ public class WebSiteSessionController extends AbstractComponentSessionController
       siteDetail.setPk(pubPk);
       getWebSiteService().updatePublication(siteDetail, getComponentId());
     } catch (Exception re) {
-      throw new WebSitesException("WebSiteSessionController.updateWebSite(siteDetail)",
-          SilverpeasException.ERROR, "webSites.EX_UPDATE_WEBSITE_FAILED",
-          "siteDetail =" + siteDetail, re);
+      throw new WebSitesException(re);
     }
   }
 
-  /**
-   * deleteDirectory
-   */
   public synchronized void deleteDirectory(String path) throws WebSitesException {
     boolean result;
     File directory = new File(getFullPath(path));
@@ -599,8 +535,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
     }
     result = directory.delete();
     if (!result) {
-      throw new WebSitesException("WebSiteSessionClientController.deleteDirectory()",
-          SilverpeasException.ERROR, "webSites.EXE_DELETE_DIRECTORY_FAIL", "path = " + path);
+      throw new WebSitesException("The directory" + path + " fails to be deleted");
     }
   }
 
@@ -613,13 +548,13 @@ public class WebSiteSessionController extends AbstractComponentSessionController
     }
   }
 
-  /**
-   * delDir : procedure privee recursive
-   */
   private synchronized void delDir(File dir) {
     try {
       if (dir.isDirectory()) {
         File[] dirFiles = dir.listFiles();
+        if (dirFiles == null) {
+          return;
+        }
         for (final File dirFile : dirFiles) {
           delDir(dirFile);
         }
@@ -648,8 +583,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
             "the new and the old file names must have the same extension: " + extension);
       }
     } catch (Exception e) {
-      throw new WebSitesException("WebSiteSessionController.renameFile()",
-          SilverpeasException.ERROR, "webSites.EX_RENAME_FILE_FAIL", e);
+      throw new WebSitesException(e);
     }
   }
 
@@ -660,24 +594,13 @@ public class WebSiteSessionController extends AbstractComponentSessionController
     try {
       FileFolderManager.deleteFile(getFullPath(path));
     } catch (Exception e) {
-      throw new WebSitesException("WebSiteSessionController.deleteFile()",
-          SilverpeasException.ERROR, "webSites.EX_DELETE_FILE_FAIL", e);
+      throw new WebSitesException(e);
     }
   }
 
-  /**
-   * verif
-   * @param action
-   * @param currentPath
-   * @param name
-   * @param newName
-   * @param nomPage
-   * @return
-   * @throws WebSitesException
-   */
   public synchronized String verif(String action, String currentPath, String name, String newName,
       String nomPage) throws WebSitesException {
-    String res = "";
+    String res;
     String fullPath = getFullPath(currentPath);
     try {
       switch (action) {
@@ -726,8 +649,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
           break;
       }
     } catch (Exception e) {
-      throw new WebSitesException("WebSiteSessionController.verif()", SilverpeasException.ERROR,
-          "webSites.EX_VERIF_FAIL", e);
+      throw new WebSitesException(e);
     }
     return res;
   }
@@ -777,27 +699,19 @@ public class WebSiteSessionController extends AbstractComponentSessionController
     return silverObjectId;
   }
 
-  /**
-   * @param idSite
-   * @param arrayTopic
-   * @throws WebSitesException
-   */
   public void updateClassification(String idSite, ArrayList<String> arrayTopic)
       throws WebSitesException {
     try {
       String idPub = getWebSiteService().getIdPublication(getComponentId(), idSite);
       getWebSiteService().updateClassification(new PublicationPK(idPub, getComponentId()), arrayTopic);
     } catch (Exception re) {
-      throw new WebSitesException("WebSiteSessionController.updateClassification",
-          SilverpeasException.ERROR, "webSites.EX_PUBLICATION_UPDATE_FAILED", "site id =" + idSite,
-          re);
+      throw new WebSitesException(re);
     }
   }
 
   public void checkPath(String path) throws WebSitesException {
     if (path.contains("..")) {
-      throw new WebSitesException(getClass().getSimpleName() + ".checkPath",
-          SilverpeasException.ERROR, "peasCore.RESOURCE_ACCESS_FORBIDDEN");
+      throw new WebSitesException("Forbidden access path " + path);
     }
   }
 
@@ -810,8 +724,8 @@ public class WebSiteSessionController extends AbstractComponentSessionController
     String fileName = FileUploadUtil.getFileName(fileItem);
     String path = getWebSiteRepositoryPath() + "/" + webSitePath;
     File file = new File(path, fileName);
-    fileItem.write(file);
-    if (!isInWhiteList(file)) {
+    fileItem.saveTo(file);
+    if (isNotInWhiteList(file)) {
       FileUtil.forceDeletion(file);
       return -3;
     }
@@ -819,12 +733,12 @@ public class WebSiteSessionController extends AbstractComponentSessionController
   }
 
   /**
-   * Creates a web site from the content of an archive file (a ZIP file).
+   * Creates a website from the content of an archive file (a ZIP file).
    * @param descriptionSite the site to create.
    * @param fileItem the zip archive with the content of the site to create.
    * @return the creation status. 0 means the creation succeed, other values means the site creation
-   * failed: -1 the main page name is invalid and -2 the web site folder creation failed.
-   * @throws Exception if an unexpected error occurs when creating the web site.
+   * failed: -1 the main page name is invalid and -2 the website folder creation failed.
+   * @throws Exception if an unexpected error occurs when creating the website.
    */
   public int createWebSiteFromZipFile(SiteDetail descriptionSite, FileItem fileItem)
       throws Exception {
@@ -836,7 +750,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
       String fichierZipName = FileUploadUtil.getFileName(fileItem);
       File fichier = new File(cheminZip + "/" + fichierZipName);
 
-      fileItem.write(fichier);
+      fileItem.saveTo(fichier);
 
       /* dezip du fichier.zip sur le serveur */
       String cheminFichierZip = cheminZip + "/" + fichierZipName;
@@ -845,7 +759,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
       /* check the files are thoses expected */
       Collection<File> files = FileFolderManager.getAllWebPages(cheminZip);
       for (File uploadedFile : files) {
-        if (!uploadedFile.getName().equals(fichierZipName) && !isInWhiteList(uploadedFile)) {
+        if (!uploadedFile.getName().equals(fichierZipName) && isNotInWhiteList(uploadedFile)) {
           return -3;
         }
       }
@@ -873,17 +787,17 @@ public class WebSiteSessionController extends AbstractComponentSessionController
     return 0;
   }
 
-  private boolean isInWhiteList(File file) {
+  private boolean isNotInWhiteList(File file) {
     String authorizedMimeTypes = getSettings().getString(WEBSITE_WHITE_LIST);
     if (StringUtil.isDefined(authorizedMimeTypes)) {
-      List<String> whiteList = Arrays.asList(authorizedMimeTypes.split(" "));
+      String[] whiteList = authorizedMimeTypes.split(" ");
       String mimeType = FileUtil.getMimeType(file.getPath());
       for (String whiteMiteType : whiteList) {
         if (mimeType.matches(whiteMiteType.replace("*", ".*").replace("+", "\\+"))) {
-          return true;
+          return false;
         }
       }
     }
-    return false;
+    return true;
   }
 }

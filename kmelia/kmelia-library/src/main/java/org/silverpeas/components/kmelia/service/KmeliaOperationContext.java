@@ -38,7 +38,7 @@ import java.util.Optional;
  */
 public class KmeliaOperationContext {
 
-  private static final String cacheKey = "@@@KmeliaOperationContext@@@";
+  private static final String CACHE_KEY = "@@@KmeliaOperationContext@@@";
   private final OperationType operation;
 
   /**
@@ -48,7 +48,7 @@ public class KmeliaOperationContext {
   public static Optional<KmeliaOperationContext> current() {
     return Optional.ofNullable(CacheAccessorProvider.getThreadCacheAccessor()
         .getCache()
-        .get(cacheKey, KmeliaOperationContext.class));
+        .get(CACHE_KEY, KmeliaOperationContext.class));
   }
 
   /**
@@ -57,7 +57,7 @@ public class KmeliaOperationContext {
    */
   public static void about(final OperationType type) {
     KmeliaOperationContext context = new KmeliaOperationContext(type);
-    CacheAccessorProvider.getThreadCacheAccessor().getCache().put(cacheKey, context);
+    CacheAccessorProvider.getThreadCacheAccessor().getCache().put(CACHE_KEY, context);
   }
 
   private KmeliaOperationContext(final OperationType type) {

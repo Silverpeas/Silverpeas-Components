@@ -47,7 +47,7 @@ public class SpaceMembersRequestRouter
   @Override
   public String getDestination(String function, SpaceMembersSessionController spaceMembersSCC,
       HttpRequest request) {
-    String destination = "";
+    String destination;
     if (function.startsWith("Main") || function.startsWith("portlet")) {
       destination = "/Rdirectory/jsp/Main?SpaceId=" + spaceMembersSCC.getSpaceId();
       // only logged-in members

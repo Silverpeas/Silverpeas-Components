@@ -23,13 +23,24 @@
  */
 package org.silverpeas.components.gallery.process.media;
 
-import org.silverpeas.components.gallery.MediaUtil;
+import org.silverpeas.components.gallery.constant.MediaMimeType;
+import org.silverpeas.components.gallery.media.DrewMediaMetadataExtractor;
+import org.silverpeas.components.gallery.media.MediaMetadataException;
+import org.silverpeas.components.gallery.media.MediaMetadataExtractor;
 import org.silverpeas.components.gallery.model.InternalMedia;
+import org.silverpeas.components.gallery.model.Media;
+import org.silverpeas.components.gallery.model.Photo;
+import org.silverpeas.core.notification.message.MessageManager;
 import org.silverpeas.core.process.ProcessProvider;
 import org.silverpeas.core.process.io.file.FileHandler;
+import org.silverpeas.core.process.io.file.HandledFile;
 import org.silverpeas.core.process.management.AbstractFileProcess;
 import org.silverpeas.core.process.management.ProcessExecutionContext;
 import org.silverpeas.core.process.session.ProcessSession;
+import org.silverpeas.kernel.logging.SilverLogger;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 /**
  * Process to load metadata of a photo
@@ -39,35 +50,44 @@ public class GalleryLoadMetaDataProcess extends AbstractFileProcess<ProcessExecu
 
   private final InternalMedia media;
 
-  /**
-   * Default hidden constructor
-   * @param media
-   */
   private GalleryLoadMetaDataProcess(final InternalMedia media) {
     this.media = media;
   }
 
-  /**
-   * Method to call to load MetaData
-   * @param media
-   * @throws Exception
-   */
   public static void load(final InternalMedia media) throws Exception {
     ProcessProvider.getProcessManagement().execute(new GalleryLoadMetaDataProcess(media),
         new ProcessExecutionContext(null, null));
   }
 
-  /*
-   * (non-Javadoc)
-   * @see AbstractFileProcess#processFiles(org.silverpeas.process.
-   * management.ProcessExecutionContext, ProcessSession,
-   * FileHandler)
-   */
   @Override
   public void processFiles(final ProcessExecutionContext context, final ProcessSession session,
-      final FileHandler fileHandler) throws Exception {
+      final FileHandler fileHandler) throws MediaMetadataException {
     if (media.getType().isPhoto()) {
-      MediaUtil.setMetaData(fileHandler, media.getPhoto());
+      setMetaData(fileHandler, media.getPhoto());
+    }
+  }
+
+  private static void setMetaData(final FileHandler fileHandler, final Photo photo)
+      throws MediaMetadataException {
+    if (MediaMimeType.JPG == photo.getFileMimeType()) {
+      final HandledFile handledFile = fileHandler
+          .getHandledFile(Media.BASE_PATH, photo.getInstanceId(), photo.getWorkspaceSubFolderName(),
+              photo.getFileName());
+      if (handledFile.exists()) {
+        try {
+          MediaMetadataExtractor extractor = new DrewMediaMetadataExtractor(photo.getInstanceId());
+          String lang = MessageManager.getLanguage();
+          extractor.extractImageExifMetaData(handledFile.getFile(), lang)
+              .forEach(photo::addMetaData);
+          extractor.extractImageIptcMetaData(handledFile.getFile(), lang)
+              .forEach(photo::addMetaData);
+        } catch (UnsupportedEncodingException e) {
+          SilverLogger.getLogger(GalleryLoadMetaDataProcess.class).silent(e)
+              .error("Bad metadata encoding in image " + photo.getTitle() + ": " + e.getMessage());
+        } catch (IOException e) {
+          throw new MediaMetadataException(e);
+        }
+      }
     }
   }
 }

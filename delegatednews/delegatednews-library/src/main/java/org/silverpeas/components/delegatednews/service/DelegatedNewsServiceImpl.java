@@ -37,8 +37,8 @@ import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Inject;
-import javax.transaction.Transactional;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -48,7 +48,6 @@ import static java.util.Collections.singletonList;
 import static org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper.buildAndSend;
 
 @Service
-@Transactional
 public class DelegatedNewsServiceImpl implements DelegatedNewsService, ComponentInstanceDeletion {
 
   @Inject
@@ -56,11 +55,13 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService, Component
   @Inject
   private OrganizationController organizationController;
 
+  @Transactional
   @Override
   public void delete(final String componentInstanceId) {
     dao.deleteByComponentInstanceId(componentInstanceId);
   }
 
+  @Transactional
   @Override
   public void submitNews(Contribution contribution, Period visibilityPeriod, String userId) {
     DelegatedNews delegatedNews = new DelegatedNews(contribution.getIdentifier(),
@@ -89,6 +90,7 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService, Component
     return dao.findByStatus(DelegatedNews.NEWS_VALID);
   }
 
+  @Transactional
   @Override
   public void validateDelegatedNews(String contributionId, String validatorId) {
     DelegatedNews delegatedNews = dao.getById(contributionId);
@@ -102,6 +104,7 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService, Component
     }
   }
 
+  @Transactional
   @Override
   public void refuseDelegatedNews(String contributionId, String validatorId, String refusalMotive) {
     DelegatedNews delegatedNews = dao.getById(contributionId);
@@ -115,6 +118,7 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService, Component
     }
   }
 
+  @Transactional
   @Override
   public void updateDateDelegatedNews(String contributionId, Period visibilityPeriod) {
     DelegatedNews delegatedNews = dao.getById(contributionId);
@@ -140,7 +144,7 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService, Component
   }
 
   /**
-   * Notify the editorial team about a news to validate.
+   * Notify the editorial team about news to validate.
    */
   private void notifyDelegatedNewsToValidate(DelegatedNews news, String senderId) {
     final String delegatedNewsInstanceId = getAppId();
@@ -152,6 +156,7 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService, Component
     }
   }
 
+  @Transactional
   @Override
   public void updateDelegatedNews(ContributionIdentifier id, String updaterId,
       Period visibilityPeriod) {
@@ -168,6 +173,7 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService, Component
     }
   }
 
+  @Transactional
   @Override
   public void deleteDelegatedNews(String contributionId) {
     DelegatedNews delegatedNews = dao.getById(contributionId);
@@ -192,6 +198,7 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService, Component
     }
   }
 
+  @Transactional
   @Override
   public DelegatedNews updateOrderDelegatedNews(String contributionId, int newsOrder) {
     DelegatedNews delegatedNews = dao.getById(contributionId);

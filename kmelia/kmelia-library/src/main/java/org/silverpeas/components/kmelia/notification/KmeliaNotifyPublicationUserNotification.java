@@ -28,6 +28,7 @@ import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * @author Yohann Chastagnier
@@ -49,7 +50,7 @@ public class KmeliaNotifyPublicationUserNotification
   @Override
   protected Collection<String> getUserIdsToNotify() {
     // Users to notify are not handled here.
-    return null;
+    return Collections.emptyList();
   }
 
   @Override

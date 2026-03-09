@@ -38,14 +38,9 @@ import java.util.Collection;
 public class ForumsMessageSubscriptionUserNotification extends AbstractForumsMessageUserNotification
     implements UserSubscriptionNotificationBehavior {
 
-  private SubscriptionSubscriberMapBySubscriberType subscriberIdsByTypes =
+  private final SubscriptionSubscriberMapBySubscriberType subscriberIdsByTypes =
       new SubscriptionSubscriberMapBySubscriberType();
 
-  /**
-   * Default constructor.
-   * @param resource
-   * @param action
-   */
   public ForumsMessageSubscriptionUserNotification(final Message resource, final NotifAction action) {
     super(resource, action);
   }

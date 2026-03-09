@@ -44,7 +44,7 @@ public class MailingListSessionController extends AbstractComponentSessionContro
 
   public boolean isModerated() {
     String param = getComponentParameterValue(MailingListService.PARAM_MODERATE);
-    return param != null &&
-        (Boolean.valueOf(param) || "Y".equalsIgnoreCase(param) || "YES".equalsIgnoreCase(param));
+    return Boolean.parseBoolean(param) || "Y".equalsIgnoreCase(param)
+        || "YES".equalsIgnoreCase(param);
   }
 }

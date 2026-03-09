@@ -23,13 +23,13 @@
  */
 package org.silverpeas.components.rssaggregator.service;
 
+import jakarta.inject.Singleton;
 import org.silverpeas.components.rssaggregator.model.SPChannel;
 import org.silverpeas.components.rssaggregator.model.SPChannelPK;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.kernel.annotation.Technical;
 
-import javax.inject.Singleton;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -37,7 +37,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author sv
  */
 @Technical
-@Service
+@Bean
 @Singleton
 public class RssAggregatorCache {
   // content of cache

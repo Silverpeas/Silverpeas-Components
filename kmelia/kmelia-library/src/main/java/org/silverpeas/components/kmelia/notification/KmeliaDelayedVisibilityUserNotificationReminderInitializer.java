@@ -37,7 +37,7 @@ import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -47,7 +47,7 @@ import java.time.ZoneId;
 import java.util.List;
 
 /**
- * In charge of initializing the reminder about news with a publish visibility set into the future.
+ * In charge of initializing the reminder about news with a publishing visibility set into the future.
  * @author silveryocha
  */
 @Service
@@ -59,6 +59,8 @@ public class KmeliaDelayedVisibilityUserNotificationReminderInitializer
 
   @Inject
   private KmeliaDelayedVisibilityUserNotificationReminder delayedVisibilityUserNotificationReminder;
+  @Inject
+  private KmeliaService kmeliaService;
 
   @Override
   public void init() throws PersistenceException {
@@ -70,12 +72,12 @@ public class KmeliaDelayedVisibilityUserNotificationReminderInitializer
           report.append("No reminder has been set about delayed visibility.");
         } else {
           potentialPubIds.forEach(i -> {
-            final PublicationDetail potentialPub = KmeliaService.get().getPublicationDetail(i);
+            final PublicationDetail potentialPub = kmeliaService.getPublicationDetail(i);
             if (delayedVisibilityUserNotificationReminder.setAbout(potentialPub)) {
               report.append(MessageFormat.format(
                   "Reminder set for publication with id {0}, located into instance {1}, with " +
                       "visibility set to {2} at {3}\n", potentialPub.getId(),
-                  potentialPub.getComponentInstanceId(), LocalDateTime
+                  potentialPub.getInstanceId(), LocalDateTime
                       .ofInstant(potentialPub.getBeginDate().toInstant(), ZoneId.systemDefault())
                       .toLocalDate(), potentialPub.getBeginHour()));
             }

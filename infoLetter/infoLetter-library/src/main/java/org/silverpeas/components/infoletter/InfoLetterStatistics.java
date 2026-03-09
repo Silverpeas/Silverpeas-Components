@@ -21,20 +21,18 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
- ---*/
 
 package org.silverpeas.components.infoletter;
 
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import org.silverpeas.components.infoletter.model.InfoLetter;
 import org.silverpeas.components.infoletter.model.InfoLetterPublication;
 import org.silverpeas.components.infoletter.model.InfoLetterService;
-import org.silverpeas.components.infoletter.service.InfoLetterServiceProvider;
 import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
 import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
 
-import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -42,6 +40,9 @@ import java.util.List;
 @Provider
 @Named("infoLetter" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
 public class InfoLetterStatistics implements ComponentStatisticsProvider {
+
+  @Inject
+  private InfoLetterService service;
 
   @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId) {
@@ -60,12 +61,11 @@ public class InfoLetterStatistics implements ComponentStatisticsProvider {
 
   private List<InfoLetterPublication> getInfoLetters(String componentId) {
     List<InfoLetterPublication> publications = new ArrayList<>();
-    InfoLetterService dataInterface = InfoLetterServiceProvider.getInfoLetterData();
-    List<InfoLetter> listLettres = dataInterface.getInfoLetters(componentId);
+    List<InfoLetter> listLettres = service.getInfoLetters(componentId);
     if (listLettres != null) {
       for (InfoLetter defaultLetter : listLettres) {
         List<InfoLetterPublication> listParutions =
-            dataInterface.getInfoLetterPublications(defaultLetter.getPK());
+            service.getInfoLetterPublications(defaultLetter.getId());
         publications.addAll(listParutions);
       }
     }

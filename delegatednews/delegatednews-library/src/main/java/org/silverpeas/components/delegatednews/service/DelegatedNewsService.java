@@ -37,7 +37,7 @@ public interface DelegatedNewsService {
   class Constants {
     /**
      * The name of the component instance configuration parameter to use to indicate the
-     * contributions in the given component instance can be subject to be submitted as a news to
+     * contributions in the given component instance can be subject to be submitted as news to
      * publish in the home page.
      */
     public static final String DELEGATED_COMPONENT_PARAM = "delegatedNews";
@@ -57,10 +57,10 @@ public interface DelegatedNewsService {
   /**
    * Submits the specified contribution as a delegated news. The submitted news can then be
    * identified by the contribution identifier from which it is spawned.
-   * @param contribution the contribution to take as a news to publish.
+   * @param contribution the contribution to take as news to publish.
    * @param visibilityPeriod the period during which the news has to be visible. If null, the news
    * is always visible.
-   * @param userId the unique identifier of the user that has submitted the contribution as a news.
+   * @param userId the unique identifier of the user that has submitted the contribution as news.
    */
   void submitNews(Contribution contribution, Period visibilityPeriod, String userId);
 
@@ -68,7 +68,7 @@ public interface DelegatedNewsService {
    * Gets the delegated news matching the specified contribution.
    * @param contributionId the unique identifier of the delegated news. It is the unique identifier of the
    * contribution from which it was spawned.
-   * @return
+   * @return the asked delegated news.
    */
   DelegatedNews getDelegatedNews(String contributionId);
 
@@ -82,13 +82,13 @@ public interface DelegatedNewsService {
 
   /**
    * Gets all the delegated news.
-   * @return a list of all of the delegated news.
+   * @return a list of all the delegated news.
    */
   List<DelegatedNews> getAllDelegatedNews();
 
   /**
    * Gets all the validated delegated news.
-   * @return a list of all of the delegated news that are validated.
+   * @return a list of all the delegated news that are validated.
    */
   List<DelegatedNews> getAllValidDelegatedNews();
 
@@ -138,7 +138,7 @@ public interface DelegatedNewsService {
 
   /**
    * Updates the order of the specified delegated news among the other news.
-   * @param contributionId the unique identifier of the contribution from which the deletaged news
+   * @param contributionId the unique identifier of the contribution from which the delegated news
    * was spawned.
    * @param newsOrder the new order of the news.
    * @return the updated delegated news.

@@ -20,6 +20,7 @@
  */
 package org.silverpeas.components.kmelia;
 
+import jakarta.inject.Inject;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.contentcontainer.content.AbstractSilverpeasContentManager;
@@ -46,6 +47,11 @@ public class KmeliaContentManager extends AbstractSilverpeasContentManager imple
 
   private static final String CONTENT_ICON_FILE_NAME = "kmeliaSmall.gif";
 
+  @Inject
+  private PublicationAccessControl accessController;
+  @Inject
+  private PublicationService service;
+
   /**
    * Hidden constructor as this implementation must be GET by CDI mechanism.
    */
@@ -71,7 +77,7 @@ public class KmeliaContentManager extends AbstractSilverpeasContentManager imple
         .map(r -> new PublicationPK(r.getLocalId(), r.getComponentInstanceId()))
         .collect(Collectors.toList());
     final List<PublicationDetail> publications = getPublicationService().getPublications(ids);
-    return PublicationAccessControl.get()
+    return accessController
         .filterAuthorizedByUser(currentUserId, publications)
         .collect(Collectors.toList());
   }
@@ -100,6 +106,6 @@ public class KmeliaContentManager extends AbstractSilverpeasContentManager imple
   }
 
   private PublicationService getPublicationService() {
-    return PublicationService.get();
+    return service;
   }
 }

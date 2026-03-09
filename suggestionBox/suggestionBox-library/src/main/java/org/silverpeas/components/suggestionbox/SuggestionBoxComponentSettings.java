@@ -35,6 +35,9 @@ import org.silverpeas.kernel.bundle.SettingBundle;
  */
 public final class SuggestionBoxComponentSettings {
 
+  private SuggestionBoxComponentSettings() {
+  }
+
   /**
    * The name of the Suggestion Box component in Silverpeas.
    */

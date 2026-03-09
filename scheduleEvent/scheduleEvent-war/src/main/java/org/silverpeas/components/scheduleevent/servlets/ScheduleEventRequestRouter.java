@@ -24,6 +24,7 @@
 
 package org.silverpeas.components.scheduleevent.servlets;
 
+import jakarta.inject.Inject;
 import org.silverpeas.components.scheduleevent.control.ScheduleEventSessionController;
 import org.silverpeas.components.scheduleevent.servlets.handlers.ScheduleEventRequestHandler;
 import org.silverpeas.core.util.ServiceProvider;
@@ -38,6 +39,9 @@ public class ScheduleEventRequestRouter extends
 
   private static final long serialVersionUID = 368205022700081777L;
 
+  @Inject
+  private RequestHandlerRegistry registry;
+
   /**
    * This method has to be implemented in the component request rooter class. returns the session
    * control bean name to be put in the request object ex : for almanach, returns "almanach"
@@ -46,13 +50,6 @@ public class ScheduleEventRequestRouter extends
     return "ScheduleEvent";
   }
 
-  /**
-   * Method declaration
-   * @param mainSessionCtrl
-   * @param componentContext
-   * @return
-   *
-   */
   public ScheduleEventSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new ScheduleEventSessionController(mainSessionCtrl, componentContext);
@@ -62,14 +59,13 @@ public class ScheduleEventRequestRouter extends
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    * @param function The entering request function (ex : "Main.jsp")
-   * @param scheduleeventSC The component Session Control, build and initialised.
-   * @param request
+   * @param scheduleeventSC The component Session Control, build and initialized.
+   * @param request HTTP request
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   public String getDestination(String function, ScheduleEventSessionController scheduleeventSC,
       HttpRequest request) {
-    RequestHandlerRegistry registry = ServiceProvider.getService(RequestHandlerRegistry.class);
     String destination;
     try {
       ScheduleEventRequestHandler currentAction = registry.getHandler(function);

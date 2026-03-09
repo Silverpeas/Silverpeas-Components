@@ -33,15 +33,14 @@ import org.silverpeas.components.resourcesmanager.repository.ResourceRepository;
 import org.silverpeas.components.resourcesmanager.repository.ResourceValidatorRepository;
 import org.silverpeas.core.annotation.Service;
 
-import javax.inject.Inject;
-import javax.transaction.Transactional;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import java.util.List;
 
 /**
  * @author ehugonnet
  */
 @Service
-@Transactional
 public class ReservationService {
 
   @Inject
@@ -56,6 +55,7 @@ public class ReservationService {
   @Inject
   private ResourceValidatorRepository resourceValidatorRepository;
 
+  @Transactional
   public void createReservation(Reservation reservation, List<Long> resourceIds) {
     reservation.setStatus(ResourceStatus.STATUS_VALIDATE);
     repository.save(reservation);
@@ -98,6 +98,7 @@ public class ReservationService {
     return ResourceStatus.STATUS_VALIDATE;
   }
 
+  @Transactional
   public void updateReservation(Reservation reservation) {
     repository.saveAndFlush(reservation);
   }
@@ -106,6 +107,7 @@ public class ReservationService {
     return repository.getById(Long.toString(id));
   }
 
+  @Transactional
   public void deleteReservation(long id) {
     reservedResourceRepository.deleteAllReservedResourcesForReservation(id);
     repository.deleteById(Long.toString(id));
@@ -127,11 +129,11 @@ public class ReservationService {
   /**
    * Finds all reservations related to the given user on the given period.
    * If user parameter (userId) is not defined, the reservations returned are not filtered by user.
-   * @param instanceId
-   * @param userId
-   * @param startPeriod
-   * @param endPeriod
-   * @return
+   * @param instanceId resource manager instance id
+   * @param userId unique identifier of the user
+   * @param startPeriod the start date of the period
+   * @param endPeriod the end date of the period
+   * @return a list of reservations
    */
   public List<Reservation> findAllReservationsInRange(String instanceId, Integer userId,
       String startPeriod, String endPeriod) {
@@ -146,12 +148,12 @@ public class ReservationService {
    * one
    * resource of the given category is attached.
    * If user parameter (userId) is not defined, the reservations returned are not filtered by user.
-   * @param instanceId
-   * @param userId
-   * @param categoryId
-   * @param startPeriod
-   * @param endPeriod
-   * @return
+   * @param instanceId the resource manager instance identifier
+   * @param userId the unique identifier of the user
+   * @param categoryId the unique identifier of the category
+   * @param startPeriod the start date of the period
+   * @param endPeriod the end date of the period
+   * @return a list of reservations.
    */
   public List<Reservation> findAllReservationsForCategoryInRange(final String instanceId,
       Integer userId, Long categoryId, String startPeriod, String endPeriod) {
@@ -168,12 +170,12 @@ public class ReservationService {
    * Finds all reservations related to the given user on the given period and for which the given
    * resource is attached.
    * If user parameter (userId) is not defined, the reservations returned are not filtered by user.
-   * @param instanceId
-   * @param userId
-   * @param resourceId
-   * @param startPeriod
-   * @param endPeriod
-   * @return
+   * @param instanceId the resource manager instance identifier.
+   * @param userId the unique identifier of the user
+   * @param resourceId the unique identifier of the resource
+   * @param startPeriod the start date of the period
+   * @param endPeriod the end date of the period
+   * @return a list of reservations.
    */
   public List<Reservation> findAllReservationsForResourceInRange(final String instanceId,
       Integer userId, Long resourceId, String startPeriod, String endPeriod) {

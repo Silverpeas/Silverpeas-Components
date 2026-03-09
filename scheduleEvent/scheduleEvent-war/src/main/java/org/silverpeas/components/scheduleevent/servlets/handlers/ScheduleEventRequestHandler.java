@@ -24,9 +24,10 @@
 
 package org.silverpeas.components.scheduleevent.servlets.handlers;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.silverpeas.components.scheduleevent.control.ScheduleEventSessionController;
+import org.silverpeas.kernel.SilverpeasException;
 
-import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 
 public interface ScheduleEventRequestHandler {
@@ -39,6 +40,6 @@ public interface ScheduleEventRequestHandler {
   SimpleDateFormat FORMATTER_TMP_ID = new SimpleDateFormat("ddMMyy");
 
   String getDestination(String function, ScheduleEventSessionController scheduleeventSC,
-      HttpServletRequest request) throws Exception;
+      HttpServletRequest request) throws SilverpeasException;
 
 }

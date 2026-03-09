@@ -29,12 +29,12 @@ import org.silverpeas.kernel.util.StringUtil;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.Table;
 import javax.sql.DataSource;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
@@ -95,8 +95,7 @@ public class MyDBConnectionInfo
 
   /**
    * Sets the default table to defaultTable from the database with this connection information
-   * and returns
-   * the later.
+   * and returns the latter.
    * @param tableName the name of the table to load by default.
    * @return itself.
    */

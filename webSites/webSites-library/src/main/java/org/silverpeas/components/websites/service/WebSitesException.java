@@ -23,32 +23,20 @@
  */
 package org.silverpeas.components.websites.service;
 
-import org.silverpeas.core.exception.SilverpeasException;
+
+import org.silverpeas.kernel.SilverpeasException;
 
 public class WebSitesException extends SilverpeasException {
 
-  private static final long serialVersionUID = 8020751439361166931L;
-
-  public WebSitesException(String callingClass, int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
+  public WebSitesException(String message, String... parameters) {
+    super(message, parameters);
   }
 
-  public WebSitesException(String callingClass, int errorLevel, String message,
-      String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public WebSitesException(String message, Throwable cause) {
+    super(message, cause);
   }
 
-  public WebSitesException(String callingClass, int errorLevel, String message, Exception nested) {
-    super(callingClass, errorLevel, message, nested);
+  public WebSitesException(Throwable cause) {
+    super(cause);
   }
-
-  public WebSitesException(String callingClass, int errorLevel, String message, String extraParams,
-      Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  public String getModule() {
-    return "webSites";
-  }
-
 }

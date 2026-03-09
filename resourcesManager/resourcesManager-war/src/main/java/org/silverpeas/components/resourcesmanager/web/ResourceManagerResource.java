@@ -23,6 +23,9 @@
  */
 package org.silverpeas.components.resourcesmanager.web;
 
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response.Status;
 import org.silverpeas.components.resourcesmanager.model.Reservation;
 import org.silverpeas.components.resourcesmanager.model.Resource;
 import org.silverpeas.core.annotation.WebService;
@@ -30,16 +33,9 @@ import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.date.period.PeriodType;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.rs.annotation.Authorized;
+import org.silverpeas.kernel.util.StringUtil;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.Status;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -417,7 +413,7 @@ public class ResourceManagerResource extends AbstractResourceManagerResource {
    * @return
    */
   private Date computeReferenceDate(final int year, final int month, final int day) {
-    Calendar calendar = Calendar.getInstance(I18NHelper.defaultLocale);
+    Calendar calendar = Calendar.getInstance(I18NHelper.getDefaultLocale());
     calendar.setTime(DateUtil.getDate());
     calendar.set(year, (month - 1), day);
     return calendar.getTime();

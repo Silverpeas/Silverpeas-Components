@@ -39,17 +39,17 @@ import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Inject;
-import javax.mail.FetchProfile;
-import javax.mail.Flags.Flag;
-import javax.mail.Folder;
-import javax.mail.Message;
-import javax.mail.Message.RecipientType;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.Store;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
+import jakarta.inject.Inject;
+import jakarta.mail.FetchProfile;
+import jakarta.mail.Flags.Flag;
+import jakarta.mail.Folder;
+import jakarta.mail.Message;
+import jakarta.mail.Message.RecipientType;
+import jakarta.mail.MessagingException;
+import jakarta.mail.Session;
+import jakarta.mail.Store;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
@@ -287,7 +287,7 @@ public class MessageChecker {
    * @param mail the email whose recipients are extracted.
    * @return a list of InternetAdress.
    * @throws MessagingException
-   * @see javax.mail.internet.InternetAddress
+   * @see jakarta.mail.internet.InternetAddress
    */
   protected Set<String> getAllRecipients(MimeMessage mail) throws MessagingException {
     Set<String> allRecipients = new HashSet<>(10);

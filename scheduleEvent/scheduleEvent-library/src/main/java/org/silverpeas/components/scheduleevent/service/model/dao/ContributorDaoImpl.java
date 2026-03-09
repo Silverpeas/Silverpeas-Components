@@ -22,12 +22,13 @@ package org.silverpeas.components.scheduleevent.service.model.dao;
 
 import org.silverpeas.components.scheduleevent.service.model.beans.Contributor;
 
-import javax.inject.Singleton;
-import javax.transaction.Transactional;
+import jakarta.inject.Singleton;
+import jakarta.transaction.Transactional;
+import org.silverpeas.core.annotation.Repository;
+
 import java.util.Set;
 
-@Singleton
-@Transactional
+@Repository
 public class ContributorDaoImpl implements ContributorDao {
 
   @Override

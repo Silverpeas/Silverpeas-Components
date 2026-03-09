@@ -25,6 +25,7 @@
 package org.silverpeas.components.formsonline.model;
 
 import org.silverpeas.components.formsonline.model.RequestCriteria.QUERY_ORDER_BY;
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.contribution.ContributionStatus;
@@ -71,6 +72,7 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 import static org.silverpeas.core.contribution.ContributionStatus.VALIDATED;
 import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery.*;
 
+@Repository
 public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
 
   // General infos

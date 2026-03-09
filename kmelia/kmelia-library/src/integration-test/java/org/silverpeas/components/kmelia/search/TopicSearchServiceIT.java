@@ -47,9 +47,6 @@ import static org.junit.Assert.assertEquals;
 @RunWith(Arquillian.class)
 public class TopicSearchServiceIT {
 
-  public TopicSearchServiceIT() {
-  }
-
   private TopicSearchService searchService;
 
   @Rule
@@ -64,6 +61,7 @@ public class TopicSearchServiceIT {
           warBuilder.addPackages(true, "org.silverpeas.components.kmelia.dao");
           warBuilder.addPackages(true, "org.silverpeas.components.kmelia.repository");
           warBuilder.addPackages(true, "org.silverpeas.components.kmelia.search");
+          warBuilder.addAsResource("org/silverpeas/components/kmelia/search");
         }).build();
   }
 

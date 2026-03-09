@@ -26,10 +26,10 @@ package org.silverpeas.components.websites;
 import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.kernel.annotation.Technical;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 
 /**
- * Deletes all the web site links recorded into the Bookmark instance that is being deleted.
+ * Deletes all the website links recorded into the Bookmark instance that is being deleted.
  * @author mmoquillon
  */
 @Technical

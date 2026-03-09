@@ -23,12 +23,11 @@
  */
 package org.silverpeas.components.forums.bean;
 
-import org.silverpeas.core.util.comparator.AbstractComplexComparator;
 import org.silverpeas.components.forums.model.Moderator;
+import org.silverpeas.core.util.comparator.AbstractComplexComparator;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -37,16 +36,10 @@ import java.util.List;
  */
 public class ForumModeratorBean {
 
-  private int forumId;
-  private Collection<Moderator> moderators;
-  private Collection<String> specificModerators;
+  private final int forumId;
+  private final Collection<Moderator> moderators;
+  private final Collection<String> specificModerators;
 
-  /**
-   * Default constructor.
-   * @param forumId
-   * @param moderators
-   * @param specificModerators
-   */
   private ForumModeratorBean(final int forumId, final Collection<Moderator> moderators,
       final Collection<String> specificModerators) {
     this.forumId = forumId;
@@ -54,15 +47,9 @@ public class ForumModeratorBean {
     this.specificModerators = specificModerators;
   }
 
-  /**
-   * Initializing a bean that handle moderators of a forum.
-   * @param forumId
-   * @param moderators
-   * @return
-   */
   public static ForumModeratorBean from(int forumId, List<Moderator> moderators) {
     Collection<String> specificModerators = new ArrayList<>(moderators.size());
-    Collections.sort(moderators, new AbstractComplexComparator<Moderator>() {
+    moderators.sort(new AbstractComplexComparator<>() {
       @Override
       protected ValueBuffer getValuesToCompare(final Moderator moderator) {
         return new ValueBuffer().append(moderator.isByInheritance(), false)
@@ -79,7 +66,7 @@ public class ForumModeratorBean {
 
   /**
    * Gets the identifier of handled forum.
-   * @return
+   * @return the identifier
    */
   public int getForumId() {
     return forumId;
@@ -87,8 +74,8 @@ public class ForumModeratorBean {
 
   /**
    * Indicates id given user (represented by its identifier) is a moderator of the forum.
-   * @param userId
-   * @return
+   * @param userId the user identifier
+   * @return true if the user is a moderator, false otherwise.
    */
   public boolean isSpecificModerator(String userId) {
     return specificModerators.contains(userId);
@@ -96,7 +83,7 @@ public class ForumModeratorBean {
 
   /**
    * Gets the moderator of the forum (inherited and specifics)
-   * @return
+   * @return a collection of moderators
    */
   public Collection<Moderator> getModerators() {
     return moderators;

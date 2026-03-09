@@ -32,7 +32,7 @@ import org.silverpeas.core.process.annotation.SimulationElementLister;
 import java.util.List;
 
 /**
- * User: Yohann Chastagnier
+ * @author Yohann Chastagnier
  * Date: 24/10/13
  */
 public class KmeliaNodeSimulationElementLister extends AbstractKmeliaSimulationElementLister {

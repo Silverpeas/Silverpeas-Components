@@ -26,13 +26,14 @@ package org.silverpeas.components.gallery;
 import org.silverpeas.components.gallery.constant.MediaResolution;
 import org.silverpeas.components.gallery.constant.MediaType;
 import org.silverpeas.components.gallery.model.Media;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.contribution.contentcontainer.content.AbstractSilverpeasContentManager.ContributionWrapper;
 import org.silverpeas.core.contribution.contentcontainer.content.AbstractGlobalSilverContentProcessor;
 import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
 import org.silverpeas.kernel.util.Pair;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -41,6 +42,7 @@ import static java.util.stream.Collectors.toMap;
 import static org.silverpeas.components.gallery.GalleryComponentSettings.COMPONENT_NAME;
 import static org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContentProcessor.Constants.PROCESSOR_NAME_SUFFIX;
 
+@Bean
 @Named(COMPONENT_NAME + PROCESSOR_NAME_SUFFIX)
 public class GalleryGlobalSilverpeasContentProcessor extends AbstractGlobalSilverContentProcessor {
 

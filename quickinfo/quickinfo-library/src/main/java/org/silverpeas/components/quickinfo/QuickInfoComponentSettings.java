@@ -34,7 +34,7 @@ import static org.silverpeas.components.delegatednews.service.DelegatedNewsServi
 
 public class QuickInfoComponentSettings implements Serializable {
 
-  private String description;
+  private final String description;
   private boolean commentsEnabled = false;
   private boolean taxonomyEnabled = false;
   private boolean notificationAllowed = false;

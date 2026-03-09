@@ -61,9 +61,8 @@ public class KmeliaSupervisorPublicationUserNotification extends AbstractKmeliaP
   @Override
   protected Collection<String> getUserIdsToNotify() {
     final List<String> roles = Collections.singletonList("supervisor");
-    final List<String> supervisors = new ArrayList<>(Arrays.asList(getOrganisationController()
+    return new ArrayList<>(Arrays.asList(getOrganisationController()
         .getUsersIdsByRoleNames(getResource().getPK().getInstanceId(), roles)));
-    return supervisors;
   }
 
   @Override

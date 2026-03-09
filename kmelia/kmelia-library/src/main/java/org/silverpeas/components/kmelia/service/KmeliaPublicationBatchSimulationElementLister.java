@@ -23,7 +23,6 @@
  */
 package org.silverpeas.components.kmelia.service;
 
-import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
@@ -34,6 +33,7 @@ import org.silverpeas.core.contribution.attachment.process.SimpleDocumentSimulat
 import org.silverpeas.core.contribution.content.form.field.FileField;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileUtil;
@@ -96,7 +96,7 @@ public class KmeliaPublicationBatchSimulationElementLister
     data.stream()
         .map(Pair::getFirst)
         .filter(Objects::nonNull)
-        .map(i -> createDummySimpleDocument(publication, i, i.getName()))
+        .map(i -> createDummySimpleDocument(publication, i, i.getFileName()))
         .forEach(d -> addElement(new SimpleDocumentSimulationElement(d)));
   }
 
@@ -105,7 +105,7 @@ public class KmeliaPublicationBatchSimulationElementLister
   }
 
   private SimpleDocument createDummySimpleDocument(PublicationDetail pub, FileItem item, String fileName) {
-    // the UUID make same document non unique in order to count rightly the amount of bytes written on the server
+    // the UUID make same document non-unique in order to count rightly the amount of bytes written on the server
     final SimpleAttachment attachment = SimpleAttachment.builder()
         .setFilename(fileName + UUID.randomUUID())
         .setSize(item.getSize())

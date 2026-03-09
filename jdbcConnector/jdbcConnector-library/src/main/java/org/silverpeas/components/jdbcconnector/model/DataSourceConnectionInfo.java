@@ -29,12 +29,12 @@ import org.silverpeas.kernel.util.StringUtil;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.Table;
 import javax.sql.DataSource;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
@@ -92,7 +92,7 @@ public class DataSourceConnectionInfo
    * Is this connection information defined? Information about a connection to a data source is
    * defined if both it is related to a ConnecteurJDBC application instance and the name of the
    * data source is defined.
-   * @return true is the data source is well defined
+   * @return true is the data source is well-defined
    */
   public boolean isDefined() {
     return StringUtil.isDefined(this.dataSource) && StringUtil.isDefined(this.instanceId);

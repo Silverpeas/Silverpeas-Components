@@ -23,28 +23,32 @@
  */
 package org.silverpeas.components.gallery;
 
+import jakarta.inject.Inject;
 import org.silverpeas.core.admin.component.ComponentInstancePostConstruction;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 
-import javax.inject.Named;
-import javax.transaction.Transactional;
+import jakarta.inject.Named;
+import jakarta.transaction.Transactional;
 
 /**
  * Once an instance of the Gallery application is created, creates for it one entry for galleries
  * with the Node service and then creates the home gallery.
  * @author mmoquillon
  */
+@Bean
 @Named
 public class GalleryInstancePostConstruction implements ComponentInstancePostConstruction {
+
+  @Inject
+  private NodeService nodeService;
 
   @Transactional
   @Override
   public void postConstruct(final String componentInstanceId) {
-    NodeService nodeService = NodeService.get();
-
     NodeDetail rootGallery = getGalleryRootNodeFor(componentInstanceId);
     NodeDetail homeGallery = getHomeGalleryNodeFor(componentInstanceId, rootGallery);
 

@@ -69,7 +69,7 @@ public final class DataWarningDBDrivers {
 
   public DataWarningDBDriver getDBDriver(String driverUniqueId) {
 
-    if ((driverUniqueId == null) || (driverUniqueId.length() <= 0)) {
+    if ((driverUniqueId == null) || (driverUniqueId.isEmpty())) {
       return sortedDBDrivers[0];
     } else {
       return allDBDrivers.get(driverUniqueId);

@@ -28,7 +28,7 @@ import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.web.rs.annotation.Authorized;
 import org.silverpeas.core.webapi.calendar.CalendarResource;
 
-import javax.ws.rs.Path;
+import jakarta.ws.rs.Path;
 
 import static org.silverpeas.components.almanach.services.AlmanachCalendarResource.ALMANACH_CALENDAR_BASE_URI;
 

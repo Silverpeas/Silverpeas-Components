@@ -32,7 +32,7 @@ import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 public class ClassifiedsRequestRouter extends ComponentRequestRouter<ClassifiedsSessionController> {
 
@@ -57,7 +57,7 @@ public class ClassifiedsRequestRouter extends ComponentRequestRouter<Classifieds
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    * @param function The entering request function (ex : "Main.jsp")
-   * @param classifiedsSC The component Session Control, build and initialised.
+   * @param classifiedsSC The component Session Control, build and initialized.
    * @param request the HTTP request
    * @return The complete destination URL for a forward (ex : "/almanach/jsp/almanach
    * .jsp?flag=user")

@@ -25,7 +25,7 @@ package org.silverpeas.components.mailinglist.service.model.beans;
 
 import org.silverpeas.core.util.file.FileRepositoryManager;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.Instant;
 import java.util.Calendar;
 import java.util.Date;
@@ -99,10 +99,10 @@ public class Message extends IdentifiableObject {
   public void setSentDate(Date date) {
     if (date != null) {
       this.sentDate = date.toInstant();
-      Calendar calend = Calendar.getInstance();
-      calend.setTime(getSentDate());
-      this.year = calend.get(Calendar.YEAR);
-      this.month = calend.get(Calendar.MONTH);
+      Calendar calendar = Calendar.getInstance();
+      calendar.setTime(getSentDate());
+      this.year = calendar.get(Calendar.YEAR);
+      this.month = calendar.get(Calendar.MONTH);
     }
   }
 

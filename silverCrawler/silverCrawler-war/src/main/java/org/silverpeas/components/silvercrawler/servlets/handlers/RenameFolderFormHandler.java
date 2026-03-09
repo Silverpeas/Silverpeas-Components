@@ -28,13 +28,17 @@ import org.silverpeas.components.silvercrawler.control.SilverCrawlerSessionContr
 import org.silverpeas.components.silvercrawler.model.SilverCrawlerForbiddenActionException;
 import org.silverpeas.core.util.file.FileUtil;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Handler for use case : admin request folder renaming.
  * @author Ludovic Bertin
  */
 public class RenameFolderFormHandler extends FunctionHandler {
+
+  protected RenameFolderFormHandler(HandlerProvider provider) {
+    super(provider);
+  }
 
   @Override
   public String getDestination(SilverCrawlerSessionController sessionController,

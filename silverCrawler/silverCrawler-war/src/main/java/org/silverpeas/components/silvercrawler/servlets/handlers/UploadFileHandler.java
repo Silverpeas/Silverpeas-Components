@@ -25,12 +25,12 @@
 package org.silverpeas.components.silvercrawler.servlets.handlers;
 
 import org.silverpeas.components.silvercrawler.control.SilverCrawlerSessionController;
-import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -38,6 +38,10 @@ import java.util.List;
  * @author Ludovic Bertin
  */
 public class UploadFileHandler extends FunctionHandler {
+
+  protected UploadFileHandler(HandlerProvider provider) {
+    super(provider);
+  }
 
   @Override
   public String getDestination(SilverCrawlerSessionController sessionController,
@@ -68,7 +72,7 @@ public class UploadFileHandler extends FunctionHandler {
     }
 
     // returns page to redirect to
-    return HandlerProvider.getHandler("ViewDirectory").getDestination(sessionController, request);
+    return getHandlerProvider().getHandler("ViewDirectory").getDestination(sessionController, request);
   }
 
 }

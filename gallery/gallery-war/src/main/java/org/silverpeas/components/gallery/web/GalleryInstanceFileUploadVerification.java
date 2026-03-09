@@ -26,6 +26,7 @@ package org.silverpeas.components.gallery.web;
 
 import org.silverpeas.components.gallery.constant.MediaMimeType;
 import org.silverpeas.components.gallery.model.GalleryRuntimeException;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.notification.message.MessageManager;
 import org.silverpeas.core.notification.message.MessageNotifier;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
@@ -34,7 +35,7 @@ import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.webapi.upload.ComponentInstanceFileUploadVerification;
 import org.silverpeas.core.webapi.upload.FileUploadVerifyData;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 import java.io.File;
 
 /**
@@ -42,6 +43,7 @@ import java.io.File;
  * component data.
  * @author Yohann Chastagnier
  */
+@Bean
 @Named
 public class GalleryInstanceFileUploadVerification
     implements ComponentInstanceFileUploadVerification {

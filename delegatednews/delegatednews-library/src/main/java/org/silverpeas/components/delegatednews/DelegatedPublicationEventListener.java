@@ -32,7 +32,7 @@ import org.silverpeas.core.contribution.publication.notification.PublicationEven
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import static org.silverpeas.components.delegatednews.service.DelegatedNewsService.Constants.DELEGATED_COMPONENT_PARAM;
 

@@ -41,7 +41,7 @@ import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SilverpeasList;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -210,7 +210,7 @@ public class SuggestionRepository implements EntityRepository<Suggestion> {
 
   /**
    * Indexes the specified suggestion.
-   * The suggestion validation must be at validated status. Otherwise the index creation is
+   * The suggestion validation must be at validated status. Otherwise, the index creation is
    * ignored.
    * @param suggestion the suggestion for which the indexation must be performed.
    */

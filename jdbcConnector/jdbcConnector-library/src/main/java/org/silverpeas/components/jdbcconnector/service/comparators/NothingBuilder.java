@@ -31,7 +31,7 @@ package org.silverpeas.components.jdbcconnector.service.comparators;
 public class NothingBuilder implements FieldValueComparator {
 
   @Override
-  public boolean compare(final Comparable value, final Comparable referenceValue) {
+  public <T> boolean compare(final Comparable<T> value, final Comparable<T> referenceValue) {
     return true;
   }
 }

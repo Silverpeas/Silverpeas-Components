@@ -23,7 +23,6 @@
  */
 package org.silverpeas.components.blog.servlets;
 
-import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.blog.control.BlogSessionController;
 import org.silverpeas.components.blog.model.Category;
 import org.silverpeas.components.blog.model.PostDetail;
@@ -31,6 +30,7 @@ import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.http.HttpRequest;
@@ -40,7 +40,7 @@ import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.web.mvc.util.WysiwygRouting;
 import org.silverpeas.core.web.util.viewgenerator.html.monthcalendar.Event;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
@@ -83,14 +83,14 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    * @param function The entering request function (ex : "Main.jsp")
-   * @param blogSC The component Session Control, build and initialised.
+   * @param blogSC The component Session Control, build and initialized.
    * @param request the current request.
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
   public String getDestination(String function, BlogSessionController blogSC, HttpRequest request) {
-    String destination = "";
+    String destination;
 
     String rootDest = "/blog/jsp/";
 
@@ -106,7 +106,7 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         // passage des paramètres communs
         setCommonParam(blogSC, request);
 
-        // creation d'une liste d'event par rapport aux posts du mois
+        // creation d'une liste d'événements par rapport aux posts du mois
         setPostsByArchiveParam(blogSC, request);
 
         request.setAttribute("IsUserSubscribed", blogSC.isUserSubscribed());
@@ -193,7 +193,7 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         PostDetail post = blogSC.getPost(postId);
         request.setAttribute("Post", post);
         setCommonParam(blogSC, request);
-        // creation d'une liste d'event par rapport à posts
+        // creation d'une liste d'événements par rapport à posts
         setPostsByArchiveParam(blogSC, request);
         destination = rootDest + "viewPost.jsp";
       } else if (POST_BY_CATEGORY_FCT.equals(function)) {
@@ -205,7 +205,7 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         // récupération des billets par catégorie
         request.setAttribute(POSTS_ATTR, blogSC.postsByCategory(categoryId, SAFE_LIMIT));
         setCommonParam(blogSC, request);
-        // creation d'une liste d'event par rapport à posts
+        // creation d'une liste d'événements par rapport à posts
         setPostsByArchiveParam(blogSC, request);
 
         destination = rootDest + HOMEPAGE_VIEW;
@@ -224,7 +224,7 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         Collection<PostDetail> posts = blogSC.postsByArchive(beginDate, endDate, SAFE_LIMIT);
         request.setAttribute(POSTS_ATTR, posts);
         setCommonParam(blogSC, request);
-        // creation d'une liste d'event par rapport à posts
+        // creation d'une liste d'événements par rapport à posts
         Collection<Event> events = toEvents(posts);
         request.setAttribute("Events", events);
         request.setAttribute(DATE_CALENDAR, blogSC.getCurrentBeginDateAsString());
@@ -238,7 +238,7 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         // récupération des billets par archive
         request.setAttribute(POSTS_ATTR, blogSC.postsByDate(date, SAFE_LIMIT));
         setCommonParam(blogSC, request);
-        // creation d'une liste d'event par rapport à posts
+        // creation d'une liste d'événements par rapport à posts
         setPostsByArchiveParam(blogSC, request);
 
         destination = rootDest + HOMEPAGE_VIEW;
@@ -341,14 +341,14 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         FileItem fileWallPaper = request.getFile("wallPaper");
         FileItem fileStyleSheet = request.getFile("styleSheet");
 
-        if (fileWallPaper != null && StringUtil.isDefined(fileWallPaper.getName())) {
+        if (fileWallPaper != null && StringUtil.isDefined(fileWallPaper.getFileName())) {
           //Update
           blogSC.saveWallPaperFile(fileWallPaper);
         } else if ("yes".equals(removeWallPaperFile)) {
           //Remove
           blogSC.removeWallPaperFile();
         }
-        if (fileStyleSheet != null && StringUtil.isDefined(fileStyleSheet.getName())) {
+        if (fileStyleSheet != null && StringUtil.isDefined(fileStyleSheet.getFileName())) {
           //Update
           blogSC.saveStyleSheetFile(fileStyleSheet);
         } else if ("yes".equals(removeStyleSheetFile)) {

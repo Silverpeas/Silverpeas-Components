@@ -27,8 +27,7 @@ import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.core.notification.system.AbstractResourceEvent;
 
 /**
- * Event about a news. This event can be about a creation, an update or a deletion of a
- * news.
+ * Event about news. This event can be about a creation, an update or a deletion of news.
  * @author silveryocha
  */
 public class NewsEvent extends AbstractResourceEvent<News> {
@@ -38,9 +37,6 @@ public class NewsEvent extends AbstractResourceEvent<News> {
     super();
   }
 
-  /**
-   * @see AbstractResourceEvent#AbstractResourceEvent(Type, Object[])
-   */
   public NewsEvent(Type type, News... news) {
     super(type, news);
   }

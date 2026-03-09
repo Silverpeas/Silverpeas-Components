@@ -42,7 +42,6 @@ import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.cache.service.SessionCacheAccessor;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
 
-import java.util.ArrayList;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;

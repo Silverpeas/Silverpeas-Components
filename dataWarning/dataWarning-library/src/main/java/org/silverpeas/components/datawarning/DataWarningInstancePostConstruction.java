@@ -31,8 +31,8 @@ import org.silverpeas.components.datawarning.model.DataWarningDataManager;
 import org.silverpeas.components.datawarning.model.DataWarningQuery;
 import org.silverpeas.components.datawarning.model.DataWarningScheduler;
 
-import javax.inject.Named;
-import javax.transaction.Transactional;
+import jakarta.inject.Named;
+import jakarta.transaction.Transactional;
 
 /**
  * Once an instance of the DataWarning application is created, creates a data warning entity,

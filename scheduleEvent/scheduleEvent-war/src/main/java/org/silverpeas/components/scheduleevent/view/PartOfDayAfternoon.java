@@ -1,7 +1,7 @@
 package org.silverpeas.components.scheduleevent.view;
 
 public class PartOfDayAfternoon implements PartOfDay {
-  private static PartOfDayAfternoon instance = new PartOfDayAfternoon();
+  private static final PartOfDayAfternoon instance = new PartOfDayAfternoon();
 
   private PartOfDayAfternoon() {}
 

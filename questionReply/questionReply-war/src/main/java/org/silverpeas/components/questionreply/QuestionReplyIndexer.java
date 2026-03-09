@@ -27,18 +27,20 @@ import org.silverpeas.components.questionreply.index.QuestionIndexer;
 import org.silverpeas.components.questionreply.model.Question;
 import org.silverpeas.components.questionreply.model.Reply;
 import org.silverpeas.components.questionreply.service.QuestionManager;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.kernel.SilverpeasException;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.web.index.components.ComponentIndexation;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.inject.Singleton;
 import java.util.Collection;
 
 /**
  * @author ehugonnet
  */
+@Bean
 @Singleton
 @Named("questionReply" + ComponentIndexation.QUALIFIER_SUFFIX)
 public class QuestionReplyIndexer implements ComponentIndexation {

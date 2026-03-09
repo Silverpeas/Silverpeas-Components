@@ -38,15 +38,16 @@ public class WarBuilder4ResourcesManager extends BasicWarBuilder {
   /**
    * Constructs a war builder for the specified test class. It will load all the resources in the
    * same packages of the specified test class.
-   * @param test the class of the test for which a war archive will be build.
+   * @param test the class of the test for which a war archive will be built.
    */
   protected <T> WarBuilder4ResourcesManager(final Class<T> test) {
     super(test);
     addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core");
     addMavenDependenciesWithPersistence("org.silverpeas.core.services:silverpeas-core-pdc");
-    addMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud");
     addMavenDependencies("org.silverpeas.core.services:silverpeas-core-personalorganizer");
     addAsResource("org/silverpeas/components/resourcesmanager/service");
+    addAsResource("org/silverpeas/util/logging/silverpeasLogging.properties");
+    addAsResource("org/silverpeas/jobStartPagePeas/settings/jobStartPagePeasSettings.properties");
     addPackages(true, "org.silverpeas.components.resourcesmanager");
   }
 }

@@ -25,7 +25,9 @@ package org.silverpeas.components.resourcesmanager.model;
 
 import org.silverpeas.core.persistence.datasource.model.CompositeEntityIdentifier;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
+
+import java.util.Objects;
 
 /**
  * @author ehugonnet
@@ -39,8 +41,8 @@ public class ReservedResourcePk implements CompositeEntityIdentifier {
   public static final int RR_RESERVATION_POSITION = 1;
 
 
-  private long resourceId;
-  private long reservationId;
+  private Long resourceId;
+  private Long reservationId;
 
   public ReservedResourcePk() {
   }
@@ -75,17 +77,17 @@ public class ReservedResourcePk implements CompositeEntityIdentifier {
       return false;
     }
     final ReservedResourcePk other = (ReservedResourcePk) obj;
-    if (this.resourceId != other.resourceId) {
+    if (!Objects.equals(this.resourceId, other.resourceId)) {
       return false;
     }
-    return this.reservationId == other.reservationId;
+    return Objects.equals(this.reservationId, other.reservationId);
   }
 
 
   @Override
   public int hashCode() {
-    int result = (int) (resourceId ^ (resourceId >>> 32));
-    result = 31 * result + (int) (reservationId ^ (reservationId >>> 32));
+    int result = resourceId.hashCode();
+    result = 31 * result + reservationId.hashCode();
     return result;
   }
 
@@ -105,5 +107,10 @@ public class ReservedResourcePk implements CompositeEntityIdentifier {
   @Override
   public String asString() {
     return resourceId + COMPOSITE_SEPARATOR + reservationId;
+  }
+
+  @Override
+  public boolean isNull() {
+    return false;
   }
 }

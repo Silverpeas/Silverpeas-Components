@@ -45,9 +45,7 @@
 %>
 <%!
 public void listFolders(JspWriter out, String userId, boolean admin, int rootId, int parentId,
-        String indent, LocalizationBundle resource, ForumsSessionController fsc)
-    throws ForumsException
-{
+        String indent, LocalizationBundle resource, ForumsSessionController fsc) {
     try
     {
         int[] sonsIds = fsc.getForumSonsIds(rootId);

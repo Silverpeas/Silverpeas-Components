@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.formsonline.servlets;
 
+import jakarta.inject.Inject;
 import org.silverpeas.components.formsonline.model.FormDetail;
 import org.silverpeas.components.formsonline.model.FormPK;
 import org.silverpeas.components.formsonline.model.FormsOnlineService;
@@ -30,20 +31,22 @@ import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.util.servlet.GoTo;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.net.URLEncoder;
 
 public class GoToForm extends GoTo {
 
   private static final long serialVersionUID = -8077728285107343008L;
 
+  @Inject
+  private FormsOnlineService service;
+
   @Override
   public String getDestination(String objectId, HttpServletRequest req, HttpServletResponse res)
       throws Exception {
 
-    FormDetail form =
-        FormsOnlineService.get().loadForm(new FormPK(objectId, req.getParameter("ComponentId")));
+    FormDetail form = service.loadForm(new FormPK(objectId, req.getParameter("ComponentId")));
 
     String componentId = form.getPK().getInstanceId();
 

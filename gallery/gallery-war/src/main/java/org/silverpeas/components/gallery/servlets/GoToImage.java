@@ -23,35 +23,34 @@
  */
 package org.silverpeas.components.gallery.servlets;
 
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.components.gallery.model.MediaPK;
 import org.silverpeas.components.gallery.service.GalleryService;
 import org.silverpeas.core.util.Charsets;
-import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.util.servlet.GoTo;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.net.URLEncoder;
 
 public class GoToImage extends GoTo {
 
   private static final long serialVersionUID = -8077728285107343008L;
 
+  @Inject
+  private GalleryService galleryService;
+
   @Override
-  public String getDestination(String objectId, HttpServletRequest req, HttpServletResponse res)
-      throws Exception {
+  public String getDestination(String objectId, HttpServletRequest req, HttpServletResponse res) {
     MediaPK mediaPK = new MediaPK(objectId);
-    Media media = getGalleryService().getMedia(mediaPK);
+    Media media = galleryService.getMedia(mediaPK);
     String componentId = media.getMediaPK().getInstanceId();
 
     String gotoURL = URLUtil.getURL(null, componentId) + media.getURL();
 
-    return "goto=" + URLEncoder.encode(gotoURL, Charsets.UTF_8.name());
+    return "goto=" + URLEncoder.encode(gotoURL, Charsets.UTF_8);
   }
 
-  private GalleryService getGalleryService() {
-    return ServiceProvider.getService(GalleryService.class);
-  }
 }

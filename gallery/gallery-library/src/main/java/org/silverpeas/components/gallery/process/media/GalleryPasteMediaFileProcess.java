@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.gallery.process.media;
 
-import org.silverpeas.components.gallery.MediaUtil;
+import org.silverpeas.components.gallery.MediaProcessor;
 import org.silverpeas.components.gallery.model.InternalMedia;
 import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.components.gallery.model.MediaPK;
@@ -39,46 +39,27 @@ import org.silverpeas.core.process.session.ProcessSession;
 public class GalleryPasteMediaFileProcess extends AbstractGalleryFileProcess {
 
   private final MediaPK fromMediaPk;
-  private final boolean isCutted;
+  private final boolean isCut;
 
-  /**
-   * Default hidden constructor
-   * @param media
-   * @param fromMediaPk
-   * @param isCutted
-   */
   protected GalleryPasteMediaFileProcess(final Media media, final MediaPK fromMediaPk,
-      final boolean isCutted) {
+      final boolean isCut) {
     super(media);
     this.fromMediaPk = fromMediaPk;
-    this.isCutted = isCutted;
+    this.isCut = isCut;
   }
 
-  /**
-   * Gets an instance
-   * @param media
-   * @param fromMediaPk
-   * @param isCutted
-   * @return
-   */
   public static GalleryPasteMediaFileProcess getInstance(final Media media,
-      final MediaPK fromMediaPk, final boolean isCutted) {
-    return new GalleryPasteMediaFileProcess(media, fromMediaPk, isCutted);
+      final MediaPK fromMediaPk, final boolean isCut) {
+    return new GalleryPasteMediaFileProcess(media, fromMediaPk, isCut);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see AbstractFileProcess#processFiles(org.silverpeas.process.
-   * management.ProcessExecutionContext, ProcessSession,
-   * FileHandler)
-   */
   @Override
   public void processFiles(final ProcessExecutionContext context,
-      final ProcessSession session, final FileHandler fileHandler) throws Exception {
+      final ProcessSession session, final FileHandler fileHandler) {
     InternalMedia internalMedia = getMedia().getInternalMedia();
     if (internalMedia != null &&
-        (!isCutted || !fromMediaPk.getInstanceId().equals(context.getComponentInstanceId()))) {
-        MediaUtil.pasteInternalMedia(fileHandler, fromMediaPk, internalMedia, isCutted);
+        (!isCut || !fromMediaPk.getInstanceId().equals(context.getComponentInstanceId()))) {
+        MediaProcessor.get().pasteInternalMedia(fileHandler, fromMediaPk, internalMedia, isCut);
     }
   }
 }

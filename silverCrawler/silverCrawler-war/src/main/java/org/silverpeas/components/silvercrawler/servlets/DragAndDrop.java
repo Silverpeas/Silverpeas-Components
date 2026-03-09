@@ -23,35 +23,29 @@
  */
 package org.silverpeas.components.silvercrawler.servlets;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.silverpeas.components.silvercrawler.control.SilverCrawlerSessionController;
 import org.silverpeas.components.silvercrawler.control.UploadItem;
 import org.silverpeas.components.silvercrawler.control.UploadReport;
 import org.silverpeas.core.io.upload.UploadSession;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
+import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
-/**
- * Class declaration
- * @author
- */
 public class DragAndDrop extends SilverpeasAuthenticatedHttpServlet {
 
   private static final long serialVersionUID = 1L;
 
   @Override
-  public void doGet(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException {
+  public void doGet(HttpServletRequest req, HttpServletResponse res) {
     doPost(req, res);
   }
 
@@ -72,7 +66,6 @@ public class DragAndDrop extends SilverpeasAuthenticatedHttpServlet {
     }
 
     UploadSession uploadSession = UploadSession.from(request);
-
     try {
       String componentId = request.getParameter("ComponentId");
       boolean ignoreFolders = request.getParameterAsBoolean("IgnoreFolders");
@@ -100,7 +93,7 @@ public class DragAndDrop extends SilverpeasAuthenticatedHttpServlet {
       report.setRepositoryPath(rootUploadFolder);
 
       if (ignoreFolders) {
-        // Verifying that is does not exist folders
+        // Verifying that it doesn't exist folders
         File[] folders =
             rootUploadFolder.listFiles((FileFilter) FileFilterUtils.directoryFileFilter());
         if (folders != null && folders.length > 0) {
@@ -131,7 +124,6 @@ public class DragAndDrop extends SilverpeasAuthenticatedHttpServlet {
       SilverLogger.getLogger(this).error(e);
       try {
         res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        return;
       } catch (IOException e1) {
         SilverLogger.getLogger(this).error(e1);
       }

@@ -23,7 +23,6 @@
  */
 package org.silverpeas.components.gallery.delegate;
 
-import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.gallery.constant.MediaType;
 import org.silverpeas.components.gallery.model.GalleryRuntimeException;
 import org.silverpeas.components.gallery.model.InternalMedia;
@@ -39,6 +38,7 @@ import org.silverpeas.core.media.streaming.StreamingProvider;
 import org.silverpeas.core.media.streaming.StreamingProvidersRegistry;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileUploadUtil;
 

@@ -36,7 +36,7 @@ import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,12 +52,6 @@ public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionContr
     return "quizz";
   }
 
-  /**
-   * Method declaration
-   * @param mainSessionCtrl
-   * @param componentContext
-   * @return
-   */
   public QuizzSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new QuizzSessionController(mainSessionCtrl, componentContext);
@@ -67,7 +61,7 @@ public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionContr
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    * @param function The entering request function (ex : "Main.jsp")
-   * @param quizzSC The component Session Control, build and initialised.
+   * @param quizzSC The component Session Control, build and initialized.
    * @param request The entering request. The request rooter need it to get parameters
    * @return The complete destination URL for a forward (ex : "/quizz/jsp/quizz.jsp?flag=user")
    */
@@ -141,12 +135,9 @@ public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionContr
         HttpSession session = request.getSession(false);
         QuestionContainerDetail quizzDetail = (QuestionContainerDetail) session.getAttribute("quizzUnderConstruction");
 
-        //Vector 2 Collection
-        List questionsV = (List) session.getAttribute("questionsVector");
-        List<Question> q = new ArrayList<Question>();
-        for (int j = 0; j < questionsV.size(); j++) {
-          q.add((Question) questionsV.get(j));
-        }
+        //noinspection unchecked
+        List<Question> questionsV = (List<Question>) session.getAttribute("questionsVector");
+        List<Question> q = new ArrayList<>(questionsV);
         quizzDetail.setQuestions(q);
         quizzSC.createQuizz(quizzDetail);
         session.removeAttribute("quizzUnderConstruction");
@@ -157,9 +148,7 @@ public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionContr
       }
 
       if (profileError) {
-        String sessionTimeout =
-            ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout");
-        destination = sessionTimeout;
+        destination = ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout");
       }
     } catch (Exception e) {
       request.setAttribute("javax.servlet.jsp.jspException", e);

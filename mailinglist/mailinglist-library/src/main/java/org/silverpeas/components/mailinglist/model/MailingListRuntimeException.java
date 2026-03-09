@@ -23,36 +23,20 @@
  */
 package org.silverpeas.components.mailinglist.model;
 
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 public class MailingListRuntimeException extends SilverpeasRuntimeException {
-  /**
-   * constructors
-   */
-  public MailingListRuntimeException(String callingClass, int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
+
+  public MailingListRuntimeException(String message) {
+    super(message);
   }
 
-  public MailingListRuntimeException(String callingClass, int errorLevel, String message,
-      String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public MailingListRuntimeException(String message, Throwable cause) {
+    super(message, cause);
   }
 
-  public MailingListRuntimeException(String callingClass, int errorLevel, String message,
-      Exception nested) {
-    super(callingClass, errorLevel, message, nested);
+  public MailingListRuntimeException(Throwable cause) {
+    super(cause);
   }
-
-  public MailingListRuntimeException(String callingClass, int errorLevel, String message,
-      String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  /**
-   * getModule
-   */
-  public String getModule() {
-    return "MailingList";
-  }
-
 }

@@ -27,19 +27,19 @@ import org.silverpeas.components.whitepages.dao.SearchFieldDao;
 import org.silverpeas.components.whitepages.model.SearchField;
 import org.silverpeas.core.annotation.Service;
 
-import javax.inject.Inject;
-import javax.transaction.Transactional;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 @Service
-@Transactional
 public class DefaultWhitePagesService implements WhitePagesService {
 
   @Inject
   private SearchFieldDao searchFieldDao;
 
+  @Transactional
   @Override
   public void createSearchFields(String[] fields, String instanceId) {
 
@@ -66,6 +66,7 @@ public class DefaultWhitePagesService implements WhitePagesService {
     return fields;
   }
 
+  @Transactional
   @Override
   public void deleteFields(String instanceId) {
     searchFieldDao.deleteSearchFieldsFor(instanceId);

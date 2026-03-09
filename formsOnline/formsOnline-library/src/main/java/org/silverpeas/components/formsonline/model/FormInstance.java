@@ -29,7 +29,7 @@ import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.model.ContributionValidation;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 
-import javax.persistence.Transient;
+import jakarta.persistence.Transient;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;

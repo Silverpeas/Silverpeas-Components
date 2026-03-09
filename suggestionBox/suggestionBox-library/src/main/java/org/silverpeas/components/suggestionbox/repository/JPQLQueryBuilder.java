@@ -41,6 +41,7 @@ import java.util.List;
 
 /**
  * A dynamic builder of a JPQL query.
+ *
  * @author mmoquillon
  */
 public class JPQLQueryBuilder implements SuggestionCriteriaProcessor {
@@ -56,6 +57,7 @@ public class JPQLQueryBuilder implements SuggestionCriteriaProcessor {
 
   @Override
   public void startProcessing() {
+    // nothing to do
   }
 
   @Override
@@ -123,11 +125,7 @@ public class JPQLQueryBuilder implements SuggestionCriteriaProcessor {
         if (!anOrdering.isApplicableOnJpaQuery()) {
           continue;
         }
-        if (orderBy == null) {
-          orderBy = new StringBuilder("order by ");
-        } else {
-          orderBy.append(", ");
-        }
+        orderBy = orderBy == null ? new StringBuilder("order by ") : orderBy.append(", ");
         orderBy.append(anOrdering.getPropertyName());
         orderBy.append(" ");
         orderBy.append(anOrdering.isAsc() ? "asc" : "desc");
@@ -140,9 +138,9 @@ public class JPQLQueryBuilder implements SuggestionCriteriaProcessor {
   @Override
   public SuggestionCriteriaProcessor processIdentifiers(List<String> identifiers) {
     if (!done) {
-      List<UuidIdentifier> uuids = new ArrayList<UuidIdentifier>(identifiers.size());
+      List<UuidIdentifier> uuids = new ArrayList<>(identifiers.size());
       for (String id : identifiers) {
-        uuids.add(new UuidIdentifier().fromString(id));
+        uuids.add(new UuidIdentifier().setFromString(id));
       }
       jpqlCriteria.clause().add(conjonction).add("id in :ids").parameters().add("ids", uuids);
       conjonction = null;

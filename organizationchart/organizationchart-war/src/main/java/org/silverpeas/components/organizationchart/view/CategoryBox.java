@@ -23,9 +23,11 @@
  */
 package org.silverpeas.components.organizationchart.view;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class CategoryBox {
+public class CategoryBox implements Serializable {
+
   private String name = null;
   private List<UserVO> users = null;
 

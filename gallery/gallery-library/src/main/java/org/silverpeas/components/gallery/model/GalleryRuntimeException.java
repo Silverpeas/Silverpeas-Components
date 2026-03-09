@@ -33,10 +33,6 @@ public class GalleryRuntimeException extends SilverpeasRuntimeException {
     super(message);
   }
 
-  public GalleryRuntimeException(final String message, final Throwable cause) {
-    super(message, cause);
-  }
-
   public GalleryRuntimeException(final Throwable cause) {
     super(cause);
   }

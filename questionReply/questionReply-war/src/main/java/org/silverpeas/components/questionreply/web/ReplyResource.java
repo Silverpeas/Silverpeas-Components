@@ -23,34 +23,27 @@
  */
 package org.silverpeas.components.questionreply.web;
 
+import jakarta.inject.Inject;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response.Status;
 import org.silverpeas.components.questionreply.QuestionReplyException;
 import org.silverpeas.components.questionreply.model.Reply;
-import org.silverpeas.components.questionreply.service.QuestionManagerProvider;
+import org.silverpeas.components.questionreply.service.QuestionManager;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.annotation.WebService;
-import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.web.rs.annotation.Authorized;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.Status;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 /**
- *
- * @author emmanuel.hugonnet@silverpeas.org
- */
-/**
  * A REST Web resource representing a given reply to a question. It is a web service that provides
- * an access to a reply referenced by its URL.
+ * access to a reply referenced by its URL.
  */
 @WebService
 @Path(QuestionReplyBaseWebService.PATH + "/{componentId}/replies")
@@ -59,6 +52,12 @@ public class ReplyResource extends QuestionReplyBaseWebService {
 
   @PathParam("componentId")
   protected String componentId;
+
+  @Inject
+  private QuestionManager questionManager;
+
+  @Inject
+  private AttachmentService attachmentService;
 
   @Override
   public String getComponentId() {
@@ -81,7 +80,7 @@ public class ReplyResource extends QuestionReplyBaseWebService {
   public ReplyEntity[] getAllRepliesForQuestion(@PathParam("questionId") String onQuestionId) {
     try {
       long questionId = Long.parseLong(onQuestionId);
-      List<Reply> replies = QuestionManagerProvider.getQuestionManager().getAllReplies(questionId,
+      List<Reply> replies = questionManager.getAllReplies(questionId,
           componentId);
       return asWebEntities(extractVisibleReplies(questionId, replies), getUserProfile());
     } catch (Exception ex) {
@@ -94,7 +93,7 @@ public class ReplyResource extends QuestionReplyBaseWebService {
   @Path("public/question/{questionId}")
   public ReplyEntity[] getPublicRepliesForQuestion(@PathParam("questionId") String onQuestionId) {
     try {
-      List<Reply> replies = QuestionManagerProvider.getQuestionManager().getQuestionPublicReplies(
+      List<Reply> replies = questionManager.getQuestionPublicReplies(
           Long.parseLong(onQuestionId), componentId);
       return asWebEntities(replies, getUserProfile());
     } catch (Exception ex) {
@@ -134,31 +133,21 @@ public class ReplyResource extends QuestionReplyBaseWebService {
   protected ReplyEntity asWebEntity(final Reply reply, URI replyURI, SilverpeasRole profile) {
     ReplyEntity entity = ReplyEntity.fromReply(reply, getUserPreferences().getLanguage()).withURI(
         replyURI).withProfile(profile);
-    Collection<SimpleDocument> attachments = AttachmentServiceProvider.getAttachmentService().
-        listDocumentsByForeignKey(reply.getPK().toResourceReference(), entity.getLanguage());
+    Collection<SimpleDocument> attachments =
+        attachmentService.listDocumentsByForeignKey(reply.getPK().toResourceReference(),
+            entity.getLanguage());
     entity.withAttachments(attachments);
     AuthorEntity author = AuthorEntity.fromUser(reply.readAuthor());
     author.setAvatar(getHttpServletRequest().getContextPath() + author.getAvatar());
     return entity;
   }
 
-  /**
-   * Private replies should be visible to writers or publishers that have asked the question.
-   *
-   * @param questionAuthor
-   * @param reply
-   * @param role
-   * @param userId
-   * @return
-   */
   boolean isReplyVisible(String questionAuthor, Reply reply, SilverpeasRole role,
       String userId) {
     boolean isPrivate = reply.getPublicReply() <= 0;
     if (isPrivate) {
       boolean isAuthor = questionAuthor.equals(userId);
-      if (SilverpeasRole.USER == role || (SilverpeasRole.PUBLISHER == role && !isAuthor)) {
-        return false;
-      }
+      return SilverpeasRole.USER != role && (SilverpeasRole.PUBLISHER != role || isAuthor);
     }
     return true;
   }
@@ -166,7 +155,7 @@ public class ReplyResource extends QuestionReplyBaseWebService {
   List<Reply> extractVisibleReplies(long questionId, List<Reply> replies) throws
       QuestionReplyException {
     List<Reply> visibleReplies = new ArrayList<>(replies.size());
-    String authorId = QuestionManagerProvider.getQuestionManager().getQuestion(questionId).
+    String authorId = questionManager.getQuestion(questionId).
         getCreatorId();
     SilverpeasRole profile = getUserProfile();
     String userid = getUser().getId();

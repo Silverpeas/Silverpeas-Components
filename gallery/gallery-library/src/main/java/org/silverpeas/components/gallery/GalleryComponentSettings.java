@@ -89,7 +89,7 @@ public final class GalleryComponentSettings {
 
   /**
    * Gets the max number of media displayed on homepage.
-   * @return
+   * @return the max number of media
    */
   public static int getNbMediaDisplayedPerPage() {
     return DEFAULT_NBMEDIAS_PER_PAGE;
@@ -133,9 +133,9 @@ public final class GalleryComponentSettings {
     return watermarkOther;
   }
 
-  public static Integer getWatermarkSize(String bundlePartOfWaterwarkSizeLabel) {
+  public static Integer getWatermarkSize(String bundlePartOfWatermarkSizeLabel) {
     String tmpValue =
-        getSettings().getString("sizeWatermark" + bundlePartOfWaterwarkSizeLabel, null);
+        getSettings().getString("sizeWatermark" + bundlePartOfWatermarkSizeLabel, null);
     return StringUtil.isInteger(tmpValue) ? Integer.valueOf(tmpValue) : null;
   }
 

@@ -27,8 +27,8 @@ package org.silverpeas.components.gallery.constant;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileUtil;
 
-import javax.activation.MimeType;
-import javax.activation.MimeTypeParseException;
+import jakarta.activation.MimeType;
+import jakarta.activation.MimeTypeParseException;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -66,7 +66,7 @@ public enum MediaMimeType {
       identifiedMimeType = ("ERROR".equals(this.name()) ? "" :
           new MimeType(FileUtil.getMimeType("file." + this.name().toLowerCase()))).toString();
     } catch (MimeTypeParseException e) {
-      identifiedMimeType = javax.ws.rs.core.MediaType.APPLICATION_OCTET_STREAM;
+      identifiedMimeType = jakarta.ws.rs.core.MediaType.APPLICATION_OCTET_STREAM;
     }
     mimeType = identifiedMimeType;
     extensions = new ArrayList<>();
@@ -76,7 +76,7 @@ public enum MediaMimeType {
 
   /**
    * Finds from the given file the corresponding {@link MediaMimeType}
-   * @param file
+   * @param file the file
    * @return {@link MediaMimeType}
    */
   public static MediaMimeType fromFile(File file) {
@@ -85,7 +85,7 @@ public enum MediaMimeType {
 
   /**
    * Gets the corresponding {@link MediaMimeType} of specified one as string.
-   * @param mimeType
+   * @param mimeType the MIME type
    * @return {@link MediaMimeType}
    */
   public static MediaMimeType fromMimeType(String mimeType) {
@@ -108,26 +108,14 @@ public enum MediaMimeType {
     return ERROR;
   }
 
-  /**
-   * Gets the name (useful for JSTL use)
-   * @return
-   */
   public String getName() {
     return name();
   }
 
-  /**
-   * Gets the mime type as string.
-   * @return
-   */
   public String getMimeType() {
     return mimeType;
   }
 
-  /**
-   * Gets supported extensions.
-   * @return
-   */
   public List<String> getExtensions() {
     return extensions;
   }

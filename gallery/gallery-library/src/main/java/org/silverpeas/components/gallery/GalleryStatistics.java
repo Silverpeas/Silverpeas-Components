@@ -23,22 +23,19 @@
  */
 package org.silverpeas.components.gallery;
 
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.components.gallery.model.MediaCriteria;
 import org.silverpeas.components.gallery.service.GalleryService;
 import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
 import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
-import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.kernel.annotation.NonNull;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Named;
 import java.io.IOException;
-import java.nio.file.FileVisitResult;
-import java.nio.file.FileVisitor;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -50,6 +47,9 @@ import static org.silverpeas.core.util.file.FileRepositoryManager.getAbsolutePat
 @Provider
 @Named("gallery" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
 public class GalleryStatistics implements ComponentStatisticsProvider {
+
+  @Inject
+  private GalleryService galleryService;
 
   @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId) {
@@ -92,10 +92,10 @@ public class GalleryStatistics implements ComponentStatisticsProvider {
   }
 
   private GalleryService getGalleryService() {
-    return ServiceProvider.getService(GalleryService.class);
+    return galleryService;
   }
 
-  private class GalleryFileCounter extends GallerySpecificFileVisitor {
+  private static class GalleryFileCounter extends GallerySpecificFileVisitor {
 
     private long count = 0L;
 
@@ -118,7 +118,7 @@ public class GalleryStatistics implements ComponentStatisticsProvider {
     }
   }
 
-  private class GalleryFileSizeCounter extends GallerySpecificFileVisitor {
+  private static class GalleryFileSizeCounter extends GallerySpecificFileVisitor {
 
     private long size = 0L;
 
@@ -156,8 +156,8 @@ public class GalleryStatistics implements ComponentStatisticsProvider {
     }
 
     @Override
-    public final FileVisitResult preVisitDirectory(final Path dir,
-        final BasicFileAttributes attrs) {
+    public final @NonNull FileVisitResult preVisitDirectory(final Path dir,
+        @NonNull final BasicFileAttributes attrs) {
       FileVisitResult result = preVisitDirectoryResult;
       if (isSpecificDirectory(dir)) {
         handleDirectory(dir, attrs);
@@ -179,19 +179,21 @@ public class GalleryStatistics implements ComponentStatisticsProvider {
     }
 
     @Override
-    public final FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs) {
+    public final @NonNull FileVisitResult visitFile(final Path file,
+        @NonNull final BasicFileAttributes attrs) {
       handleFile(file, attrs);
       return FileVisitResult.CONTINUE;
     }
 
     @Override
-    public final FileVisitResult visitFileFailed(final Path file, final IOException exc) {
+    public final @NonNull FileVisitResult visitFileFailed(final Path file,
+        @NonNull final IOException exc) {
       SilverLogger.getLogger(this).warn(exc);
       return FileVisitResult.CONTINUE;
     }
 
     @Override
-    public final FileVisitResult postVisitDirectory(final Path dir, final IOException exc) {
+    public final @NonNull FileVisitResult postVisitDirectory(final Path dir, final IOException exc) {
       return FileVisitResult.CONTINUE;
     }
 

@@ -208,11 +208,11 @@ public class MediaCriteria {
 
   /**
    * Configures the order of the media list.
-   * @param orderBies the list of order by directives.
+   * @param orderBys the list of order by directives.
    * @return the media criteria itself with the list ordering criterion.
    */
-  public MediaCriteria orderedBy(QUERY_ORDER_BY... orderBies) {
-    CollectionUtil.addAllIgnoreNull(this.orderByList, orderBies);
+  public MediaCriteria orderedBy(QUERY_ORDER_BY... orderBys) {
+    CollectionUtil.addAllIgnoreNull(this.orderByList, orderBys);
     return this;
   }
 
@@ -274,7 +274,7 @@ public class MediaCriteria {
   }
 
   /**
-   * Gets the indetifier of media instance. {@link #fromComponentInstanceId(String)}
+   * Gets the identifier of media instance. {@link #fromComponentInstanceId(String)}
    * @return the criterion on the media instance to which the medias should belong.
    */
   public String getComponentInstanceId() {
@@ -367,9 +367,9 @@ public class MediaCriteria {
   }
 
   /**
-   * Processes this criteria with the specified processor. It chains in a given order the different
+   * Processes these criteria with the specified processor. It chains in a given order the different
    * criterion to process.
-   * @param processor the processor to use for processing each criterion in this criteria.
+   * @param processor the processor to use for processing each criterion in these criteria.
    */
   public void processWith(final MediaCriteriaProcessor processor) {
     processor.startProcessing();

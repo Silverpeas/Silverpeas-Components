@@ -28,20 +28,20 @@ import org.silverpeas.components.resourcesmanager.model.ReservedResourcePk;
 import org.silverpeas.components.resourcesmanager.repository.ReservedResourceRepository;
 import org.silverpeas.core.annotation.Service;
 
-import javax.inject.Inject;
-import javax.transaction.Transactional;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import java.util.List;
 
 /**
  * @author ehugonnet
  */
 @Service
-@Transactional
 public class ReservedResourceService {
 
   @Inject
   ReservedResourceRepository repository;
 
+  @Transactional
   public void create(ReservedResource resource) {
     repository.saveAndFlush(resource);
   }
@@ -50,10 +50,12 @@ public class ReservedResourceService {
     return repository.getById(new ReservedResourcePk(resourceId, reservationId).asString());
   }
 
+  @Transactional
   public void update(ReservedResource resource) {
     repository.saveAndFlush(resource);
   }
 
+  @Transactional
   public void delete(ReservedResource reservedResource) {
     repository.delete(reservedResource);
   }

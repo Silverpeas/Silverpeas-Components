@@ -35,7 +35,7 @@ import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -142,7 +142,7 @@ class JdbcRequester {
    * Gets the definition of all the columns of the specified database table and passes them to the
    * specified {@link ColumnConsumer} function.
    * @param connection a connection to the database.
-   * @param tableName the name of the table from which the columns have to be get.
+   * @param tableName the name of the table from which the columns have to be got.
    * @param consumer the consumer of the column definitions.
    * @throws SQLException if an error occurs while requesting the database.
    */
@@ -211,7 +211,7 @@ class JdbcRequester {
    * @param connection a connection to the database.
    * @param tableName the name of the table to request.
    * @param predicate a predicate to use to filter the table's content.
-   * @param orderBy a order by directive already built (without the clause key words).
+   * @param orderBy an order by directive already built (without the clause keywords).
    * @param converters the converters to use to convert each row and each row's value to a business
    * object.
    * @param pagination a pagination in order to avoid bad performances.

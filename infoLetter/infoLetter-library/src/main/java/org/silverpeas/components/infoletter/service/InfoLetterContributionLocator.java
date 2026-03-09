@@ -24,14 +24,22 @@
 
 package org.silverpeas.components.infoletter.service;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Named;
+import org.silverpeas.components.infoletter.InfoLetterException;
+import org.silverpeas.components.infoletter.model.InfoLetterPublication;
 import org.silverpeas.components.infoletter.model.InfoLetterPublicationPdC;
 import org.silverpeas.components.infoletter.model.InfoLetterService;
+import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.contribution.ContributionLocatorByLocalIdAndType;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
-import org.silverpeas.core.persistence.jdbc.bean.IdPK;
+import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
+import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
+import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOFactory;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
-import javax.inject.Named;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,10 +54,24 @@ import static java.util.Optional.empty;
  * </ul>
  * @author silveryocha
  */
+@Bean
 @Named
 public class InfoLetterContributionLocator implements ContributionLocatorByLocalIdAndType {
 
   private static final List<String> HANDLED_TYPES = singletonList(InfoLetterPublicationPdC.TYPE);
+
+  @SuppressWarnings("deprecation")
+  private SilverpeasBeanDAO<InfoLetterPublication> dao;
+
+  @SuppressWarnings("deprecation")
+  @PostConstruct
+  void initDAO() {
+    try {
+      dao = SilverpeasBeanDAOFactory.getDAO(InfoLetterPublication.class);
+    } catch (PersistenceException e) {
+      throw new SilverpeasRuntimeException(e);
+    }
+  }
 
   @Override
   public boolean isContributionLocatorOfType(final String type) {
@@ -61,10 +83,18 @@ public class InfoLetterContributionLocator implements ContributionLocatorByLocal
       final String localId, final String type) {
     if (InfoLetterPublicationPdC.TYPE.equals(type)) {
       final InfoLetterService service = InfoLetterService.get();
-      final IdPK pk = new IdPK(localId);
-      return Optional.ofNullable(service.getInfoLetterPublication(pk))
+      ResourceReference ref = new ResourceReference(localId);
+      return Optional.ofNullable(service.getInfoLetterPublication(ContributionIdentifier.from(ref)))
           .map(InfoLetterPublicationPdC::getIdentifier);
     }
     return empty();
+  }
+
+  public InfoLetterPublicationPdC getInfoLetterContribution(ContributionIdentifier id) {
+    try {
+      return new InfoLetterPublicationPdC(dao.findByPrimaryKey(id.toReference()));
+    } catch (PersistenceException pe) {
+      throw new InfoLetterException(pe);
+    }
   }
 }

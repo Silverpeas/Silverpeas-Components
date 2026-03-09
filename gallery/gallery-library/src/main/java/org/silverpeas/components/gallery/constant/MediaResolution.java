@@ -33,7 +33,7 @@ import java.util.EnumSet;
 import java.util.Set;
 
 /**
- * @author: Yohann Chastagnier
+ * @author Yohann Chastagnier
  */
 public enum MediaResolution {
   TINY(true, "66x50", 66, 50, "66x50"),
@@ -45,7 +45,6 @@ public enum MediaResolution {
   WATERMARK(false, "watermark", null, null, null),
   ORIGINAL(false, "original", null, null, null);
 
-  @SuppressWarnings("unchecked")
   public static final Set<MediaResolution> ALL =
       Collections.unmodifiableSet(EnumSet.allOf(MediaResolution.class));
 
@@ -57,12 +56,12 @@ public enum MediaResolution {
   private final Integer watermarkSize;
 
   MediaResolution(final boolean displayed, final String label, final Integer width,
-      final Integer height, final String bundlePartOfWaterwarkSizeLabel) {
+      final Integer height, final String bundlePartOfWatermarkSizeLabel) {
     this.displayed = displayed;
     this.label = label;
     this.width = width;
     this.height = height;
-    this.watermarkSize = GalleryComponentSettings.getWatermarkSize(bundlePartOfWaterwarkSizeLabel);
+    this.watermarkSize = GalleryComponentSettings.getWatermarkSize(bundlePartOfWatermarkSizeLabel);
     this.thumbnailSuffix = "original".equals(label) ? "" : ("_" + label);
   }
 

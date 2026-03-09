@@ -39,19 +39,19 @@ INSERT INTO st_spaceuserrole (id, spaceid, name, rolename, isinherited) VALUES (
 INSERT INTO st_componentinstance (id, spaceid, name, componentname, lang, description, ordernum)
 VALUES (100, 3, 'Liste de diffusion de test', 'mailingList', 'fr', 'Gestion d''une liste de diffusion', 5);
 
-INSERT INTO st_instance_data (id, componentid, name, label, value)
+INSERT INTO st_instance_data (id, componentid, name, label, val)
 VALUES (400, 100, 'notify', 'Liste de distribution / d''archivage', 'true');
 
-INSERT INTO st_instance_data (id, componentid, name, label, value)
+INSERT INTO st_instance_data (id, componentid, name, label, val)
 VALUES (403, 100, 'moderated', 'Liste de diffusion modérée', 'true');
 
-INSERT INTO st_instance_data (id, componentid, name, label, value)
+INSERT INTO st_instance_data (id, componentid, name, label, val)
 VALUES (404, 100, 'open', 'Liste de diffusion ouverte', 'no');
 
-INSERT INTO st_instance_data (id, componentid, name, label, value)
+INSERT INTO st_instance_data (id, componentid, name, label, val)
 VALUES (405, 100, 'subscribedAddress', 'Adresse', 'thesimpsons@silverpeas.com');
 
-INSERT INTO st_instance_data (id, componentid, name, label, value)
+INSERT INTO st_instance_data (id, componentid, name, label, val)
 VALUES (406, 100, 'rss', 'Flux RSS', 'yes');
 
 INSERT INTO st_userrole (id, instanceid, rolename, name) VALUES (300, 100, 'admin', 'Gestionnaire');

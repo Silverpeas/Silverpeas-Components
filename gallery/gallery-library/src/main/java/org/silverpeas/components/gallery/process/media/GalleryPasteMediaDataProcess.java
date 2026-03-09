@@ -55,14 +55,14 @@ import static org.silverpeas.kernel.util.StringUtil.isDefined;
  */
 public class GalleryPasteMediaDataProcess extends AbstractGalleryDataProcess {
 
-  /**
-   * Id of the album (Node)
+  /*
+   * Identifier of the album (the corresponding {@link org.silverpeas.core.node.model.NodeDetail})
    */
   private final String albumId;
   private Collection<String> albumIdsForDeletion;
 
   private final MediaPK fromMediaPk;
-  private final boolean isCutted;
+  private final boolean isCut;
 
   private boolean isSameComponentInstanceDestination = true;
   private ResourceReference fromResourceReference = null;
@@ -70,41 +70,20 @@ public class GalleryPasteMediaDataProcess extends AbstractGalleryDataProcess {
   private MediaPK toMediaPK = null;
   private final Media mediaBeforeChanges;
 
-  /**
-   * Default hidden constructor
-   * @param media
-   * @param albumId
-   * @param fromMediaPk
-   * @param isCutted
-   */
   protected GalleryPasteMediaDataProcess(final Media media, final String albumId,
-      final MediaPK fromMediaPk, final boolean isCutted) {
+      final MediaPK fromMediaPk, final boolean isCut) {
     super(media);
     this.albumId = albumId;
     this.fromMediaPk = fromMediaPk;
-    this.isCutted = isCutted;
+    this.isCut = isCut;
     this.mediaBeforeChanges = media.getCopy();
   }
 
-  /**
-   * Default hidden constructor
-   * @param media
-   * @param albumId
-   * @param fromMediaPk
-   * @param isCutted
-   * @return
-   */
   public static GalleryPasteMediaDataProcess getInstance(final Media media, final String albumId,
-      final MediaPK fromMediaPk, final boolean isCutted) {
-    return new GalleryPasteMediaDataProcess(media, albumId, fromMediaPk, isCutted);
+      final MediaPK fromMediaPk, final boolean isCut) {
+    return new GalleryPasteMediaDataProcess(media, albumId, fromMediaPk, isCut);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * AbstractGalleryDataProcess#processData(com.silverpeas.gallery
-   * .process.ProcessExecutionContext, ProcessSession)
-   */
   @Override
   protected void processData(final ProcessExecutionContext context,
       final ProcessSession session) throws Exception {
@@ -124,7 +103,7 @@ public class GalleryPasteMediaDataProcess extends AbstractGalleryDataProcess {
     }
 
     // If the paste action is copy and paste (not cut and paste), then create the new media
-    if (!isCutted) {
+    if (!isCut) {
       createMedia(albumId, context);
     } else {
       updateMedia(true, context);
@@ -148,13 +127,6 @@ public class GalleryPasteMediaDataProcess extends AbstractGalleryDataProcess {
     processPasteCommons(context);
   }
 
-  /**
-   * Centralizes the media path update
-   * @param fromComponentInstanceId
-   * @param albumId
-   * @param context
-   * @throws Exception
-   */
   private void moveMediaPath(final String fromComponentInstanceId, final String albumId,
       final ProcessExecutionContext context) throws SQLException {
     getMedia().setComponentInstanceId(fromComponentInstanceId);
@@ -165,10 +137,10 @@ public class GalleryPasteMediaDataProcess extends AbstractGalleryDataProcess {
 
   private void processPasteCommons(final ProcessExecutionContext context)
       throws PdcException, FormException {
-    if (!isCutted || !isSameComponentInstanceDestination) {
+    if (!isCut || !isSameComponentInstanceDestination) {
       // Paste positions on Pdc
-      final int fromSilverObjectId = getGalleryBm().getSilverObjectId(fromMediaPk);
-      final int toSilverObjectId = getGalleryBm().getSilverObjectId(toMediaPK);
+      final int fromSilverObjectId = getGalleryService().getSilverObjectId(fromMediaPk);
+      final int toSilverObjectId = getGalleryService().getSilverObjectId(toMediaPK);
 
       PdcServiceProvider.getPdcManager()
           .copyPositions(fromSilverObjectId, fromMediaPk.getInstanceId(), toSilverObjectId,
@@ -184,18 +156,13 @@ public class GalleryPasteMediaDataProcess extends AbstractGalleryDataProcess {
     }
   }
 
-  /**
-   * Paste XML Form
-   * @param context
-   * @throws FormException
-   */
   private void pasteXmlForm(final ProcessExecutionContext context) throws FormException {
-    if (!isCutted || !isSameComponentInstanceDestination) {
+    if (!isCut || !isSameComponentInstanceDestination) {
       try {
         final String xmlFormName = getXMLFormName(context);
         if (isDefined(xmlFormName)) {
 
-          // Stopping if no defined xml form is detected
+          // Stopping if no defined XML form is detected
           final String xmlFormShortName =
               xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
           if (StringUtil.isNotDefined(xmlFormShortName) && "0".equals(xmlFormShortName)) {
@@ -212,7 +179,7 @@ public class GalleryPasteMediaDataProcess extends AbstractGalleryDataProcess {
               .getPublicationTemplate(fromMediaPk.getInstanceId() + ":" + xmlFormShortName);
           RecordSet set = pubTemplate.getRecordSet();
 
-          if (!isCutted) {
+          if (!isCut) {
             set.copy(fromResourceReference, toResourceReference, toRecordset.getRecordTemplate(), null);
           } else {
             set.move(fromResourceReference, toResourceReference, toRecordset.getRecordTemplate());
@@ -228,7 +195,7 @@ public class GalleryPasteMediaDataProcess extends AbstractGalleryDataProcess {
   public void onSuccessful() throws Exception {
     super.onSuccessful();
     final AlbumMediaEventNotifier notifier = AlbumMediaEventNotifier.get();
-    if (isCutted) {
+    if (isCut) {
       for (final String albumIdForDeletion : albumIdsForDeletion) {
         notifier.notifyEventOn(ResourceEvent.Type.DELETION,
             new AlbumMedia(albumIdForDeletion, mediaBeforeChanges));

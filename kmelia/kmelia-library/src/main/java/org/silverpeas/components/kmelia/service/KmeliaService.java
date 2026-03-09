@@ -261,10 +261,10 @@ public interface KmeliaService extends ApplicationService {
    * Gets the details about the father from which the specified publication is accessible to the
    * given user. If the main location of the publication isn't accessible by the user, then the
    * first accessible alias of the publication is returned. If no aliases are accessible or defined,
-   * the the details of the root topic is returned.
+   * the details of the root topic is returned.
    * <p>
    * The component instance set to given {@link PublicationPK} gives the priority of the resulting
-   * {@link TopicDetail}. For example, into case of a main publication on instance A with aliases on
+   * {@link TopicDetail}. For example, in case of a main publication on instance A with aliases on
    * instance B, if component instance id set to given {@link PublicationPK} is the B one, then
    * {@link TopicDetail} result is about the best father PK (the best location) on instance B (so an
    * alias in that case).
@@ -280,7 +280,7 @@ public interface KmeliaService extends ApplicationService {
   /**
    * Gets the father of the specified publication according to the rights of the user. If the main
    * location of the publication isn't accessible by the user, then the first accessible alias of
-   * the publication is returned. If no aliases are accessible or defined, the the root topic is
+   * the publication is returned. If no aliases are accessible or defined, the root topic is
    * returned.
    * <p>
    * The component instance set to given {@link PublicationPK} gives the priority of the resulting
@@ -365,7 +365,7 @@ public interface KmeliaService extends ApplicationService {
    * @param force if true, force to validate publication (bypass pending validations)
    * @param hasUserNoMoreValidationRight true if the given id represents a user which has no more
    * validation right (deleted user for example)
-   * @return true if the validation process is complete (ie all validators have validate)
+   * @return true if the validation process is complete (ie all validators have validated)
    * @
    */
   boolean validatePublication(PublicationPK pubPK, String userId, boolean force,
@@ -413,13 +413,13 @@ public interface KmeliaService extends ApplicationService {
 
   /**
    * Send an email to alert users of a publication creation
-   * @param pubPK the publication Id
+   * @param pubPK the publication id
    */
   UserNotification getUserNotification(PublicationPK pubPK, NodePK topicPK);
 
   /**
-   * Send an email to alert users of a attachment
-   * @param pubPK the publication Id
+   * Send an email to alert users about an attachment
+   * @param pubPK the publication id
    */
   UserNotification getUserNotification(PublicationPK pubPK, SimpleDocumentPK documentPk,
       NodePK topicPK);
@@ -689,7 +689,7 @@ public interface KmeliaService extends ApplicationService {
   /**
    * Deletes the specified topic located into the given parent topic. Before the topic is deleted,
    * the privileges of the specified user is checked. If topic is in the trash folder, then the
-   * topic is definitively deleted. Otherwise it is just moved into the bin.
+   * topic is definitively deleted. Otherwise, it is just moved into the bin.
    *
    * @param topic the unique identifier of the topic
    * @param userId the unique identifier of the user asking the deletion.
@@ -721,7 +721,7 @@ public interface KmeliaService extends ApplicationService {
 
   /**
    * Copies the specified publication according to the given copy descriptor. In the case the
-   * publication is an alias, then the copy adds a new location to the original copy. Otherwise the
+   * publication is an alias, then the copy adds a new location to the original copy. Otherwise, the
    * publication is well copied.
    *
    * @param publication the publication to copy.

@@ -31,7 +31,7 @@ import org.silverpeas.core.notification.system.CDIResourceEventListener;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.kernel.annotation.Technical;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 /**
  * The community of users application is removed, that is to say it is moved into the bin of the

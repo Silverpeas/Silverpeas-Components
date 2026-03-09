@@ -46,13 +46,13 @@ public abstract class AbstractMediaMetadataExtractor implements MediaMetadataExt
 
   @Override
   public final List<ExifProperty> defineImageProperties(Iterable<String> propertyNames) {
-    List<ExifProperty> properties = new ArrayList<ExifProperty>();
+    List<ExifProperty> properties = new ArrayList<>();
     for (String value : propertyNames) {
       if (value.startsWith("METADATA_")) {
         String property = settings.getString(value + "_TAG");
         if (property != null) {
           String labelKey = settings.getString(value + "_LABEL");
-          ExifProperty exifProperty = new ExifProperty(Integer.valueOf(property));
+          ExifProperty exifProperty = new ExifProperty(Integer.parseInt(property));
           for (Map.Entry<String, LocalizationBundle> labels : metaDataBundles.entrySet()) {
             String label = labels.getValue().getString(labelKey);
             exifProperty.setLabel(labels.getKey(), label);
@@ -66,14 +66,14 @@ public abstract class AbstractMediaMetadataExtractor implements MediaMetadataExt
 
   @Override
   public final List<IptcProperty> defineImageIptcProperties(Iterable<String> propertyNames) {
-    List<IptcProperty> properties = new ArrayList<IptcProperty>();
+    List<IptcProperty> properties = new ArrayList<>();
     for (String value : propertyNames) {
       if (value.startsWith("IPTC_")) {
         String property = settings.getString(value + "_TAG");
         if (property != null) {
           String labelKey = settings.getString(value + "_LABEL");
           boolean isDate = StringUtil.getBooleanValue(settings.getString(value + "_DATE"));
-          IptcProperty iptcProperty = new IptcProperty(Integer.valueOf(property));
+          IptcProperty iptcProperty = new IptcProperty(Integer.parseInt(property));
           for (Map.Entry<String, LocalizationBundle> labels : metaDataBundles.entrySet()) {
             String label = labels.getValue().getString(labelKey);
             iptcProperty.setLabel(labels.getKey(), label);

@@ -111,7 +111,7 @@ CREATE TABLE ST_Instance_Data
     componentId int          NOT NULL,
     name        varchar(100) NOT NULL,
     label       varchar(100) NOT NULL,
-    value       varchar(1000)
+    val         varchar(1000)
 );
 
 CREATE TABLE SB_Node_Node

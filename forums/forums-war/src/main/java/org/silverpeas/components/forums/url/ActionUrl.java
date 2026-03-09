@@ -34,7 +34,7 @@ public class ActionUrl {
 
   private String spaceId = "";
   private String componentId = "";
-  private String page = null;
+  private final String page;
   private String call = "";
   private int action = -1;
   private int params = -1;
@@ -151,8 +151,8 @@ public class ActionUrl {
             "=").append(values[i]);
       }
     }
-    return ((page == null || page.length() == 0) ? DEFAULT_PAGE : page)
-        + ".jsp" + sb.toString();
+    return ((page == null || page.isEmpty()) ? DEFAULT_PAGE : page)
+        + ".jsp" + sb;
   }
 
 }

@@ -27,13 +27,7 @@ package org.silverpeas.components.organizationchart.model;
  * @author ludovic
  */
 public enum OrganizationalChartType {
-  TYPE_UNITCHART(0), TYPE_PERSONNCHART(1);
-
-  private int id = -1;
-
-  private OrganizationalChartType(int id) {
-    this.id = id;
-  }
+  TYPE_UNITCHART, TYPE_PERSONNCHART;
 
   public static OrganizationalChartType fromString(String idAsString) {
     if ("1".equals(idAsString)) {
@@ -43,7 +37,4 @@ public enum OrganizationalChartType {
     }
   }
 
-  public int getId() {
-    return id;
-  }
 }

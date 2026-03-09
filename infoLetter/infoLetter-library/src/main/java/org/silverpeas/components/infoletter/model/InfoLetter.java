@@ -44,7 +44,6 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 import static java.util.Optional.ofNullable;
-import static org.silverpeas.core.i18n.I18NHelper.DEFAULT_LANGUAGE;
 import static org.silverpeas.kernel.util.StringUtil.isNotDefined;
 
 @SuppressWarnings("deprecation")
@@ -97,6 +96,10 @@ public class InfoLetter extends SilverpeasBean implements Comparable<InfoLetter>
     this.periode = periode;
   }
 
+  public ContributionIdentifier getId() {
+    return ContributionIdentifier.from(instanceId, getPK().getId(), TYPE);
+  }
+
   // Assesseurs
 
   public String getInstanceId() {
@@ -130,8 +133,6 @@ public class InfoLetter extends SilverpeasBean implements Comparable<InfoLetter>
   public void setPeriode(String periode) {
     this.periode = periode;
   }
-
-  // Methodes
 
   @Override
   public int compareTo(@NonNull InfoLetter obj) {
@@ -183,7 +184,7 @@ public class InfoLetter extends SilverpeasBean implements Comparable<InfoLetter>
     if (this.templateContent == null) {
       final ContributionIdentifier templateId = getTemplateIdentifier();
       this.templateContent = WysiwygController.get(templateId.getComponentInstanceId(),
-          templateId.getLocalId(), DEFAULT_LANGUAGE);
+          templateId.getLocalId(), I18NHelper.getDefaultLanguage());
     }
     return ofNullable(this.templateContent);
   }
@@ -222,7 +223,7 @@ public class InfoLetter extends SilverpeasBean implements Comparable<InfoLetter>
     }
     // Update the Wysiwyg if exists, create one otherwise
     WysiwygController.updateFileAndAttachment(wysiwygContent, templateId.getComponentInstanceId(),
-        templateId.getLocalId(), User.getCurrentUser().getId(), I18NHelper.DEFAULT_LANGUAGE);
+        templateId.getLocalId(), User.getCurrentUser().getId(), I18NHelper.getDefaultLanguage());
   }
 
   public ContributionIdentifier getTemplateIdentifier() {

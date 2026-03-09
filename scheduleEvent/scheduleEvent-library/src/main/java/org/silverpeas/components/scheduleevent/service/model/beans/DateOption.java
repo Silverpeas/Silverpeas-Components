@@ -23,13 +23,14 @@ package org.silverpeas.components.scheduleevent.service.model.beans;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.PrePersist;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import org.silverpeas.kernel.annotation.NonNull;
 
 @Entity
 @Table(name = "sc_scheduleevent_options")
@@ -81,7 +82,7 @@ public class DateOption implements Comparable<DateOption>, Serializable {
   public int hashCode() {
     final int prime = 31;
     int result = prime + ((day == null) ? 0 : day.hashCode());
-    result = prime * result + (int) (hour ^ (hour >>> 31));
+    result = prime * result + (hour ^ (hour >>> 31));
     return result;
   }
 
@@ -94,15 +95,11 @@ public class DateOption implements Comparable<DateOption>, Serializable {
       return false;
     }
     DateOption option = (DateOption)obj;
-    if (day.equals(option.getDay()) && hour == option.getHour()) {
-      return true;
-    } else {
-      return false;
-    }
+    return day.equals(option.getDay()) && hour == option.getHour();
   }
 
   @Override
-  public int compareTo(DateOption obj) {
+  public int compareTo(@NonNull DateOption obj) {
     if (this.equals(obj)) {
       return 0;
     } else if (day.equals(obj.getDay())) {

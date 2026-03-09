@@ -25,6 +25,7 @@ package org.silverpeas.components.almanach.workflowextensions;
 
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.Priority;
@@ -36,8 +37,8 @@ import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.model.Parameter;
 import org.silverpeas.core.workflow.external.impl.ExternalActionImpl;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -63,6 +64,7 @@ import static org.silverpeas.kernel.util.StringUtil.getBooleanValue;
  * Watch {@link AlmanachTriggerParam} to get more trigger parameter information
  * @author ebonnet
  */
+@Bean
 @Named("SendInAlmanachHandler")
 public class SendInAlmanach extends ExternalActionImpl {
 

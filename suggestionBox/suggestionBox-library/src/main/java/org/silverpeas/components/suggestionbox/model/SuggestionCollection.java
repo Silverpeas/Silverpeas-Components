@@ -17,7 +17,7 @@ import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelp
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.util.Process;
 
-import javax.enterprise.inject.Vetoed;
+import jakarta.enterprise.inject.Vetoed;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;

@@ -1,10 +1,10 @@
 package org.silverpeas.components.scheduleevent.view;
 
+import org.silverpeas.components.scheduleevent.service.model.beans.DateOption;
+import org.silverpeas.kernel.SilverpeasException;
+
 import java.util.Date;
 import java.util.List;
-
-import org.silverpeas.components.scheduleevent.service.model.beans.DateOption;
-import org.silverpeas.components.scheduleevent.service.model.beans.DateOption;
 
 public interface DateVO {
 
@@ -16,5 +16,5 @@ public interface DateVO {
 
   Integer getTimesNumber();
 
-  void addTime(DateOption date) throws Exception;
+  void addTime(DateOption date) throws SilverpeasException;
 }

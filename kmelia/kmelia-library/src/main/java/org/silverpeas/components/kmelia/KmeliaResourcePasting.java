@@ -38,9 +38,9 @@ import org.silverpeas.core.pdc.pdc.model.UsedAxis;
 import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.transaction.Transactional;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.transaction.Transactional;
 import java.util.List;
 
 @Service

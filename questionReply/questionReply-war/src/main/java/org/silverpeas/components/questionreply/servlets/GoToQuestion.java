@@ -23,27 +23,31 @@
  */
 package org.silverpeas.components.questionreply.servlets;
 
-import org.silverpeas.core.web.util.servlet.GoTo;
-import org.silverpeas.components.questionreply.service.QuestionManagerProvider;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.silverpeas.components.questionreply.model.Question;
+import org.silverpeas.components.questionreply.service.QuestionManager;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.web.util.servlet.GoTo;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.net.URLEncoder;
 
 public class GoToQuestion extends GoTo {
 
   private static final long serialVersionUID = 8074965533055941265L;
 
+  @Inject
+  private QuestionManager questionManager;
+
   @Override
   public String getDestination(String objectId, HttpServletRequest req, HttpServletResponse res)
       throws Exception {
-    Question question = QuestionManagerProvider.getQuestionManager().getQuestion(Long.parseLong(
-        objectId));
+    Question question = questionManager.getQuestion(Long.parseLong(objectId));
     String componentId = question.getInstanceId();
 
     String gotoURL = URLUtil.getURL(null, componentId) + question.getURL();
-    return "goto=" + URLEncoder.encode(gotoURL, "UTF-8");
+    return "goto=" + URLEncoder.encode(gotoURL, Charsets.UTF_8);
   }
 }

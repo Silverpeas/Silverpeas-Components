@@ -23,14 +23,15 @@
  */
 package org.silverpeas.components.resourcesmanager;
 
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.inject.Singleton;
 import org.silverpeas.components.resourcesmanager.service.ResourcesManager;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.web.index.components.ComponentIndexation;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-
+@Bean
 @Singleton
 @Named("resourcesManager" + ComponentIndexation.QUALIFIER_SUFFIX)
 public class ResourcesManagerIndexer implements ComponentIndexation {

@@ -29,7 +29,7 @@ import org.silverpeas.kernel.util.Pair;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 /**
  * List of {@link Message} which represents a path.

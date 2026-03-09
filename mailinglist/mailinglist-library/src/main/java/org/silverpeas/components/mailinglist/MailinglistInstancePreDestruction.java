@@ -23,13 +23,14 @@
  */
 package org.silverpeas.components.mailinglist;
 
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.transaction.Transactional;
+import org.silverpeas.components.mailinglist.service.job.MessageChecker;
+import org.silverpeas.components.mailinglist.service.model.MailingListService;
 import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
-import org.silverpeas.components.mailinglist.service.MailingListServicesProvider;
 import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.kernel.annotation.Technical;
-
-import javax.inject.Named;
-import javax.transaction.Transactional;
 
 /**
  * Delete the mailing connection data and remove the mails fetching scheduler related to the
@@ -41,6 +42,11 @@ import javax.transaction.Transactional;
 @Named
 public class MailinglistInstancePreDestruction implements ComponentInstancePreDestruction {
 
+  @Inject
+  private MailingListService service;
+  @Inject
+  private MessageChecker checker;
+
   /**
    * Performs pre destruction tasks in the behalf of the specified MailingList instance.
    * @param componentInstanceId the unique identifier of the MailingList instance.
@@ -48,7 +54,7 @@ public class MailinglistInstancePreDestruction implements ComponentInstancePreDe
   @Transactional
   @Override
   public void preDestroy(final String componentInstanceId) {
-    MailingListServicesProvider.getMailingListService().deleteMailingList(componentInstanceId);
-    MailingListServicesProvider.getMessageChecker().removeListener(componentInstanceId);
+    service.deleteMailingList(componentInstanceId);
+    checker.removeListener(componentInstanceId);
   }
 }

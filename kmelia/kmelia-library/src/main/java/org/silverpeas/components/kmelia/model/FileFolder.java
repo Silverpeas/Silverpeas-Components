@@ -26,7 +26,6 @@ package org.silverpeas.components.kmelia.model;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class FileFolder implements java.io.Serializable {
@@ -35,17 +34,17 @@ public class FileFolder implements java.io.Serializable {
   /**
    * A File collection representing all items in folder
    */
-  private ArrayList children;
+  private final List<FileDetail> children;
 
   /**
    * A File collection representing files in folder
    */
-  private ArrayList files;
+  private final List<FileDetail> files;
 
   /**
    * A File collection representing folders in folder
    */
-  private ArrayList folders;
+  private final List<FileDetail> folders;
 
   /**
    * folder name
@@ -55,17 +54,13 @@ public class FileFolder implements java.io.Serializable {
   /**
    * folder path
    */
-  private String path;
+  private final String path;
 
-  /**
-   * Constructor declaration
-   * @param path
-   */
   public FileFolder(String path) {
     this.path = path;
-    files = new ArrayList(0);
-    folders = new ArrayList(0);
-    children = new ArrayList(0);
+    files = new ArrayList<>();
+    folders = new ArrayList<>();
+    children = new ArrayList<>();
 
     try {
       File f = new File(path);
@@ -92,38 +87,23 @@ public class FileFolder implements java.io.Serializable {
     }
   }
 
-  /**
-   * @return
-   */
-  public Collection getFiles() {
+  public List<FileDetail> getFiles() {
     return files;
   }
 
-  /**
-   * @return
-   */
-  public Collection getFolders() {
+  public List<FileDetail> getFolders() {
     return folders;
   }
 
-  /**
-   * @return
-   */
   public String getName() {
     return name;
   }
 
-  /**
-   * @return
-   */
   public String getPath() {
     return path;
   }
 
-  /**
-   * @return
-   */
-  public List getChildren() {
+  public List<FileDetail> getChildren() {
     return children;
   }
 

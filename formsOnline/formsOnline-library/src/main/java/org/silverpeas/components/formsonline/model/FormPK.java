@@ -43,7 +43,7 @@ public class FormPK extends WAPrimaryKey {
     if (this == obj) {
       return true;
     }
-    if (obj == null || !(obj instanceof FormPK)) {
+    if (!(obj instanceof FormPK)) {
       return false;
     }
     FormPK other = (FormPK) obj;

@@ -23,17 +23,27 @@
  */
 package org.silverpeas.components.mailinglist.servlets;
 
-import org.silverpeas.components.mailinglist.service.MailingListServicesProvider;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
+import org.silverpeas.components.mailinglist.service.model.MailingListService;
+import org.silverpeas.components.mailinglist.service.model.MessageService;
 import org.silverpeas.components.mailinglist.service.model.beans.MailingList;
 import org.silverpeas.components.mailinglist.service.model.beans.Message;
 import org.silverpeas.components.mailinglist.service.util.OrderBy;
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
+@Bean
 public class ModerationProcessor implements MailingListRoutage {
 
-  public static String processModeration(RestRequest rest, HttpServletRequest request) {
+  @Inject
+  private MailingListService mailingListService;
+  @Inject
+  private MessageService messageService;
+
+  public String processModeration(RestRequest rest, HttpServletRequest request) {
     switch (rest.getAction()) {
       case RestRequest.DELETE:
       case RestRequest.UPDATE:
@@ -43,11 +53,12 @@ public class ModerationProcessor implements MailingListRoutage {
         if (request.getParameter(CURRENT_PAGE_PARAM) != null) {
           try {
             page = Integer.parseInt(request.getParameter(CURRENT_PAGE_PARAM));
-          } catch (NumberFormatException nfex) {
+          } catch (NumberFormatException e) {
+            SilverLogger.getLogger(this).error(e.getMessage());
           }
         }
         String id = rest.getElements().get(DESTINATION_MODERATION);
-        MailingList list = MailingListServicesProvider.getMailingListService().findMailingList(id);
+        MailingList list = mailingListService.findMailingList(id);
         String orderParam = request.getParameter(ORDER_BY_PARAM);
         String ascendantParam = request.getParameter(ORDER_ASC_PARAM);
         boolean asc = false;
@@ -55,15 +66,13 @@ public class ModerationProcessor implements MailingListRoutage {
           orderParam = "sentDate";
         }
         if (ascendantParam != null) {
-          asc = Boolean.valueOf(ascendantParam);
+          asc = Boolean.parseBoolean(ascendantParam);
         }
         OrderBy orderBy = new OrderBy(orderParam, asc);
         request.setAttribute(orderParam, !asc);
-        List<Message> messages = MailingListServicesProvider.getMessageService()
-            .listUnmoderatedeMessages(list, page, orderBy);
+        List<Message> messages = messageService.listUnmoderatedeMessages(list, page, orderBy);
         request.setAttribute(MESSAGES_LIST_ATT, messages);
-        int nbPages = MailingListServicesProvider.getMessageService()
-            .getNumberOfPagesForUnmoderatedMessages(list);
+        int nbPages = messageService.getNumberOfPagesForUnmoderatedMessages(list);
         request.setAttribute(NB_PAGE_ATT, nbPages);
         return JSP_BASE + DESTINATION_DISPLAY_MODERATION;
     }

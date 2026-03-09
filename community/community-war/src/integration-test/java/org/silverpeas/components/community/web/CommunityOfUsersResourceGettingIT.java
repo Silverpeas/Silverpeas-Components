@@ -53,7 +53,7 @@ public class CommunityOfUsersResourceGettingIT extends ResourceGettingTest {
 
   private static final String DATASET_SCRIPT = "/community-dataset.sql";
 
-  private static final String EXPECTED_ID = "community1";
+  private static final String EXPECTED_ID = "community2";
 
   private String authToken;
   private CommunityOfUsersEntity expectedEntity;
@@ -134,6 +134,6 @@ public class CommunityOfUsersResourceGettingIT extends ResourceGettingTest {
 
   @Override
   public String[] getExistingComponentInstances() {
-    return new String[]{EXPECTED_ID, "community2"};
+    return new String[]{EXPECTED_ID, "community3"};
   }
 }

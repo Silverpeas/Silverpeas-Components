@@ -26,13 +26,16 @@ package org.silverpeas.components.kmelia.servlets;
 
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
+import org.silverpeas.core.annotation.Bean;
+
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * @author ebonnet
  */
+@Bean
 @Singleton
 public class KmeliaActionAccessController {
 

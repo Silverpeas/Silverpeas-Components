@@ -33,6 +33,6 @@ public interface NotificationHelper {
     return ServiceProvider.getService(NotificationHelper.class);
   }
 
-  public void notify(Message message, MailingList list) throws Exception;
+  void notify(Message message, MailingList list) throws Exception;
 
 }

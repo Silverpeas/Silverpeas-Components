@@ -53,12 +53,6 @@ public class StatsFilterVO {
    */
   private Integer groupId;
 
-  /**
-   * @param instanceId
-   * @param topicId
-   * @param startDate
-   * @param endDate
-   */
   public StatsFilterVO(String instanceId, Integer topicId, Date startDate, Date endDate) {
     super();
     this.instanceId = instanceId;

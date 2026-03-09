@@ -35,7 +35,7 @@ import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import org.silverpeas.core.web.util.viewgenerator.html.tabs.TabbedPane;
 
-import javax.servlet.jsp.JspWriter;
+import jakarta.servlet.jsp.JspWriter;
 import java.io.IOException;
 import java.util.List;
 

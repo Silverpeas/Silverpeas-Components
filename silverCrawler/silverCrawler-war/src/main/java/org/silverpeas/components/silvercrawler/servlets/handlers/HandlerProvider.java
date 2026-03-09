@@ -24,56 +24,58 @@
 
 package org.silverpeas.components.silvercrawler.servlets.handlers;
 
+import jakarta.annotation.PostConstruct;
+import org.silverpeas.core.annotation.Provider;
+
 import java.util.HashMap;
 import java.util.Map;
 
+@Provider
 public class HandlerProvider {
 
   /**
    * Map the function name to the function handler
    */
-  private static Map<String, FunctionHandler> handlerMap;
+  private final Map<String, FunctionHandler> handlerMap = new HashMap<>();
 
   /**
    * Inits the function handler
    */
-  static {
-    handlerMap = new HashMap<>();
-
-    handlerMap.put("Main", new InitHandler());
-
-    handlerMap.put("SubDirectory", new SubDirectoryHandler());
-    handlerMap.put("SubDirectoryFromResult", new SubDirectoryFromResultHandler());
-    handlerMap.put("ViewDirectory", new ViewDirectoryHandler());
-    handlerMap.put("GoToDirectory", new GoToDirectoryHandler());
-    handlerMap.put("DownloadFolder", new DownloadFolderHandler());
-    handlerMap.put("ViewDownloadHistory", new ViewDownloadHistoryHandler());
-    handlerMap.put("ViewDownloadHistoryFromResult", new ViewDownloadHistoryFromResultHandler());
-    handlerMap.put("ViewHistoryByUser", new ViewHistoryByUserHandler());
-    handlerMap.put("IndexPath", new IndexPathHandler());
-    handlerMap.put("IndexFile", new IndexFileHandler());
-    handlerMap.put("IndexDirSelected", new IndexSelectedFoldersHandler());
-    handlerMap.put("IndexFileSelected", new IndexSelectedFilesHandler());
-    handlerMap.put("Search", new SearchHandler());
-    handlerMap.put("searchResult", new SearchHandler());
-    handlerMap.put("ViewResult", new BackToSearchResultsHandler());
-    handlerMap.put("portlet", new PortletHandler());
-    handlerMap.put("ActivateRWaccess", new ActivateReadWriteAccessHandler());
-    handlerMap.put("UnactivateRWaccess", new UnActivateReadWriteAccessHandler());
-    handlerMap.put("RemoveFolder", new RemoveFolderHandler());
-    handlerMap.put("RenameFolderForm", new RenameFolderFormHandler());
-    handlerMap.put("RenameFolder", new RenameFolderHandler());
-    handlerMap.put("RemoveFile", new RemoveFileHandler());
-    handlerMap.put("RenameFileForm", new RenameFileFormHandler());
-    handlerMap.put("RenameFile", new RenameFileHandler());
-    handlerMap.put("CreateFolderForm", new CreateFolderFormHandler());
-    handlerMap.put("CreateFolder", new CreateFolderHandler());
-    handlerMap.put("UploadFileForm", new UploadFileFormHandler());
-    handlerMap.put("UploadFile", new UploadFileHandler());
-    handlerMap.put("RemoveSelectedFiles", new RemoveSelectedFilesHandler());
-    handlerMap.put("RemoveSelectedFolders", new RemoveSelectedFoldersHandler());
-    handlerMap.put("ProcessDragAndDrop", new ProcessDragAndDropHandler());
-    handlerMap.put("ResolveConflicts", new ResolveConflictsHandler());
+  @PostConstruct
+  void setUpHandlers() {
+    handlerMap.put("Main", new InitHandler(this));
+    handlerMap.put("SubDirectory", new SubDirectoryHandler(this));
+    handlerMap.put("SubDirectoryFromResult", new SubDirectoryFromResultHandler(this));
+    handlerMap.put("ViewDirectory", new ViewDirectoryHandler(this));
+    handlerMap.put("GoToDirectory", new GoToDirectoryHandler(this));
+    handlerMap.put("DownloadFolder", new DownloadFolderHandler(this));
+    handlerMap.put("ViewDownloadHistory", new ViewDownloadHistoryHandler(this));
+    handlerMap.put("ViewDownloadHistoryFromResult", new ViewDownloadHistoryFromResultHandler(this));
+    handlerMap.put("ViewHistoryByUser", new ViewHistoryByUserHandler(this));
+    handlerMap.put("IndexPath", new IndexPathHandler(this));
+    handlerMap.put("IndexFile", new IndexFileHandler(this));
+    handlerMap.put("IndexDirSelected", new IndexSelectedFoldersHandler(this));
+    handlerMap.put("IndexFileSelected", new IndexSelectedFilesHandler(this));
+    handlerMap.put("Search", new SearchHandler(this));
+    handlerMap.put("searchResult", new SearchHandler(this));
+    handlerMap.put("ViewResult", new BackToSearchResultsHandler(this));
+    handlerMap.put("portlet", new PortletHandler(this));
+    handlerMap.put("ActivateRWaccess", new ActivateReadWriteAccessHandler(this));
+    handlerMap.put("UnactivateRWaccess", new UnActivateReadWriteAccessHandler(this));
+    handlerMap.put("RemoveFolder", new RemoveFolderHandler(this));
+    handlerMap.put("RenameFolderForm", new RenameFolderFormHandler(this));
+    handlerMap.put("RenameFolder", new RenameFolderHandler(this));
+    handlerMap.put("RemoveFile", new RemoveFileHandler(this));
+    handlerMap.put("RenameFileForm", new RenameFileFormHandler(this));
+    handlerMap.put("RenameFile", new RenameFileHandler(this));
+    handlerMap.put("CreateFolderForm", new CreateFolderFormHandler(this));
+    handlerMap.put("CreateFolder", new CreateFolderHandler(this));
+    handlerMap.put("UploadFileForm", new UploadFileFormHandler(this));
+    handlerMap.put("UploadFile", new UploadFileHandler(this));
+    handlerMap.put("RemoveSelectedFiles", new RemoveSelectedFilesHandler(this));
+    handlerMap.put("RemoveSelectedFolders", new RemoveSelectedFoldersHandler(this));
+    handlerMap.put("ProcessDragAndDrop", new ProcessDragAndDropHandler(this));
+    handlerMap.put("ResolveConflicts", new ResolveConflictsHandler(this));
   }
 
   /**
@@ -81,7 +83,7 @@ public class HandlerProvider {
    * @param useCase the use case
    * @return ready to use handler
    */
-  public static FunctionHandler getHandler(String useCase) {
+  public FunctionHandler getHandler(String useCase) {
     if (!handlerMap.containsKey(useCase)) {
       return getHandler("Main");
     }

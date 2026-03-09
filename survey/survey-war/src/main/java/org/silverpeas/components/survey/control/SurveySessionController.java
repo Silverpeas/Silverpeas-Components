@@ -23,10 +23,11 @@
  */
 package org.silverpeas.components.survey.control;
 
-import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.survey.SurveyException;
 import org.silverpeas.components.survey.notification.SurveyUserNotification;
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.util.Charsets;
+import org.silverpeas.core.util.file.*;
 import org.silverpeas.kernel.SilverpeasException;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationController;
@@ -60,10 +61,6 @@ import org.silverpeas.core.questioncontainer.result.service.QuestionResultServic
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.csv.CSVRow;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.file.FileServerUtils;
-import org.silverpeas.core.util.file.FileUploadUtil;
-import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.export.ExportCSVBuilder;
 import org.silverpeas.core.web.http.HttpRequest;
@@ -72,7 +69,7 @@ import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -122,12 +119,6 @@ public class SurveySessionController extends AbstractComponentSessionController 
   private List<PdcPosition> newSurveyPositions = null;
   private DisplayResultView displayResultView = DisplayResultView.fromString(null);
 
-  /**
-   * Creates new sessionClientController
-   *
-   * @param mainSessionCtrl
-   * @param componentContext
-   */
   public SurveySessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext, "org.silverpeas.survey.multilang.surveyBundle", null,
@@ -163,23 +154,13 @@ public class SurveySessionController extends AbstractComponentSessionController 
     return participationMultipleAllowedForUser;
   }
 
-  /**
-   * Set user status to know if he can participate more than one time
-   *
-   * @param state
-   */
   public void setParticipationMultipleAllowedForUser(boolean state) {
     this.participationMultipleAllowedForUser = state;
   }
 
-  /**
-   * Get display comments Mode
-   *
-   * @return
-   */
   public String getDisplayCommentsMode() {
     String parameterValue = this.getComponentParameterValue(PARAM_DISPLAY_COMMENTS);
-    if (parameterValue == null || parameterValue.length() <= 0) {
+    if (parameterValue == null || parameterValue.isEmpty()) {
       return DISPLAY_COMMENTS_FOR_ALL;
     }
     return parameterValue;
@@ -214,7 +195,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
    */
   public boolean isAnonymousModeEnabled() {
     String value = getComponentParameterValue("useAnonymousMode");
-    return value != null && "yes".equalsIgnoreCase(value);
+    return "yes".equalsIgnoreCase(value);
   }
 
   /**
@@ -224,11 +205,6 @@ public class SurveySessionController extends AbstractComponentSessionController 
     return hasAlreadyParticipated;
   }
 
-  /**
-   * Set status of anonymous user (if he has already participated with this ip)
-   *
-   * @param state
-   */
   public void hasAlreadyParticipated(boolean state) {
     this.hasAlreadyParticipated = state;
   }
@@ -259,7 +235,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
 
   /**
    * @return a list of survey of the current instance of component.
-   * @throws SurveyException
+   * @throws SurveyException if the list cannot be got
    */
   public Collection<QuestionContainerHeader> getSurveys() throws SurveyException {
 
@@ -305,7 +281,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
   /**
    * @param surveyId the survey identifier
    * @return the question container detail of the survey given in parameter
-   * @throws SurveyException
+   * @throws SurveyException if the survey cannot be got
    */
   public QuestionContainerDetail getSurvey(String surveyId) throws SurveyException {
     try {
@@ -694,7 +670,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
   /**
    * Paste surveys which are in the clipboard selection
    *
-   * @throws Exception
+   * @throws SilverpeasException if the pasting fails
    */
   public void paste() throws SilverpeasException {
     try {
@@ -713,12 +689,6 @@ public class SurveySessionController extends AbstractComponentSessionController 
     }
   }
 
-  /**
-   * Paste a survey
-   *
-   * @param survey the QuestionContanerDetail to paste
-   * @throws Exception
-   */
   private void pasteSurvey(QuestionContainerDetail survey)
       throws IOException, SurveyException, PdcException {
     String componentId;
@@ -742,7 +712,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
         if (StringUtil.isDefined(physicalName)) {
           // copy image
           String type =
-              physicalName.substring(physicalName.indexOf('.') + 1, physicalName.length());
+              physicalName.substring(physicalName.indexOf('.') + 1);
           String newPhysicalName =
               Long.toString(new Date().getTime()) + attachmentSuffix + "." + type;
           attachmentSuffix = attachmentSuffix + 1;
@@ -817,10 +787,9 @@ public class SurveySessionController extends AbstractComponentSessionController 
         qV.remove(qId);
         this.setSessionQuestions(qV);
       } else {
-        StringBuilder message = new StringBuilder();
-        message.append("Trying to delete a wrong question, questionIndexToDelete=").append(qId).
-            append(", questions list size=").append(qV == null ? "null" : qV.size());
-        SilverLogger.getLogger(this).warn(message.toString());
+        String message = "Trying to delete a wrong question, questionIndexToDelete=" + qId +
+                         ", questions list size=" + (qV == null ? "null" : qV.size());
+        SilverLogger.getLogger(this).warn(message);
       }
 
     } else if ("SendQuestions".equals(action)) {
@@ -846,7 +815,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
     this.removeSessionSurveyName();
     String surveyName = "";
     List<Question> questionsV = new ArrayList<>();
-    QuestionContainerDetail survey = null;
+    QuestionContainerDetail survey;
     try {
       survey = this.getSurvey(surveyId);
       Collection<Question> questions = survey.getQuestions();
@@ -877,11 +846,6 @@ public class SurveySessionController extends AbstractComponentSessionController 
     return questionStyles;
   }
 
-  /**
-   * @param function
-   * @param request
-   * @return the view to display
-   */
   public String manageQuestionBusiness(String function, HttpServletRequest request) {
     String surveyImageDirectory = FileServerUtils
         .getUrl(this.getComponentId(), "REPLACE_FILE_NAME", "REPLACE_FILE_NAME", "image/gif",
@@ -901,7 +865,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
         "UpdateQuestion".equals(parameters.getAction())) {
       if ("SendQuestionForm".equals(parameters.getAction())) {
         request.setAttribute("NbAnswers", parameters.getAnswerCount());
-      } else if ("UpdateQuestion".equals(parameters.getAction())) {
+      } else {
         request.setAttribute("QuestionId", parameters.getQuestionId());
       }
     }
@@ -1024,8 +988,8 @@ public class SurveySessionController extends AbstractComponentSessionController 
     QuestionContainerDetail survey = this.getSessionSurvey();
     try {
       Date creationDate = new Date();
-      String filename = fileSynthesis.getName();
-      SimpleAttachment file = SimpleAttachment.builder(I18NHelper.DEFAULT_LANGUAGE)
+      String filename = fileSynthesis.getFileName();
+      SimpleAttachment file = SimpleAttachment.builder(I18NHelper.getDefaultLanguage())
           .setFilename(FileUtil.getFilename(filename))
           .setTitle(filename)
           .setDescription("")
@@ -1053,7 +1017,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
   public void removeSynthesisFile(String idDocument) {
     SimpleDocumentPK primaryKey = new SimpleDocumentPK(idDocument);
     SimpleDocument document = AttachmentServiceProvider.getAttachmentService()
-        .searchDocumentById(primaryKey, I18NHelper.DEFAULT_LANGUAGE);
+        .searchDocumentById(primaryKey, I18NHelper.getDefaultLanguage());
     AttachmentServiceProvider.getAttachmentService().deleteAttachment(document);
   }
 
@@ -1061,7 +1025,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
     SimpleDocumentPK surveyForeignKey = new SimpleDocumentPK(surveyId, this.getComponentId());
     return AttachmentServiceProvider.getAttachmentService()
         .listDocumentsByForeignKey(surveyForeignKey.toResourceReference(),
-            I18NHelper.DEFAULT_LANGUAGE);
+            I18NHelper.getDefaultLanguage());
   }
 
   public QuestionResult getSuggestion(String userId, String questionId, String answerId)
@@ -1117,8 +1081,8 @@ public class SurveySessionController extends AbstractComponentSessionController 
   }
 
   private String getFilePhysicalName(final int attachmentSuffix, final FileItem item) {
-    String logicalName = item.getName();
-    String type = logicalName.substring(logicalName.indexOf('.') + 1, logicalName.length());
+    String logicalName = item.getFileName();
+    String type = logicalName.substring(logicalName.indexOf('.') + 1);
     return Long.toString(new Date().getTime()) + attachmentSuffix + "." + type;
   }
 
@@ -1126,27 +1090,27 @@ public class SurveySessionController extends AbstractComponentSessionController 
       final boolean file, final FileItem item) throws UnsupportedEncodingException {
     String mpName = item.getFieldName();
     if (ACTION_PARAM.equals(mpName)) {
-      parameters.setAction(item.getString());
+      parameters.setAction(item.getContent());
     } else if ("question".equals(mpName)) {
-      parameters.setQuestion(item.getString(FileUploadUtil.DEFAULT_ENCODING));
+      parameters.setQuestion(item.getContent(Charsets.UTF_8));
     } else if ("nbAnswers".equals(mpName)) {
-      parameters.setAnswerCount(item.getString(FileUploadUtil.DEFAULT_ENCODING));
+      parameters.setAnswerCount(item.getContent(Charsets.UTF_8));
     } else if ("SuggestionAllowed".equals(mpName)) {
-      parameters.setSuggestion(item.getString(FileUploadUtil.DEFAULT_ENCODING));
+      parameters.setSuggestion(item.getContent(Charsets.UTF_8));
       answer.setIsOpened(StringUtil.getBooleanValue(parameters.getSuggestion()));
     } else if ("questionStyle".equals(mpName)) {
-      parameters.setStyle(item.getString(FileUploadUtil.DEFAULT_ENCODING));
+      parameters.setStyle(item.getContent(Charsets.UTF_8));
     } else if (mpName.startsWith("answer") || "suggestionLabel".equals(mpName)) {
-      parameters.setAnswerInput(item.getString(FileUploadUtil.DEFAULT_ENCODING));
+      parameters.setAnswerInput(item.getContent(Charsets.UTF_8));
       answer = new Answer(null, null, parameters.getAnswerInput(), 0, false, "", 0, false, null,
           null);
       parameters.addAnswer(answer);
     } else if (mpName.startsWith("valueImageGallery") &&
-        StringUtil.isDefined(item.getString(FileUploadUtil.DEFAULT_ENCODING)) && !file) {
+        StringUtil.isDefined(item.getContent(Charsets.UTF_8)) && !file) {
       // traiter les images venant de la gallery si pas d'image externe
-      answer.setImage(item.getString(FileUploadUtil.DEFAULT_ENCODING));
+      answer.setImage(item.getContent(Charsets.UTF_8));
     } else if ("QuestionId".equals(mpName)) {
-      parameters.setQuestionId(item.getString(FileUploadUtil.DEFAULT_ENCODING));
+      parameters.setQuestionId(item.getContent(Charsets.UTF_8));
     }
     return answer;
   }

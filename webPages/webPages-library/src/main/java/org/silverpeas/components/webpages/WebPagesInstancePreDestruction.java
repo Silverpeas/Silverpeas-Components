@@ -33,7 +33,7 @@ import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 
 /**
  * Deletes all the web pages managed by the WebPages instance that is being deleted.

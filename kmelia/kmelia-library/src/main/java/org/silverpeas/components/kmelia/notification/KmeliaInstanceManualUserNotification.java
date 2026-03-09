@@ -24,8 +24,10 @@
 
 package org.silverpeas.components.kmelia.notification;
 
+import jakarta.inject.Inject;
 import org.silverpeas.components.kmelia.service.KmeliaService;
 import org.silverpeas.core.admin.ProfiledObjectType;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.node.model.NodeDetail;
@@ -35,16 +37,20 @@ import org.silverpeas.core.notification.user.NotificationContext;
 import org.silverpeas.core.notification.user.UserNotification;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 
 import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * @author silveryocha
  */
+@Bean
 @Named
 public class KmeliaInstanceManualUserNotification extends
     AbstractComponentInstanceManualUserNotification {
+
+  @Inject
+  private KmeliaService kmeliaService;
 
   @Override
   public UserNotification createUserNotification(final NotificationContext context) {
@@ -95,7 +101,7 @@ public class KmeliaInstanceManualUserNotification extends
   }
 
   private KmeliaService getKmeliaService() {
-    return KmeliaService.get();
+    return kmeliaService;
   }
 
   private String asResourceId(final String folderId) {

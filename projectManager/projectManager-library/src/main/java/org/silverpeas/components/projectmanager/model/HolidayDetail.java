@@ -42,44 +42,26 @@ public class HolidayDetail implements Serializable {
     setFatherId(fatherId);
   }
 
-  /**
-   * @return
-   */
   public int getFatherId() {
     return fatherId;
   }
 
-  /**
-   * @return
-   */
   public Date getDate() {
     return holidayDate;
   }
 
-  /**
-   * @return
-   */
   public String getInstanceId() {
     return instanceId;
   }
 
-  /**
-   * @param i
-   */
   public void setFatherId(int i) {
     fatherId = i;
   }
 
-  /**
-   * @param date
-   */
   public void setDate(Date date) {
     holidayDate = date;
   }
 
-  /**
-   * @param string
-   */
   public void setInstanceId(String string) {
     instanceId = string;
   }

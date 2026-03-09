@@ -23,25 +23,22 @@
  */
 package org.silverpeas.components.forums.subscription;
 
+import jakarta.inject.Inject;
 import org.silverpeas.components.forums.model.Forum;
 import org.silverpeas.components.forums.model.ForumPK;
 import org.silverpeas.components.forums.model.Message;
 import org.silverpeas.components.forums.model.MessagePK;
-import org.silverpeas.core.subscription.SubscriberDirective;
-import org.silverpeas.core.subscription.SubscriptionResourceType;
-import org.silverpeas.core.subscription.SubscriptionFactory;
+import org.silverpeas.components.forums.service.ForumService;
+import org.silverpeas.core.subscription.*;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.subscription.SubscriptionSubscriber;
 import org.silverpeas.core.subscription.service.AbstractResourceSubscriptionService;
 import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
 
 import java.util.Collection;
 import java.util.HashSet;
 
-import static org.silverpeas.components.forums.service.ForumsServiceProvider.getForumsService;
 import static org.silverpeas.components.forums.subscription.ForumSubscriptionConstants.FORUM;
 import static org.silverpeas.components.forums.subscription.ForumSubscriptionConstants.FORUM_MESSAGE;
-import static org.silverpeas.core.subscription.SubscriptionServiceProvider.getSubscribeService;
 import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.COMPONENT;
 
 /**
@@ -52,6 +49,11 @@ import static org.silverpeas.core.subscription.constant.CommonSubscriptionResour
  */
 @Service
 public class ForumsSubscriptionService extends AbstractResourceSubscriptionService {
+
+  @Inject
+  private ForumService forumService;
+  @Inject
+  private SubscriptionService subscriptionService;
 
   @Override
   public void init()  {
@@ -134,5 +136,13 @@ public class ForumsSubscriptionService extends AbstractResourceSubscriptionServi
     }
 
     return message;
+  }
+
+  private ForumService getForumsService() {
+    return forumService;
+  }
+
+  private SubscriptionService getSubscribeService() {
+    return subscriptionService;
   }
 }

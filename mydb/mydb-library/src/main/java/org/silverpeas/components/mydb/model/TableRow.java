@@ -29,8 +29,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * A row in a table in a data source. A row is a tuple whose each field matches a given column of
- * the requested table. Hence the field name in the row is the column name and its value the value
+ * A row in a table in a data source. A row is a tuple in which each field matches a given column of
+ * the requested table. Hence, the field name in the row is the column name and its value the value
  * in the column.
  * @author mmoquillon
  */

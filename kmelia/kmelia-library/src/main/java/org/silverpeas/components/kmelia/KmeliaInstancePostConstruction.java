@@ -23,28 +23,32 @@
  */
 package org.silverpeas.components.kmelia;
 
+import jakarta.inject.Inject;
 import org.silverpeas.core.admin.component.ComponentInstancePostConstruction;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 
-import javax.inject.Named;
-import javax.transaction.Transactional;
+import jakarta.inject.Named;
+import jakarta.transaction.Transactional;
 
 /**
  * Once an instance of the Kmelia application is created, creates for it the root folder, the bin
  * and the declassified child folders.
  * @author mmoquillon
  */
+@Bean
 @Named
 public class KmeliaInstancePostConstruction implements ComponentInstancePostConstruction {
+
+  @Inject
+  private NodeService nodeService;
 
   @Transactional
   @Override
   public void postConstruct(final String componentInstanceId) {
-    NodeService nodeService = NodeService.get();
-
     NodeDetail rootFolder = getRootFolderNodeFor(componentInstanceId);
     NodeDetail bin = getBinNodeFor(componentInstanceId, rootFolder);
     NodeDetail dz = getDzNodeFor(componentInstanceId, rootFolder);

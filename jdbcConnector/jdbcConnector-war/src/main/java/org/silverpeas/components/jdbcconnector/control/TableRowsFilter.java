@@ -55,10 +55,7 @@ public class TableRowsFilter {
   private String fieldName = FIELD_NONE;
   private String fieldValue = EMPTY;
   private Class<?> fieldType = null;
-
-  /**
-   * Set up the different {@link FieldValueComparator} instances supported by this filter.
-   */
+  
   static {
     comparators.put(FIELD_NONE, new NothingBuilder());
     comparators.put("include", new Inclusion());
@@ -72,7 +69,7 @@ public class TableRowsFilter {
   }
 
   /**
-   * Gets the symbol of all of the comparators supported by this filter.
+   * Gets the symbol of all the comparators supported by this filter.
    * @return a set of comparator symbols.
    */
   public static Set<String> getAllComparators() {
@@ -105,7 +102,7 @@ public class TableRowsFilter {
   }
 
   /**
-   * Sets the value with which a field of all of the table row will be filtered.
+   * Sets the value with which a field of all the table row will be filtered.
    * @param fieldValue the value with which the field of each table row will be compared.
    */
   public void setFieldValue(final String fieldValue) {
@@ -157,15 +154,15 @@ public class TableRowsFilter {
   public List<TableRow> filter(final List<TableRow> rows) {
     final FieldValueComparator predicate = comparators.get(comparator);
     if (!fieldName.equals(FIELD_NONE) && predicate != null) {
-      Comparable actualValue;
+      Comparable<?> actualValue;
       try {
         Method valueOf = fieldType.getMethod("valueOf", String.class);
-        actualValue = (Comparable) valueOf.invoke(fieldType, fieldValue);
+        actualValue = (Comparable<?>) valueOf.invoke(fieldType, fieldValue);
       } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException |
           ClassCastException e) {
         actualValue = fieldValue;
       }
-      final Comparable refValue = actualValue;
+      final Comparable<?> refValue = actualValue;
       return rows.stream()
           .filter(byApplying(predicate, fieldName, refValue))
           .collect(Collectors.toList());
@@ -173,11 +170,10 @@ public class TableRowsFilter {
     return rows;
   }
 
-  @SuppressWarnings("unchecked")
-  private Predicate<TableRow> byApplying(final FieldValueComparator comparator,
-      final String fieldName, final Comparable withValue) {
+  private <T> Predicate<TableRow> byApplying(final FieldValueComparator comparator,
+      final String fieldName, final Comparable<T> withValue) {
     return r -> {
-      Comparable v = r.getFieldValue(fieldName);
+      Comparable<T> v = r.getFieldValue(fieldName);
       return withValue != null && comparator.compare(v, withValue);
     };
   }

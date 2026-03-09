@@ -103,7 +103,7 @@ public class KmeliaHelper implements Serializable {
   }
 
   public static String extractObjectIdFromURL(String url) {
-    return url.substring(url.indexOf("Id=") + 3, url.length());
+    return url.substring(url.indexOf("Id=") + 3);
   }
 
   public static String extractObjectTypeFromURL(String url) {

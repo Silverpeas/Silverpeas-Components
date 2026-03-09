@@ -26,7 +26,6 @@ package org.silverpeas.components.gallery.notification.user;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -50,10 +49,10 @@ import org.silverpeas.core.subscription.service.ResourceSubscriptionProvider;
 import org.silverpeas.core.subscription.service.UserSubscriptionSubscriber;
 import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
 import org.silverpeas.core.test.unit.extention.JEETestContext;
-import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
-import org.silverpeas.kernel.test.extension.LocalizationBundleStub;
 import org.silverpeas.kernel.test.annotations.TestManagedMock;
 import org.silverpeas.kernel.test.annotations.TestManagedMocks;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.extension.LocalizationBundleStub;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -77,10 +76,9 @@ class GalleryAlbumMediaSubscriptionNotificationBuilderTest {
   private static final String FR = LocalizationBundleStub.LANGUAGE_FR;
   private static final String EN = LocalizationBundleStub.LANGUAGE_EN;
   private static final String DE = LocalizationBundleStub.LANGUAGE_DE;
-  private static final ComponentInstLight componentInstance = new ComponentInstLight();
-  private static final AlbumDetail albumDetail = new AlbumDetail(new NodeDetail());
-  private static final AlbumDetail parentAlbumDetail = new AlbumDetail(new NodeDetail());
-  private static final NodePath albumPath = new NodePath();
+  private ComponentInstLight componentInstance;
+  private AlbumDetail albumDetail;
+  private NodePath albumPath;
   private static final User sender = mock(User.class);
 
   @RegisterExtension
@@ -95,10 +93,15 @@ class GalleryAlbumMediaSubscriptionNotificationBuilderTest {
   private Map<String, ResourceSubscriptionService> componentImplementations;
   private final SubscriptionSubscriberList subscriptionSubscribers = new SubscriptionSubscriberList();
 
-  @BeforeAll
-  static void setupStaticData() {
+  @BeforeEach
+  void setupTestData() {
+    componentInstance = new ComponentInstLight();
     componentInstance.setLocalId(38);
     componentInstance.setName("gallery");
+
+    albumDetail = new AlbumDetail(new NodeDetail());
+    AlbumDetail parentAlbumDetail = new AlbumDetail(new NodeDetail());
+    albumPath = new NodePath();
     albumDetail.setId(26);
     albumDetail.getNodePK().setComponentName(componentInstance.getId());
     albumDetail.setName("B");
@@ -120,7 +123,7 @@ class GalleryAlbumMediaSubscriptionNotificationBuilderTest {
 
   @SuppressWarnings("unchecked")
   @BeforeEach
-  void setup(@TestManagedMock OrganizationController organizationController,
+  void setupMocks(@TestManagedMock OrganizationController organizationController,
       @TestManagedMock SilverpeasComponentInstanceProvider componentInstanceProvider,
       @TestManagedMock NodeService nodeService) throws Exception {
     final Optional<SilverpeasComponentInstance> optionalInstance = Optional.of(componentInstance);

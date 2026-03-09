@@ -2,9 +2,10 @@ package org.silverpeas.components.scheduleevent.servlets;
 
 import java.net.URLEncoder;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.util.servlet.GoTo;
 
@@ -16,12 +17,10 @@ public class GoToScheduleEvent extends GoTo {
   public String getDestination(String objectId, HttpServletRequest req, HttpServletResponse res)
       throws Exception {
 
-
-
     String gotoURL =  URLUtil.getURL(URLUtil.CMP_SCHEDULE_EVENT)
         + "Detail?scheduleEventId=" + objectId;
 
-    return "goto=" + URLEncoder.encode(gotoURL, "UTF-8");
+    return "goto=" + URLEncoder.encode(gotoURL, Charsets.UTF_8);
   }
 
 }

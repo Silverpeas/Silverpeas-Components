@@ -36,10 +36,10 @@ import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.webapi.calendar.CalendarWebManager;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -116,7 +116,8 @@ public class AlmanachWebManager extends CalendarWebManager {
         .filter(StringUtil::isDefined)
         .map(String::trim)
         .filter(i -> !indexedComponentIds.contains(i))
-        .filter(i -> COMPONENT_NAME.equals(SilverpeasComponentInstance.getComponentName(i)))
+        .filter(i ->
+            COMPONENT_NAME.equals(SilverpeasComponentInstance.getIdentity(i).getComponentName()))
         .collect(Collectors.toList());
     componentAccessController
         .filterAuthorizedByUser(customAggregationComponentIds, User.getCurrentRequester().getId())

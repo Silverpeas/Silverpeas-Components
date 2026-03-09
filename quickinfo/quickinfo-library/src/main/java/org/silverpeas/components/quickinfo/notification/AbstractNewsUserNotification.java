@@ -35,7 +35,7 @@ public abstract class AbstractNewsUserNotification extends AbstractQuickInfoUser
 
   private final NotifAction action;
 
-  public AbstractNewsUserNotification(News resource, NotifAction action) {
+  protected AbstractNewsUserNotification(News resource, NotifAction action) {
     super(resource);
     this.action = action;
   }

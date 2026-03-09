@@ -29,9 +29,9 @@ import org.silverpeas.components.suggestionbox.model.SuggestionBoxService;
 import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.kernel.annotation.Technical;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.transaction.Transactional;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.transaction.Transactional;
 
 /**
  * Deletes the suggestion box associated with the SuggestionBox instance that is being deleted.

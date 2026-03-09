@@ -24,6 +24,7 @@
 
 package org.silverpeas.components.forums.subscription.bean;
 
+import jakarta.inject.Inject;
 import org.silverpeas.components.forums.model.ForumPK;
 import org.silverpeas.components.forums.model.ForumPath;
 import org.silverpeas.components.forums.model.MessagePK;
@@ -56,6 +57,12 @@ import static org.silverpeas.components.forums.subscription.ForumSubscriptionCon
 @Service
 public class ForumsSubscriptionBeanService extends AbstractSubscriptionBeanService {
 
+  @Inject
+  private ForumService forumService;
+
+  @Inject
+  private OrganizationController controller;
+
   @Override
   protected List<SubscriptionResourceType> getHandledSubscriptionResourceTypes() {
     return Stream.of(FORUM, FORUM_MESSAGE).collect(Collectors.toList());
@@ -79,7 +86,6 @@ public class ForumsSubscriptionBeanService extends AbstractSubscriptionBeanServi
   @Override
   public List<AbstractSubscriptionBean> toSubscriptionBean(
       final Collection<Subscription> subscriptions, final String language) {
-    final OrganizationController controller = OrganizationController.get();
     final List<AbstractSubscriptionBean> converted = new ArrayList<>();
     for (final Subscription subscription : subscriptions) {
       // Subscriptions managed at this level are only those of node subscription.
@@ -88,13 +94,13 @@ public class ForumsSubscriptionBeanService extends AbstractSubscriptionBeanServi
       if (FORUM.equals(type)) {
         controller.getComponentInstance(resource.getInstanceId())
             .ifPresent(i -> {
-              final ForumPath path = ForumService.get().getForumPath(toForumPK(resource));
+              final ForumPath path = forumService.getForumPath(toForumPK(resource));
               converted.add(new ForumSubscriptionBean(subscription, path, i, language));
             });
       } else if (FORUM_MESSAGE.equals(type)) {
         controller.getComponentInstance(resource.getInstanceId())
             .ifPresent(i -> {
-              final MessagePath path = ForumService.get().getMessagePath(toMessagePK(resource));
+              final MessagePath path = forumService.getMessagePath(toMessagePK(resource));
               converted.add(new ForumMessageSubscriptionBean(subscription, path, i, language));
             });
       }

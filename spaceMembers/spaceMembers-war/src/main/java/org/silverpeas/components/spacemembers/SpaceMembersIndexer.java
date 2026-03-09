@@ -23,12 +23,13 @@
  */
 package org.silverpeas.components.spacemembers;
 
+import jakarta.inject.Named;
+import jakarta.inject.Singleton;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.web.index.components.ComponentIndexation;
 
-import javax.inject.Named;
-import javax.inject.Singleton;
-
+@Bean
 @Singleton
 @Named("spaceMembers" + ComponentIndexation.QUALIFIER_SUFFIX)
 public class SpaceMembersIndexer implements ComponentIndexation {

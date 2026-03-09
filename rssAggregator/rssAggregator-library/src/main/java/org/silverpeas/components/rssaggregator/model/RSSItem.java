@@ -78,7 +78,7 @@ public class RSSItem implements Comparable<RSSItem> {
 
   /**
    * Default RSSItem constructor which encapsulate Item and Channel from ROME API
-   * @param item a RSS item from ROME API
+   * @param item RSS item from ROME API
    * @param feed the feed from which the item comes from.
    * @param spChannel the Silverpeas RSS channel with which the feed is mapped.
    */

@@ -1,10 +1,9 @@
 package org.silverpeas.components.scheduleevent.view;
 
+import org.silverpeas.components.scheduleevent.service.model.beans.Response;
+
 import java.util.Map;
 import java.util.Set;
-
-import org.silverpeas.components.scheduleevent.service.model.beans.Response;
-import org.silverpeas.components.scheduleevent.service.model.beans.Response;
 
 public interface TimeVO {
   DateVO getDate();

@@ -23,13 +23,13 @@
  */
 package org.silverpeas.components.kmelia;
 
-import com.rometools.rome.feed.synd.SyndContent;
-import com.rometools.rome.feed.synd.SyndContentImpl;
-import com.rometools.rome.feed.synd.SyndEntry;
-import com.rometools.rome.feed.synd.SyndEntryImpl;
-import com.rometools.rome.feed.synd.SyndFeed;
-import com.rometools.rome.feed.synd.SyndFeedImpl;
+import com.rometools.rome.feed.synd.*;
 import com.rometools.rome.io.SyndFeedOutput;
+import jakarta.inject.Inject;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.service.OrganizationController;
@@ -38,24 +38,18 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.personalization.UserPreferences;
-import org.silverpeas.core.personalization.service.PersonalizationServiceProvider;
+import org.silverpeas.core.personalization.service.PersonalizationService;
 import org.silverpeas.core.util.MimeTypes;
-import org.silverpeas.kernel.bundle.ResourceLocator;
-import org.silverpeas.kernel.bundle.SettingBundle;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.controller.SilverpeasWebUtil;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Inject;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Writer;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -79,6 +73,9 @@ public class RssLastPublicationsServlet extends HttpServlet {
 
   @Inject
   private OrganizationController organizationController;
+
+  @Inject
+  private PersonalizationService personalizationService;
 
   @Override
   public void service(HttpServletRequest request, HttpServletResponse response)
@@ -141,15 +138,12 @@ public class RssLastPublicationsServlet extends HttpServlet {
     return kmeliaTransversal.getUpdatedPublications(spaceId, maxAge, returnedNb);
   }
 
-  public SyndEntry toSyndEntry(PublicationDetail publication, String serverURL, String lang) throws
-      MalformedURLException {
-    final int maxUrlLength = 256;
+  public SyndEntry toSyndEntry(PublicationDetail publication, String serverURL, String lang) {
     SyndEntry entry = new SyndEntryImpl();
     entry.setTitle(publication.getTitle());
-    StringBuilder url = new StringBuilder(maxUrlLength);
-    url.append(serverURL);
-    url.append(URLUtil.getSimpleURL(URLUtil.URL_PUBLI, publication.getPK().getId()));
-    entry.setLink(url.toString());
+    String url = serverURL +
+        URLUtil.getSimpleURL(URLUtil.URL_PUBLI, publication.getPK().getId());
+    entry.setLink(url);
     entry.setPublishedDate(publication.getCreationDate());
     entry.setUpdatedDate(publication.getLastUpdateDate());
 
@@ -206,6 +200,6 @@ public class RssLastPublicationsServlet extends HttpServlet {
    * @return the UserPreferences of user identified by userId
    */
   public UserPreferences getPersonalization(String userId) {
-    return PersonalizationServiceProvider.getPersonalizationService().getUserSettings(userId);
+    return personalizationService.getUserSettings(userId);
   }
 }

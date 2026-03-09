@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.silverpeas.components</groupId>
     <artifactId>gallery</artifactId>
-    <version>6.5-SNAPSHOT</version>
+    <version>6.5-ee-SNAPSHOT</version>
   </parent>
 
   <groupId>org.silverpeas.components.gallery</groupId>
@@ -14,18 +14,10 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.fasterxml.jackson.module</groupId>
-      <artifactId>jackson-module-jaxb-annotations</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.silverpeas.core</groupId>
-      <artifactId>silverpeas-core</artifactId>
-      <version>${core.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.silverpeas.core</groupId>
       <artifactId>silverpeas-core-rs</artifactId>
       <version>${core.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
@@ -58,21 +50,14 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-annotations</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpclient</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.drewnoakes</groupId>
-      <artifactId>metadata-extractor</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.silverpeas.core</groupId>
       <artifactId>silverpeas-core-test</artifactId>
       <version>${core.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.module</groupId>
+      <artifactId>jackson-module-jakarta-xmlbind-annotations</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

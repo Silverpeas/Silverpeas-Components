@@ -33,7 +33,9 @@ import org.silverpeas.components.resourcesmanager.model.Category;
  * @author ehugonnet
  */
 public class CategoryMatcher extends BaseMatcher<Category> {
-  private Category category;
+
+  private final Category category;
+
   public CategoryMatcher(Category detail) {
     super();
     this.category = detail;

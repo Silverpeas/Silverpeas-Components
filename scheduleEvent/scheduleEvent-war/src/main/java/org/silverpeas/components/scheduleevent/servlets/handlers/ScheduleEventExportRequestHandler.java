@@ -28,9 +28,10 @@ import org.silverpeas.components.scheduleevent.control.ScheduleEventSessionContr
 import org.silverpeas.components.scheduleevent.service.model.beans.ScheduleEvent;
 import org.silverpeas.core.importexport.ExportException;
 import org.silverpeas.core.util.file.FileServerUtils;
+import org.silverpeas.kernel.SilverpeasException;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 public class ScheduleEventExportRequestHandler implements ScheduleEventRequestHandler {
   private final String jspDestination;
@@ -41,7 +42,7 @@ public class ScheduleEventExportRequestHandler implements ScheduleEventRequestHa
 
   @Override
   public String getDestination(String function, ScheduleEventSessionController scheduleeventSC,
-      HttpServletRequest request) throws Exception {
+      HttpServletRequest request) throws SilverpeasException {
 
     ScheduleEvent event = scheduleeventSC.getCurrentScheduleEvent();
     if (event != null) {

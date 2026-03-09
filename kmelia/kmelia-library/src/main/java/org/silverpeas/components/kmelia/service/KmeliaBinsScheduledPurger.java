@@ -43,7 +43,7 @@ import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.util.Date;

@@ -4,19 +4,11 @@
   <parent>
     <groupId>org.silverpeas.components</groupId>
     <artifactId>organizationchart</artifactId>
-    <version>6.5-SNAPSHOT</version>
+    <version>6.5-ee-SNAPSHOT</version>
   </parent>
 
   <groupId>org.silverpeas.components.organizationchart</groupId>
   <artifactId>silverpeas-organizationchart</artifactId>
   <packaging>jar</packaging>
   <name>Organizationchart Library</name>
-
-  <dependencies>
-    <dependency>
-      <groupId>org.silverpeas.core</groupId>
-      <artifactId>silverpeas-core</artifactId>
-      <version>${core.version}</version>
-    </dependency>
-  </dependencies>
 </project>

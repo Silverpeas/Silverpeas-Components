@@ -34,19 +34,15 @@ public class MostInterestedQueryVO implements Serializable {
   private static final long serialVersionUID = 311256678113676898L;
 
   /**
-   * The searched key words
+   * The searched keywords
    */
   private String query;
 
   /**
-   * Number of occurences
+   * Number of occurrences
    */
   private Integer occurrences;
 
-  /**
-   * @param query
-   * @param occurrences
-   */
   public MostInterestedQueryVO(String query, Integer occurrences) {
     this.query = query;
     this.occurrences = occurrences;

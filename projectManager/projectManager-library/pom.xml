@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.silverpeas.components</groupId>
     <artifactId>projectmanager</artifactId>
-    <version>6.5-SNAPSHOT</version>
+    <version>6.5-ee-SNAPSHOT</version>
   </parent>
 
   <groupId>org.silverpeas.components.projectmanager</groupId>
@@ -13,11 +13,6 @@
   <name>ProjectManager Library</name>
 
   <dependencies>
-    <dependency>
-      <groupId>org.silverpeas.core</groupId>
-      <artifactId>silverpeas-core</artifactId>
-      <version>${core.version}</version>
-    </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
       <artifactId>silverpeas-core-silverstatistics</artifactId>
@@ -33,12 +28,6 @@
       <groupId>org.silverpeas.core.services</groupId>
       <artifactId>silverpeas-core-personalorganizer</artifactId>
       <version>${core.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.silverpeas.core</groupId>
-      <artifactId>silverpeas-core-test</artifactId>
-      <version>${core.version}</version>
-      <scope>test</scope>
     </dependency>
   </dependencies>
 

@@ -42,11 +42,11 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
 public class QuickInfosPortlet extends GenericPortlet implements FormNames {
 
-  public final static String PARAM_DISPLAY = "displayMode";
+  public static final String PARAM_DISPLAY = "displayMode";
 
   @Override
   public void doView(RenderRequest request, RenderResponse response)
-      throws PortletException, IOException {
+      throws PortletException {
     PortletSession session = request.getPortletSession();
     MainSessionController mainSessionCtrl = (MainSessionController) session
         .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT,
@@ -100,14 +100,14 @@ public class QuickInfosPortlet extends GenericPortlet implements FormNames {
     if (request.getParameter(SUBMIT_FINISHED) != null) {
       processEditFinishedAction(request, response);
     } else if (request.getParameter(SUBMIT_CANCEL) != null) {
-      processEditCancelAction(request, response);
+      processEditCancelAction(response);
     }
   }
 
   /*
    * Process the "cancel" action for the edit page.
    */
-  private void processEditCancelAction(ActionRequest request, ActionResponse response)
+  private void processEditCancelAction(ActionResponse response)
       throws PortletException {
     response.setPortletMode(PortletMode.VIEW);
   }
@@ -123,18 +123,22 @@ public class QuickInfosPortlet extends GenericPortlet implements FormNames {
 
     try {
       // store preference
-      PortletPreferences pref = request.getPreferences();
-      try {
-        pref.setValue(PARAM_DISPLAY, displayMode);
-        pref.store();
-      } catch (IOException ioe) {
-        throw new PortletException("QuickInfosPortlet.processEditFinishedAction", ioe);
-      }
+      setUpPortletPreferences(request, displayMode);
       response.setPortletMode(PortletMode.VIEW);
 
     } catch (NumberFormatException e) {
       response.setRenderParameter(ERROR_BAD_VALUE, "true");
       response.setPortletMode(PortletMode.EDIT);
+    }
+  }
+
+  private static void setUpPortletPreferences(ActionRequest request, String displayMode) throws PortletException {
+    PortletPreferences pref = request.getPreferences();
+    try {
+      pref.setValue(PARAM_DISPLAY, displayMode);
+      pref.store();
+    } catch (IOException ioe) {
+      throw new PortletException("QuickInfosPortlet.processEditFinishedAction", ioe);
     }
   }
 }

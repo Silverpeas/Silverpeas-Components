@@ -33,14 +33,14 @@ import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Inject;
-import javax.mail.MessagingException;
-import javax.mail.Multipart;
-import javax.mail.Part;
-import javax.mail.internet.ContentType;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.ParseException;
+import jakarta.inject.Inject;
+import jakarta.mail.MessagingException;
+import jakarta.mail.Multipart;
+import jakarta.mail.Part;
+import jakarta.mail.internet.ContentType;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.internet.ParseException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -57,7 +57,7 @@ public class MailProcessor {
   public static final String MAIL_HEADER_IN_REPLY_TO = "In-Reply-To";
   public static final String MAIL_HEADER_REFERENCES = "References";
 
-  private SilverLogger logger = SilverLogger.getLogger(this);
+  private final SilverLogger logger = SilverLogger.getLogger(this);
 
   @Inject
   private HtmlCleaner cleaner;
@@ -68,7 +68,7 @@ public class MailProcessor {
   }
 
   /**
-   * Processes a part for a multi-part email.
+   * Processes a part for a multipart email.
    * @param part the part to be processed.
    * @param message the message corresponding to the email.
    * @throws MessagingException

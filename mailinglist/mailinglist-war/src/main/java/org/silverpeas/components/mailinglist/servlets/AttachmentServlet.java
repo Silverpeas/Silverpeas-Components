@@ -23,14 +23,15 @@
  */
 package org.silverpeas.components.mailinglist.servlets;
 
-import org.silverpeas.components.mailinglist.service.MailingListServicesProvider;
+import jakarta.inject.Inject;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.silverpeas.components.mailinglist.service.model.MessageService;
 import org.silverpeas.components.mailinglist.service.model.beans.Attachment;
 import org.silverpeas.components.mailinglist.service.model.beans.Message;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,6 +43,9 @@ import static org.silverpeas.core.web.http.FileResponse.encodeInlineFilenameAsUt
 public class AttachmentServlet extends HttpServlet implements MailingListRoutage {
   private static final long serialVersionUID = -6066054163259803146L;
 
+  @Inject
+  private MessageService messageService;
+
   @Override
   public void service(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
@@ -51,7 +55,7 @@ public class AttachmentServlet extends HttpServlet implements MailingListRoutage
     if (messageId == null || attachmentId == null) {
       return;
     }
-    Message message = MailingListServicesProvider.getMessageService().getMessage(messageId);
+    Message message = messageService.getMessage(messageId);
     Iterator<Attachment> iter = message.getAttachments().iterator();
     Attachment file = null;
     boolean found = false;

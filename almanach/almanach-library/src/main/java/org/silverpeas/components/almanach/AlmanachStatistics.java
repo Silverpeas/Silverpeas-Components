@@ -29,7 +29,7 @@ import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
 import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 import java.util.Collection;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;

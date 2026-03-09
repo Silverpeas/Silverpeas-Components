@@ -21,10 +21,12 @@
 package org.silverpeas.components.scheduleevent.service.model.dao;
 
 import org.silverpeas.components.scheduleevent.service.model.beans.DateOption;
-import org.silverpeas.components.scheduleevent.service.model.beans.DateOption;
+import org.silverpeas.core.annotation.Repository;
 
+import java.util.Collections;
 import java.util.Set;
 
+@Repository
 public class DateOptionDaoImpl implements DateOptionDao {
 
   @Override
@@ -34,10 +36,11 @@ public class DateOptionDaoImpl implements DateOptionDao {
 
   @Override
   public Set<DateOption> listDateOptionsByScheduleEventId(String scheduleEventId) {
-    return null;
+    return Collections.emptySet();
   }
 
   @Override
   public void deleteDatesOptionsByScheduleEventId(String scheduleEventId) {
+    // nothing to do
   }
 }

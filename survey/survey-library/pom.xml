@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.silverpeas.components</groupId>
     <artifactId>survey</artifactId>
-    <version>6.5-SNAPSHOT</version>
+    <version>6.5-ee-SNAPSHOT</version>
   </parent>
 
   <groupId>org.silverpeas.components.survey</groupId>
@@ -13,11 +13,6 @@
   <name>Survey Library</name>
 
   <dependencies>
-    <dependency>
-      <groupId>org.silverpeas.core</groupId>
-      <artifactId>silverpeas-core</artifactId>
-      <version>${core.version}</version>
-    </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
       <artifactId>silverpeas-core-silverstatistics</artifactId>

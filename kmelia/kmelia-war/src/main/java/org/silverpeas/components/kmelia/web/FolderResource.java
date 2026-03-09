@@ -20,6 +20,12 @@
  */
 package org.silverpeas.components.kmelia.web;
 
+import jakarta.annotation.Nonnull;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 import org.apache.commons.lang3.StringUtils;
 import org.owasp.encoder.Encode;
 import org.silverpeas.components.kmelia.service.KmeliaHelper;
@@ -29,36 +35,20 @@ import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
-import org.silverpeas.kernel.bundle.LocalizationBundle;
-import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.annotation.Authorized;
 import org.silverpeas.core.webapi.node.NodeAttrEntity;
 import org.silverpeas.core.webapi.node.NodeEntity;
 import org.silverpeas.core.webapi.node.NodeType;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.annotation.Nonnull;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
- * A REST Web resource representing a given node. It is a web service that provides an access to a
+ * A REST Web resource representing a given node. It is a web service that provides access to a
  * node referenced by its URL.
  */
 @WebService
@@ -70,6 +60,9 @@ public class FolderResource extends RESTWebService {
 
   @PathParam("componentId")
   private String componentId;
+
+  @Inject
+  private KmeliaService kmeliaService;
 
   /**
    * Get the root of the application and its children.
@@ -348,11 +341,7 @@ public class FolderResource extends RESTWebService {
   }
 
   private KmeliaService getKmeliaService() {
-    try {
-      return KmeliaService.get();
-    } catch (Exception e) {
-      throw new WebApplicationException(e, Status.INTERNAL_SERVER_ERROR);
-    }
+    return kmeliaService;
   }
 
   private SilverpeasRole getHighestUserRoleIfAny() {

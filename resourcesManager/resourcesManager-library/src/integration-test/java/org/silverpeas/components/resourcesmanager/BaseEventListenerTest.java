@@ -31,7 +31,7 @@ import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;

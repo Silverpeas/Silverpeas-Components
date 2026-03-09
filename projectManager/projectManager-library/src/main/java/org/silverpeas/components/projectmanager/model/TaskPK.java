@@ -53,6 +53,7 @@ public class TaskPK extends WAPrimaryKey {
   /**
    * Implementation of equals method for TaskPK object
    */
+  @Override
   public boolean equals(Object other) {
     if (!(other instanceof TaskPK)) {
       return false;
@@ -64,6 +65,7 @@ public class TaskPK extends WAPrimaryKey {
   /**
    * @return A hash code for this object
    */
+  @Override
   public int hashCode() {
     return super.hashCode();
   }

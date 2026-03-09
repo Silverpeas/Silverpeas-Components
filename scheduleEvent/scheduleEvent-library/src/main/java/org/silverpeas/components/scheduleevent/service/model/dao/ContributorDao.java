@@ -30,10 +30,10 @@ import org.silverpeas.components.scheduleevent.service.model.beans.Contributor;
 
 public interface ContributorDao {
 
-  public String createContributor(Contributor contributors);
+  String createContributor(Contributor contributors);
 
-  public Set<Contributor> listContributorsByScheduleEventId(String scheduleEventId);
+  Set<Contributor> listContributorsByScheduleEventId(String scheduleEventId);
 
-  public void deleteContributorsByScheduleEventId(String scheduleEventId);
+  void deleteContributorsByScheduleEventId(String scheduleEventId);
 
 }

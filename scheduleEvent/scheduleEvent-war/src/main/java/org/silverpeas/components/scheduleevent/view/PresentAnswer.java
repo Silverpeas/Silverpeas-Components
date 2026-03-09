@@ -3,10 +3,10 @@ package org.silverpeas.components.scheduleevent.view;
 import static org.silverpeas.components.scheduleevent.view.ScheduleEventRessources.formatInPercent;
 
 public class PresentAnswer implements AnswerVO {
-  private final static String HMTL_CLASS_ATTRIBUTE = "participation";
+  private static final String HTML_CLASS_ATTRIBUTE = "participation";
 
-  private int presents;
-  private int contributors;
+  private final int presents;
+  private final int contributors;
 
   public PresentAnswer(AvailabilityVisitorPresenceCounter presenceCounter) {
     this.presents = presenceCounter.count();
@@ -28,7 +28,7 @@ public class PresentAnswer implements AnswerVO {
 
   @Override
   public String getHtmlClassAttribute() {
-    return HMTL_CLASS_ATTRIBUTE;
+    return HTML_CLASS_ATTRIBUTE;
   }
 
 }

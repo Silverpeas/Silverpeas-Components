@@ -26,9 +26,8 @@ package org.silverpeas.components.mailinglist.service.model.beans;
 import java.util.List;
 
 public class MailingListActivity {
-  private List<Message> messages;
-
-  private List<Activity> activities;
+  private final List<Message> messages;
+  private final List<Activity> activities;
 
   public MailingListActivity(List<Message> messages, List<Activity> activities) {
     this.messages = messages;

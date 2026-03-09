@@ -25,7 +25,7 @@ package org.silverpeas.components.kmelia.servlets.ajax;
 
 import org.silverpeas.components.kmelia.control.KmeliaSessionController;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 public interface AjaxHandler {
   String handleRequest(HttpServletRequest request, KmeliaSessionController controller);

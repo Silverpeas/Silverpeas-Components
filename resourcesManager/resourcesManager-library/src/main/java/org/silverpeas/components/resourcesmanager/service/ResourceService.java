@@ -32,13 +32,12 @@ import org.silverpeas.components.resourcesmanager.repository.ResourceRepository;
 import org.silverpeas.components.resourcesmanager.repository.ResourceValidatorRepository;
 import org.silverpeas.core.annotation.Service;
 
-import javax.inject.Inject;
-import javax.transaction.Transactional;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@Transactional
 public class ResourceService {
 
   @Inject
@@ -50,10 +49,12 @@ public class ResourceService {
   @Inject
   private ResourceValidatorRepository resourceValidatorRepository;
 
+  @Transactional
   public void createResource(Resource resource) {
     repository.saveAndFlush(resource);
   }
 
+  @Transactional
   public void updateResource(Resource resource) {
     repository.saveAndFlush(resource);
   }
@@ -74,15 +75,18 @@ public class ResourceService {
     return repository.getById(Long.toString(id));
   }
 
+  @Transactional
   public void deleteResource(long id) {
     reservedResourceRepository.deleteAllReservedResourcesForResource(id);
     repository.deleteById(Long.toString(id));
   }
 
+  @Transactional
   public void deleteResourcesFromCategory(Long categoryId) {
     repository.deleteResourcesFromCategory(categoryId);
   }
 
+  @Transactional
   public void addManagers(long resourceId, List<ResourceValidator> managerIds) {
     Resource resource = repository.getById(Long.toString(resourceId));
     for (ResourceValidator manager : managerIds) {
@@ -92,6 +96,7 @@ public class ResourceService {
     repository.saveAndFlush(resource);
   }
 
+  @Transactional
   public void addManager(ResourceValidator manager) {
     Resource resource = repository.getById(Long.toString(manager.getResourceId()));
     resource.getManagers().add(manager);
@@ -103,12 +108,14 @@ public class ResourceService {
     return new ArrayList<>(resource.getManagers());
   }
 
+  @Transactional
   public void removeAllManagers(long resourceId) {
     Resource resource =  repository.getById(Long.toString(resourceId));
     resource.getManagers().clear();
     repository.saveAndFlush(resource);
   }
 
+  @Transactional
   public void removeManager(ResourceValidator manager) {
     Resource resource = repository.getById(Long.toString(manager.getResourceId()));
     resource.getManagers().remove(manager);

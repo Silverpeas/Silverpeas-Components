@@ -24,10 +24,9 @@
 
 package org.silverpeas.components.scheduleevent.servlets.handlers;
 
-import javax.servlet.http.HttpServletRequest;
-
+import jakarta.servlet.http.HttpServletRequest;
 import org.silverpeas.components.scheduleevent.control.ScheduleEventSessionController;
-import org.silverpeas.components.scheduleevent.control.ScheduleEventSessionController;
+import org.silverpeas.kernel.SilverpeasException;
 
 public class ScheduleEventModifyStateRequestHandler implements ScheduleEventRequestHandler {
 
@@ -39,16 +38,16 @@ public class ScheduleEventModifyStateRequestHandler implements ScheduleEventRequ
 
   @Override
   public String getDestination(String function, ScheduleEventSessionController scheduleeventSC,
-      HttpServletRequest request) throws Exception {
+      HttpServletRequest request) throws SilverpeasException {
     if (forwardRequestHandler != null) {
       return deleteScheduleEventAndForwardRequestHandler(function, scheduleeventSC, request);
     } else {
-      throw UndefinedForwardRequestHandlerException();
+      throw undefinedForwardRequestHandlerException();
     }
   }
 
   private String deleteScheduleEventAndForwardRequestHandler(String function,
-      ScheduleEventSessionController scheduleeventSC, HttpServletRequest request) throws Exception {
+      ScheduleEventSessionController scheduleeventSC, HttpServletRequest request) throws SilverpeasException {
     String scheduleEventId = request.getParameter("scheduleEventId");
     if (scheduleEventId != null) {
       scheduleeventSC.switchState(scheduleEventId);
@@ -56,8 +55,8 @@ public class ScheduleEventModifyStateRequestHandler implements ScheduleEventRequ
     return forwardRequestHandler.getDestination(function, scheduleeventSC, request);
   }
 
-  private Exception UndefinedForwardRequestHandlerException() {
-    return new Exception(
+  private SilverpeasException undefinedForwardRequestHandlerException() {
+    return new SilverpeasException(
         "No forward request defines for" + this.getClass());
   }
 }

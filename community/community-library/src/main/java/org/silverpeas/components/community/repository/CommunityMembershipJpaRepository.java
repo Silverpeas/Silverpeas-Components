@@ -34,9 +34,9 @@ import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters
 import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityRepository;
 import org.silverpeas.core.util.SilverpeasList;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.persistence.Query;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
+import jakarta.persistence.Query;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;

@@ -23,58 +23,15 @@
  */
 package org.silverpeas.components.webpages.model;
 
-import org.silverpeas.core.exception.SilverpeasException;
+
+import org.silverpeas.kernel.SilverpeasException;
 
 /**
  * @author sdevolder
  */
 public class WebPagesException extends SilverpeasException {
 
-  private static final long serialVersionUID = 325345510438177278L;
-
-  /**
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   */
-  public WebPagesException(String callingClass, int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
-  }
-
-  /**
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param nested
-   */
-  public WebPagesException(String callingClass, int errorLevel, String message, Exception nested) {
-    super(callingClass, errorLevel, message, nested);
-  }
-
-  /**
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param extraParams
-   */
-  public WebPagesException(String callingClass, int errorLevel, String message,
-      String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
-  }
-
-  /**
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param extraParams
-   * @param nested
-   */
-  public WebPagesException(String callingClass, int errorLevel, String message, String extraParams,
-      Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  public String getModule() {
-    return "webPages";
+  public WebPagesException(Throwable cause) {
+    super(cause);
   }
 }

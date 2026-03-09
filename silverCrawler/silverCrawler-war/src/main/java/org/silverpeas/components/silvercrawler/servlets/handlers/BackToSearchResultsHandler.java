@@ -27,7 +27,7 @@ package org.silverpeas.components.silvercrawler.servlets.handlers;
 import org.silverpeas.components.silvercrawler.control.SilverCrawlerSessionController;
 import org.silverpeas.components.silvercrawler.model.FileDetail;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Collection;
 
 /**
@@ -35,6 +35,10 @@ import java.util.Collection;
  * @author Ludovic Bertin
  */
 public class BackToSearchResultsHandler extends FunctionHandler {
+
+  protected BackToSearchResultsHandler(HandlerProvider provider) {
+    super(provider);
+  }
 
   @Override
   public String getDestination(SilverCrawlerSessionController sessionController,

@@ -32,19 +32,10 @@ import org.silverpeas.core.subscription.service.PKSubscriptionResource;
  */
 public class ForumMessageSubscriptionResource extends PKSubscriptionResource {
 
-  /**
-   * A way to get an instance of a forum message subscription resource.
-   * @param pk
-   * @return
-   */
   public static ForumMessageSubscriptionResource from(MessagePK pk) {
     return new ForumMessageSubscriptionResource(pk);
   }
 
-  /**
-   * Default constructor
-   * @param pk
-   */
   protected ForumMessageSubscriptionResource(final MessagePK pk) {
     super(pk, ForumSubscriptionConstants.FORUM_MESSAGE);
   }

@@ -38,13 +38,7 @@ public class ContributorComparator implements Comparator<Contributor> {
     } else if (contr2.getId() != null) {
       return 1;
     } else {
-      if (contr1.getUserId() > contr2.getUserId()) {
-        return 1;
-      } else if (contr1.getUserId() == contr2.getUserId()) {
-        return 0;
-      } else {
-        return -1;
-      }
+      return Integer.compare(contr1.getUserId(), contr2.getUserId());
     }
   }
 }

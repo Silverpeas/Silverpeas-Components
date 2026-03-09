@@ -23,10 +23,10 @@
  */
 package org.silverpeas.components.blog.servlets;
 
+import jakarta.inject.Inject;
 import org.silverpeas.components.blog.model.PostDetail;
 import org.silverpeas.components.blog.service.BlogFilters;
 import org.silverpeas.components.blog.service.BlogService;
-import org.silverpeas.components.blog.service.BlogServiceFactory;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.util.servlet.RssServlet;
 
@@ -42,11 +42,14 @@ public class BlogRssServlet extends RssServlet<PostDetail> {
 
   private static final long serialVersionUID = -7858489574699990145L;
 
+  @Inject
+  private BlogService blogService;
+
   @Override
   public Collection<PostDetail> getListElements(String instanceId, int nbReturned) {
     // récupération de la liste des 10 prochains billets du Blog
-    BlogService service = BlogServiceFactory.getBlogService();
-    return service.getLastValidPosts(instanceId, new BlogFilters(false).withMaxResult(nbReturned));
+    return blogService.getLastValidPosts(instanceId,
+        new BlogFilters(false).withMaxResult(nbReturned));
   }
 
   @Override

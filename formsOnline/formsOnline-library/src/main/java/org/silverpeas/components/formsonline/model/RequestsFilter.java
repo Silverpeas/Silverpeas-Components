@@ -8,7 +8,7 @@ public class RequestsFilter {
 
   private String componentId;
   private boolean allRequests;
-  private List<String> formIds = new ArrayList<>();
+  private final List<String> formIds = new ArrayList<>();
   private int state = -1;
   private FormInstanceValidationType pendingValidationType;
 

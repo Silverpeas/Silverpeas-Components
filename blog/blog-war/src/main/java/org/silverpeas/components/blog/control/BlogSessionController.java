@@ -23,7 +23,6 @@
  */
 package org.silverpeas.components.blog.control;
 
-import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.components.blog.access.BlogPostWriteAccessControl;
 import org.silverpeas.components.blog.model.Archive;
@@ -33,10 +32,7 @@ import org.silverpeas.components.blog.model.PostDetail;
 import org.silverpeas.components.blog.service.BlogFilters;
 import org.silverpeas.components.blog.service.BlogService;
 import org.silverpeas.components.blog.service.BlogServiceFactory;
-import org.silverpeas.kernel.exception.NotFoundException;
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.admin.domain.model.Domain;
-import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.model.CommentId;
@@ -56,14 +52,8 @@ import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.subscription.service.ComponentSubscriptionResource;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.JSONCodec;
-import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.UtilException;
-import org.silverpeas.core.util.file.FileFolderManager;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.file.FileServerUtils;
-import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.core.util.file.*;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -71,6 +61,9 @@ import org.silverpeas.core.web.subscription.SubscriptionContext;
 import org.silverpeas.core.webapi.mylinks.MyLinksWebManager;
 import org.silverpeas.core.webapi.node.NodeEntity;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
+import org.silverpeas.kernel.exception.NotFoundException;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -78,12 +71,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.AccessControlException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import static java.util.Optional.of;
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
@@ -98,10 +86,9 @@ public final class BlogSessionController extends AbstractComponentSessionControl
   private static final String BANNER_JPG = "banner.jpg";
   private final Calendar currentBeginDate = Calendar.getInstance();
   private final Calendar currentEndDate = Calendar.getInstance();
-  private final String serverURL;
   private WallPaper wallPaper = null;
   private StyleSheet styleSheet = null;
-  private static final String FORBIDEN_ACCESS_MSG = "blog.error.access";
+  private static final String FORBIDDEN_ACCESS_MSG = "blog.error.access";
 
   private transient BlogPostWriteAccessControl accessController;
 
@@ -114,16 +101,13 @@ public final class BlogSessionController extends AbstractComponentSessionControl
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext, "org.silverpeas.blog.multilang.blogBundle",
         "org.silverpeas.blog.settings.blogIcons");
-    AdminController admin = ServiceProvider.getService(AdminController.class);
-    Domain defaultDomain = admin.getDomain(getUserDetail().getDomainId());
-    serverURL = defaultDomain.getSilverpeasServerURL();
     setWallPaper();
     setStyleSheet();
   }
 
   public void checkWriteAccessOnBlogPost() {
     if (!getAccessController().isUserAuthorized(getUserId(), getComponentId())) {
-      String errorMsg = getMultilang().getString(FORBIDEN_ACCESS_MSG);
+      String errorMsg = getMultilang().getString(FORBIDDEN_ACCESS_MSG);
       throw new AccessControlException(errorMsg);
     }
   }
@@ -185,7 +169,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
   public Collection<PostDetail> postsByCategory(String categoryId, int limit) {
     // rechercher les billets de la catégorie
     if ("0".equals(categoryId)) {
-      // on veux arriver sur l'accueil
+      // on veut arriver sur l'accueil
       return lastPosts(limit);
     } else {
       return getBlogService().getPostsByCategory(getComponentId(), categoryId,
@@ -196,7 +180,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
   public Collection<PostDetail> postsByArchive(String theBeginDate, String theEndDate, int limit) {
     String beginDate = theBeginDate;
     String endDate = theEndDate;
-    if (endDate == null || endDate.length() == 0 || "null".equals(endDate)) {
+    if (endDate == null || endDate.isEmpty() || "null".equals(endDate)) {
       beginDate = getCurrentBeginDateAsString();
       endDate = getCurrentEndDateAsString();
     } else {
@@ -213,7 +197,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
   }
 
   public PostDetail getPost(String postId) {
-    // rechercher la publication associé au billet
+    // rechercher la publication associée au billet
     ContributionIdentifier identifier =
         ContributionIdentifier.from(getComponentId(), postId, PostDetail.getResourceType());
     PostDetail post = getBlogService().getContributionById(identifier)
@@ -306,8 +290,8 @@ public final class BlogSessionController extends AbstractComponentSessionControl
   }
 
   /**
-   * Gets {@link PdcClassificationEntity} from  positions as json string
-   * @param positions the string json positions.
+   * Gets {@link PdcClassificationEntity} from  positions as JSON string
+   * @param positions the string JSON positions.
    */
   private PdcClassificationEntity getClassificationFromJSON(String positions) {
     return of(isPdcUsed())
@@ -421,7 +405,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
    * Gets a DefaultCommentService instance.
    * @return a DefaultCommentService instance.
    */
-  protected CommentService getCommentService() {
+  private CommentService getCommentService() {
     return CommentServiceProvider.getCommentService();
   }
 
@@ -471,10 +455,6 @@ public final class BlogSessionController extends AbstractComponentSessionControl
         currentEndDate.getActualMaximum(Calendar.DAY_OF_MONTH));
   }
 
-  public String getServerURL() {
-    return serverURL;
-  }
-
   /**
    * Converts the list of Delegated News into its JSON representation.
    * @return a JSON representation of the list of Delegated News (as string)
@@ -495,10 +475,10 @@ public final class BlogSessionController extends AbstractComponentSessionControl
    * Converts the list of Delegated News Entity into its JSON representation.
    * @param listNodeEntity list of NodeEntity
    * @return a JSON representation of the list of Delegated News Entity (as string)
-   * @throws BlogRuntimeException
+   * @throws BlogRuntimeException if the serialization in JSON fails.
    */
   private String listAsJSON(List<NodeEntity> listNodeEntity) {
-    NodeEntity[] entities = listNodeEntity.toArray(new NodeEntity[listNodeEntity.size()]);
+    NodeEntity[] entities = listNodeEntity.toArray(new NodeEntity[0]);
     try {
       return JSONCodec.encode(entities);
     } catch (EncodingException ex) {
@@ -510,17 +490,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
    * Set the name, URL and size of the wallpaper file.
    */
   public void setWallPaper() {
-    String path = FileRepositoryManager.getAbsolutePath(this.getComponentId());
-
-    List<File> files;
-    try {
-      files = (List<File>) FileFolderManager.getAllFile(path);
-    } catch (UtilException e) {
-      SilverLogger.getLogger(this)
-          .silent(e);
-      files = new ArrayList<>();
-    }
-
+    List<File> files = getFiles();
     for (File file : files) {
       if (BANNER_GIF.equals(file.getName()) || BANNER_JPG.equals(file.getName()) ||
           BANNER_PNG.equals(file.getName())) {
@@ -535,6 +505,20 @@ public final class BlogSessionController extends AbstractComponentSessionControl
     }
   }
 
+  private List<File> getFiles() {
+    String path = FileRepositoryManager.getAbsolutePath(this.getComponentId());
+
+    List<File> files;
+    try {
+      files = (List<File>) FileFolderManager.getAllFile(path);
+    } catch (UtilException e) {
+      SilverLogger.getLogger(this)
+          .silent(e);
+      files = new ArrayList<>();
+    }
+    return files;
+  }
+
   /**
    * Get the wallpaper object.
    * @return the wallpaper object
@@ -545,20 +529,19 @@ public final class BlogSessionController extends AbstractComponentSessionControl
 
   /**
    * Save the banner file.
-   * @throws BlogRuntimeException
+   * @throws BlogRuntimeException if the banner saving fails.
    */
   public void saveWallPaperFile(FileItem fileItemWallPaper) {
     //extension
-    String extension = FileRepositoryManager.getFileExtension(fileItemWallPaper.getName());
-    if (extension != null && "jpeg".equalsIgnoreCase(extension)) {
+    String extension = FileRepositoryManager.getFileExtension(fileItemWallPaper.getFileName());
+    if ("jpeg".equalsIgnoreCase(extension)) {
       extension = "jpg";
     }
 
-    if (extension == null ||
-        (!"gif".equalsIgnoreCase(extension) && !"jpg".equalsIgnoreCase(extension) &&
-            !"png".equalsIgnoreCase(extension))) {
+    if ((!"gif".equalsIgnoreCase(extension) && !"jpg".equalsIgnoreCase(extension) &&
+        !"png".equalsIgnoreCase(extension))) {
       throw new BlogRuntimeException(
-          fileItemWallPaper.getName() + " wallpaper format isn't supported");
+          fileItemWallPaper.getFileName() + " wallpaper format isn't supported");
     }
 
     //path to create the file
@@ -576,7 +559,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
       if (!rootFolder.exists()) {
         rootFolder.mkdirs();
       }
-      fileItemWallPaper.write(fileWallPaper);
+      fileItemWallPaper.saveTo(fileWallPaper);
 
       //save the information
       this.wallPaper = new WallPaper();
@@ -625,17 +608,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
    * Set the name, URL, size and content of the style sheet file.
    */
   public void setStyleSheet() {
-    String path = FileRepositoryManager.getAbsolutePath(this.getComponentId());
-
-    List<File> files;
-    try {
-      files = (List<File>) FileFolderManager.getAllFile(path);
-    } catch (UtilException e) {
-      SilverLogger.getLogger(this)
-          .silent(e);
-      files = new ArrayList<>();
-    }
-
+    List<File> files = getFiles();
     for (File file : files) {
       if (STYLES_CSS.equals(file.getName())) {
         this.styleSheet = new StyleSheet();
@@ -666,14 +639,14 @@ public final class BlogSessionController extends AbstractComponentSessionControl
 
   /**
    * Save the stylesheet file.
-   * @throws BlogRuntimeException
+   * @throws BlogRuntimeException if the stylesheet saving fails.
    */
   public void saveStyleSheetFile(FileItem fileItemStyleSheet) {
     //extension
-    String extension = FileRepositoryManager.getFileExtension(fileItemStyleSheet.getName());
+    String extension = FileRepositoryManager.getFileExtension(fileItemStyleSheet.getFileName());
     if (!"css".equalsIgnoreCase(extension)) {
       throw new BlogRuntimeException(
-          fileItemStyleSheet.getName() + " isn't a supported stylesheet");
+          fileItemStyleSheet.getFileName() + " isn't a supported stylesheet");
     }
 
     //path to create the file
@@ -691,7 +664,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
       if (!rootFolder.exists()) {
         rootFolder.mkdirs();
       }
-      fileItemStyleSheet.write(fileStyleSheet);
+      fileItemStyleSheet.saveTo(fileStyleSheet);
 
       //save the information
       this.styleSheet = new StyleSheet();

@@ -34,19 +34,19 @@ public abstract class AbstractOrganizationChartConfiguration {
 
   private String attUnit = null;
   private String attName = null;
-  // champ LDAP du titre
+  // title LDAP field
   private String attTitle = null;
-  // champ ldap de la description
+  // description LDAP field
   private String attDesc = null;
 
   private List<OrganizationalRole> unitsChartCentralLabel = null;
   private List<OrganizationalRole> unitsChartRightLabel = null;
   private List<OrganizationalRole> unitsChartLeftLabel = null;
 
-  private List<OrganizationalRole> personnsChartCentralLabel = null;
-  private List<OrganizationalRole> personnsChartCategoriesLabel = null;
+  private List<OrganizationalRole> personsChartCentralLabel = null;
+  private List<OrganizationalRole> personsChartCategoriesLabel = null;
   private Map<String, String> unitsChartOthersInfosKeys = null;
-  private Map<String, String> personnsChartOthersInfosKeys = null;
+  private Map<String, String> personsChartOthersInfosKeys = null;
 
   AbstractOrganizationChartConfiguration() {
   }
@@ -164,32 +164,32 @@ public abstract class AbstractOrganizationChartConfiguration {
   }
 
   /**
-   * @return the personnsChartCentralLabel
+   * @return the personsChartCentralLabel
    */
-  public List<OrganizationalRole> getPersonnsChartCentralLabel() {
-    return personnsChartCentralLabel;
+  public List<OrganizationalRole> getPersonsChartCentralLabel() {
+    return personsChartCentralLabel;
   }
 
   /**
-   * @param personnsChartCentralLabel the personnsChartCentralLabel to set
+   * @param personsChartCentralLabel the personsChartCentralLabel to set
    */
-  public void setPersonnsChartCentralLabel(List<OrganizationalRole> personnsChartCentralLabel) {
-    this.personnsChartCentralLabel = personnsChartCentralLabel;
+  public void setPersonsChartCentralLabel(List<OrganizationalRole> personsChartCentralLabel) {
+    this.personsChartCentralLabel = personsChartCentralLabel;
   }
 
   /**
-   * @return the personnsChartCategoriesLabel
+   * @return the personsChartCategoriesLabel
    */
-  public List<OrganizationalRole> getPersonnsChartCategoriesLabel() {
-    return personnsChartCategoriesLabel;
+  public List<OrganizationalRole> getPersonsChartCategoriesLabel() {
+    return personsChartCategoriesLabel;
   }
 
   /**
-   * @param personnsChartCategoriesLabel the personnsChartCategoriesLabel to set
+   * @param personsChartCategoriesLabel the personsChartCategoriesLabel to set
    */
-  public void setPersonnsChartCategoriesLabel(
-      List<OrganizationalRole> personnsChartCategoriesLabel) {
-    this.personnsChartCategoriesLabel = personnsChartCategoriesLabel;
+  public void setPersonsChartCategoriesLabel(
+      List<OrganizationalRole> personsChartCategoriesLabel) {
+    this.personsChartCategoriesLabel = personsChartCategoriesLabel;
   }
 
   /**
@@ -207,17 +207,17 @@ public abstract class AbstractOrganizationChartConfiguration {
   }
 
   /**
-   * @return the personnsChartOthersInfosKeys
+   * @return the personsChartOthersInfosKeys
    */
-  public Map<String, String> getPersonnsChartOthersInfosKeys() {
-    return personnsChartOthersInfosKeys;
+  public Map<String, String> getPersonsChartOthersInfosKeys() {
+    return personsChartOthersInfosKeys;
   }
 
   /**
-   * @param personnsChartOthersInfosKeys the personnsChartOthersInfosKeys to set
+   * @param personsChartOthersInfosKeys the personsChartOthersInfosKeys to set
    */
-  public void setPersonnsChartOthersInfosKeys(Map<String, String> personnsChartOthersInfosKeys) {
-    this.personnsChartOthersInfosKeys = personnsChartOthersInfosKeys;
+  public void setPersonsChartOthersInfosKeys(Map<String, String> personsChartOthersInfosKeys) {
+    this.personsChartOthersInfosKeys = personsChartOthersInfosKeys;
   }
 
 }

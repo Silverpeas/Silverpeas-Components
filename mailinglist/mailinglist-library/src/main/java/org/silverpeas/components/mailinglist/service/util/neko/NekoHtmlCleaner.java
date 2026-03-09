@@ -33,7 +33,7 @@ import org.cyberneko.html.filters.ElementRemover;
 import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.kernel.annotation.Technical;
 
-import javax.enterprise.inject.Default;
+import jakarta.enterprise.inject.Default;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringWriter;
@@ -43,8 +43,8 @@ import java.io.StringWriter;
 @Bean
 public class NekoHtmlCleaner implements HtmlCleaner {
   private StringWriter content;
-  private XMLParserConfiguration parser;
-  private EntityReplaceWriter writer;
+  private final XMLParserConfiguration parser;
+  private final EntityReplaceWriter writer;
   private int maxSize = 0;
 
   public NekoHtmlCleaner() {
@@ -70,7 +70,7 @@ public class NekoHtmlCleaner implements HtmlCleaner {
     buffer = buffer.trim();
     buffer = buffer.replaceAll("<[B,b][R,r]>", " ");
     buffer = buffer.replaceAll("<[B,b][R,r]/>", " ");
-    buffer = buffer.replaceAll("\\s[\\s]*", " ");
+    buffer = buffer.replaceAll("\\s\\s*", " ");
     if (buffer.length() <= maxSize) {
       return buffer;
     }

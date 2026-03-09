@@ -31,7 +31,7 @@ import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.ComponentAccessController;
 import org.silverpeas.core.security.authorization.DefaultInstanceAccessControlExtension;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 
 import static java.util.Optional.ofNullable;
 import static org.silverpeas.core.admin.space.SpaceInst.SPACE_KEY_PREFIX;

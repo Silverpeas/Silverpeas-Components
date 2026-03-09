@@ -30,8 +30,8 @@ import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.kernel.annotation.Technical;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 /**
  * Deletes all the RSS streams in the RssAgregrator instance that is being deleted.

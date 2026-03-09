@@ -1,11 +1,10 @@
 package org.silverpeas.components.suggestionbox.repository;
 
+import jakarta.inject.Singleton;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
 import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityRepository;
-
-import javax.inject.Singleton;
 
 /**
  * The JPA manager dedicated to manage Suggestion instances. This class is to be used only
@@ -20,6 +19,7 @@ public class SuggestionJPARepository extends SilverpeasJpaEntityRepository<Sugge
 
   @Override
   protected NamedParameters newNamedParameters() {
+    // to allow access from SuggestionRepository
     return super.newNamedParameters();
   }
 }

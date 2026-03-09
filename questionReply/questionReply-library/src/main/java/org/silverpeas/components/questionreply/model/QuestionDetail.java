@@ -45,9 +45,6 @@ public class QuestionDetail implements SilverpeasContent {
   // added for PDC integration
   private String silverObjectId;
 
-  /**
-   * @param question
-   */
   public QuestionDetail(Question question) {
     super();
     this.question = question;

@@ -43,8 +43,8 @@ import org.silverpeas.core.web.search.AbstractResultDisplayer;
 import org.silverpeas.core.web.search.ResultDisplayer;
 import org.silverpeas.core.web.search.SearchResultContentVO;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Named;
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Named;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.Date;

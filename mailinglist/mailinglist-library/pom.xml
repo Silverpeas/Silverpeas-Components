@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.silverpeas.components</groupId>
     <artifactId>mailinglist</artifactId>
-    <version>6.5-SNAPSHOT</version>
+    <version>6.5-ee-SNAPSHOT</version>
   </parent>
 
   <groupId>org.silverpeas.components.mailinglist</groupId>
@@ -13,15 +13,6 @@
   <name>Mailinglist Library</name>
 
   <dependencies>
-    <dependency>
-      <groupId>org.silverpeas.core</groupId>
-      <artifactId>silverpeas-core</artifactId>
-      <version>${core.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>xerces</groupId>
-      <artifactId>xercesImpl</artifactId>
-    </dependency>
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
       <artifactId>silverpeas-core-silverstatistics</artifactId>
@@ -35,24 +26,9 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.silverpeas.core</groupId>
-      <artifactId>silverpeas-core-test</artifactId>
-      <version>${core.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.silverpeas.core.services</groupId>
-      <artifactId>silverpeas-core-tagcloud</artifactId>
-      <version>${core.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.ehcache</groupId>
-      <artifactId>ehcache</artifactId>
-    </dependency>
-    <dependency>
       <groupId>com.icegreen</groupId>
       <artifactId>greenmail</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 

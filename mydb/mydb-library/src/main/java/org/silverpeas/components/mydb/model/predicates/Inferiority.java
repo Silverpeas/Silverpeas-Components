@@ -28,7 +28,7 @@ import org.silverpeas.components.mydb.model.DbColumn;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 
 /**
- * The non-strict inferiority predicates; the column'values can be equal with the reference value.
+ * The non-strict inferiority predicates; the column values can be equal with the reference value.
  * @author mmoquillon
  */
 public class Inferiority extends AbstractColumnValuePredicate {

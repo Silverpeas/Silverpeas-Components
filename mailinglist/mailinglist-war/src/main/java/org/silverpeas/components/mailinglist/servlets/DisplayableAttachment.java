@@ -28,15 +28,15 @@ import org.silverpeas.components.mailinglist.service.model.beans.Attachment;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 
 public class DisplayableAttachment implements MailingListRoutage {
-  private long size;
+  private final long size;
 
-  private String fileName;
+  private final String fileName;
 
-  private String icon;
+  private final String icon;
 
-  private String downloadTime;
+  private final String downloadTime;
 
-  private String url;
+  private final String url;
 
   public DisplayableAttachment(String messageId, Attachment attachment) {
     this.size = attachment.getSize();

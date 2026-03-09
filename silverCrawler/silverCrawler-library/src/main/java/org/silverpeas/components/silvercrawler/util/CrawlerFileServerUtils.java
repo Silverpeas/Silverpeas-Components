@@ -27,7 +27,7 @@ package org.silverpeas.components.silvercrawler.util;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.file.FileServerUtils;
 
-import javax.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.UriBuilder;
 
 public class CrawlerFileServerUtils extends FileServerUtils {
 

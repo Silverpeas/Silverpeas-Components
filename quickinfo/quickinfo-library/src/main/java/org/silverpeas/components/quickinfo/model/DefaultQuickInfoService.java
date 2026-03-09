@@ -24,8 +24,10 @@
 
 package org.silverpeas.components.quickinfo.model;
 
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.transaction.Transactional;
 import org.silverpeas.components.delegatednews.service.DelegatedNewsService;
-import org.silverpeas.components.delegatednews.service.DelegatedNewsServiceProvider;
 import org.silverpeas.components.quickinfo.NewsByStatus;
 import org.silverpeas.components.quickinfo.NewsSort;
 import org.silverpeas.components.quickinfo.QuickInfoComponentSettings;
@@ -50,7 +52,7 @@ import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.index.indexing.model.IndexManager;
 import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailController;
 import org.silverpeas.core.io.upload.UploadedFile;
@@ -69,23 +71,12 @@ import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.kernel.bundle.SettingBundle;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -113,6 +104,16 @@ public class DefaultQuickInfoService implements QuickInfoService {
   private PdcManager pdcManager;
   @Inject
   private PdcSubscriptionManager pdcSubscriptionManager;
+  @Inject
+  private PublicationService publicationService;
+  @Inject
+  private StatisticService statisticService;
+  @Inject
+  private DelegatedNewsService delegatedNewsService;
+  @Inject
+  private QuickInfoDelayedVisibilityUserNotificationReminder reminder;
+  @Inject
+  private I18n i18n;
 
   @Override
   public Optional<News> getContributionById(ContributionIdentifier contributionId) {
@@ -308,7 +309,7 @@ public class DefaultQuickInfoService implements QuickInfoService {
     // saving WYSIWYG content
     WysiwygController.save(news.getContentToStore(), news.getComponentInstanceId(),
         news.getPublicationId(),
-            publication.getUpdaterId(), I18NHelper.DEFAULT_LANGUAGE, false);
+            publication.getUpdaterId(), i18n.getDefaultLanguage(), false);
 
     // Attach uploaded files
     Attachments.from(uploadedFiles).attachTo(news.getPublication());
@@ -355,7 +356,7 @@ public class DefaultQuickInfoService implements QuickInfoService {
     // Deleting publication
     getPublicationService().deletePublication(foreignPK);
 
-    // De-reffering contribution in taxonomy
+    // De-referring contribution in taxonomy
     try (final Connection connection = DBUtil.openConnection()) {
       quickInfoContentManager.deleteSilverContent(connection, foreignPK);
     } catch (ContentManagerException | SQLException e) {
@@ -363,8 +364,6 @@ public class DefaultQuickInfoService implements QuickInfoService {
           "can not delete the silver-content of the publication " + foreignPK.getId() +
               ASSOCIATED_TO_THE_NEWS_MSG + news.getId(), e);
     }
-
-    // TODO: the statistic deletion should be done by using the CDI notification for a better decoupling
 
     // deleting statistics
     getStatisticService().deleteStats(news);
@@ -480,7 +479,7 @@ public class DefaultQuickInfoService implements QuickInfoService {
               .error("PdC subscriber notification failure", e);
         }
       } else {
-        QuickInfoDelayedVisibilityUserNotificationReminder.get().setAbout(news);
+        reminder.setAbout(news);
       }
     }
   }
@@ -488,7 +487,7 @@ public class DefaultQuickInfoService implements QuickInfoService {
   /**
    * Classify the info letter publication on the PdC only if the positions parameter is filled
    * @param publi the quickInfo PublicationDetail to classify
-   * @param pdcPositions the string json positions
+   * @param pdcPositions the string JSON positions
    */
   private void classifyQuickInfo(PublicationDetail publi, List<PdcPosition> pdcPositions) {
     if (pdcPositions != null) {
@@ -526,15 +525,15 @@ public class DefaultQuickInfoService implements QuickInfoService {
 
 
   private PublicationService getPublicationService() {
-    return PublicationService.get();
+    return publicationService;
   }
 
   private StatisticService getStatisticService() {
-    return StatisticService.get();
+    return statisticService;
   }
 
   private DelegatedNewsService getDelegatedNewsService() {
-    return DelegatedNewsServiceProvider.getDelegatedNewsService();
+    return delegatedNewsService;
   }
 
 }

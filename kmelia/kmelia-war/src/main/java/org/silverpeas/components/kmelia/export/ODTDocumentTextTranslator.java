@@ -41,14 +41,16 @@ import org.w3c.dom.NodeList;
 
 /**
  * It is a translator of text containing in some parts of an ODT documents.
- * It is instanciated for a given localized resource bundle from which it will fetch the translated
+ * It is instantiated for a given localized resource bundle from which it will fetch the translated
  * text.
- *
+ * <p>
  * Currently it translates all the header, footer, paragraphs and tables in an ODT document.
- *
+ * </p>
+ * <p>
  * Instances of this class are mainly used to translate predefined text in templates in the ODT
- * format. The text to translate is refered in the document as a key in the backed resource bundle.
+ * format. The text to translate is referred in the document as a key in the backed resource bundle.
  * If the key exists, it is replaced in the ODT document by its associated translation.
+ * </p>
  */
 public class ODTDocumentTextTranslator {
 
@@ -69,11 +71,12 @@ public class ODTDocumentTextTranslator {
 
   /**
    * Translates the specified ODT document.
-   *
+   * <p>
    * Each text to translate in the document should be actually a key in the resource bundle to the
    * translated text to use; the key in the document is then replaced by the associated translated
-   * text. If the text is not a key in the resource bundle, then it isn't translated and it is kept
+   * text. If the text is not a key in the resource bundle, then it isn't translated, and it is kept
    * as such in the document.
+   * </p>
    * @param document the document to translate.
    */
   public void translate(final TextDocument document) {
@@ -102,9 +105,9 @@ public class ODTDocumentTextTranslator {
 
   /**
    * Specific processes for the header and the footer of an ODT document.
-   * The header and the footer text can contain fields and it is important not erasing them by
-   * rewritting the text with translated words. So, the text of headers and footers are taken as
-   * an XML element and their childs are treated differently according to their type (text to
+   * The header and the footer text can contain fields, and it is important not erasing them by
+   * rewriting the text with translated words. So, the text of headers and footers are taken as
+   * an XML element and their children are treated differently according to their type (text to
    * translate is the content of the XML elements text:span).
    * @param tables the tables that made a header or a footer.
    */

@@ -28,7 +28,7 @@ import org.silverpeas.components.silvercrawler.control.SilverCrawlerSessionContr
 import org.silverpeas.components.silvercrawler.control.UploadItem;
 import org.silverpeas.components.silvercrawler.control.UploadReport;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Handler for use case : some conflicts have been detected and user make a choice for each
@@ -36,6 +36,10 @@ import javax.servlet.http.HttpServletRequest;
  * @author Ludovic Bertin
  */
 public class ResolveConflictsHandler extends FunctionHandler {
+
+  protected ResolveConflictsHandler(HandlerProvider provider) {
+    super(provider);
+  }
 
   @Override
   public String getDestination(SilverCrawlerSessionController sessionController,
@@ -61,7 +65,7 @@ public class ResolveConflictsHandler extends FunctionHandler {
     request.setAttribute("successMessage", report.displaySuccess());
 
     // Go back to main page
-    return HandlerProvider.getHandler("ViewDirectory").getDestination(sessionController, request);
+    return getHandlerProvider().getHandler("ViewDirectory").getDestination(sessionController, request);
   }
 
 }

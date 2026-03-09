@@ -20,6 +20,7 @@
  */
 package org.silverpeas.components.kmelia.web;
 
+import jakarta.inject.Inject;
 import org.silverpeas.components.kmelia.service.KmeliaService;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.WebService;
@@ -30,15 +31,15 @@ import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.annotation.Authorized;
 import org.silverpeas.core.webapi.publication.PublicationEntity;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 import java.net.URI;
 
 /**
@@ -53,6 +54,9 @@ public class KmeliaResource extends RESTWebService {
 
   @PathParam("componentId")
   private String componentId;
+
+  @Inject
+  private KmeliaService kmeliaService;
 
   @Override
   protected String getResourceBasePath() {
@@ -70,7 +74,7 @@ public class KmeliaResource extends RESTWebService {
    *
    * @param nodeId The ID of the publication's parent node.
    * @param publicationEntity The description of the publication to create.
-   * @return
+   * @return HTTP response
    */
   @Path("/{nodeId}")
   @POST
@@ -143,11 +147,7 @@ public class KmeliaResource extends RESTWebService {
   }
 
   private KmeliaService getKmeliaService() {
-    try {
-      return KmeliaService.get();
-    } catch (Exception e) {
-      throw new WebApplicationException(e, Status.INTERNAL_SERVER_ERROR);
-    }
+    return kmeliaService;
   }
 
 }

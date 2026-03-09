@@ -23,8 +23,10 @@
  */
 package org.silverpeas.components.gallery.service;
 
+import jakarta.inject.Inject;
 import org.silverpeas.components.gallery.model.GalleryRuntimeException;
 import org.silverpeas.components.gallery.model.Media;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
@@ -37,10 +39,10 @@ import org.silverpeas.core.scheduler.SchedulerProvider;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.Link;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
-import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.text.MessageFormat;
@@ -48,13 +50,17 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.silverpeas.components.gallery.service.MediaServiceProvider.getMediaService;
-import static org.silverpeas.core.admin.service.OrganizationControllerProvider.getOrganisationController;
 import static org.silverpeas.core.notification.user.client.NotificationParameters.PRIORITY_NORMAL;
 
 public class ScheduledAlertUser implements SchedulerEventListener {
 
   public static final String GALLERYENGINE_JOB_NAME = "GalleryEngineJob";
+
+  @Inject
+  private GalleryService mediaService;
+
+  @Inject
+  private OrganizationController organizationController;
 
   public void initialize() {
     try {
@@ -78,7 +84,7 @@ public class ScheduledAlertUser implements SchedulerEventListener {
       SettingBundle resources =
           ResourceLocator.getSettingBundle("org.silverpeas.gallery.settings.gallerySettings");
       int nbDays = resources.getInteger("nbDaysForAlertUser");
-      Collection<Media> mediaList = getMediaService().getAllMediaThatWillBeNotVisible(nbDays);
+      Collection<Media> mediaList = mediaService.getAllMediaThatWillBeNotVisible(nbDays);
 
       String currentInstanceId = null;
       LocalizedContent messageContent = new LocalizedContent();
@@ -106,7 +112,7 @@ public class ScheduledAlertUser implements SchedulerEventListener {
   }
 
   private void createMessage(LocalizedContent localizedContent, String componentInstanceId) {
-    UserDetail[] admins = getOrganisationController().getUsers(componentInstanceId, "admin");
+    UserDetail[] admins = organizationController.getUsers(componentInstanceId, "admin");
     if (admins == null || admins.length == 0) {
       return;
     }
@@ -136,7 +142,7 @@ public class ScheduledAlertUser implements SchedulerEventListener {
   private void mergeLocalizedContentIntoNotificationMetaData(final String componentInstanceId,
       LocalizedContent localizedContent, NotificationMetaData notificationMetaData) {
     String nameInstance =
-        getOrganisationController().getComponentInst(componentInstanceId).getLabel();
+        organizationController.getComponentInst(componentInstanceId).getLabel();
     String url = URLUtil.getComponentInstanceURL(componentInstanceId) + "Main";
     for (String language : DisplayI18NHelper.getLanguages()) {
       LocalizationBundle bundle = LocalizedContent.getBundle(language);
@@ -163,12 +169,12 @@ public class ScheduledAlertUser implements SchedulerEventListener {
   @Override
   public void jobFailed(SchedulerEvent anEvent) {
     SilverLogger.getLogger(this).error(
-        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' was not successfull",
+        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' was not successfully",
         anEvent.getJobThrowable());
   }
 
   private static class LocalizedContent {
-    private Map<String, StringBuilder> localizedContents = new HashMap<>();
+    private final Map<String, StringBuilder> localizedContents = new HashMap<>();
 
     public LocalizedContent appendFromBundleKey(String key) {
       for (String language : DisplayI18NHelper.getLanguages()) {

@@ -25,12 +25,16 @@ package org.silverpeas.components.yellowpages;
 
 import org.silverpeas.components.yellowpages.service.YellowpagesService;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.web.index.components.ComponentIndexation;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.inject.Singleton;
+import org.silverpeas.kernel.annotation.Technical;
 
+@Technical
+@Bean
 @Singleton
 @Named("yellowpages" + ComponentIndexation.QUALIFIER_SUFFIX)
 public class YellowpagesIndexer implements ComponentIndexation {

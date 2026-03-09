@@ -23,7 +23,6 @@
  */
 package org.silverpeas.components.gallery.servlets;
 
-import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.gallery.ParameterNames;
 import org.silverpeas.components.gallery.constant.MediaResolution;
 import org.silverpeas.components.gallery.constant.MediaType;
@@ -38,6 +37,7 @@ import org.silverpeas.components.gallery.model.Order;
 import org.silverpeas.components.gallery.model.OrderRow;
 import org.silverpeas.components.gallery.web.MediaSort;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.kernel.cache.model.SimpleCache;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Field;
@@ -66,7 +66,7 @@ import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.web.mvc.util.AccessForbiddenException;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -323,7 +323,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         request.setAttribute(IS_ORDER, gallerySC.isOrder());
         request.setAttribute(IS_VIEW_METADATA, gallerySC.isViewMetadata());
 
-        // prepare xml form data
+        // prepare XML form data
         PublicationTemplate template = gallerySC.getTemplate();
         if (template != null) {
           RecordSet recordSet = template.getRecordSet();
@@ -385,9 +385,9 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         // retour à l'album courant
         destination = getDestination(GO_TO_CURRENT_ALBUM_FUNC, gallerySC, request);
       } else if (MEDIA_VIEW_FUNC.equals(function)) {
-        // mise à blanc de la liste restreintes des médias (pour les médias non visibles)
+        // mise à blanc de la liste restreinte des médias (pour les médias non visibles)
         gallerySC.setRestrictedListMedia(new ArrayList<>());
-        // remise à blanc des médias selectionnés
+        // remise à blanc des médias sélectionnés
         deselectAll(gallerySC);
         // récupération des paramètres
         String mediaId = request.getParameter(MEDIA_ID);
@@ -463,7 +463,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         gallerySC.setDisplayedMediaResolution(MediaResolution.fromNameOrLabel(choix));
         // retourner au début de la liste des médias
         gallerySC.initIndex();
-        // retour ... en fonction d'ou on viens
+        // retour en fonction d'où on vient
         destination = returnToAlbum(request, gallerySC);
 
       } else if ("SortBy".equals(function)) {
@@ -481,7 +481,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
         // check user rights
         if (!highestUserRole.isGreaterThanOrEquals(SilverpeasRole.PUBLISHER)) {
-          throw new AccessForbiddenException("Media edition fobidden");
+          throw new AccessForbiddenException("Media edition forbidden");
         }
 
         String searchKeyWord = request.getParameter(SEARCH_KEY_WORD);
@@ -525,7 +525,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         }
         updateSelectedMedia(request, gallerySC, mediaIds, request.getCharacterEncoding());
 
-        // tout déselectionner
+        // tout désélectionner
         deselectAll(gallerySC);
         destination = returnToAlbum(request, gallerySC);
 
@@ -538,7 +538,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
         for (String mediaId : mediaIds) {
           if (gallerySC.isMediaAdmin(highestUserRole, mediaId, userId)) {
-            // ajouter les nouveau emplacements sur les anciens
+            // ajouter les nouveaux emplacements sur les anciens
             gallerySC.addMediaToAlbums(mediaId, albums);
           }
         }
@@ -635,14 +635,14 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         // appel jsp
         destination = rootDest + MEDIA_PREFIX + media.getType().name() + "Edit.jsp";
       } else if ("AllSelected".equals(function)) {
-        // sélectionne (ou déselectionne) tous les médias de l'album (ou de la liste restreinte
+        // sélectionne (ou désélectionne) tous les médias de l'album (ou de la liste restreinte
         // dans le cas de la recherche)
         boolean select = !gallerySC.getSelect();
         gallerySC.setSelect(select);
 
         Collection<Media> media;
 
-        // Returning to the from
+        // Returning to the form
         if (!gallerySC.isSearchResult() && !gallerySC.isViewNotVisible()) {
           // Returning to the album
           media = gallerySC.goToAlbum().getMedia();
@@ -688,7 +688,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         // récupérer le contexte
         QueryDescription query = gallerySC.getQuery();
 
-        // passage des paramètre pour garder le contexte
+        // passage des paramètres pour garder le contexte
         String keyWord = query.getQuery();
         request.setAttribute("KeyWord", keyWord);
 
@@ -721,7 +721,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
       } else if (SEARCH_KEY_WORD.equals(function)) {
         // traitement de la recherche par mot clé
         // et de la recherche dédiée
-        // récupération du mot clé et de la liste des médias concernés si il existe
+        // récupération du mot clé et de la liste des médias concernés s'il existe
         String searchKeyWord = request.getParameter(SEARCH_KEY_WORD);
         if (searchKeyWord == null) {
           searchKeyWord = (String) request.getAttribute(SEARCH_KEY_WORD);
@@ -777,7 +777,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         }
         List<FileItem> items = request.getFileItems();
         QueryDescription query = new QueryDescription();
-        // Ajout de la requete classique
+        // Ajout de la requête classique
         String word = FileUploadUtil
             .getParameter(items, SEARCH_KEY_WORD, null, request.getCharacterEncoding());
         query.setQuery(word);
@@ -799,7 +799,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
             XmlSearchForm searchForm = (XmlSearchForm) template.getSearchForm();
             searchForm.update(items, data, context);
 
-            // store xml search data in session
+            // store XML search data in session
             gallerySC.setXMLSearchContext(data);
 
             for (final String fieldName : searchTemplate.getFieldNames()) {
@@ -816,7 +816,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
         // Add IPTC search elements
         List<MetaData> iptcFields = gallerySC.getMetaDataKeys();
-        // Loop for each xml fields
+        // Loop for each XML fields
         for (final MetaData iptcField : iptcFields) {
           // recuperation valeur dans request
           String property = iptcField.getProperty();
@@ -830,7 +830,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
             }
           } else {
             // cas particulier des champs de type date
-            // recupere les deux champs
+            // récupère les deux champs
             String dateBeginStr = FileUploadUtil
                 .getParameter(items, property + "_Begin", null, request.getCharacterEncoding());
             String dateEndStr = FileUploadUtil
@@ -1187,7 +1187,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         request.setAttribute(MEDIA_ID, id);
         destination = getDestination(MEDIA_VIEW_FUNC, gallerySC, request);
       } else if ("Node".equals(type)) {
-        // traitement des noeuds = les albums
+        // traitement des nœuds = les albums
         destination = getDestination("ViewAlbum", gallerySC, request);
       } else {
         destination = getDestination(GO_TO_CURRENT_ALBUM_FUNC, gallerySC, request);
@@ -1307,7 +1307,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
     // rechercher la demande
     Order order = gallerySC.getOrder(orderId);
 
-    // mettre à jour la date et le user
+    // mettre à jour la date et l'utilisateur
     order.setProcessUserId(userId);
 
     // mettre à jour les lignes
@@ -1368,7 +1368,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
   private void deleteSelectedMedia(GallerySessionController gallerySC,
       Collection<String> mediaIds) {
-    // suppression des médias selectionnés : traitement par lot
+    // suppression des médias sélectionnés : traitement par lot
     gallerySC.deleteMedia(mediaIds);
   }
 

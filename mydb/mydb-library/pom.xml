@@ -4,30 +4,11 @@
   <parent>
     <groupId>org.silverpeas.components</groupId>
     <artifactId>mydb</artifactId>
-    <version>6.5-SNAPSHOT</version>
+    <version>6.5-ee-SNAPSHOT</version>
   </parent>
 
   <groupId>org.silverpeas.components.mydb</groupId>
   <artifactId>silverpeas-mydb</artifactId>
   <packaging>jar</packaging>
   <name>MyDB Library</name>
-
-  <dependencies>
-    <dependency>
-      <groupId>org.silverpeas.core</groupId>
-      <artifactId>silverpeas-core</artifactId>
-      <version>${core.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-lang3</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.silverpeas.core</groupId>
-      <artifactId>silverpeas-core-test</artifactId>
-      <version>${core.version}</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
 </project>

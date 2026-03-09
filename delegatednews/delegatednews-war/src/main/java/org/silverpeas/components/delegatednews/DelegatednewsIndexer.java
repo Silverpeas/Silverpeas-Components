@@ -28,7 +28,7 @@ import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.web.index.components.ComponentIndexation;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 
 @Technical
 @Bean

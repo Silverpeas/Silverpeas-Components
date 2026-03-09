@@ -24,13 +24,14 @@
 
 package org.silverpeas.components.quickinfo.service;
 
+import jakarta.inject.Inject;
 import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
 import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -39,7 +40,8 @@ import java.util.List;
 @Named("quickinfo" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
 public class QuickinfoStatistics implements ComponentStatisticsProvider {
 
-  private PublicationService publicationService = null;
+  @Inject
+  private PublicationService publicationService;
 
   @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId) {
@@ -55,9 +57,6 @@ public class QuickinfoStatistics implements ComponentStatisticsProvider {
   }
 
   private PublicationService getPublicationService() {
-    if (publicationService == null) {
-      publicationService = PublicationService.get();
-    }
     return publicationService;
   }
 

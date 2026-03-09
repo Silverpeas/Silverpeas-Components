@@ -60,6 +60,7 @@ public class TopicSearchRepositoryIT {
         .testFocusedOn(warBuilder -> {
           warBuilder.addClasses(TopicSearch.class);
           warBuilder.addPackages(true, "org.silverpeas.components.kmelia.repository");
+          warBuilder.addAsResource("org/silverpeas/components/kmelia/repository");
         }).build();
   }
 

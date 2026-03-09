@@ -28,7 +28,7 @@ import org.silverpeas.core.admin.user.notification.GroupEvent;
 import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 /**
  * A listener of events coming from the changes operating on the user groups.

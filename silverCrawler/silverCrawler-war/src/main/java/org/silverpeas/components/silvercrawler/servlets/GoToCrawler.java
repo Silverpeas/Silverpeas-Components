@@ -23,11 +23,12 @@
  */
 package org.silverpeas.components.silvercrawler.servlets;
 
-import org.silverpeas.core.web.util.servlet.GoTo;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.web.util.servlet.GoTo;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.net.URLEncoder;
 
 public class GoToCrawler extends GoTo {
@@ -36,14 +37,10 @@ public class GoToCrawler extends GoTo {
 
   public String getDestination(String objectId, HttpServletRequest req, HttpServletResponse res)
       throws Exception {
-    String componentId = objectId;
     String path = req.getParameter("Path");
-
     String gotoURL =
-        URLUtil.getURL(null, componentId) + "SubDirectoryFromResult?DirectoryPath=" + path;
-    return "goto=" + URLEncoder.encode(gotoURL, "UTF-8");
+        URLUtil.getURL(null, objectId) + "SubDirectoryFromResult?DirectoryPath=" + path;
+    return "goto=" + URLEncoder.encode(gotoURL, Charsets.UTF_8);
   }
 
-  public GoToCrawler() {
-  }
 }

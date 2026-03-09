@@ -23,13 +23,15 @@
  */
 package org.silverpeas.components.organizationchart.view;
 
+import java.io.Serializable;
 import java.util.Map;
 
-public class UserVO {
-  private String fullName = null;
-  private String login = null;
-  private String role = null;
-  private Map<String, String> details = null;
+public class UserVO implements Serializable {
+
+  private String fullName;
+  private String login;
+  private String role;
+  private Map<String, String> details;
   private String avatar = null;
 
   /**

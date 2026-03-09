@@ -25,19 +25,21 @@
 package org.silverpeas.components.classifieds.notification;
 
 import org.silverpeas.components.classifieds.model.ClassifiedDetail;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.kernel.exception.NotFoundException;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.notification.user.AbstractComponentInstanceManualUserNotification;
 import org.silverpeas.core.notification.user.NotificationContext;
 import org.silverpeas.core.notification.user.UserNotification;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 
 import static org.silverpeas.components.classifieds.service.ClassifiedServiceProvider.getClassifiedService;
 
 /**
  * @author silveryocha
  */
+@Bean
 @Named
 public class ClassifiedsInstanceManualUserNotification extends
     AbstractComponentInstanceManualUserNotification {

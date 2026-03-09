@@ -28,23 +28,24 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * A row in a table in a data source. A row is a tuple whose each field matches a given column of
- * the requested table. Hence the field name in the row is the column name and its value the value
+ * A row in a table in a data source. A row is a tuple in which each field matches a given column of
+ * the requested table. Hence, the field name in the row is the column name and its value the value
  * in the column.
+ *
  * @author mmoquillon
  */
 public class TableRow {
 
-  private final Map<String, Comparable> fields = new LinkedHashMap<>();
+  private final Map<String, Comparable<?>> fields = new LinkedHashMap<>();
 
   /**
    * Constructs a {@link TableRow} from the specified {@link ResultSet}.
+   *
    * @param rs a {@link ResultSet} returned by a SQL query.
    */
   TableRow(final ResultSet rs) {
@@ -52,11 +53,11 @@ public class TableRow {
       ResultSetMetaData rsMetaData = rs.getMetaData();
       for (int i = 1; i <= rsMetaData.getColumnCount(); i++) {
         Object value = rs.getObject(i);
-        Comparable valueToStore;
+        Comparable<?> valueToStore;
         if (value == null) {
           valueToStore = null;
         } else if (value instanceof Comparable) {
-          valueToStore = (Comparable) value;
+          valueToStore = (Comparable<?>) value;
         } else {
           valueToStore = new TableFieldValue(value);
         }
@@ -69,27 +70,22 @@ public class TableRow {
 
   /**
    * Gets the name of all the fields in this table row.
-   * @return a list with the name of all of the fields in this table row.
+   *
+   * @return a list with the name of all the fields in this table row.
    */
   public List<String> getFieldNames() {
     return new ArrayList<>(fields.keySet());
   }
 
   /**
-   * Gets all the fields of this table row.
-   * @return a {@link Map} between a field name and its value.
-   */
-  public Map<String, Object> getFields() {
-    return Collections.unmodifiableMap(fields);
-  }
-
-  /**
    * Gets the value of the specified field in this table row.
+   *
    * @param field the name of the field.
    * @return the value of the asked field.
    */
-  public Comparable getFieldValue(final String field) {
-    return fields.get(field);
+  public <T> Comparable<T> getFieldValue(final String field) {
+    //noinspection unchecked
+    return (Comparable<T>) fields.get(field);
   }
 }
   

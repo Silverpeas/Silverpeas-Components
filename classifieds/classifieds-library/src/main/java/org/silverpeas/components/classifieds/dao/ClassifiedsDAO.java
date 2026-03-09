@@ -25,6 +25,7 @@ package org.silverpeas.components.classifieds.dao;
 
 import org.silverpeas.components.classifieds.model.ClassifiedDetail;
 import org.silverpeas.components.classifieds.model.Subscribe;
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 
 import java.sql.Connection;
@@ -33,6 +34,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
+@Repository
 public class ClassifiedsDAO {
 
   private ClassifiedsDAO() {
@@ -46,7 +48,7 @@ public class ClassifiedsDAO {
    * @return classifiedId the unique identifier of the created classified
    * @throws SQLException if the classified cannot be created.
    */
-  public static String createClassified(Connection con, ClassifiedDetail classified)
+  public String createClassified(Connection con, ClassifiedDetail classified)
       throws SQLException {
     // Création d'une nouvelle petite annonce
     String query =
@@ -69,7 +71,7 @@ public class ClassifiedsDAO {
    * @param classified the ClassifiedDetail with the data to update.
    * @throws SQLException if the classified cannot be updated
    */
-  public static void updateClassified(Connection con, ClassifiedDetail classified)
+  public void updateClassified(Connection con, ClassifiedDetail classified)
       throws SQLException {
     String query =
         "update SC_Classifieds_Classifieds set title = ? , description = ? , price = ? , status" +
@@ -102,7 +104,7 @@ public class ClassifiedsDAO {
    * @param classifiedId the unique identifier of a classified
    * @throws SQLException if the classified fail to be deleted.
    */
-  public static void deleteClassified(Connection con, String classifiedId) throws SQLException {
+  public void deleteClassified(Connection con, String classifiedId) throws SQLException {
     String query = "delete from SC_Classifieds_Classifieds where classifiedId = ? ";
     try(PreparedStatement prepStmt = con.prepareStatement(query)) {
       prepStmt.setInt(1, Integer.parseInt(classifiedId));
@@ -117,7 +119,7 @@ public class ClassifiedsDAO {
    * @return classified the {@link ClassifiedDetail} instance
    * @throws SQLException if the classified cannot be fetched
    */
-  public static ClassifiedDetail getClassified(Connection con, String classifiedId)
+  public ClassifiedDetail getClassified(Connection con, String classifiedId)
       throws SQLException {
     // récupérer la petite annonce
     String query = "select * from SC_Classifieds_Classifieds where classifiedId = ? ";
@@ -140,7 +142,7 @@ public class ClassifiedsDAO {
    * @return a collection of {@link ClassifiedDetail} instances.
    * @throws SQLException if the fetching of the classifieds fails
    */
-  public static Collection<ClassifiedDetail> getAllClassifieds(Connection con, String instanceId)
+  public Collection<ClassifiedDetail> getAllClassifieds(Connection con, String instanceId)
       throws SQLException {
     // récupérer toutes les petites annonces
     ArrayList<ClassifiedDetail> listClassifieds = new ArrayList<>();
@@ -164,7 +166,7 @@ public class ClassifiedsDAO {
    * @return the count of classifieds in the component instance.
    * @throws SQLException if an error occurs while getting the classifieds count.
    */
-  public static String getNbTotalClassifieds(Connection con, String instanceId)
+  public String getNbTotalClassifieds(Connection con, String instanceId)
       throws SQLException {
     // récupérer le nombre total d'annonces validées
     String nb = "";
@@ -191,7 +193,7 @@ public class ClassifiedsDAO {
    * @return a collection of {@link ClassifiedDetail}s of the user.
    * @throws SQLException if the classifieds getting fails.
    */
-  public static List<ClassifiedDetail> getClassifiedsByUser(Connection con, String instanceId,
+  public List<ClassifiedDetail> getClassifiedsByUser(Connection con, String instanceId,
       String userId) throws SQLException {
     // récupérer toutes les petites annonces de l'utilisateur
     List<ClassifiedDetail> listClassifieds = new ArrayList<>();
@@ -220,7 +222,7 @@ public class ClassifiedsDAO {
    * @return a list of {@link ClassifiedDetail}
    * @throws SQLException if the classifieds cannot be fetched.
    */
-  public static List<ClassifiedDetail> getClassifiedsWithStatus(Connection con, String instanceId,
+  public List<ClassifiedDetail> getClassifiedsWithStatus(Connection con, String instanceId,
       String status, int firstItemIndex, int elementsPerPage) throws SQLException {
     List<ClassifiedDetail> listClassifieds = new ArrayList<>();
     String query = "select * from SC_Classifieds_Classifieds where instanceId = ? and status = ? " +
@@ -255,7 +257,7 @@ public class ClassifiedsDAO {
    * @return a list of {@link ClassifiedDetail}
    * @throws SQLException if the classifieds cannot be fetched
    */
-  public static List<ClassifiedDetail> getAllClassifiedsToUnpublish(Connection con, int nbDays,
+  public List<ClassifiedDetail> getAllClassifiedsToUnpublish(Connection con, int nbDays,
       String instanceId) throws SQLException {
     ArrayList<ClassifiedDetail> listClassifieds = new ArrayList<>();
 
@@ -289,7 +291,7 @@ public class ClassifiedsDAO {
    * @return subscribeId the unique identifier of a subscription.
    * @throws SQLException if the creation fails.
    */
-  public static String createSubscribe(Connection con, Subscribe subscribe) throws SQLException {
+  public String createSubscribe(Connection con, Subscribe subscribe) throws SQLException {
     String id;
     String query =
         "insert into SC_Classifieds_Subscribes (subscribeId, userId, instanceId, field1, " +
@@ -310,7 +312,7 @@ public class ClassifiedsDAO {
    * @param subscribeId the unique identifier of a subscription
    * @throws SQLException if the deletion fails.
    */
-  public static void deleteSubscribe(Connection con, String subscribeId) throws SQLException {
+  public void deleteSubscribe(Connection con, String subscribeId) throws SQLException {
     String query = "delete from SC_Classifieds_Subscribes where subscribeId = ? ";
     try (PreparedStatement prepStmt = con.prepareStatement(query)) {
       prepStmt.setInt(1, Integer.parseInt(subscribeId));
@@ -325,7 +327,7 @@ public class ClassifiedsDAO {
    * @return a collection of {@link Subscribe}
    * @throws SQLException if the fetching fails
    */
-  public static Collection<Subscribe> getAllSubscribes(Connection con, String instanceId)
+  public Collection<Subscribe> getAllSubscribes(Connection con, String instanceId)
       throws SQLException {
     ArrayList<Subscribe> listSubscribes = new ArrayList<>();
     String query = "select * from SC_Classifieds_Subscribes where instanceId = ? ";
@@ -349,7 +351,7 @@ public class ClassifiedsDAO {
    * @return a collection of {@link Subscribe}
    * @throws SQLException if the fetching fails.
    */
-  public static Collection<Subscribe> getSubscribesByUser(Connection con, String instanceId,
+  public Collection<Subscribe> getSubscribesByUser(Connection con, String instanceId,
       String userId) throws SQLException {
     // récupérer tous les abonnements de l'utilisateur
     ArrayList<Subscribe> listSubscribes = new ArrayList<>();
@@ -377,7 +379,7 @@ public class ClassifiedsDAO {
    * @return a collection of user identifiers.
    * @throws SQLException if the getting of the subscribers fail.
    */
-  public static Collection<String> getUsersBySubscribe(Connection con, String instanceId,
+  public Collection<String> getUsersBySubscribe(Connection con, String instanceId,
       String field1, String field2) throws SQLException {
     // récupérer tous les utilisateurs abonnés à une recherche
     ArrayList<String> listUsers = new ArrayList<>();

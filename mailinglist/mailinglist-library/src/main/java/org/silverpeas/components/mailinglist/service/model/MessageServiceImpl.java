@@ -23,6 +23,8 @@
  */
 package org.silverpeas.components.mailinglist.service.model;
 
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import org.silverpeas.components.mailinglist.service.model.beans.Activity;
 import org.silverpeas.components.mailinglist.service.model.beans.MailingList;
 import org.silverpeas.components.mailinglist.service.model.beans.MailingListActivity;
@@ -35,8 +37,6 @@ import org.silverpeas.core.personalorganizer.service.CalendarRuntimeException;
 import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import javax.inject.Inject;
-import javax.transaction.Transactional;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -156,21 +156,26 @@ public class MessageServiceImpl implements MessageService {
       messageDao.deleteMessage(message);
       MessageIndexer.unindexMessage(message);
       try {
-        Collection<ToDoHeader> todos = getCalendar().getOrganizerToDos(message.getComponentId());
-        if (todos != null && !todos.isEmpty()) {
-          for (ToDoHeader todo : todos) {
-            if (id.equalsIgnoreCase(todo.getDescription())) {
-              todo.setCompletedDate(new Date());
-              todo.setPercentCompleted(100);
-              getCalendar().updateToDo(todo);
-              return;
-            }
-          }
-        }
+        updateTodos(id, message);
       } catch (CalendarRuntimeException ex) {
         SilverLogger.getLogger(this).error(ex.getMessage(), ex);
       }
     }
+  }
+
+  private boolean updateTodos(String id, Message message) {
+    Collection<ToDoHeader> todos = getCalendar().getOrganizerToDos(message.getComponentId());
+    if (todos != null && !todos.isEmpty()) {
+      for (ToDoHeader todo : todos) {
+        if (id.equalsIgnoreCase(todo.getDescription())) {
+          todo.setCompletedDate(new Date());
+          todo.setPercentCompleted(100);
+          getCalendar().updateToDo(todo);
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   @Override
@@ -183,17 +188,7 @@ public class MessageServiceImpl implements MessageService {
     }
     try {
       if (message != null) {
-        Collection<ToDoHeader> todos = getCalendar().getOrganizerToDos(message.getComponentId());
-        if (todos != null && !todos.isEmpty()) {
-          for (ToDoHeader todo : todos) {
-            if (id.equalsIgnoreCase(todo.getDescription())) {
-              todo.setCompletedDate(new Date());
-              todo.setPercentCompleted(100);
-              getCalendar().updateToDo(todo);
-              return;
-            }
-          }
-        }
+        updateTodos(id, message);
       }
     } catch (CalendarRuntimeException ex) {
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);

@@ -38,6 +38,6 @@ public interface FieldValueComparator {
    * @param referenceValue the reference value the value is compared to.
    * @return true if the comparing predicate between the two specified values is satisfied.
    */
-  boolean compare(final Comparable value, final Comparable referenceValue);
+  <T> boolean compare(final Comparable<T> value, final Comparable<T> referenceValue);
 }
   

@@ -26,9 +26,9 @@ package org.silverpeas.components.suggestionbox.web;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 
-import javax.ws.rs.PathParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response.Status;
 
 /**
  * @author Yohann Chastagnier
@@ -60,7 +60,7 @@ public abstract class AbstractSuggestionBoxResource extends RESTWebService {
 
   /**
    * Gets the suggestion box associated to the current request.
-   * @return
+   * @return the suggestion box
    */
   public SuggestionBox getSuggestionBox() {
     if (suggestionBox == null) {

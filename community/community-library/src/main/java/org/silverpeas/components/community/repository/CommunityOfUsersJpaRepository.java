@@ -28,7 +28,7 @@ import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
 
-import javax.persistence.Query;
+import jakarta.persistence.Query;
 import java.util.List;
 import java.util.Optional;
 

@@ -8,9 +8,9 @@ import org.silverpeas.components.scheduleevent.service.model.beans.Response;
 import org.silverpeas.components.scheduleevent.view.AvailabilityFactoryVO.Availability;
 
 public class ContributorImplVO implements ContributorVO {
-  private Contributor contributor;
-  private String name;
-  private AvailabilityFactoryVO availabilityFactory;
+  private final Contributor contributor;
+  private final String name;
+  private final AvailabilityFactoryVO availabilityFactory;
   private String htmlClassAttribute;
 
   public ContributorImplVO(String name, Contributor contributor, AvailabilityFactoryVO availabilityFactory) {
@@ -43,11 +43,8 @@ public class ContributorImplVO implements ContributorVO {
       return false;
     ContributorImplVO other = (ContributorImplVO) obj;
     if (contributor == null) {
-      if (other.contributor != null)
-        return false;
-    } else if (!contributor.equals(other.contributor))
-      return false;
-    return true;
+      return other.contributor == null;
+    } else return contributor.equals(other.contributor);
   }
 
   @Override
@@ -57,7 +54,7 @@ public class ContributorImplVO implements ContributorVO {
 
   @Override
   public Set<Response> match(Set<Response> responses) {
-    Set<Response> match = new HashSet<Response>();
+    Set<Response> match = new HashSet<>();
     for(Response response: responses) {
       if (isMatchedUserId(response.getUserId())) {
         match.add(response);
@@ -71,8 +68,8 @@ public class ContributorImplVO implements ContributorVO {
   }
 
   @Override
-  public AvailableVO makeAvailabilty(Availability availability) {
-    return availabilityFactory.makeAvailablity(availability);
+  public AvailableVO makeAvailability(Availability availability) {
+    return availabilityFactory.makeAvailability(availability);
   }
 
   @Override

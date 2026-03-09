@@ -27,13 +27,17 @@ package org.silverpeas.components.silvercrawler.servlets.handlers;
 import org.silverpeas.components.silvercrawler.control.SilverCrawlerSessionController;
 import org.silverpeas.core.util.file.FileUtil;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Handler for use case : Go to Sub Directory From Result page.
  * @author Ludovic Bertin
  */
 public class SubDirectoryFromResultHandler extends FunctionHandler {
+
+  protected SubDirectoryFromResultHandler(HandlerProvider provider) {
+    super(provider);
+  }
 
   @Override
   public String getDestination(SilverCrawlerSessionController sessionController,
@@ -43,7 +47,7 @@ public class SubDirectoryFromResultHandler extends FunctionHandler {
     sessionController.setCurrentPathFromResult(newPath);
 
     // redirect to "ViewDirectory" use case
-    return HandlerProvider.getHandler("ViewDirectory")
+    return getHandlerProvider().getHandler("ViewDirectory")
         .computeDestination(sessionController, request);
   }
 

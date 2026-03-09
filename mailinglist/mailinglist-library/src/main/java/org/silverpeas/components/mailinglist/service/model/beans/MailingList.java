@@ -25,7 +25,7 @@ package org.silverpeas.components.mailinglist.service.model.beans;
 
 import org.silverpeas.kernel.annotation.NonNull;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -256,7 +256,7 @@ public class MailingList extends IdentifiableObject {
     }
 
     /**
-     * Returns an array containing all of the elements in this set.
+     * Returns an array containing all the elements in this set.
      * If this set makes any guarantees as to what order its elements
      * are returned by its iterator, this method must return the
      * elements in the same order.
@@ -277,7 +277,7 @@ public class MailingList extends IdentifiableObject {
     }
 
     /**
-     * Returns an array containing all of the elements in this set; the
+     * Returns an array containing all the elements in this set; the
      * runtime type of the returned array is that of the specified array.
      * If the set fits in the specified array, it is returned therein.
      * Otherwise, a new array is allocated with the runtime type of the
@@ -383,11 +383,11 @@ public class MailingList extends IdentifiableObject {
     }
 
     /**
-     * Returns <tt>true</tt> if this set contains all of the elements of the
+     * Returns <tt>true</tt> if this set contains all the elements of the
      * specified collection.  If the specified collection is also a set, this
      * method returns <tt>true</tt> if it is a <i>subset</i> of this set.
      * @param c collection to be checked for containment in this set
-     * @return <tt>true</tt> if this set contains all of the elements of the
+     * @return <tt>true</tt> if this set contains all the elements of the
      * specified collection
      * @throws ClassCastException if the types of one or more elements
      * in the specified collection are incompatible with this
@@ -406,7 +406,7 @@ public class MailingList extends IdentifiableObject {
     }
 
     /**
-     * Adds all of the elements in the specified collection to this set if
+     * Adds all the elements in the specified collection to this set if
      * they're not already present (optional operation).  If the specified
      * collection is also a set, the <tt>addAll</tt> operation effectively
      * modifies this set so that its value is the <i>union</i> of the two
@@ -481,7 +481,7 @@ public class MailingList extends IdentifiableObject {
     }
 
     /**
-     * Removes all of the elements from this set (optional operation).
+     * Removes all the elements from this set (optional operation).
      * The set will be empty after this call returns.
      * @throws UnsupportedOperationException if the <tt>clear</tt> method
      * is not supported by this set

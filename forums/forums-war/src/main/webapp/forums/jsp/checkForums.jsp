@@ -34,7 +34,6 @@
 <%@ page import="org.silverpeas.core.util.URLUtil"%>
 <%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.core.admin.user.model.UserDetail"%>
-<%@ page import="org.silverpeas.components.forums.service.ForumsException"%>
 <%@ page import="org.silverpeas.components.forums.model.Forum"%>
 <%@ page import="org.silverpeas.components.forums.model.Message"%>
 <%@ page import="org.silverpeas.components.forums.control.ForumsSessionController"%>

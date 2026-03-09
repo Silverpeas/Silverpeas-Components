@@ -30,13 +30,15 @@ import org.silverpeas.components.mailinglist.service.model.beans.MailingList;
 import org.silverpeas.components.mailinglist.service.model.beans.Message;
 import org.silverpeas.components.mailinglist.service.util.OrderBy;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.web.index.components.ComponentIndexation;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.inject.Singleton;
 import java.util.List;
 
+@Bean
 @Singleton
 @Named("mailingList" + ComponentIndexation.QUALIFIER_SUFFIX)
 public class MailinglistIndexer implements ComponentIndexation {

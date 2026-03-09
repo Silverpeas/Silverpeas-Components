@@ -24,15 +24,17 @@
 
 package org.silverpeas.components.scheduleevent.servlets;
 
+import jakarta.annotation.PostConstruct;
 import org.silverpeas.components.scheduleevent.servlets.handlers.*;
+import org.silverpeas.core.annotation.Provider;
 
-import javax.annotation.PostConstruct;
 import java.util.HashMap;
 
 /**
  * Registry of request handlers for the request router.
  * @author mmoquillon
  */
+@Provider
 public class RequestHandlerRegistry {
 
   private final HashMap<String, ScheduleEventRequestHandler> actions = new HashMap<>();

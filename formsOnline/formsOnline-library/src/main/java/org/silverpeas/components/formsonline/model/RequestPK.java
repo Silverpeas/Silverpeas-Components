@@ -39,7 +39,7 @@ public class RequestPK extends WAPrimaryKey {
     if (this == obj) {
       return true;
     }
-    if (obj == null || !(obj instanceof RequestPK)) {
+    if (!(obj instanceof RequestPK)) {
       return false;
     }
     RequestPK other = (RequestPK) obj;

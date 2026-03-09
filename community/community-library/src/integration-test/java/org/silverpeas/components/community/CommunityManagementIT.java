@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.community;
 
+import jakarta.inject.Inject;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -47,7 +48,6 @@ import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
 import org.silverpeas.kernel.util.Pair;
 
-import javax.inject.Inject;
 import java.net.MalformedURLException;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -635,6 +635,7 @@ public class CommunityManagementIT {
       SpaceInst spaceInst = admin.getSpaceInstById("WA2");
       SpaceProfileInst profileInst =
           spaceInst.getDirectSpaceProfileInst(SilverpeasRole.PUBLISHER.getName());
+      assertThat(profileInst, notNullValue());
       profileInst.getAllUsers().add(user.getId());
       admin.updateSpaceProfileInst(profileInst, "0");
       return null;

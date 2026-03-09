@@ -23,23 +23,21 @@
  */
 package org.silverpeas.components.kmelia.workflowextensions;
 
-import com.itextpdf.text.BaseColor;
-import com.itextpdf.text.Document;
-import com.itextpdf.text.Element;
-import com.itextpdf.text.Font;
+import com.itextpdf.text.*;
 import com.itextpdf.text.Font.FontFamily;
-import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import net.htmlparser.jericho.Source;
 import org.silverpeas.components.kmelia.service.KmeliaService;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.contribution.attachment.AttachmentException;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
-import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
@@ -53,15 +51,13 @@ import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.kernel.util.StringUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.instance.HistoryStep;
 import org.silverpeas.core.workflow.api.instance.ProcessInstance;
@@ -70,26 +66,27 @@ import org.silverpeas.core.workflow.api.model.Action;
 import org.silverpeas.core.workflow.api.model.Parameter;
 import org.silverpeas.core.workflow.api.model.State;
 import org.silverpeas.core.workflow.external.impl.ExternalActionImpl;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.io.*;
 import java.util.Date;
 import java.util.List;
 
+@Bean
 @Named("SendInKmeliaHandler")
 public class SendInKmelia extends ExternalActionImpl {
 
   private static final String UNKNOWN = "unknown";
 
   @Inject
+  private I18n i18n;
+  @Inject
   private NodeService nodeService;
   @Inject
   private KmeliaService kmeliaService;
+  @Inject
+  private AttachmentService attachmentService;
 
   @Override
   public void execute() {
@@ -153,7 +150,7 @@ public class SendInKmelia extends ExternalActionImpl {
       // target app use form : populate form fields
       populateFields(pubId, fromPK, toPK, xmlFormName);
     } else {
-      // target app do not use form : copy files of worflow folder
+      // target app do not use form : copy files of workflow folder
       copyFiles(fromPK, toPK, DocumentType.form);
     }
 
@@ -246,7 +243,8 @@ public class SendInKmelia extends ExternalActionImpl {
         fieldValue = copyFormFile(fromPK, toPK, ((FileField) fieldOfFolder).getAttachmentId());
       } else if ("wysiwyg".equals(fieldTemplate.getDisplayerName())) {
         WysiwygFCKFieldDisplayer displayer = new WysiwygFCKFieldDisplayer();
-        fieldValue = displayer.duplicateContent(fieldTemplate, fromPK, toPK, I18NHelper.DEFAULT_LANGUAGE);
+        fieldValue =
+            displayer.duplicateContent(fieldTemplate, fromPK, toPK, i18n.getDefaultLanguage());
         displayer.cloneContents(fromPK, toPK, null);
       }
     } catch (WorkflowException | IOException e) {
@@ -259,11 +257,9 @@ public class SendInKmelia extends ExternalActionImpl {
       String attachmentId) {
     SimpleDocument attachment;
     if (StringUtil.isDefined(attachmentId)) {
-      AttachmentService service = AttachmentServiceProvider.getAttachmentService();
       // Retrieve attachment detail to copy
-      attachment =
-          service.searchDocumentById(new SimpleDocumentPK(attachmentId, fromPK.getInstanceId()),
-              null);
+      attachment = attachmentService
+          .searchDocumentById(new SimpleDocumentPK(attachmentId, fromPK.getInstanceId()), null);
       if (attachment != null) {
         SimpleDocumentPK copyPK = copyFileWithoutDocumentTypeChange(attachment, toPK);
         return copyPK.getId();
@@ -275,7 +271,7 @@ public class SendInKmelia extends ExternalActionImpl {
   private void copyFiles(ResourceReference fromPK, ResourceReference toPK,
       DocumentType fromType) {
     try {
-      List<SimpleDocument> origins = AttachmentServiceProvider.getAttachmentService()
+      List<SimpleDocument> origins = attachmentService
           .listDocumentsByForeignKeyAndType(fromPK, fromType, getLanguage());
       for (SimpleDocument origin : origins) {
         copyFile(origin, toPK, DocumentType.attachment);
@@ -296,7 +292,7 @@ public class SendInKmelia extends ExternalActionImpl {
     if (type != null) {
       file.setDocumentType(type);
     }
-    return AttachmentServiceProvider.getAttachmentService().copyDocument(file, toPK);
+    return attachmentService.copyDocument(file, toPK);
   }
 
   private byte[] generatePDF(final String role, ProcessInstance instance) {
@@ -436,9 +432,8 @@ public class SendInKmelia extends ExternalActionImpl {
 
       // wysiwyg field
       if ("wysiwyg".equals(fieldTemplate.getDisplayerName())) {
-        String file =
-            WysiwygFCKFieldDisplayer.getFile(componentId, getProcessInstance().getInstanceId(),
-                fieldTemplate.getFieldName(), getLanguage());
+        String file = new WysiwygFCKFieldDisplayer().getFile(componentId,
+            getProcessInstance().getInstanceId(), fieldTemplate.getFieldName(), getLanguage());
 
         // Extract the text content of the html code
         Source source = new Source(new FileInputStream(file));
@@ -446,7 +441,7 @@ public class SendInKmelia extends ExternalActionImpl {
       } else if (FileField.TYPE.equals(fieldTemplate.getTypeName())) {
         // Field file type
         if (StringUtil.isDefined(field.getValue())) {
-          SimpleDocument doc = AttachmentServiceProvider.getAttachmentService()
+          SimpleDocument doc = attachmentService
               .searchDocumentById(new SimpleDocumentPK(field.getValue(), componentId), null);
           if (doc != null) {
             fieldValue = doc.getFilename();
@@ -485,7 +480,7 @@ public class SendInKmelia extends ExternalActionImpl {
   }
 
   private String getLanguage() {
-    return I18NHelper.DEFAULT_LANGUAGE;
+    return i18n.getDefaultLanguage();
   }
 
   private KmeliaService getKmeliaService() {
@@ -568,9 +563,9 @@ public class SendInKmelia extends ExternalActionImpl {
      * are satisfied:
      * <ul>
      *   <li>if the creation fails, the root node is returned and the current transaction isn't
-     *   rollbacked so that the publication can be put into the returned node,</li>
+     *   rolled back so that the publication can be put into the returned node,</li>
      *   <li>the node creation is effectively applied and not just put in the current transaction's
-     *   cache so that the node can be get later in the treatment.</li>
+     *   cache so that the node can be got later in the treatment.</li>
      * </ul>
      * @param explicitPath the path of the topic in which the publication will be put.
      * @return the unique identifier of the topic referred by the given path.
@@ -587,7 +582,7 @@ public class SendInKmelia extends ExternalActionImpl {
             // topic exists
             parentId = existingNode.getNodePK().getId();
           } else {
-            // topic does not exists, creating it
+            // topic does not exist, creating it
             NodeDetail newNode = new NodeDetail();
             newNode.setName(name);
             newNode.setNodePK(new NodePK(UNKNOWN, targetId));

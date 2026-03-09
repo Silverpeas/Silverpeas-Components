@@ -24,19 +24,18 @@
 
 package org.silverpeas.components.classifieds.servlets;
 
-import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.classifieds.control.ClassifiedsSessionController;
 import org.silverpeas.core.contribution.content.form.*;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 

@@ -86,7 +86,7 @@ public class MediaPK extends WAPrimaryKey {
   }
 
   /**
-   * Check if an another object is equal to this object
+   * Check if another object is equal to this object
    * @param other the object to compare to this NodePK
    * @return true if other is equals to this object
    * @since 1.0
