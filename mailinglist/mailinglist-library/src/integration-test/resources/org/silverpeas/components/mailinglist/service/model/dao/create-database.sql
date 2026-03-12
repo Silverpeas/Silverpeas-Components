@@ -444,7 +444,6 @@ ALTER TABLE ST_UserFavoriteSpaces ADD CONSTRAINT FK_UserFavoriteSpaces_2 FOREIGN
 INSERT INTO ST_AccessLevel (id, name) VALUES ('U', 'User');
 INSERT INTO ST_AccessLevel (id, name) VALUES ('A', 'Administrator');
 INSERT INTO ST_AccessLevel (id, name) VALUES ('G', 'Guest');
-INSERT INTO ST_AccessLevel (id, name) VALUES ('R', 'Removed');
 INSERT INTO ST_AccessLevel (id, name) VALUES ('K', 'KMManager');
 INSERT INTO ST_AccessLevel (id, name) VALUES ('D', 'DomainManager');
 
