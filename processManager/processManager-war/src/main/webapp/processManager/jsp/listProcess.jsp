@@ -99,6 +99,7 @@
 <c:set var="canCreate" value="${silfn:booleanValue(requestScope.canCreate)}"/>
 <c:set var="hasUserSettings" value="${silfn:booleanValue(requestScope.hasUserSettings)}"/>
 <c:set var="isCSVExportEnabled" value="${silfn:booleanValue(requestScope.isCSVExportEnabled)}"/>
+<c:set var="isProcessIdVisible" value="${silfn:booleanValue(requestScope.isProcessIdVisible)}"/>
 <c:set var="currentRole" value="${requestScope.currentRole}"/>
 <c:set var="currentReplacement" value="${requestScope.currentReplacement}"/>
 <c:set var="isCurrentRoleSupervisor" value="${'supervisor' eq fn:toLowerCase(currentRole)}"/>
@@ -364,7 +365,15 @@
 
                 <%-- DYNAMIC COLUMNS--%>
                 <c:forEach var="_header" items="${headers}" varStatus="headerStatus" begin="1">
-                  <view:arrayCellText text="${workflowfn:formatFieldValue(items, _header, process.getField(headerStatus.index), userLanguage)}"/>
+                  <c:choose>
+                    <c:when test="${isProcessIdVisible eq true && headerStatus.index eq 1}">
+                      <c:set var="processTitleLinkLabel"><a href="${viewProcessUrl}">${workflowfn:formatFieldValue(items, _header, process.getField(headerStatus.index), userLanguage)}</a></c:set>
+                      <view:arrayCellText text="${processTitleLinkLabel}"/>
+                    </c:when>
+                    <c:otherwise>
+                      <view:arrayCellText text="${workflowfn:formatFieldValue(items, _header, process.getField(headerStatus.index), userLanguage)}"/>
+                    </c:otherwise>
+                  </c:choose>
                 </c:forEach>
 
                 <%-- LAST COLUMN, if supervisor--%>
