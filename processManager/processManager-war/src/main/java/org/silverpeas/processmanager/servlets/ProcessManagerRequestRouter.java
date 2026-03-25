@@ -194,6 +194,7 @@ public class ProcessManagerRequestRouter
         request.setAttribute("hasUserSettings", "0");
       }
       request.setAttribute("isCSVExportEnabled", session.isCSVExportEnabled());
+      request.setAttribute("isProcessIdVisible", session.isProcessIdVisible());
       Item[] folderItems = session.getFolderItems();
       request.setAttribute("FolderItems", folderItems);
       RecordTemplate listHeaders = session.getProcessListHeaders();

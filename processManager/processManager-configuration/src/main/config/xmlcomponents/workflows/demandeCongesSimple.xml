@@ -154,5 +154,101 @@
         <message lang="en">Allows users to stop seeing the "Back to..." action</message>
       </help>
     </parameter>
+    <parameter>
+      <name>attachmentTabEnable</name>
+      <label>
+        <message lang="fr">Afficher l'onglet fichiers joints</message>
+        <message lang="en">Display attachment tab</message>
+      </label>
+      <value>no</value>
+      <mandatory>N</mandatory>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <order>5</order>
+      <help>
+        <message lang="fr">Permet aux utilisateurs de voir les fichiers joints dans un onglet dédié</message>
+        <message lang="en"></message>
+      </help>
+    </parameter>
+    <parameter>
+      <name>historyTabEnable</name>
+      <label>
+        <message lang="fr">Afficher l'onglet historique</message>
+        <message lang="en">Display history tab</message>
+      </label>
+      <value>yes</value>
+      <mandatory>N</mandatory>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <order>6</order>
+      <help>
+        <message lang="fr">Permet d'afficher l'onglet Historique des étapes</message>
+        <message lang="en"></message>
+      </help>
+    </parameter>
+    <parameter>
+      <name>processIdVisible</name>
+      <label>
+        <message lang="fr">Afficher l'id de l'instance</message>
+        <message lang="en">Display instance Id</message>
+      </label>
+      <value>no</value>
+      <mandatory>N</mandatory>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <order>7</order>
+      <help>
+        <message lang="fr">Permet d'afficher l'identifiant de l'instance</message>
+        <message lang="en"></message>
+      </help>
+    </parameter>
+    <parameter>
+      <name>printButtonEnabled</name>
+      <label>
+        <message lang="fr">Afficher l'opération Imprimer</message>
+        <message lang="en">Display the Print operation</message>
+      </label>
+      <order>8</order>
+      <mandatory>N</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Permet d'utiliser le printForm (fichier HTML avec des données Workflow) mise en place</message>
+        <message lang="en"></message>
+      </help>
+    </parameter>
+    <parameter>
+      <name>filterHistory</name>
+      <label>
+        <message lang="fr">Historique filtré</message>
+      </label>
+      <order>9</order>
+      <mandatory>false</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Les formulaires associés à chaque état sont visibles uniquement si
+          l'utilisateur courant était un working user ou un interested user
+        </message>
+      </help>
+    </parameter>
+    <parameter>
+      <name>saveButtonEnabled</name>
+      <label>
+        <message lang="fr">Possibilité de sauvegarder en brouillon</message>
+        <message lang="en">Ability to save as draft</message>
+      </label>
+      <order>10</order>
+      <mandatory>N</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Permet d'utiliser le mode brouillon</message>
+        <message lang="en">Use of the draft mode</message>
+      </help>
+    </parameter>
   </parameters>
 </WAComponent>
