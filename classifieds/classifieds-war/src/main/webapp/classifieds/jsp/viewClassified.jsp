@@ -80,7 +80,7 @@
 <c:set var="contributionIdKey"><%=NotificationContext.CONTRIBUTION_ID%></c:set>
 
 <view:sp-page>
-<view:sp-head-part>
+<view:sp-head-part withCheckFormScript="true">
 <fmt:message var="deletionConfirm" key="classifieds.confirmDeleteClassified" />
 <script type="text/javascript">
   function deleteConfirm() {
