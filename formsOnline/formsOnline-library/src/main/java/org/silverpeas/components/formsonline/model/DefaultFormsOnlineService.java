@@ -959,7 +959,9 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
      */
     public static class HierarchicalValidatorCacheManager {
 
+        public static final String BOSS_FIELDNAME = "boss";
         private static final String CACHE_KEY = HierarchicalValidatorCacheManager.class.getName();
+        public static final String DELEGATE_APPROVER_FIELDNAME = "delegateApprover";
         private final Set<String> userIds = new HashSet<>();
         private final Map<String, String> cache = new HashMap<>();
 
@@ -997,15 +999,63 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
                 UserFull.getByIds(userIds).forEach(u -> {
                     final String id = u.getId();
                     userIds.remove(id);
-                    cache.put(id, ofNullable(u.getValue("boss")).orElse(EMPTY));
+                    cache.put(id, getHierarchicalValidatorOrDelegateApproverOf(userId));
                 });
                 userIds.forEach(i -> cache.put(i, EMPTY));
                 userIds.clear();
             }
+
             return cache.computeIfAbsent(userId,
                     i -> ofNullable(UserFull.getById(i))
-                            .map(u -> u.getValue("boss"))
+                            .map(u -> getHierarchicalValidatorOrDelegateApproverOf(userId))
                             .orElse(StringUtil.EMPTY));
+        }
+
+        private String getHierarchicalValidatorOrDelegateApproverOf(final String userId) {
+            UserFull u = UserFull.getById(userId);
+
+            String bossId = u.getValue(BOSS_FIELDNAME);
+            if (bossId != null && !bossId.isEmpty()) {
+                UserFull boss = UserFull.getById(bossId);
+                String delegateApprover = boss.getAllDefinedValues(boss.getUserPreferences().getLanguage()).get(DELEGATE_APPROVER_FIELDNAME);
+                if (delegateApprover != null && !delegateApprover.isEmpty()) {
+                    if (!boss.getValue(DELEGATE_APPROVER_FIELDNAME).isEmpty()) {
+                        // field 'delegateApprover' is in user domain properties
+                        return boss.getValue(DELEGATE_APPROVER_FIELDNAME);
+                    } else {
+                        // field 'delegateApprover' is in user form
+                        return getDelegateApprover(boss);
+                    }
+                } else {
+                    return bossId;
+                }
+            }
+
+            return EMPTY;
+        }
+
+        private String getDelegateApprover(final UserFull u) {
+            PagesContext pageContext = new PagesContext();
+            pageContext.setDomainId(u.getDomainId());
+            pageContext.setObjectId(u.getId());
+            pageContext.setLanguage(u.getUserPreferences().getLanguage());
+
+            PublicationTemplate template = PublicationTemplateManager.getInstance().getDirectoryTemplate(pageContext);
+            if (template != null) {
+                try {
+                    DataRecord data = template.getRecordSet().getRecord(u.getId());
+                    if (data != null) {
+                        Field f = data.getField(DELEGATE_APPROVER_FIELDNAME);
+                        if (f != null) {
+                            UserDetail delegateApprover = (UserDetail) f.getObjectValue();
+                            return delegateApprover.getId();
+                        }
+                    }
+                } catch (Exception e) {
+                    SilverLogger.getLogger(this).error(e);
+                }
+            }
+            return EMPTY;
         }
     }
 }
