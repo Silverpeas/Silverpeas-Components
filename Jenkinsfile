@@ -8,7 +8,7 @@ pipeline {
   }
   agent {
     docker {
-      image 'silverpeas/silverbuild:6.4'
+      image 'silverpeas/silverbuild:6.5-JakartaEE'
       args '''
         -v $HOME/.m2:/home/silverbuild/.m2 
         -v $HOME/.gitconfig:/home/silverbuild/.gitconfig 
