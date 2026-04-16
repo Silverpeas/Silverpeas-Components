@@ -4,23 +4,19 @@
  */
 package org.silverpeas.components.kmelia.servlets;
 
-import org.apache.commons.io.IOUtils;
-import org.silverpeas.components.kmelia.control.KmeliaSessionController;
-import org.silverpeas.core.contribution.converter.DocumentFormat;
-import org.silverpeas.core.util.MimeTypes;
-import org.silverpeas.kernel.logging.SilverLogger;
-import org.silverpeas.core.web.util.ClientBrowserUtil;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.commons.io.IOUtils;
+import org.silverpeas.components.kmelia.control.KmeliaSessionController;
+import org.silverpeas.core.contribution.converter.DocumentFormat;
+import org.silverpeas.core.util.MimeTypes;
+import org.silverpeas.core.web.util.ClientBrowserUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
+import java.nio.file.Files;
 
 import static org.silverpeas.core.contribution.converter.DocumentFormat.inFormat;
 import static org.silverpeas.kernel.util.StringUtil.isDefined;
@@ -100,12 +96,17 @@ public class KmeliaPublicationExportServlet extends HttpServlet {
       response.setHeader("Content-Length", String.valueOf(generatedDocument.length()));
       IOUtils.copy(in, out);
     } finally {
-      if (generatedDocument != null) {
-        boolean deleted = generatedDocument.delete();
-        if (!deleted) {
-          SilverLogger.getLogger(this).warn("The generated document " + generatedDocument.getName()
-              + " cannot be deleted");
-        }
+      deleteGeneratedDocument(generatedDocument);
+    }
+  }
+
+  private void deleteGeneratedDocument(File document) {
+    if (document != null) {
+      try {
+        Files.delete(document.toPath());
+      } catch (IOException e) {
+        SilverLogger.getLogger(this).warn("The generated document " + document.getName()
+            + " cannot be deleted");
       }
     }
   }

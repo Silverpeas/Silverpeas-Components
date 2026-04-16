@@ -126,16 +126,16 @@ public class GalleryIndexMediaDataProcess extends AbstractGalleryDataProcess {
     // récupération des métadonnées pour les indéxer
     StringBuilder metaDataStr = new StringBuilder();
     MetaData metaData;
-    final Collection<String> properties = photo.getMetaDataProperties();
+    final Collection<String> properties = photo.getAllMetaData().getMetaDataProperties();
     for (final String property : properties) {
-      metaData = photo.getMetaData(property);
+      metaData = photo.getAllMetaData().getMetaData(property);
       final String value = metaData.getValue();
       metaDataStr.append(" ").append(value);
     }
     indexEntry.addTextContent(metaDataStr.toString());
     // indexation des métadonnées (une donnée par champ d'index)
     for (final String property : properties) {
-      metaData = photo.getMetaData(property);
+      metaData = photo.getAllMetaData().getMetaData(property);
       final String value = metaData.getValue();
 
       if (metaData.isDate()) {

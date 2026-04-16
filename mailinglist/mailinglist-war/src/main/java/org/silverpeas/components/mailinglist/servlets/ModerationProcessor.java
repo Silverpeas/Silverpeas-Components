@@ -35,8 +35,10 @@ import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.util.List;
 
+import static org.silverpeas.components.mailinglist.servlets.MailingListRoutageProperties.*;
+
 @Bean
-public class ModerationProcessor implements MailingListRoutage {
+public class ModerationProcessor {
 
   @Inject
   private MailingListService mailingListService;

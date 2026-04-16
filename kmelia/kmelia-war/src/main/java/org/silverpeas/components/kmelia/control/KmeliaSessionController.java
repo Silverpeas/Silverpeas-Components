@@ -235,9 +235,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   // select/deselect all
   private boolean allPublicationsListSelected = false;
-  private final PdcManager pdcManager = PdcManager.get();
-  private final NodeService nodeService = NodeService.get();
-  private final PublicationService publicationService = PublicationService.get();
+  private final transient PdcManager pdcManager = PdcManager.get();
+  private final transient NodeService nodeService = NodeService.get();
+  private final transient PublicationService publicationService = PublicationService.get();
   private final AdminController adminController = ServiceProvider.getService(AdminController.class);
 
   public KmeliaSessionController(MainSessionController mainSessionCtrl, ComponentContext context) {

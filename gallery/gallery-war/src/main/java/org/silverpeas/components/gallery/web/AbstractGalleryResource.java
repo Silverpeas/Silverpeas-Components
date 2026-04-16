@@ -109,25 +109,26 @@ abstract class AbstractGalleryResource extends RESTWebService {
    * @param album the album of the photo.
    * @return the corresponding photo entity.
    */
-  private AbstractMediaEntity<?> asWebEntity(Media media, AlbumDetail album) {
-    final AbstractMediaEntity<?> entity;
+  @SuppressWarnings("unchecked")
+  private <T extends AbstractMediaEntity<T>> T asWebEntity(Media media, AlbumDetail album) {
+    final T entity;
     switch (media.getType()) {
       case Photo:
-        entity = PhotoEntity.createFrom(media.getPhoto())
+        entity = (T) PhotoEntity.createFrom(media.getPhoto())
             .withNormalUrl(GalleryResourceURIs.buildMediaContentURI(media, MediaResolution.NORMAL))
             .withPreviewUrl(GalleryResourceURIs.buildMediaContentURI(media, MediaResolution.PREVIEW))
             .withThumbUrl(URI.create(media.getApplicationThumbnailUrl(MediaResolution.SMALL)));
         break;
       case Video:
-        entity = VideoEntity.createFrom(media.getVideo())
+        entity = (T) VideoEntity.createFrom(media.getVideo())
             .withThumbUrl(URI.create(media.getApplicationThumbnailUrl(MediaResolution.MEDIUM)));
         break;
       case Sound:
-        entity = SoundEntity.createFrom(media.getSound())
+        entity = (T) SoundEntity.createFrom(media.getSound())
             .withThumbUrl(URI.create(media.getApplicationThumbnailUrl(MediaResolution.MEDIUM)));
         break;
       case Streaming:
-        entity = StreamingEntity.createFrom(media.getStreaming())
+        entity = (T) StreamingEntity.createFrom(media.getStreaming())
             .withOriginalUrl(URI.create(media.getStreaming().getHomepageUrl()))
             .withThumbUrl(URI.create(media.getApplicationThumbnailUrl(MediaResolution.MEDIUM)));
         break;
@@ -149,8 +150,8 @@ abstract class AbstractGalleryResource extends RESTWebService {
    * @param mediaId the identifier of the expected media
    * @return the corresponding media entity.
    */
-  AbstractMediaEntity<?> getMediaEntity(final MediaType expectedMediaType, final String albumId,
-      final String mediaId) {
+  <T extends AbstractMediaEntity<T>> T getMediaEntity(final MediaType expectedMediaType,
+      final String albumId, final String mediaId) {
     try {
       final AlbumDetail album = getGalleryService().getAlbum(new NodePK(albumId, getComponentId()));
       final Media media = getGalleryService().getMedia(new MediaPK(mediaId, getComponentId()));
@@ -322,7 +323,7 @@ abstract class AbstractGalleryResource extends RESTWebService {
       }
       final SilverpeasFile thumbFile =
           SilverpeasFileProvider.getFile(FileUtils
-              .getFile(Media.BASE_PATH.getPath(), media.getComponentInstanceId(),
+              .getFile(Media.BASE_PATH.getPath(), media.getInstanceId(),
                   media.getWorkspaceSubFolderName(), filename).getPath());
       if (!thumbFile.exists()) {
         throw new WebApplicationException(Status.NOT_FOUND);

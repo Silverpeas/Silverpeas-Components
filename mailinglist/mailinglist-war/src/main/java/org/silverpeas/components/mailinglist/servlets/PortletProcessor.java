@@ -35,8 +35,10 @@ import org.silverpeas.core.annotation.Bean;
 
 import java.util.*;
 
+import static org.silverpeas.components.mailinglist.servlets.MailingListRoutageProperties.*;
+
 @Bean
-public class PortletProcessor implements MailingListRoutage {
+public class PortletProcessor {
 
   @Inject
   private MailingListService mailingListService;

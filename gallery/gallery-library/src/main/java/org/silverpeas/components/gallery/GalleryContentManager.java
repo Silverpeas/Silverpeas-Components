@@ -32,7 +32,6 @@ import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.contentcontainer.content.AbstractSilverpeasContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
 import org.silverpeas.core.contribution.model.Contribution;
-import org.silverpeas.core.util.ServiceProvider;
 
 import java.io.Serializable;
 import java.util.List;

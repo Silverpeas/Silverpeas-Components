@@ -23,10 +23,11 @@
  */
 package org.silverpeas.components.gallery.model;
 
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 
-public class MetaData {
+public class MetaData implements Serializable {
 
   private String property;
   private String label;

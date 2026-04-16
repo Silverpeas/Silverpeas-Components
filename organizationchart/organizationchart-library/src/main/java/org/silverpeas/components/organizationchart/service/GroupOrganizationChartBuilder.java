@@ -101,7 +101,6 @@ class GroupOrganizationChartBuilder extends AbstractOrganizationChartBuilder {
     }
 
     String userFunction = user.getValue(config.getAttTitle());
-    String userDescription = user.getValue(config.getAttDesc());
     String userService = user.getValue(config.getAttUnit());
 
     OrganizationalPerson person =

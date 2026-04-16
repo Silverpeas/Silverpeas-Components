@@ -53,7 +53,7 @@ public class PhotoIT extends AbstractMediaIT {
     assertThat(photo.getType(), Matchers.is(MediaType.Photo));
     assertThat(photo.getDefinition().getWidth(), is(0));
     assertThat(photo.getDefinition().getHeight(), is(0));
-    assertThat(photo.getMetaDataProperties(), hasSize(0));
+    assertThat(photo.getAllMetaData().getMetaDataProperties(), hasSize(0));
     assertThat(photo.getApplicationThumbnailUrl(MediaResolution.TINY),
         is("/silverpeas/gallery/jsp/icons/notAvailable_fr" +
             MediaResolution.TINY.getThumbnailSuffix() + ".jpg"));
@@ -91,7 +91,7 @@ public class PhotoIT extends AbstractMediaIT {
     photo.setFileSize(1024);
     photo.setFileMimeType(MediaMimeType.JPG);
     photo.setDefinition(Definition.of(800, 600));
-    photo.addMetaData(new MetaData("ok").setProperty("metadata"));
+    photo.getAllMetaData().addMetaData(new MetaData("ok").setProperty("metadata"));
     photo.setCreationDate(TODAY);
     assertDefaultPhoto(photo);
     return photo;
@@ -103,8 +103,8 @@ public class PhotoIT extends AbstractMediaIT {
     assertThat(photo.getWorkspaceSubFolderName(), is("imagemediaId"));
     assertThat(photo.getDefinition().getWidth(), is(800));
     assertThat(photo.getDefinition().getHeight(), is(600));
-    assertThat(photo.getMetaDataProperties(), hasSize(1));
-    assertThat(photo.getMetaData(photo.getMetaDataProperties().iterator().next()).getValue(),
+    assertThat(photo.getAllMetaData().getMetaDataProperties(), hasSize(1));
+    assertThat(photo.getAllMetaData().getMetaData(photo.getAllMetaData().getMetaDataProperties().iterator().next()).getValue(),
         is("ok"));
     assertThat(photo.getApplicationThumbnailUrl(MediaResolution.PREVIEW),
         is(GALLERY_REST_WEB_SERVICE_BASE_URI +

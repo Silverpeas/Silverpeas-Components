@@ -28,7 +28,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.components.gallery.constant.GalleryResourceURIs;
 import org.silverpeas.components.gallery.constant.MediaMimeType;
 import org.silverpeas.components.gallery.constant.MediaResolution;
-import org.silverpeas.components.gallery.process.media.GalleryLoadMetaDataProcess;
 import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.io.file.SilverpeasFileProvider;
@@ -37,16 +36,12 @@ import org.silverpeas.core.notification.message.MessageManager;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
@@ -62,10 +57,9 @@ public abstract class InternalMedia extends Media {
   private long fileSize = 0;
   private MediaMimeType fileMimeType = MediaMimeType.ERROR;
   private Period downloadPeriod = Period.UNDEFINED;
+  private MetaDataSet metaData = null;
 
-  private LinkedHashMap<String, MetaData> metaData = null;
-
-  public InternalMedia() {
+  protected InternalMedia() {
     super();
   }
 
@@ -77,7 +71,7 @@ public abstract class InternalMedia extends Media {
     this.fileMimeType = other.fileMimeType;
     this.downloadPeriod = other.downloadPeriod;
     if (other.metaData != null) {
-      this.metaData = new LinkedHashMap<>(other.metaData);
+      this.metaData = new MetaDataSet(other.metaData);
     }
   }
 
@@ -139,6 +133,13 @@ public abstract class InternalMedia extends Media {
 
   public void setDownloadPeriod(final Period downloadPeriod) {
     this.downloadPeriod = Period.check(downloadPeriod);
+  }
+
+  public MetaDataSet getAllMetaData() {
+    if (metaData == null) {
+      metaData = new MetaDataSet(this);
+    }
+    return metaData;
   }
 
   @Override
@@ -222,47 +223,5 @@ public abstract class InternalMedia extends Media {
     return file;
   }
 
-  private Map<String, MetaData> getAllMetaData() {
-    if (metaData == null) {
-      metaData = new LinkedHashMap<>();
-      try {
-        GalleryLoadMetaDataProcess.load(this);
-      } catch (Exception e) {
-        SilverLogger.getLogger(this).warn(e);
-      }
-    }
-    return metaData;
-  }
 
-  /**
-   * Adds a metadata.
-   * @param data a metadata.
-   */
-  public void addMetaData(MetaData data) {
-    getAllMetaData().put(data.getProperty(), data);
-  }
-
-  /**
-   * Gets a metadata according to the specified property name.
-   * @param property the property name for which the metadata is requested.
-   * @return the metadata if it exists, null otherwise.
-   */
-  public MetaData getMetaData(String property) {
-    return getAllMetaData().get(property);
-  }
-
-  /**
-   * Gets all metadata property names.
-   * @return the list of metadata property names, empty list if no metadata.
-   */
-  public Collection<String> getMetaDataProperties() {
-    Collection<MetaData> values = getAllMetaData().values();
-    Collection<String> properties = new ArrayList<>();
-    for (MetaData meta : values) {
-      if (meta != null) {
-        properties.add(meta.getProperty());
-      }
-    }
-    return properties;
-  }
 }

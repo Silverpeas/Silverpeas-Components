@@ -28,7 +28,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-public class RestRequest implements MailingListRoutage {
+import static org.silverpeas.components.mailinglist.servlets.MailingListRoutageProperties.*;
+
+public class RestRequest {
   public static final int UPDATE = 1;
   public static final int DELETE = 2;
   public static final int FIND = 3;

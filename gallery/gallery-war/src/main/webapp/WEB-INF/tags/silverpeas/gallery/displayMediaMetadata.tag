@@ -42,14 +42,14 @@
 
 <c:set var="_photo" value="${media.photo}"/>
 
-<c:if test="${not empty _photo && isViewMetadata and not empty _photo.metaDataProperties}">
+<c:if test="${not empty _photo && isViewMetadata and not empty _photo.allMetaData.metaDataProperties}">
   <div class="metadata bgDegradeGris" id="metadata">
     <div class="header bgDegradeGris">
       <h4 class="clean"><fmt:message key="GML.metadata"/></h4>
     </div>
     <div id="metadata_list">
-      <c:forEach var="metaDataKey" items="${_photo.metaDataProperties}">
-        <c:set var="metaData" value="${_photo.getMetaData(metaDataKey)}"/>
+      <c:forEach var="metaDataKey" items="${_photo.allMetaData.metaDataProperties}">
+        <c:set var="metaData" value="${_photo.allMetaData.getMetaData(metaDataKey)}"/>
         <jsp:useBean id="metaData" type="org.silverpeas.components.gallery.model.MetaData"/>
         <p id="metadata_${fn:replace(metaData.label, ' ', '_')}">${metaData.label}
           <b><c:out value="${metaData.date ? silfn:formatDateAndHour(metaData.dateValue, _userLanguage) : metaData.value}"/></b>

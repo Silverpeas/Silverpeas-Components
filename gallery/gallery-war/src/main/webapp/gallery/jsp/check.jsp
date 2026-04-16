@@ -80,6 +80,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="org.silverpeas.components.gallery.model.AlbumDetail"%>
 <%@ page import="org.silverpeas.components.gallery.model.Media"%>
 <%@ page import="org.silverpeas.components.gallery.model.MetaData"%>
+<%@ page import="org.silverpeas.components.gallery.model.MetaDataSet"%>
 <%@ page import="org.silverpeas.components.gallery.model.Order"%>
 <%@ page import="org.silverpeas.components.gallery.model.OrderRow"%>
 <%@ page import="org.silverpeas.components.gallery.model.Photo" %>

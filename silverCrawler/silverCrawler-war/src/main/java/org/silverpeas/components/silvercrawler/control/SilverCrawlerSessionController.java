@@ -84,7 +84,7 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
   private final SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmm");
   private UploadReport lastReport;
   private static final Pattern WEIRD_CHARACTERS_REGEX = Pattern.compile("[/\\\\:*?\"<>|]");
-  private final Statistic statistic = ServiceProvider.getService(Statistic.class);
+  private final transient Statistic statistic = ServiceProvider.getService(Statistic.class);
 
   /**
    * Standard Session Controller Constructor

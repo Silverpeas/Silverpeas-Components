@@ -31,7 +31,9 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.web.http.HttpRequest;
 
-public class MailingListRequestRouter extends ComponentRequestRouter<MailingListSessionController> implements MailingListRoutage {
+import static org.silverpeas.components.mailinglist.servlets.MailingListRoutageProperties.*;
+
+public class MailingListRequestRouter extends ComponentRequestRouter<MailingListSessionController> {
 
   @Inject
   private Processors processors;
