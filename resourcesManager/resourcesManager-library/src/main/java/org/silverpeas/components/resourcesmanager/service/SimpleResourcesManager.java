@@ -23,12 +23,9 @@
  */
 package org.silverpeas.components.resourcesmanager.service;
 
-import org.silverpeas.components.resourcesmanager.model.Category;
-import org.silverpeas.components.resourcesmanager.model.Reservation;
-import org.silverpeas.components.resourcesmanager.model.ReservedResource;
-import org.silverpeas.components.resourcesmanager.model.Resource;
-import org.silverpeas.components.resourcesmanager.model.ResourceStatus;
-import org.silverpeas.components.resourcesmanager.model.ResourceValidator;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+import org.silverpeas.components.resourcesmanager.model.*;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
@@ -37,14 +34,11 @@ import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.date.period.Period;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.kernel.util.StringUtil;
 
-import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;

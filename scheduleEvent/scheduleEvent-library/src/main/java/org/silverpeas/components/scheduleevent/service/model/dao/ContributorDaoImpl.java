@@ -21,9 +21,6 @@
 package org.silverpeas.components.scheduleevent.service.model.dao;
 
 import org.silverpeas.components.scheduleevent.service.model.beans.Contributor;
-
-import jakarta.inject.Singleton;
-import jakarta.transaction.Transactional;
 import org.silverpeas.core.annotation.Repository;
 
 import java.util.Set;
@@ -38,10 +35,11 @@ public class ContributorDaoImpl implements ContributorDao {
 
   @Override
   public Set<Contributor> listContributorsByScheduleEventId(String scheduleEventId) {
-    return null;
+    return Set.of();
   }
 
   @Override
   public void deleteContributorsByScheduleEventId(String scheduleEventId) {
+    // nothing to do
   }
 }

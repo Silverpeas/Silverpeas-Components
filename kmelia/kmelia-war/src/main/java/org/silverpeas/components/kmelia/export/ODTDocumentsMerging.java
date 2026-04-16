@@ -64,15 +64,15 @@ class ODTDocumentsMerging extends TextDocument {
   /**
    * The prefix to concat with the names and with the display name of the styles to import.
    */
-  protected static final String MERGE_STYLE_PREFIX = "IMPORTED";
+  private static final String MERGE_STYLE_PREFIX = "IMPORTED";
   /**
    * The prefix to concat with the display name of the styles to import.
    */
-  protected static final String MERGE_STYLE_DISPLAY_NAME_PREFIX = MERGE_STYLE_PREFIX + " ";
+  private static final String MERGE_STYLE_DISPLAY_NAME_PREFIX = MERGE_STYLE_PREFIX + " ";
   /**
    * The prefix to concat with thr name of the styles to import.
    */
-  protected static final String MERGE_STYLE_NAME_PREFIX = MERGE_STYLE_PREFIX + "_";
+  private static final String MERGE_STYLE_NAME_PREFIX = MERGE_STYLE_PREFIX + "_";
 
   /**
    * Creates a merger for the specified ODT document.
@@ -91,25 +91,6 @@ class ODTDocumentsMerging extends TextDocument {
    */
   public static String atSection(String sectionName) {
     return sectionName;
-  }
-
-  /**
-   * Merges the specified document into self. The content is merged at the end of the
-   * decorated document.
-   * @param theDocument the document to merge.
-   * @return the document resulting of the merge.
-   */
-  public TextDocument merge(final TextDocument theDocument) {
-    try {
-      importGlobalStylesOf(theDocument);
-      importContentStylesOf(theDocument);
-      Node myContent = getTextDocument().getContentDom().getFirstChild().getLastChild().
-              getFirstChild();
-      insertContentTextOf(theDocument, into(myContent));
-      return getTextDocument();
-    } catch (Exception ex) {
-      throw new DocumentMergeException(ex.getMessage(), ex);
-    }
   }
 
   /**
@@ -341,24 +322,27 @@ class ODTDocumentsMerging extends TextDocument {
    * This interface defines the qualified name of all the XML elements that made up the text of
    * an ODT document.
    */
-  protected interface OpenDocumentTextElements {
+  private static class OpenDocumentTextElements {
+
+    OpenDocumentTextElements() {
+    }
 
     /**
      * The root XML element of the text content of an ODT document.
      */
-    String ELEMENT_OFFICE_TEXT = "office:text";
+    public static final String ELEMENT_OFFICE_TEXT = "office:text";
     /**
      * The XML element of an image within a text content.
      */
-    String ELEMENT_DRAW_IMAGE = "draw:image";
+    public static final String ELEMENT_DRAW_IMAGE = "draw:image";
     /**
      * The attribute of an XML element referring an external inserted object.
      */
-    String ATTRIBUTE_LINK_REF = "xlink:href";
+    public static final String ATTRIBUTE_LINK_REF = "xlink:href";
     /**
      * The attribute an XML element indicating the name of a style. It can be the name of a style
      * definition as well the name of the style to apply onto a text element of a text content.
      */
-    String ATTRIBUTE_STYLE_NAME = "text:style-name";
+    public static final String ATTRIBUTE_STYLE_NAME = "text:style-name";
   }
 }

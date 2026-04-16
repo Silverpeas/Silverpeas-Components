@@ -694,13 +694,6 @@ public class CommunityOfUsers
       }
     }
 
-    private void executeWithinTransaction(AdminTask task) {
-      Transaction.performInOne(() -> {
-        execute(task);
-        return null;
-      });
-    }
-
     @FunctionalInterface
     private interface AdminTask {
 
@@ -747,6 +740,13 @@ public class CommunityOfUsers
               administration.removeUserFromGroup(memberId, group.getId());
             }
           }
+        });
+      }
+
+      private void executeWithinTransaction(AdminTask task) {
+        Transaction.performInOne(() -> {
+          execute(task);
+          return null;
         });
       }
     }

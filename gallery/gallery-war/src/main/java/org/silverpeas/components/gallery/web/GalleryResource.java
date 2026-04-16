@@ -23,6 +23,10 @@
  */
 package org.silverpeas.components.gallery.web;
 
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 import org.jboss.resteasy.plugins.providers.html.View;
 import org.silverpeas.components.gallery.constant.MediaResolution;
 import org.silverpeas.components.gallery.model.AlbumDetail;
@@ -30,24 +34,15 @@ import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.components.gallery.model.MediaPK;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.rs.annotation.Authorized;
-
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
-import jakarta.ws.rs.WebApplicationException;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.Response.Status;
+import org.silverpeas.kernel.util.StringUtil;
 
 import static org.silverpeas.components.gallery.constant.GalleryResourceURIs.*;
 import static org.silverpeas.components.gallery.constant.MediaType.*;
 
 /**
  * A REST Web resource giving gallery data.
+ *
  * @author Yohann Chastagnier
  */
 @WebService
@@ -59,6 +54,7 @@ public class GalleryResource extends AbstractGalleryResource {
    * Gets the JSON representation of an album. If it doesn't exist, a 404 HTTP code is returned. If
    * the user isn't authentified, a 401 HTTP code is returned. If a problem occurs when processing
    * the request, a 503 HTTP code is returned.
+   *
    * @param albumId the identifier of the photo
    * @return the response to the HTTP GET request with the JSON representation of the asked photo.
    */
@@ -84,13 +80,14 @@ public class GalleryResource extends AbstractGalleryResource {
    * Gets the JSON representation of a photo. If it doesn't exist, a 404 HTTP code is returned. If
    * the user isn't authentified, a 401 HTTP code is returned. If a problem occurs when processing
    * the request, a 503 HTTP code is returned.
+   *
    * @param photoId the identifier of the photo
    * @return the response to the HTTP GET request with the JSON representation of the asked photo.
    */
   @GET
   @Path(GALLERY_ALBUMS_URI_PART + "/{albumId}/" + GALLERY_PHOTOS_PART + "/{photoId}")
   @Produces(MediaType.APPLICATION_JSON)
-  public AbstractMediaEntity<?> getPhoto(@PathParam("albumId") final String albumId,
+  public <T extends AbstractMediaEntity<T>> T getPhoto(@PathParam("albumId") final String albumId,
       @PathParam("photoId") final String photoId) {
     return getMediaEntity(Photo, albumId, photoId);
   }
@@ -99,13 +96,14 @@ public class GalleryResource extends AbstractGalleryResource {
    * Gets the JSON representation of a video. If it doesn't exist, a 404 HTTP code is returned. If
    * the user isn't authentified, a 401 HTTP code is returned. If a problem occurs when processing
    * the request, a 503 HTTP code is returned.
+   *
    * @param videoId the identifier of the video
    * @return the response to the HTTP GET request with the JSON representation of the asked video.
    */
   @GET
   @Path(GALLERY_ALBUMS_URI_PART + "/{albumId}/" + GALLERY_VIDEOS_PART + "/{videoId}")
   @Produces(MediaType.APPLICATION_JSON)
-  public AbstractMediaEntity<?> getVideo(@PathParam("albumId") final String albumId,
+  public <T extends AbstractMediaEntity<T>> T getVideo(@PathParam("albumId") final String albumId,
       @PathParam("videoId") final String videoId) {
     return getMediaEntity(Video, albumId, videoId);
   }
@@ -114,13 +112,14 @@ public class GalleryResource extends AbstractGalleryResource {
    * Gets the JSON representation of a sound. If it doesn't exist, a 404 HTTP code is returned. If
    * the user isn't authentified, a 401 HTTP code is returned. If a problem occurs when processing
    * the request, a 503 HTTP code is returned.
+   *
    * @param soundId the identifier of the sound
    * @return the response to the HTTP GET request with the JSON representation of the asked sound.
    */
   @GET
   @Path(GALLERY_ALBUMS_URI_PART + "/{albumId}/" + GALLERY_SOUNDS_PART + "/{soundId}")
   @Produces(MediaType.APPLICATION_JSON)
-  public AbstractMediaEntity<?> getSound(@PathParam("albumId") final String albumId,
+  public <T extends AbstractMediaEntity<T>> T getSound(@PathParam("albumId") final String albumId,
       @PathParam("soundId") final String soundId) {
     return getMediaEntity(Sound, albumId, soundId);
   }
@@ -129,6 +128,7 @@ public class GalleryResource extends AbstractGalleryResource {
    * Gets the JSON representation of a streaming. If it doesn't exist, a 404 HTTP code is returned.
    * If the user isn't authentified, a 401 HTTP code is returned. If a problem occurs when
    * processing the request, a 503 HTTP code is returned.
+   *
    * @param streamingId the identifier of the streaming
    * @return the response to the HTTP GET request with the JSON representation of the asked
    * streaming.
@@ -136,7 +136,7 @@ public class GalleryResource extends AbstractGalleryResource {
   @GET
   @Path(GALLERY_ALBUMS_URI_PART + "/{albumId}/" + GALLERY_STREAMINGS_PART + "/{streamingId}")
   @Produces(MediaType.APPLICATION_JSON)
-  public AbstractMediaEntity<?> getStreaming(@PathParam("albumId") final String albumId,
+  public <T extends AbstractMediaEntity<T>> T getStreaming(@PathParam("albumId") final String albumId,
       @PathParam("streamingId") final String streamingId) {
     return getMediaEntity(Streaming, albumId, streamingId);
   }
@@ -145,6 +145,7 @@ public class GalleryResource extends AbstractGalleryResource {
    * Gets the content of a photo. If it doesn't exist, a 404 HTTP code is returned. If the user
    * isn't authentified, a 401 HTTP code is returned. If a problem occurs when processing the
    * request, a 503 HTTP code is returned.
+   *
    * @param photoId the identifier of the photo
    * @param size not used for the moment
    * @return the response to the HTTP GET request content of the asked photo.
@@ -165,6 +166,7 @@ public class GalleryResource extends AbstractGalleryResource {
    * Gets the content of a video. If it doesn't exist, a 404 HTTP code is returned. If the user
    * isn't authentified, a 401 HTTP code is returned. If a problem occurs when processing the
    * request, a 503 HTTP code is returned.
+   *
    * @param videoId the identifier of the video
    * @return the response to the HTTP GET request content of the asked video.
    */
@@ -179,16 +181,17 @@ public class GalleryResource extends AbstractGalleryResource {
    * Get the video thumbnail. If it doesn't exist, a 404 HTTP code is returned. If the user isn't
    * authentified, a 401 HTTP code is returned. If a problem occurs when processing the request, a
    * 503 HTTP code is returned.
+   *
    * @param videoId the identifier of the video
    * @param size not used for the moment
    * @return the response to the HTTP GET request content of the asked video.
    */
   @GET
-  @Path(GALLERY_VIDEOS_PART + "/{videoId}/" + GALLERY_MEDIA_THUMBNAIL_PART + "/{size:([0-9]*x[0-9]*/)?}{thumbnailId}")
+  @Path(GALLERY_VIDEOS_PART + "/{videoId}/" +
+        GALLERY_MEDIA_THUMBNAIL_PART + "/{size:([0-9]*x[0-9]*/)?}{thumbnailId}")
   @Produces(MediaType.APPLICATION_OCTET_STREAM)
   public Response getVideoThumbnail(@PathParam("videoId") final String videoId,
-      @PathParam("size") final String size,
-      @PathParam("thumbnailId") final String thumbnailId) {
+      @PathParam("size") final String size, @PathParam("thumbnailId") final String thumbnailId) {
     String sizeDirective = size;
     if (StringUtil.isDefined(sizeDirective)) {
       sizeDirective = sizeDirective.replaceAll("[^0-9x]*", "");
@@ -200,6 +203,7 @@ public class GalleryResource extends AbstractGalleryResource {
    * Gets the content of a sound. If it doesn't exist, a 404 HTTP code is returned. If the user
    * isn't authentified, a 401 HTTP code is returned. If a problem occurs when processing the
    * request, a 503 HTTP code is returned.
+   *
    * @param soundId the identifier of the sound
    * @return the response to the HTTP GET request content of the asked sound.
    */
@@ -212,9 +216,9 @@ public class GalleryResource extends AbstractGalleryResource {
 
   /**
    * Gets the provider data of a streaming from its url. If it doesn't exist, a 404 HTTP code is
-   * returned. If the user isn't authentified, a 401 HTTP code is returned. If a problem occurs
-   * when
+   * returned. If the user isn't authentified, a 401 HTTP code is returned. If a problem occurs when
    * processing the request, a 503 HTTP code is returned.
+   *
    * @param streamingId the identifier of the streaming
    * @return the response to the HTTP GET request content of the asked streaming.
    */
@@ -242,9 +246,9 @@ public class GalleryResource extends AbstractGalleryResource {
 
   /**
    * Gets the embed centent of a video. If it doesn't exist, a 404 HTTP code is returned. If the
-   * user
-   * isn't authentified, a 401 HTTP code is returned. If a problem occurs when processing the
+   * user isn't authentified, a 401 HTTP code is returned. If a problem occurs when processing the
    * request, a 503 HTTP code is returned.
+   *
    * @param videoId the identifier of the video
    * @return the response to the HTTP GET request embed centent of the asked video.
    */
@@ -256,9 +260,9 @@ public class GalleryResource extends AbstractGalleryResource {
 
   /**
    * Gets the embed content of a sound. If it doesn't exist, a 404 HTTP code is returned. If the
-   * user
-   * isn't authentified, a 401 HTTP code is returned. If a problem occurs when processing the
+   * user isn't authentified, a 401 HTTP code is returned. If a problem occurs when processing the
    * request, a 503 HTTP code is returned.
+   *
    * @param soundId the identifier of the sound
    * @return the response to the HTTP GET request embed content of the asked sound.
    */

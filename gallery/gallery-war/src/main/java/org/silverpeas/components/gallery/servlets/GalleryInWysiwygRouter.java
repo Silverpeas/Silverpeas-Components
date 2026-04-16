@@ -24,6 +24,13 @@
 
 package org.silverpeas.components.gallery.servlets;
 
+import jakarta.activation.FileDataSource;
+import jakarta.inject.Singleton;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.silverpeas.components.gallery.constant.MediaResolution;
 import org.silverpeas.components.gallery.model.AlbumDetail;
 import org.silverpeas.components.gallery.model.GalleryRuntimeException;
@@ -37,16 +44,9 @@ import org.silverpeas.core.contribution.content.wysiwyg.service.directive.ImageU
 import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
-import jakarta.activation.FileDataSource;
-import jakarta.inject.Singleton;
-import jakarta.servlet.RequestDispatcher;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -141,6 +141,7 @@ public class GalleryInWysiwygRouter extends HttpServlet {
 
   /**
    * Retrieve all albums from a multimedia application
+   *
    * @param componentId the component instance identifier
    * @return a collection of AlbumDetail
    */
@@ -155,6 +156,7 @@ public class GalleryInWysiwygRouter extends HttpServlet {
 
   /**
    * Retrieve all photos from an album
+   *
    * @param componentId the component identifier
    * @param albumId the album identifier
    * @return a collection of Photo
@@ -168,7 +170,8 @@ public class GalleryInWysiwygRouter extends HttpServlet {
     }
   }
 
-  private void displayImage(HttpServletResponse res, Photo image, String size, boolean useOriginal) {
+  private void displayImage(HttpServletResponse res, Photo image, String size,
+      boolean useOriginal) {
     res.setContentType(image.getFileMimeType().getMimeType());
     res.setHeader("Cache-Control", "no-store"); //HTTP 1.1
     res.setHeader("Pragma", "no-cache");
@@ -176,16 +179,11 @@ public class GalleryInWysiwygRouter extends HttpServlet {
     final SilverpeasFile imageFile = getSilverpeasFile(image, size, useOriginal);
     try (OutputStream out2 = res.getOutputStream();
          BufferedInputStream input = new BufferedInputStream(new FileInputStream(imageFile))) {
-      try {
-        int read;
+      int read = input.read();
+      while (read != -1) {
+        // writes bytes into the response
+        out2.write(read);
         read = input.read();
-        while (read != -1) {
-          // writes bytes into the response
-          out2.write(read);
-          read = input.read();
-        }
-      } catch (Exception e) {
-        SilverLogger.getLogger(this).warn(e);
       }
     } catch (Exception e) {
       SilverLogger.getLogger(this).warn(e);
@@ -206,7 +204,8 @@ public class GalleryInWysiwygRouter extends HttpServlet {
       from(htmlContent).withDirectives(singletonList(regexp(GALLERY_CONTENT_LINK_PATTERN, 1))).extract().forEach(l -> {
         final Map<String, String> params = extractUrlParameters(l);
         final String componentId = params.get("ComponentId");
-        // Check component instance application parameter viewInWysiwyg (shared picture) is activated
+        // Check component instance application parameter viewInWysiwyg (shared picture) is
+        // activated
         boolean isViewInWysiwyg = isViewInWysiwyg(componentId);
         if (isViewInWysiwyg) {
           final String imageId = params.get("ImageId");

@@ -23,12 +23,10 @@
  */
 package org.silverpeas.components.survey.control;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.silverpeas.components.survey.SurveyException;
 import org.silverpeas.components.survey.notification.SurveyUserNotification;
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.util.Charsets;
-import org.silverpeas.core.util.file.*;
-import org.silverpeas.kernel.SilverpeasException;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
@@ -58,30 +56,24 @@ import org.silverpeas.core.questioncontainer.question.model.QuestionPK;
 import org.silverpeas.core.questioncontainer.result.model.QuestionResult;
 import org.silverpeas.core.questioncontainer.result.model.Results;
 import org.silverpeas.core.questioncontainer.result.service.QuestionResultService;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.csv.CSVRow;
-import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.core.util.file.*;
 import org.silverpeas.core.web.export.ExportCSVBuilder;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
+import org.silverpeas.kernel.SilverpeasException;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
-import jakarta.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.silverpeas.components.survey.control.DisplayResultView.*;
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
@@ -1087,7 +1079,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
   }
 
   private Answer fetchFormFieldParameters(final Parameters parameters, Answer answer,
-      final boolean file, final FileItem item) throws UnsupportedEncodingException {
+      final boolean file, final FileItem item) {
     String mpName = item.getFieldName();
     if (ACTION_PARAM.equals(mpName)) {
       parameters.setAction(item.getContent());

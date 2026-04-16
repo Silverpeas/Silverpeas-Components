@@ -38,8 +38,10 @@ import org.silverpeas.kernel.logging.SilverLogger;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.silverpeas.components.mailinglist.servlets.MailingListRoutageProperties.*;
+
 @Bean
-public class MessageProcessor implements MailingListRoutage {
+public class MessageProcessor {
 
   @Inject
   private MailingListService mailingListService;

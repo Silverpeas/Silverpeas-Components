@@ -78,9 +78,9 @@ public class GalleryLoadMetaDataProcess extends AbstractFileProcess<ProcessExecu
           MediaMetadataExtractor extractor = new DrewMediaMetadataExtractor(photo.getInstanceId());
           String lang = MessageManager.getLanguage();
           extractor.extractImageExifMetaData(handledFile.getFile(), lang)
-              .forEach(photo::addMetaData);
+              .forEach(photo.getAllMetaData()::addMetaData);
           extractor.extractImageIptcMetaData(handledFile.getFile(), lang)
-              .forEach(photo::addMetaData);
+              .forEach(photo.getAllMetaData()::addMetaData);
         } catch (UnsupportedEncodingException e) {
           SilverLogger.getLogger(GalleryLoadMetaDataProcess.class).silent(e)
               .error("Bad metadata encoding in image " + photo.getTitle() + ": " + e.getMessage());

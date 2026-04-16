@@ -38,9 +38,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Iterator;
 
+import static org.silverpeas.components.mailinglist.servlets.MailingListRoutageProperties.*;
 import static org.silverpeas.core.web.http.FileResponse.encodeInlineFilenameAsUtf8;
 
-public class AttachmentServlet extends HttpServlet implements MailingListRoutage {
+
+public class AttachmentServlet extends HttpServlet {
   private static final long serialVersionUID = -6066054163259803146L;
 
   @Inject

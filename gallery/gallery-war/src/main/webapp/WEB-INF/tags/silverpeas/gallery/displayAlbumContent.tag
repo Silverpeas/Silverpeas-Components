@@ -272,9 +272,10 @@
                   </c:if>
                   <c:if test="${isViewMetadata and media.type.photo}">
                     <c:set var="photoMedia" value="${media.photo}"/>
-                    <c:forEach var="metaDataKey" items="${photoMedia.metaDataProperties}">
+                    <c:forEach var="metaDataKey"
+                               items="${photoMedia.allMetaData.metaDataProperties}">
                       <li class="field field_category media-name">
-                        <c:set var="metaData" value="${photoMedia.getMetaData(metaDataKey)}"/>
+                        <c:set var="metaData" value="${photoMedia.allMetaData.getMetaData(metaDataKey)}"/>
                         <jsp:useBean id="metaData" type="org.silverpeas.components.gallery.model.MetaData"/>
                         <label class="txtlibform"><c:out value="${metaData.label}"/> :</label>
 

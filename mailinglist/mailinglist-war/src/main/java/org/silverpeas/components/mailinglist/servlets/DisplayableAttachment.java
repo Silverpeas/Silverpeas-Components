@@ -27,7 +27,9 @@ package org.silverpeas.components.mailinglist.servlets;
 import org.silverpeas.components.mailinglist.service.model.beans.Attachment;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 
-public class DisplayableAttachment implements MailingListRoutage {
+import static org.silverpeas.components.mailinglist.servlets.MailingListRoutageProperties.*;
+
+public class DisplayableAttachment {
   private final long size;
 
   private final String fileName;

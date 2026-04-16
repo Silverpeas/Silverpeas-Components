@@ -53,6 +53,7 @@ import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.StringUtil;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
@@ -720,7 +721,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
     return getWebSiteRepositoryPath() + relativePath;
   }
 
-  public int addFileIntoWebSite(String webSitePath, FileItem fileItem) throws Exception {
+  public int addFileIntoWebSite(String webSitePath, FileItem fileItem) throws IOException {
     String fileName = FileUploadUtil.getFileName(fileItem);
     String path = getWebSiteRepositoryPath() + "/" + webSitePath;
     File file = new File(path, fileName);
@@ -738,10 +739,10 @@ public class WebSiteSessionController extends AbstractComponentSessionController
    * @param fileItem the zip archive with the content of the site to create.
    * @return the creation status. 0 means the creation succeed, other values means the site creation
    * failed: -1 the main page name is invalid and -2 the website folder creation failed.
-   * @throws Exception if an unexpected error occurs when creating the website.
+   * @throws WebSitesException if an unexpected error occurs when creating the website.
    */
   public int createWebSiteFromZipFile(SiteDetail descriptionSite, FileItem fileItem)
-      throws Exception {
+      throws WebSitesException {
     /* Création du directory */
     String cheminZip = getWebSiteRepositoryPath() + getWebSitePathById(descriptionSite.getId());
     File directory = new File(cheminZip);
@@ -750,7 +751,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
       String fichierZipName = FileUploadUtil.getFileName(fileItem);
       File fichier = new File(cheminZip + "/" + fichierZipName);
 
-      fileItem.saveTo(fichier);
+      saveFileItem(fileItem, fichier);
 
       /* dezip du fichier.zip sur le serveur */
       String cheminFichierZip = cheminZip + "/" + fichierZipName;
@@ -785,6 +786,14 @@ public class WebSiteSessionController extends AbstractComponentSessionController
       return -2;
     }
     return 0;
+  }
+
+  private static void saveFileItem(FileItem fileItem, File fichier) throws WebSitesException {
+    try {
+      fileItem.saveTo(fichier);
+    } catch (IOException e) {
+      throw new WebSitesException(e);
+    }
   }
 
   private boolean isNotInWhiteList(File file) {

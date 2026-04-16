@@ -104,8 +104,6 @@ class LdapOrganizationChartBuilder extends AbstractOrganizationChartBuilder {
       }
     }
 
-    boolean silverpeasUserLinkable = StringUtil.isDefined(config.getDomainId());
-
     OrganizationalChart chart;
     if (type == TYPE_UNITCHART) {
       chart = new OrganizationalChart(parent, units, ouMembers);
@@ -335,9 +333,6 @@ class LdapOrganizationChartBuilder extends AbstractOrganizationChartBuilder {
 
     // Function
     String function = getFirstAttributeValue(attrs.get(config.getAttTitle()));
-
-    // Description
-    String description = getFirstAttributeValue(attrs.get(config.getAttDesc()));
 
     // login
     String login = getFirstAttributeValue(attrs.get(config.getLdapAttAccount()));

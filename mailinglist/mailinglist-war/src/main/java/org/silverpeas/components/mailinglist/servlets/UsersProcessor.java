@@ -36,8 +36,10 @@ import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.util.*;
 
+import static org.silverpeas.components.mailinglist.servlets.MailingListRoutageProperties.*;
+
 @Bean
-public class UsersProcessor implements MailingListRoutage {
+public class UsersProcessor {
 
   public static final int ELEMENTS_PER_PAGE = 10;
 
