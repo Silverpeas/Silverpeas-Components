@@ -84,7 +84,7 @@ public class NewsByStatus {
 
   class QuickInfoBeginDateComparatorDesc implements Comparator<News> {
 
-    private final static String ASC = "ASC";
+    private static final String ASC = "ASC";
     private String sort;
     public QuickInfoBeginDateComparatorDesc(String sort) {
       this.sort = sort;
@@ -103,7 +103,7 @@ public class NewsByStatus {
 
   class QuickInfoEndDateComparatorDesc implements Comparator<News> {
 
-    private final static String ASC = "ASC";
+    private static final String ASC = "ASC";
     private String sort;
     public QuickInfoEndDateComparatorDesc(String sort) {
       this.sort = sort;
