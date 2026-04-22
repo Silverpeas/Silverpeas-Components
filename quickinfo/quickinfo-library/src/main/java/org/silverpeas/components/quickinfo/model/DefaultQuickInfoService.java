@@ -136,7 +136,10 @@ public class DefaultQuickInfoService implements QuickInfoService {
 
   @Override
   public NewsByStatus getAllNewsByStatus(String componentId, String userId) {
-    return new NewsByStatus(getAllNews(componentId), userId);
+    String noMoreVisiblesSort = getComponentSettings().getString("noMoreVisibles.sort", "ASC");
+    String notYetVisiblesSort = getComponentSettings().getString("notYetVisiblesSort", "ASC");
+
+    return new NewsByStatus(getAllNews(componentId), userId, noMoreVisiblesSort, notYetVisiblesSort);
   }
 
   @Override
