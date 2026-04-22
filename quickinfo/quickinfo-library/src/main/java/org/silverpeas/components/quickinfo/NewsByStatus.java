@@ -41,7 +41,7 @@ public class NewsByStatus {
   List<News> notYetVisibles = new ArrayList<>();
   List<News> noMoreVisibles = new ArrayList<>();
 
-  public NewsByStatus(List<News> allNews, String userId) {
+  public NewsByStatus(List<News> allNews, String userId, String noMoreVisiblesSort, String notYetVisiblesSort) {
     for (News news : allNews) {
       if (news.isDraft()) {
         if (news.getCreatorId().equals(userId)) {
@@ -57,8 +57,8 @@ public class NewsByStatus {
     }
     sortByDateDesc(drafts);
     sortByDateDesc(visibles);
-    Collections.sort(notYetVisibles, new QuickInfoBeginDateComparatorDesc());
-    Collections.sort(noMoreVisibles, new QuickInfoEndDateComparatorDesc());
+    Collections.sort(notYetVisibles, new QuickInfoBeginDateComparatorDesc(notYetVisiblesSort));
+    Collections.sort(noMoreVisibles, new QuickInfoEndDateComparatorDesc(noMoreVisiblesSort));
   }
 
   private void sortByDateDesc(List<News> listOfNews) {
@@ -83,16 +83,40 @@ public class NewsByStatus {
   }
 
   class QuickInfoBeginDateComparatorDesc implements Comparator<News> {
+
+    private final static String ASC = "ASC";
+    private String sort;
+    public QuickInfoBeginDateComparatorDesc(String sort) {
+      this.sort = sort;
+    }
+
     public int compare(News pd1, News pd2) {
-      return asDate(pd1.getVisibility().getPeriod().getStartDate())
-          .compareTo(asDate(pd2.getVisibility().getPeriod().getStartDate()));
+      if (sort.equalsIgnoreCase(ASC)) {
+        return asDate(pd1.getVisibility().getPeriod().getStartDate())
+                .compareTo(asDate(pd2.getVisibility().getPeriod().getStartDate()));
+      } else {
+        return asDate(pd2.getVisibility().getPeriod().getStartDate())
+                .compareTo(asDate(pd1.getVisibility().getPeriod().getStartDate()));
+      }
     }
   }
 
   class QuickInfoEndDateComparatorDesc implements Comparator<News> {
+
+    private final static String ASC = "ASC";
+    private String sort;
+    public QuickInfoEndDateComparatorDesc(String sort) {
+      this.sort = sort;
+    }
+
     public int compare(News pd1, News pd2) {
-      return asDate(pd1.getVisibility().getPeriod().getEndDate())
-          .compareTo(asDate(pd2.getVisibility().getPeriod().getEndDate()));
+      if (sort.equalsIgnoreCase(ASC)) {
+        return asDate(pd1.getVisibility().getPeriod().getEndDate())
+                .compareTo(asDate(pd2.getVisibility().getPeriod().getEndDate()));
+      } else {
+        return asDate(pd2.getVisibility().getPeriod().getEndDate())
+                .compareTo(asDate(pd1.getVisibility().getPeriod().getEndDate()));
+      }
     }
   }
 
