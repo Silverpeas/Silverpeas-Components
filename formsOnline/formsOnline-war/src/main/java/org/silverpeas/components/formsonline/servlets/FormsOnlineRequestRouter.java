@@ -307,7 +307,7 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
       }
     } catch (Exception e) {
       SilverLogger.getLogger(this).warn(e);
-      request.setAttribute("javax.servlet.jsp.jspException", e);
+      request.setAttribute("jakarta.servlet.jsp.jspException", e);
       destination = "/admin/jsp/errorpageMain.jsp";
     }
 

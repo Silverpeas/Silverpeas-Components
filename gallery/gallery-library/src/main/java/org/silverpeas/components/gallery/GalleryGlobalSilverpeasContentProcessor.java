@@ -27,10 +27,9 @@ import org.silverpeas.components.gallery.constant.MediaResolution;
 import org.silverpeas.components.gallery.constant.MediaType;
 import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.core.contribution.contentcontainer.content.AbstractSilverpeasContentManager.ContributionWrapper;
+import org.silverpeas.core.contribution.contentcontainer.content.ManagedContribution;
 import org.silverpeas.core.contribution.contentcontainer.content.AbstractGlobalSilverContentProcessor;
 import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
-import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
 import org.silverpeas.kernel.util.Pair;
 
 import jakarta.inject.Named;
@@ -52,9 +51,9 @@ public class GalleryGlobalSilverpeasContentProcessor extends AbstractGlobalSilve
   }
 
   @Override
-  public Stream<GlobalSilverContent> asGlobalSilverContent(List<SilverContentInterface> silverContents) {
+  public Stream<GlobalSilverContent> asGlobalSilverContent(List<ManagedContribution> silverContents) {
     final Map<String, Pair<String, MediaType>> mediaThumbnails = silverContents.stream()
-        .map(c -> (Media) ((ContributionWrapper) c).getWrappedInstance())
+        .map(c -> (Media) c.getWrappedContribution())
         .collect(toMap(Media::getId,
                        m -> Pair.of(m.getApplicationThumbnailUrl(MediaResolution.TINY), m.getType())));
     return super.asGlobalSilverContent(silverContents).peek(g -> {

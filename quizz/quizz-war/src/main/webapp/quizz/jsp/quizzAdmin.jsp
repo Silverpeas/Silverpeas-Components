@@ -34,7 +34,7 @@
 			response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
 
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view"%>
 <%@ include file="checkQuizz.jsp"%>
 
 <jsp:useBean id="currentQuizz" scope="session"

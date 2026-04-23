@@ -24,11 +24,11 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ taglib prefix="p" uri="http://www.silverpeas.com/tld/viewGenerator" %>
-<%@ taglib prefix="sp" uri="http://www.silverpeas.com/tld/viewGenerator" %>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<%@ taglib prefix="p" uri="silverpeas.tags.viewGenerator" %>
+<%@ taglib prefix="sp" uri="silverpeas.tags.viewGenerator" %>
 <%@ page import="org.silverpeas.components.kmelia.model.KmeliaPublication" %>
 <%
   response.setHeader("Cache-Control", "no-store"); //HTTP 1.1

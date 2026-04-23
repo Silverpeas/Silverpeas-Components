@@ -47,7 +47,7 @@ public class SuggestionCriteria {
 
     TITLE_ASC(true, "title", true),
     LAST_UPDATE_DATE_ASC(true, "lastUpdateDate", true),
-    STATUS_ASC(true, "status", true),
+    STATUS_ASC(true, "validation.status", true),
     TITLE_DESC(true, "title", false),
     LAST_UPDATE_DATE_DESC(true, "lastUpdateDate", false),
     VALIDATION_DATE_DESC(true, "validation.validationDate", false),
@@ -71,7 +71,7 @@ public class SuggestionCriteria {
       return type;
     }
 
-    private QUERY_ORDER_BY(final boolean applicableOnJpaQuery, final String propertyName,
+    QUERY_ORDER_BY(final boolean applicableOnJpaQuery, final String propertyName,
         final boolean asc) {
       this.applicableOnJpaQuery = applicableOnJpaQuery;
       this.propertyName = propertyName;
@@ -93,10 +93,10 @@ public class SuggestionCriteria {
 
   private SuggestionBox suggestionBox;
   private User creator;
-  private final List<ContributionStatus> statuses = new ArrayList<ContributionStatus>();
-  private final List<JOIN_DATA_APPLY> joinDataApplyList = new ArrayList<JOIN_DATA_APPLY>();
-  private final List<QUERY_ORDER_BY> orderByList = new ArrayList<QUERY_ORDER_BY>();
-  private final List<String> identifiers = new ArrayList<String>();
+  private final List<ContributionStatus> statuses = new ArrayList<>();
+  private final List<JOIN_DATA_APPLY> joinDataApplyList = new ArrayList<>();
+  private final List<QUERY_ORDER_BY> orderByList = new ArrayList<>();
+  private final List<String> identifiers = new ArrayList<>();
   private boolean loadWysiwygContent = false;
   private PaginationPage pagination;
 

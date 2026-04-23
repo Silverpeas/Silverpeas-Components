@@ -39,7 +39,7 @@
 <%@ page import="org.silverpeas.core.node.model.NodeDetail" %>
 <%@ page import="org.silverpeas.core.util.URLUtil" %>
 <%@ page import="org.silverpeas.core.admin.user.model.User" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
 <%
 // recuperation des parametres

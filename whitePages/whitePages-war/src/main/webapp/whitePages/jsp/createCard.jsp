@@ -34,7 +34,7 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane" %>
 <%@ page import="java.util.Collection" %>
 
-<%@taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@taglib uri="silverpeas.tags.viewGenerator" prefix="view"%>
 
 <%@ include file="checkWhitePages.jsp" %>
 

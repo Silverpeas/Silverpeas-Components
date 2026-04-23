@@ -26,10 +26,10 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ include file="check.jsp" %>
 
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<%@ taglib uri="silverpeas.tags.silverFunctions" prefix="silfn" %>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view" %>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/infoLetter" prefix="infoLetterTags" %>
 <%@ page import="org.silverpeas.core.util.DateUtil" %>
 <%@ page import="java.util.stream.Collectors" %>
@@ -238,9 +238,9 @@
                 </c:if>
                 <view:arrayLines var="pub" items="${sentPublications}">
                   <jsp:useBean id="pub" type="org.silverpeas.components.infoletter.model.InfoLetterPublication"/>
-                  <c:set var="pubId" value="${pub.getPK().id}"/>
+                  <c:set var="pubId" value="${pub.PK.id}"/>
                   <c:set var="accessUrl"
-                         value="javascript:open${pub.isValid() ? 'View' : 'Edit'}Parution('${pubId}')"/>
+                         value="javascript:open${pub.valid ? 'View' : 'Edit'}Parution('${pubId}')"/>
                   <view:arrayLine>
                     <view:arrayCellText>
                       <a href="${accessUrl}">
@@ -249,12 +249,12 @@
                     </view:arrayCellText>
                     <view:arrayCellText>
                       <a href="${accessUrl}">${silfn:escapeHtml(pub.title)}</a>
-                      <a href="${pub.getPermalink()}" class="sp-permalink">
+                      <a href="${pub.permalink}" class="sp-permalink">
                         <img src="${permlinkIcon}" alt=""/>
                       </a>
                     </view:arrayCellText>
                     <view:arrayCellText>
-                      <c:if test="${pub.isValid()}">
+                      <c:if test="${pub.valid}">
                         <c:set var="parutionDate" value="<%=DateUtil.parse(pub.getParutionDate())%>"/>
                         ${silfn:formatDate(parutionDate, userLanguage)}
                       </c:if>

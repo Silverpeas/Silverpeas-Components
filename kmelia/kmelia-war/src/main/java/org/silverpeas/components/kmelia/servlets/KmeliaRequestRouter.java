@@ -1491,7 +1491,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         destination = rootDestination + function;
       }
     } catch (Exception exceAll) {
-      request.setAttribute("javax.servlet.jsp.jspException", exceAll);
+      request.setAttribute("jakarta.servlet.jsp.jspException", exceAll);
       return "/admin/jsp/errorpageMain.jsp";
     }
     return destination;

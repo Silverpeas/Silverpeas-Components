@@ -1040,7 +1040,7 @@ public class ProcessManagerRequestRouter
       }
     }
     if (error != null) {
-      request.setAttribute("javax.servlet.jsp.jspException", error);
+      request.setAttribute("jakarta.servlet.jsp.jspException", error);
     }
     return "/admin/jsp/errorpageMain.jsp";
   }

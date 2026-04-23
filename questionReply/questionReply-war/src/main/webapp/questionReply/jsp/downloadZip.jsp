@@ -28,9 +28,9 @@
 <%@ page isELIgnored="false"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"%>
 <%@ include file="checkQuestionReply.jsp" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view"%>
 <fmt:setLocale value="${userLanguage}"/>
 <view:setBundle basename="org.silverpeas.importExportPeas.multilang.importExportPeasBundle"/>
 <view:setBundle basename="org.silverpeas.multilang.generalMultilang" var="general"/>

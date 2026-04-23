@@ -30,11 +30,11 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="checkKmelia.jsp" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<%@ taglib uri="jakarta.tags.functions" prefix="fn" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view"%>
+<%@ taglib uri="silverpeas.tags.silverFunctions" prefix="silfn" %>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/kmelia" prefix="kmelia" %>
 
 <c:url var="mandatoryFieldUrl" value="/util/icons/mandatoryField.gif"/>
@@ -164,7 +164,7 @@
 
     const params = {};
     params["rightsOnTopic"] = ${rightsOnTopics};
-    params["i18n"] = <%=I18NHelper.isI18nContentActivated%>;
+    params["i18n"] = <%=I18NHelper.isI18nContentActivated()%>;
     params["nbPublisDisplayed"] = ${displayNBPublis};
 
     let searchInProgress = ${searchContext != null};
@@ -1018,10 +1018,11 @@
   </div>
   <div id="addOrUpdateNode" style="display: none;">
     <form name="topicForm" action="AddTopic" method="post">
-      <input type="hidden" id="<%=I18NHelper.HTMLHiddenRemovedTranslationMode %>" name="<%=I18NHelper.HTMLHiddenRemovedTranslationMode %>" value="false"/>
-      <table cellpadding="5" width="100%">
+      <input type="hidden" id="<%=I18NHelper.HTML_HIDDEN_REMOVED_TRANSLATION_MODE %>" name="<%=I18NHelper.HTML_HIDDEN_REMOVED_TRANSLATION_MODE %>" value="false"/>
+      <table>
+        <th></th>
         <tr><td class="txtlibform"><fmt:message key="TopicPath"/> :</td>
-          <td valign="top" id="path"></td>
+          <td id="path"></td>
         </tr>
         <%=I18NHelper.getFormLine(resources, null, kmeliaScc.getLanguage())%>
         <tr>
@@ -1038,8 +1039,8 @@
 
         <% if (kmeliaScc.isNotificationAllowed()) { %>
         <tr>
-          <td class="txtlibform" valign="top"><fmt:message key="TopicAlert" /> :</td>
-          <td valign="top">
+          <td class="txtlibform"><fmt:message key="TopicAlert" /> :</td>
+          <td>
             <select name="AlertType">
               <option value="NoAlert" selected="selected"><fmt:message key="NoAlert" /></option>
               <option value="Publisher"><fmt:message key="OnlyPubsAlert" /></option>

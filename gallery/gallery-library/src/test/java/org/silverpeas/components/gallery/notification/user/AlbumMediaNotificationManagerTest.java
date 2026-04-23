@@ -48,6 +48,7 @@ import org.silverpeas.kernel.test.annotations.TestManagedMock;
 import org.silverpeas.kernel.test.annotations.TestedBean;
 import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 import org.silverpeas.kernel.test.extension.SettingBundleStub;
+import org.silverpeas.kernel.test.util.Reflections;
 
 import java.time.OffsetDateTime;
 import java.util.Date;
@@ -85,7 +86,6 @@ class AlbumMediaNotificationManagerTest {
   @TestManagedMock
   private Scheduler scheduler;
 
-  @TestManagedMock
   private UserNotificationManager userNotificationManager;
 
   @TestManagedBean
@@ -139,6 +139,9 @@ class AlbumMediaNotificationManagerTest {
     when(galleryService.getAlbum(albumDetail1.getNodePK())).thenReturn(albumDetail1);
     when(galleryService.getAlbum(albumDetail2.getNodePK())).thenReturn(albumDetail2);
     when(galleryService.getAlbum(albumDetail3.getNodePK())).thenReturn(albumDetail3);
+
+    userNotificationManager = mock(UserNotificationManager.class);
+    Reflections.setField(userNotificationHelper, "userNotificationManager", userNotificationManager);
   }
 
   @Test

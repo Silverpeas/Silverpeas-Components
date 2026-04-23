@@ -33,30 +33,27 @@ import org.silverpeas.components.gallery.service.MediaServiceProvider;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
+import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.contribution.model.WithPermanentLink;
+import org.silverpeas.core.contribution.model.WithURL;
 import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.process.io.file.FileBasePath;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
  * This class represents a Media and provides all the common data.
  */
-public abstract class Media implements SilverContentInterface, Serializable, WithPermanentLink {
+public abstract class Media implements SilverpeasContent, Serializable, WithPermanentLink, WithURL {
   private static final long serialVersionUID = -3193781401588525351L;
 
   public static final FileBasePath BASE_PATH = FileBasePath.UPLOAD_PATH;
@@ -76,7 +73,7 @@ public abstract class Media implements SilverContentInterface, Serializable, Wit
   private String silverpeasContentId;
   private String iconUrl;
 
-  public Media() {
+  protected Media() {
     mediaPK = new MediaPK(null);
   }
 
@@ -122,6 +119,10 @@ public abstract class Media implements SilverContentInterface, Serializable, Wit
   }
 
   @Override
+  public String getComponentInstanceId() {
+    return getInstanceId();
+  }
+
   public String getInstanceId() {
     return getMediaPK() != null ? getMediaPK().getInstanceId() : null;
   }
@@ -214,7 +215,6 @@ public abstract class Media implements SilverContentInterface, Serializable, Wit
     setCreatorId((creator != null) ? creator.getId() : null);
   }
 
-  @Override
   public String getCreatorId() {
     return createdBy;
   }
@@ -267,7 +267,7 @@ public abstract class Media implements SilverContentInterface, Serializable, Wit
 
   @Override
   public boolean canBeAccessedBy(final User user) {
-    return SilverContentInterface.super.canBeAccessedBy(user) &&
+    return SilverpeasContent.super.canBeAccessedBy(user) &&
         (isVisible(DateUtil.getDate()) || (user.isAccessAdmin() || getHighestUserRole(user)
             .isGreaterThanOrEquals(SilverpeasRole.PUBLISHER) || (getHighestUserRole(user)
             .isGreaterThanOrEquals(SilverpeasRole.WRITER) && user.getId().equals(getCreatorId()))));
@@ -373,15 +373,6 @@ public abstract class Media implements SilverContentInterface, Serializable, Wit
     this.silverpeasContentId = silverpeasContentId;
   }
 
-  public void setIconUrl(String iconUrl) {
-    this.iconUrl = iconUrl;
-  }
-
-  @Override
-  public String getIconUrl() {
-    return this.iconUrl;
-  }
-
   /**
    * Indicated if the download is possible.
    * @return true if download is possible, false otherwise.
@@ -393,36 +384,6 @@ public abstract class Media implements SilverContentInterface, Serializable, Wit
   @Override
   public String getURL() {
     return "searchResult?Type=" + getType().name() + "&Id=" + getId();
-  }
-
-  @Override
-  public String getDate() {
-    return DateUtil.date2SQLDate(getLastUpdateDate());
-  }
-
-  @Override
-  public String getSilverCreationDate() {
-    return DateUtil.date2SQLDate(getCreationDate());
-  }
-
-  @Override
-  public String getName() {
-    return getTitle();
-  }
-
-  @Override
-  public String getName(String language) {
-    return getName();
-  }
-
-  @Override
-  public String getDescription(String language) {
-    return getDescription();
-  }
-
-  @Override
-  public Collection<String> getLanguages() {
-    return Collections.emptyList();
   }
 
   public String toString() {

@@ -26,8 +26,8 @@
 <%@page import="org.silverpeas.components.yellowpages.ImportReport"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view"%>
 <%@ include file="checkYellowpages.jsp" %>
 
 <c:set var="help"><%=resources.getString("yellowpages.importCSVHelp1")%><br/><%=resources.getString("yellowpages.importCSVHelp2")%></c:set>

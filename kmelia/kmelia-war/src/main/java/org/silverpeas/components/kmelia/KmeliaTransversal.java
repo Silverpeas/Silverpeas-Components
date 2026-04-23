@@ -42,10 +42,15 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
 
 public class KmeliaTransversal implements PublicationHelper {
 
-  private String userId = null;
+  private String userId;
   private final PublicationService publicationService = PublicationService.get();
   private final OrganizationController organizationControl =
       OrganizationControllerProvider.getOrganisationController();
+
+  @SuppressWarnings("unused")
+  public KmeliaTransversal() {
+    // default constructor for default creation required by retrospection
+  }
 
   public KmeliaTransversal(String userId) {
     this.userId = userId;

@@ -77,8 +77,8 @@ public class InfoLetterSubscriptionPublicationUserNotification extends
       final SilverpeasTemplate template) {
     getNotificationMetaData().addLanguage(language, getTitle(language), "");
     template.setAttribute("infoLetter", getResource());
-    template.setAttribute("infoLetterTitle", Encode.forHtml(getResource().getName(language)));
-    final String desc = defaultStringIfNotDefined(getResource().getDescription(language), null);
+    template.setAttribute("infoLetterTitle", Encode.forHtml(getResource().getName()));
+    final String desc = defaultStringIfNotDefined(getResource().getDescription(), null);
     template.setAttribute("infoLetterDesc", Encode.forHtml(desc));
     template.setAttribute("senderName", sender.getDisplayedName());
   }
@@ -87,8 +87,8 @@ public class InfoLetterSubscriptionPublicationUserNotification extends
   protected void performNotificationResource(final String language,
       final InfoLetterPublicationPdC resource,
       final NotificationResourceData notificationResourceData) {
-    notificationResourceData.setResourceName(resource.getName(language));
-    notificationResourceData.setResourceDescription(resource.getDescription(language));
+    notificationResourceData.setResourceName(resource.getName());
+    notificationResourceData.setResourceDescription(resource.getDescription());
   }
 
   @Override
@@ -119,7 +119,7 @@ public class InfoLetterSubscriptionPublicationUserNotification extends
 
   @Override
   protected String getTitle(final String language) {
-    return super.getTitle(language) + getResource().getName(language);
+    return super.getTitle(language) + getResource().getName();
   }
 
   @Override

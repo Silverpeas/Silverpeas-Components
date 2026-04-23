@@ -34,12 +34,12 @@
 <%@page import="org.silverpeas.core.web.treemenu.process.TreeHandler"%>
 <%@page import="org.silverpeas.core.web.treemenu.model.MenuConstants"%>
 
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/menuTree" prefix="menuTree"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ taglib prefix="fmr" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<%@ taglib uri="silverpeas.tags.silverFunctions" prefix="silfn" %>
+<%@ taglib uri="silverpeas.tags.menuTree" prefix="menuTree"%>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view"%>
+<%@ taglib prefix="fmr" uri="jakarta.tags.fmt" %>
 
 <fmt:setLocale value="${sessionScope.WYSIWYG_Language}"/>
 <view:setBundle basename="org.silverpeas.wysiwyg.multilang.wysiwygBundle"/>

@@ -23,8 +23,10 @@
  */
 package org.silverpeas.components.gallery.service;
 
+import jakarta.inject.Inject;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
+import org.silverpeas.kernel.SilverpeasException;
 
 /**
  * Initializes the Gallery application by setting up the different schedulers, one to alert the
@@ -33,11 +35,21 @@ import org.silverpeas.core.initialization.Initialization;
 @Service
 public class GalleryInitialize implements Initialization {
 
+  @Inject
+  private ScheduledAlertUser alertUser;
+
+  @Inject
+  private ScheduledDeleteOrder deleteOrder;
+
   @Override
   public void init() {
-    ScheduledAlertUser sa = new ScheduledAlertUser();
-    sa.initialize();
-    ScheduledDeleteOrder so = new ScheduledDeleteOrder();
-    so.initialize();
+    alertUser.initialize();
+    deleteOrder.initialize();
+  }
+
+  @Override
+  public void release() throws SilverpeasException {
+    alertUser.release();
+    deleteOrder.release();
   }
 }

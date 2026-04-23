@@ -30,11 +30,13 @@
 <%@ page import="org.silverpeas.kernel.bundle.SettingBundle"%>
 <%@ page import="java.io.File"%>
 <%@ page import="java.io.IOException" %>
+<%@ page import="org.silverpeas.core.util.file.FileItem" %>
+<%@ page import="org.silverpeas.core.util.*" %>
 <%@ include file="checkSurvey.jsp" %>
 
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view"%>
 
 <%-- Set resource bundle --%>
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
@@ -114,24 +116,25 @@ List<Answer> answers = new ArrayList<Answer>();
 Answer answer = null;
 Iterator<FileItem> itemIter = items.iterator();
 while (itemIter.hasNext()) {
-  FileItem item = (FileItem) itemIter.next();
+  FileItem item = itemIter.next();
   if (item.isFormField())
   {
     String mpName = item.getFieldName();
     if (mpName.startsWith("answer")) {
-        answer = new Answer(null, null, item.getString(FileUploadUtil.DEFAULT_ENCODING), 0, 0, false, "", 0, false, null);
+        answer = new Answer(null, null, item.getContent(Charsets.UTF_8), 0, 0, false, "", 0, false,
+            null);
         answers.add(answer);
     } else if ("suggestionLabel".equals(mpName)) {
-        answer = new Answer(null, null, item.getString(FileUploadUtil.DEFAULT_ENCODING), 0, 0, false, "", 0, true, null);
+        answer = new Answer(null, null, item.getContent(Charsets.UTF_8), 0, 0, false, "", 0, true, null);
         answers.add(answer);
     }
     else if (mpName.startsWith("valueImageGallery"))
     {
-    	if (StringUtil.isDefined(item.getString()))
+    	if (StringUtil.isDefined(item.getContent()))
     	{
     		// traiter les images venant de la gallery si pas d'image externe
     		if (!file)
-    			answer.setImage(item.getString());
+    			answer.setImage(item.getContent());
     	}
     }
   }

@@ -27,16 +27,19 @@ package org.silverpeas.components.forums;
 import jakarta.inject.Inject;
 import org.silverpeas.components.forums.model.ForumPK;
 import org.silverpeas.components.forums.service.ForumService;
+import org.silverpeas.components.forums.service.ForumsRuntimeException;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.contentcontainer.content.AbstractSilverpeasContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
 import org.silverpeas.core.contribution.model.Contribution;
+import org.silverpeas.kernel.annotation.NonNull;
 
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -81,7 +84,8 @@ public class ForumsContentManager extends AbstractSilverpeasContentManager {
 
   @Override
   protected <T extends Contribution> SilverContentVisibility computeSilverContentVisibility(
-      final T contribution) {
+      @NonNull final T contribution) {
+    Objects.requireNonNull(contribution);
     return new SilverContentVisibility(true);
   }
 
@@ -94,7 +98,9 @@ public class ForumsContentManager extends AbstractSilverpeasContentManager {
    */
   public int createSilverContent(Connection con, ForumPK forumPK, String userId)
       throws ContentManagerException {
-    return createSilverContent(con, forumPK.getId(), forumPK.getComponentName(), userId);
+    var forum = getContribution(forumPK.getId(), forumPK.getInstanceId())
+        .orElseThrow(() -> new ForumsRuntimeException("No such forum " + forumPK));
+    return createSilverContent(con, forum, userId);
   }
 
   /**

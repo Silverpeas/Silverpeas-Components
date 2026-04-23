@@ -23,6 +23,9 @@
  */
 package org.silverpeas.components.suggestionbox.model;
 
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import org.silverpeas.components.suggestionbox.repository.SuggestionRepository;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
@@ -37,10 +40,6 @@ import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
 import org.silverpeas.core.util.Process;
-
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 
 /**
  * This entity represents a suggestion associated to a suggestion box. A suggestion is described by
@@ -252,7 +251,7 @@ public class Suggestion extends SilverpeasJpaEntity<Suggestion, UuidIdentifier>
    */
   public boolean isPublishableBy(User user) {
     return (getValidation().isInDraft() || getValidation().isRefused()) && (user.isAccessAdmin()
-        || (getCreator().equals(user) && getSuggestionBox().getHighestUserRole(user)
+                                                                            || (getCreator().equals(user) && getSuggestionBox().getHighestUserRole(user)
         .isGreaterThanOrEquals(SilverpeasRole.WRITER)));
   }
 
@@ -288,9 +287,9 @@ public class Suggestion extends SilverpeasJpaEntity<Suggestion, UuidIdentifier>
   @Override
   public String toString() {
     return "Suggestion{" + "suggestionBox=" + suggestionBox.getId() + ", title=" + title
-        + ", content=" + content + ", contentModified=" + contentModified + ", validation="
-        + getValidation() + ", creationDate=" + getCreationDate() + ", lastUpdateDate="
-        + getLastUpdateDate() + '}';
+           + ", content=" + content + ", contentModified=" + contentModified + ", validation="
+           + getValidation() + ", creationDate=" + getCreationDate() + ", lastUpdateDate="
+           + getLastUpdateDate() + '}';
   }
 
   /**

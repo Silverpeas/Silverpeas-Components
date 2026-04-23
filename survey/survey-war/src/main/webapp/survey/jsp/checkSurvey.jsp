@@ -89,7 +89,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="org.silverpeas.core.util.file.FileUploadUtil"%>
 
 <%@ page import="org.silverpeas.core.contribution.attachment.model.SimpleDocument"%>
-<%@ page import="org.apache.commons.fileupload.FileItem"%>
 
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
 
@@ -101,7 +100,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
   if (surveyScc == null) {
       // No session controller in the request -> security exception
       String sessionTimeout = ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout");
-      getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
+      pageContext.getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
       return;
   }
 

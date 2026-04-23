@@ -29,7 +29,7 @@
 <%@ page import="org.silverpeas.kernel.bundle.ResourceLocator"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
 <%@ page import="java.util.List"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view"%>
 <%
     String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
       GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(

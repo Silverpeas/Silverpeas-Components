@@ -41,16 +41,27 @@ public class MetaDataSet implements Serializable {
 
   private final LinkedHashMap<String, MetaData> metaData = new LinkedHashMap<>();
 
-  MetaDataSet(InternalMedia media) {
+  /**
+   * Creates an empty set of metadata
+   */
+  MetaDataSet() {
+  }
+
+  MetaDataSet(MetaDataSet metaData) {
+    this.metaData.putAll(metaData.metaData);
+  }
+
+  /**
+   * Loads the metadata of the specified media.
+   *
+   * @param media the internal media from which the metadata are loaded.
+   */
+  void load(InternalMedia media) {
     try {
       GalleryLoadMetaDataProcess.load(media);
     } catch (Exception e) {
       SilverLogger.getLogger(this).warn(e);
     }
-  }
-
-  MetaDataSet(MetaDataSet metaData) {
-    this.metaData.putAll(metaData.metaData);
   }
 
   /**

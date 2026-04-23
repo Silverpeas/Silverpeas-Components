@@ -32,6 +32,7 @@ import org.silverpeas.core.contribution.contentcontainer.content.AbstractSilverp
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.kernel.annotation.NonNull;
 
 import java.util.List;
 import java.util.Optional;
@@ -77,7 +78,7 @@ public class InfoLetterContentManager extends AbstractSilverpeasContentManager {
 
   @Override
   protected <T extends Contribution> SilverContentVisibility computeSilverContentVisibility(
-      final T contribution) {
+      @NonNull final T contribution) {
     final InfoLetterPublicationPdC ilPub = (InfoLetterPublicationPdC) contribution;
     return new SilverContentVisibility(isVisible(ilPub));
   }

@@ -25,19 +25,23 @@
 package org.silverpeas.components.infoletter.model;
 
 import org.silverpeas.components.infoletter.InfoLetterContentManager;
-import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.model.SilverpeasContent;
+import org.silverpeas.core.contribution.model.WithURL;
+import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
-import java.util.Collection;
-import java.util.Collections;
+import java.text.ParseException;
+import java.util.Date;
 import java.util.Optional;
 
 /**
  * @author lbertin
  */
 public class InfoLetterPublicationPdC extends InfoLetterPublication
-    implements SilverContentInterface {
+    implements SilverpeasContent, WithURL {
   private static final long serialVersionUID = -2174573301215680444L;
   public static final String TYPE = "publication";
 
@@ -58,11 +62,6 @@ public class InfoLetterPublicationPdC extends InfoLetterPublication
   public InfoLetterPublicationPdC(InfoLetterPublication ilp) {
     super(ilp.getPK().toResourceReference(), ilp.getTitle(), ilp.getDescription(),
         ilp.getParutionDate(), ilp.getPublicationState(), ilp.getLetterId());
-  }
-
-  @Override
-  public ContributionIdentifier getIdentifier() {
-    return super.getIdentifier();
   }
 
   /**
@@ -95,41 +94,32 @@ public class InfoLetterPublicationPdC extends InfoLetterPublication
   }
 
   @Override
-  public String getDate() {
-    return getParutionDate();
+  public Date getCreationDate() {
+    try {
+      return DateUtil.parse(getParutionDate());
+    } catch (ParseException e) {
+      throw new SilverpeasRuntimeException(e);
+    }
   }
 
   @Override
-  public String getCreatorId() {
+  public String getComponentInstanceId() {
+    return getInstanceId();
+  }
+
+  @Override
+  public Date getLastUpdateDate() {
+    return getCreationDate();
+  }
+
+  @Override
+  public User getCreator() {
     return null;
   }
 
   @Override
-  public String getIconUrl() {
-    /*
-     * publication icon
-     */
-    return "infoLetterSmall.gif";
-  }
-
-  @Override
-  public String getSilverCreationDate() {
-    return getParutionDate();
-  }
-
-  @Override
-  public String getDescription(String language) {
-    return getDescription();
-  }
-
-  @Override
-  public String getName(String language) {
-    return getName();
-  }
-
-  @Override
-  public Collection<String> getLanguages() {
-    return Collections.emptyList();
+  public User getLastUpdater() {
+    return null;
   }
 
   @Override
@@ -143,6 +133,11 @@ public class InfoLetterPublicationPdC extends InfoLetterPublication
       }
     }
     return this.silverObjectId;
+  }
+
+  @Override
+  public ContributionIdentifier getIdentifier() {
+    return ContributionIdentifier.from(getInstanceId(), getId(), getContributionType());
   }
 
   @Override

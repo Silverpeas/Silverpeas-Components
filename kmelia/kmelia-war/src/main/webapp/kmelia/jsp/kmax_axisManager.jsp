@@ -35,7 +35,7 @@
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper"%>
 <%@ page import="org.silverpeas.core.i18n.I18NHelper" %>
 
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view"%>
 
 <%@ include file="checkKmelia.jsp" %>
 <%@ include file="kmax_axisReport.jsp" %>
@@ -125,7 +125,7 @@ function axisUpdate() {
     document.managerForm.AxisName.value = document.axisManagerForm.Name.value;
     document.managerForm.AxisDescription.value = document.axisManagerForm.Description.value;
     document.managerForm.AxisId.value = document.axisManagerForm.Id.value;
-    <% if (I18NHelper.isI18nContentActivated)  { %>
+    <% if (I18NHelper.isI18nContentActivated())  { %>
       document.managerForm.I18NLanguage.value = document.axisManagerForm.I18NLanguage[document.axisManagerForm.I18NLanguage.selectedIndex].value;
     <% } %>
     if (document.getElementById('TranslationRemoveIt'))  {
@@ -217,7 +217,7 @@ function positionUpdate() {
     document.managerForm.PositionName.value = document.axisManagerForm.Name.value;
     document.managerForm.PositionDescription.value = document.axisManagerForm.Description.value;
     document.managerForm.PositionId.value = document.axisManagerForm.Id.value;
-    <% if (I18NHelper.isI18nContentActivated)  { %>
+    <% if (I18NHelper.isI18nContentActivated())  { %>
       document.managerForm.I18NLanguage.value = document.axisManagerForm.I18NLanguage[document.axisManagerForm.I18NLanguage.selectedIndex].value;
     <% } %>
     if (document.getElementById('TranslationRemoveIt'))  {

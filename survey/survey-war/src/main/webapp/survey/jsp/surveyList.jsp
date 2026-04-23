@@ -31,12 +31,12 @@
 
 <%@ include file="checkSurvey.jsp"%>
 
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
 <%--
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="jakarta.tags.functions" prefix="fn" %>
 --%>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view"%>
 
 <c:set var="ctxPath" value="${pageContext.request.contextPath}" />
 <%-- Set resource bundle --%>
@@ -60,8 +60,8 @@
       ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 
   ArrayPane buildSurveyArrayToAdmin(GraphicElementFactory gef, SurveySessionController surveyScc,
-      int view, Collection surveys, MultiSilverpeasBundle resources,
-      javax.servlet.ServletRequest request, javax.servlet.http.HttpSession session,
+      int view, Collection<QuestionContainerHeader> surveys, MultiSilverpeasBundle resources,
+      ServletRequest request, HttpSession session,
       boolean pollingStationMode) throws ParseException {
 
     ArrayPane arrayPane =
@@ -91,9 +91,7 @@
     }
 
     if (surveys != null) {
-      Iterator i = surveys.iterator();
-      while (i.hasNext()) {
-        QuestionContainerHeader survey = (QuestionContainerHeader) i.next();
+      for (QuestionContainerHeader survey : surveys) {
         ArrayLine arrayLine = arrayPane.addArrayLine();
         String link = "";
         if ((view == SurveySessionController.OPENED_SURVEYS_VIEW) ||
@@ -108,8 +106,8 @@
 
           ArrayCellText arrayCellText0 =
               arrayLine
-              .addArrayCellText("<a href=\"javascript:viewSurvey(" +
-              survey.getPK().getId() + ")\">" + WebEncodeHelper.javaStringToHtmlString(survey.getTitle()) + "</a>" + link);
+                  .addArrayCellText("<a href=\"javascript:viewSurvey(" +
+                                    survey.getPK().getId() + ")\">" + WebEncodeHelper.javaStringToHtmlString(survey.getTitle()) + "</a>" + link);
           arrayCellText0.setCompareOn(survey.getTitle());
 
           if (survey.getEndDate() == null)
@@ -129,26 +127,26 @@
           if (view == SurveySessionController.OPENED_SURVEYS_VIEW) {
             Icon closeIcon = iconPane.addIcon();
             closeIcon.setProperties(lockSrc, resources.getString("GML.lock") + " '" +
-                WebEncodeHelper.javaStringToHtmlString(survey.getTitle()) + "'",
+                                             WebEncodeHelper.javaStringToHtmlString(survey.getTitle()) + "'",
                 "javascript: closeSurvey('" + survey.getPK().getId() + "');");
           } else {
             Icon openIcon = iconPane.addIcon();
             openIcon.setProperties(unlockSrc, resources.getString("GML.unlock") + " '" +
-                WebEncodeHelper.javaStringToHtmlString(survey.getTitle()) + "'",
+                                              WebEncodeHelper.javaStringToHtmlString(survey.getTitle()) + "'",
                 "javascript: openSurvey('" + survey.getPK().getId() + "');");
           }
           // mise à jour
           Icon updateIcon = iconPane.addIcon();
           updateIcon.setProperties(surveyUpdateSrc, resources.getString("GML.modify") + " '" +
-              WebEncodeHelper.javaStringToHtmlString(survey.getTitle()) + "'", "javascript:updateSurvey('" +
-              survey.getPK().getId() + "','" +
-              WebEncodeHelper.javaStringToHtmlString(WebEncodeHelper.javaStringToJsString(survey.getTitle())) + "','" + survey.getNbVoters() + "')");
+                                                    WebEncodeHelper.javaStringToHtmlString(survey.getTitle()) + "'", "javascript:updateSurvey('" +
+                                                                                                                     survey.getPK().getId() + "','" +
+                                                                                                                     WebEncodeHelper.javaStringToHtmlString(WebEncodeHelper.javaStringToJsString(survey.getTitle())) + "','" + survey.getNbVoters() + "')");
           // suppression
           Icon deleteIcon = iconPane.addIcon();
           deleteIcon.setProperties(surveyDeleteSrc, resources.getString("GML.delete") + " '" +
-              WebEncodeHelper.javaStringToHtmlString(survey.getTitle()) + "'", "javaScript:deleteSurvey('" +
-              survey.getPK().getId() + "','" +
-              WebEncodeHelper.javaStringToHtmlString(WebEncodeHelper.javaStringToJsString(survey.getTitle())) + "')");
+                                                    WebEncodeHelper.javaStringToHtmlString(survey.getTitle()) + "'", "javaScript:deleteSurvey('" +
+                                                                                                                     survey.getPK().getId() + "','" +
+                                                                                                                     WebEncodeHelper.javaStringToHtmlString(WebEncodeHelper.javaStringToJsString(survey.getTitle())) + "')");
           iconPane.setSpacing("30px");
           arrayLine.addArrayCellIconPane(iconPane);
         } else {
@@ -163,8 +161,8 @@
 
           ArrayCellText arrayCellText =
               arrayLine
-              .addArrayCellText("<a href=\"javascript:viewSurvey(" +
-              survey.getPK().getId() + ")\">" + WebEncodeHelper.javaStringToHtmlString(survey.getTitle()) + "</a>" + link);
+                  .addArrayCellText("<a href=\"javascript:viewSurvey(" +
+                                    survey.getPK().getId() + ")\">" + WebEncodeHelper.javaStringToHtmlString(survey.getTitle()) + "</a>" + link);
           arrayCellText.setCompareOn(survey.getTitle());
 
           if (survey.getBeginDate() == null) {
@@ -188,13 +186,13 @@
           IconPane iconPane = gef.getIconPane();
           Icon updateIcon = iconPane.addIcon();
           updateIcon.setProperties(surveyUpdateSrc, resources.getString("GML.modify") + " '" +
-              WebEncodeHelper.javaStringToHtmlString(survey.getTitle()) + "'",
+                                                    WebEncodeHelper.javaStringToHtmlString(survey.getTitle()) + "'",
               "surveyUpdate.jsp?Action=UpdateSurveyHeader&SurveyId=" + survey.getPK().getId());
           Icon deleteIcon = iconPane.addIcon();
           deleteIcon.setProperties(surveyDeleteSrc, resources.getString("GML.delete") + " '" +
-              WebEncodeHelper.javaStringToHtmlString(survey.getTitle()) + "'", "javaScript:deleteSurvey('" +
-              survey.getPK().getId() + "','" +
-              WebEncodeHelper.javaStringToHtmlString(WebEncodeHelper.javaStringToJsString(survey.getTitle())) + "')");
+                                                    WebEncodeHelper.javaStringToHtmlString(survey.getTitle()) + "'", "javaScript:deleteSurvey('" +
+                                                                                                                     survey.getPK().getId() + "','" +
+                                                                                                                     WebEncodeHelper.javaStringToHtmlString(WebEncodeHelper.javaStringToJsString(survey.getTitle())) + "')");
           iconPane.setSpacing("30px");
           arrayLine.addArrayCellIconPane(iconPane);
         }
@@ -204,8 +202,8 @@
   }
 
   ArrayPane buildSurveyArrayToUser(GraphicElementFactory gef, SurveySessionController surveyScc,
-      int view, Collection surveys, MultiSilverpeasBundle resources,
-      javax.servlet.ServletRequest request, javax.servlet.http.HttpSession session,
+      int view, Collection<QuestionContainerHeader> surveys, MultiSilverpeasBundle resources,
+      ServletRequest request, HttpSession session,
       boolean pollingStationMode) throws ParseException {
 
     ArrayPane arrayPane =
@@ -232,9 +230,7 @@
     }
 
     if (surveys != null) {
-      Iterator i = surveys.iterator();
-      while (i.hasNext()) {
-        QuestionContainerHeader survey = (QuestionContainerHeader) i.next();
+      for (QuestionContainerHeader survey : surveys) {
         ArrayLine arrayLine = arrayPane.addArrayLine();
         String link = "";
         if ((view == SurveySessionController.OPENED_SURVEYS_VIEW) ||
@@ -249,8 +245,8 @@
 
           ArrayCellText arrayCellText0 =
               arrayLine
-              .addArrayCellText("<a href=\"javascript:viewSurvey(" +
-              survey.getPK().getId() + ")\">" + WebEncodeHelper.javaStringToHtmlString(survey.getTitle()) + "</a>" + link);
+                  .addArrayCellText("<a href=\"javascript:viewSurvey(" +
+                                    survey.getPK().getId() + ")\">" + WebEncodeHelper.javaStringToHtmlString(survey.getTitle()) + "</a>" + link);
           arrayCellText0.setCompareOn(survey.getTitle());
 
           if (survey.getEndDate() == null)
@@ -376,7 +372,7 @@ function createPollingStation() {
 	}
 
 function deleteSurvey(surveyId, name) {
-  var label = "<view:encodeJs string="${surveyConfirmDeleteLabel}" /> '" + name + "' ?";
+  let label = "<view:encodeJs string="${surveyConfirmDeleteLabel}" /> '" + name + "' ?";
   jQuery.popup.confirm(label, function() {
     document.surveysForm.Action.value = "DeleteSurvey";
     document.surveysForm.SurveyId.value = surveyId;

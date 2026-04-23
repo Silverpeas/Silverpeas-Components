@@ -32,12 +32,13 @@
 <%@ page import="java.io.IOException"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame" %>
-<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
+<%@ page import="org.silverpeas.core.util.file.FileItem" %>
+<%@ page import="org.silverpeas.core.util.*" %>
 
 <%@ include file="checkSurvey.jsp" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view"%>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
 
 <%!
 void displayAnswer(int i, String style, MultiSilverpeasBundle resources, List<ComponentInstLight> galleries, JspWriter out) throws IOException {
@@ -149,22 +150,22 @@ void displayAnswer(int i, String style, MultiSilverpeasBundle resources, List<Co
     Answer answer = null;
     Iterator<FileItem> itemIter = items.iterator();
     while (itemIter.hasNext()) {
-      FileItem item = (FileItem) itemIter.next();
+      FileItem item = itemIter.next();
       if (item.isFormField()) {
         String mpName = item.getFieldName();
         if (mpName.startsWith("answer")) {
-          answerInput = item.getString(FileUploadUtil.DEFAULT_ENCODING);
+          answerInput = item.getContent();
           answer = new Answer(null, null, answerInput, 0, 0, false, "", 0, false, null);
           answers.add(answer);
         } else if ("suggestionLabel".equals(mpName)) {
-          answerInput = item.getString(FileUploadUtil.DEFAULT_ENCODING);
+          answerInput = item.getContent();
           answer = new Answer(null, null, answerInput, 0, 0, false, "", 0, true, null);
           answers.add(answer);
         } else if (mpName.startsWith("valueImageGallery")) {
-          if (StringUtil.isDefined(item.getString())) {
+          if (StringUtil.isDefined(item.getContent())) {
             // traiter les images venant de la gallery si pas d'image externe
             if (!file) {
-              answer.setImage(item.getString());
+              answer.setImage(item.getContent());
             }
           }
         }

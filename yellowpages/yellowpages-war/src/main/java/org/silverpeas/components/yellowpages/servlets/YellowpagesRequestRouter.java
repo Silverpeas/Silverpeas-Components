@@ -333,7 +333,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
         destination = "/yellowpages/jsp/" + function;
       }
     } catch (Exception ex) {
-      request.setAttribute("javax.servlet.jsp.jspException", ex);
+      request.setAttribute("jakarta.servlet.jsp.jspException", ex);
       return "/admin/jsp/errorpageMain.jsp";
     }
 

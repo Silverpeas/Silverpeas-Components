@@ -56,7 +56,7 @@ public abstract class FunctionHandler {
         return ROOT_DESTINATION + destination;
       }
     } catch (Exception e) {
-      request.setAttribute("javax.servlet.jsp.jspException", e);
+      request.setAttribute("jakarta.servlet.jsp.jspException", e);
       return "/admin/jsp/errorpageMain.jsp";
     }
   }

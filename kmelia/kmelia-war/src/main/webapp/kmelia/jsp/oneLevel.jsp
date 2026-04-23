@@ -26,10 +26,10 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="checkKmelia.jsp" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view"%>
+<%@ taglib uri="silverpeas.tags.silverFunctions" prefix="silfn" %>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/kmelia" prefix="kmelia" %>
 <%@page import="org.silverpeas.components.kmelia.SearchContext"%>
 <%@page import="org.silverpeas.core.admin.user.model.SilverpeasRole"%>
@@ -50,7 +50,7 @@
 <%
   String   profile      = (String) request.getAttribute("Profile");
   String  translation   = (String) request.getAttribute("Language");
-  boolean displayNBPublis = ((Boolean) request.getAttribute("DisplayNBPublis")).booleanValue();
+  boolean displayNBPublis = (Boolean) request.getAttribute("DisplayNBPublis");
   Boolean rightsOnTopics  = (Boolean) request.getAttribute("RightsOnTopicsEnabled");
   int    currentPageIndex = (Integer) request.getAttribute("PageIndex");
 
@@ -208,7 +208,7 @@
       </form>
 
       <script type="text/javascript">
-        const icons = new Object();
+        const icons = {};
         icons["permalink"] = "<%=resources.getIcon("kmelia.link")%>";
         icons["operation.addTopic"] = "<%=resources.getIcon("kmelia.operation.addTopic")%>";
         icons["operation.addPubli"] = "<%=resources.getIcon("kmelia.operation.addPubli")%>";
@@ -217,9 +217,9 @@
         icons["operation.subscribe"] = "<%=resources.getIcon("kmelia.operation.subscribe")%>";
         icons["operation.favorites"] = "<%=resources.getIcon("kmelia.operation.favorites")%>";
 
-        const params = new Object();
+        const params = {};
         params["rightsOnTopic"] = <%=rightsOnTopics.booleanValue()%>;
-        params["i18n"] = <%=I18NHelper.isI18nContentActivated%>;
+        params["i18n"] = <%=I18NHelper.isI18nContentActivated()%>;
         params["nbPublisDisplayed"] = <%=displayNBPublis%>;
 
         let searchInProgress = <%=searchContext != null%>;
@@ -343,7 +343,7 @@
               }
               $("#subTopics").append("</ul>");
               if ($("#subTopics ul li").length > 0) {
-                $("#subTopics").append("<br clear='all'>");
+                $("#subTopics").append("<br >");
               } else {
                 $("#subTopics").empty();
               }
@@ -397,8 +397,9 @@
     </div>
     <div id="addOrUpdateNode" style="display: none;">
       <form name="topicForm" action="AddTopic" method="post">
-        <input type="hidden" id="<%=I18NHelper.HTMLHiddenRemovedTranslationMode %>" name="<%=I18NHelper.HTMLHiddenRemovedTranslationMode %>" value="false"/>
+        <input type="hidden" id="<%=I18NHelper.HTML_HIDDEN_REMOVED_TRANSLATION_MODE %>" name="<%=I18NHelper.HTML_HIDDEN_REMOVED_TRANSLATION_MODE %>" value="false"/>
         <table>
+          <th></th>
           <tr><td class="txtlibform"><fmt:message key="TopicPath"/> :</td>
             <td id="path"></td>
           </tr>

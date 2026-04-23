@@ -31,10 +31,12 @@ import org.silverpeas.core.contribution.content.renderer.ContributionContentRend
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.contribution.model.ContributionContent;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.model.WithPermanentLink;
 import org.silverpeas.core.contribution.model.WysiwygContent;
 import org.silverpeas.core.ddwe.DragAndDropEditorContent;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.kernel.annotation.NonNull;
 import org.silverpeas.kernel.util.StringUtil;
 
@@ -51,7 +53,8 @@ import static org.silverpeas.kernel.util.StringUtil.isNotDefined;
  * @author frageade
  */
 @SuppressWarnings("deprecation")
-public class InfoLetterPublication extends SilverpeasBean implements Comparable<InfoLetter> {
+public class InfoLetterPublication extends SilverpeasBean implements WithPermanentLink,
+    Comparable<InfoLetter> {
   private static final long serialVersionUID = 2579802983989822400L;
   public static final int PUBLICATION_EN_REDACTION = 1;
   public static final int PUBLICATION_VALIDEE = 2;
@@ -149,6 +152,11 @@ public class InfoLetterPublication extends SilverpeasBean implements Comparable<
 
   public void setLetterId(String letterId) {
     this.letterId = Integer.parseInt(letterId);
+  }
+
+  @Override
+  public String getPermalink() {
+    return URLUtil.getSimpleURL(URLUtil.URL_NEWSLETTER, getPK().getId());
   }
 
   @Override

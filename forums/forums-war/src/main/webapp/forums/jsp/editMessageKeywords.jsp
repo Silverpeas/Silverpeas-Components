@@ -31,7 +31,7 @@
     response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
 <%@ include file="checkForums.jsp"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view"%>
 <%
     int messageId = getIntParameter(request, "params");
     Message message = fsc.getMessage(messageId);

@@ -29,7 +29,10 @@ import org.silverpeas.components.gallery.model.MediaLogicalComparator;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
+import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.silverpeas.components.gallery.model.MediaCriteria.QUERY_ORDER_BY.*;
 
@@ -45,6 +48,10 @@ public enum MediaSort {
   Size(true, "gallery.media.size", SIZE_ASC, CREATE_DATE_DESC, IDENTIFIER_ASC),
   Author(true, "GML.author", AUTHOR_ASC_EMPTY_END, CREATE_DATE_DESC, IDENTIFIER_ASC),
   Definition(false, "gallery.dimension", DIMENSION_ASC, CREATE_DATE_DESC, IDENTIFIER_ASC);
+
+  @SuppressWarnings("unused")
+  public static final Set<MediaSort> ALL =
+      Collections.unmodifiableSet(EnumSet.allOf(MediaSort.class));
 
   private final boolean displayed;
   private final String bundleKey;
