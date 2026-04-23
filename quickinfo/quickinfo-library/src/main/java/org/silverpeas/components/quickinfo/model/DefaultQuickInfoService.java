@@ -27,6 +27,7 @@ package org.silverpeas.components.quickinfo.model;
 import org.silverpeas.components.delegatednews.service.DelegatedNewsService;
 import org.silverpeas.components.delegatednews.service.DelegatedNewsServiceProvider;
 import org.silverpeas.components.quickinfo.NewsByStatus;
+import org.silverpeas.components.quickinfo.NewsSort;
 import org.silverpeas.components.quickinfo.QuickInfoComponentSettings;
 import org.silverpeas.components.quickinfo.notification.NewsEventNotifier;
 import org.silverpeas.components.quickinfo.notification.QuickInfoDelayedVisibilityUserNotificationReminder;
@@ -136,8 +137,9 @@ public class DefaultQuickInfoService implements QuickInfoService {
 
   @Override
   public NewsByStatus getAllNewsByStatus(String componentId, String userId) {
-    String noMoreVisiblesSort = getComponentSettings().getString("noMoreVisibles.sort", "ASC");
-    String notYetVisiblesSort = getComponentSettings().getString("notYetVisiblesSort", "ASC");
+
+    NewsSort noMoreVisiblesSort = NewsSort.fromString(getComponentSettings().getString("news.visible.noMore.sort"));
+    NewsSort notYetVisiblesSort = NewsSort.fromString(getComponentSettings().getString("news.visible.noYet.sort"));
 
     return new NewsByStatus(getAllNews(componentId), userId, noMoreVisiblesSort, notYetVisiblesSort);
   }
