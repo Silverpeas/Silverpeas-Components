@@ -421,7 +421,7 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
         destination = "/infoLetter/jsp/" + destination;
       }
     } catch (Exception e) {
-      request.setAttribute("javax.servlet.jsp.jspException", e);
+      request.setAttribute("jakarta.servlet.jsp.jspException", e);
       destination = "/admin/jsp/errorpageMain.jsp";
     }
 

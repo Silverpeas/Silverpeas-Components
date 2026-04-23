@@ -33,11 +33,11 @@
 <%@ page import="org.silverpeas.core.web.treemenu.process.TreeHandler"%>
 <%@ page import="org.silverpeas.core.web.treemenu.model.MenuConstants"%>
 <%@ include file="checkKmelia.jsp" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/menuTree" prefix="menuTree"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ taglib prefix="slif" uri="http://www.silverpeas.com/tld/silverFunctions" %>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<%@ taglib uri="silverpeas.tags.silverFunctions" prefix="silfn" %>
+<%@ taglib uri="silverpeas.tags.menuTree" prefix="menuTree"%>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view"%>
+<%@ taglib prefix="slif" uri="silverpeas.tags.silverFunctions" %>
 
 <c:set var="closeWindowOnLoad" value=""/>
 <c:if test="${silfn:isDefined(requestScope.NbLinks)}">

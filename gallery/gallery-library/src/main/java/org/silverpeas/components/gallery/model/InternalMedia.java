@@ -34,14 +34,15 @@ import org.silverpeas.core.io.file.SilverpeasFileProvider;
 import org.silverpeas.core.io.media.video.ThumbnailPeriod;
 import org.silverpeas.core.notification.message.MessageManager;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
@@ -78,6 +79,7 @@ public abstract class InternalMedia extends Media {
   /**
    * Indicates if the media is marked as downloadable. The visibility period is not taken into
    * account here.
+   *
    * @return true if marked as downloadable, false otherwise.
    */
   public boolean isDownloadAuthorized() {
@@ -87,6 +89,7 @@ public abstract class InternalMedia extends Media {
   /**
    * Indicates if the download is possible according the visibility information. The date of day
    * must be included into visibility period.
+   *
    * @return true if download is possible, false otherwise.
    */
   @Override
@@ -137,7 +140,8 @@ public abstract class InternalMedia extends Media {
 
   public MetaDataSet getAllMetaData() {
     if (metaData == null) {
-      metaData = new MetaDataSet(this);
+      metaData = new MetaDataSet();
+      metaData.load(this);
     }
     return metaData;
   }
@@ -181,7 +185,7 @@ public abstract class InternalMedia extends Media {
       return GalleryResourceURIs.buildMediaContentURI(this, mediaResolution).toString();
     } else {
       String thumbnailUrl = URLUtil.getApplicationURL() + "/gallery/jsp/icons/notAvailable_" +
-          MessageManager.getLanguage() + mediaResolution.getThumbnailSuffix() + ".jpg";
+                            MessageManager.getLanguage() + mediaResolution.getThumbnailSuffix() + ".jpg";
       return FilenameUtils.normalize(thumbnailUrl, true);
     }
   }
@@ -216,7 +220,8 @@ public abstract class InternalMedia extends Media {
         continue;
       }
       if (isDefined(size)) {
-        physicalFile = Paths.get(physicalFile.getParentFile().getPath(), size, physicalFile.getName()).toFile();
+        physicalFile = Paths.get(physicalFile.getParentFile().getPath(), size,
+            physicalFile.getName()).toFile();
       }
       file = SilverpeasFileProvider.getFile(physicalFile.getPath());
     }
@@ -224,4 +229,15 @@ public abstract class InternalMedia extends Media {
   }
 
 
+  @Override
+  public boolean equals(Object o) {
+    if (!(o instanceof InternalMedia)) return false;
+    return super.equals(o);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(super.hashCode(), downloadAuthorized, fileName, fileSize, fileMimeType,
+        downloadPeriod, metaData);
+  }
 }

@@ -30,7 +30,7 @@
 <%@ page import="org.silverpeas.core.i18n.I18NHelper" %>
 <%@ include file="checkKmelia.jsp" %>
 
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view"%>
 
 <%
 String mandatoryField = m_context + "/util/icons/mandatoryField.gif";

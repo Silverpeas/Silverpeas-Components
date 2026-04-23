@@ -38,10 +38,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
- * A REST Web resource representing a given question.
- * It is a web service that provides access to a question referenced by its URL.
+ * A REST Web resource representing a given question. It is a web service that provides access to a
+ * question referenced by its URL.
  */
 @WebService
 @Path(QuestionReplyBaseWebService.PATH + "/{componentId}/questions")
@@ -60,13 +61,14 @@ public class QuestionResource extends QuestionReplyBaseWebService {
   }
 
   /**
-   * Gets the JSON representation of the specified existing question.
-   * If the question doesn't exist, a 404 HTTP code is returned.
-   * If the user isn't authentified, a 401 HTTP code is returned.
-   * If the user isn't authorized to access the question, a 403 is returned.
-   * If a problem occurs when processing the request, a 503 HTTP code is returned.
+   * Gets the JSON representation of the specified existing question. If the question doesn't exist,
+   * a 404 HTTP code is returned. If the user isn't authentified, a 401 HTTP code is returned. If
+   * the user isn't authorized to access the question, a 403 is returned. If a problem occurs when
+   * processing the request, a 503 HTTP code is returned.
+   *
    * @param onQuestionId the unique identifier of the question.
-   * @return the response to the HTTP GET request with the JSON representation of the asked question.
+   * @return the response to the HTTP GET request with the JSON representation of the asked
+   * question.
    */
   @GET
   @Path("{questionId}")
@@ -87,7 +89,7 @@ public class QuestionResource extends QuestionReplyBaseWebService {
 
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public QuestionEntity[] getQuestions(@QueryParam("ids") Set<String> ids) {
+  public List<QuestionEntity> getQuestions(@QueryParam("ids") Set<String> ids) {
     try {
       List<Question> questions = questionManager.getQuestionsByIds(new ArrayList<>(ids));
       return asWebEntities(extractVisibleQuestions(questions));
@@ -99,7 +101,7 @@ public class QuestionResource extends QuestionReplyBaseWebService {
   @GET
   @Path("all")
   @Produces(MediaType.APPLICATION_JSON)
-  public QuestionEntity[] getAllQuestions() {
+  public List<QuestionEntity> getAllQuestions() {
     try {
       List<Question> questions = questionManager.getAllQuestions(componentId);
       return asWebEntities(extractVisibleQuestions(questions));
@@ -111,7 +113,7 @@ public class QuestionResource extends QuestionReplyBaseWebService {
   @GET
   @Path("category/{categoryId}")
   @Produces(MediaType.APPLICATION_JSON)
-  public QuestionEntity[] getAllQuestionsByCategory(@PathParam("categoryId") String categoryId) {
+  public List<QuestionEntity> getAllQuestionsByCategory(@PathParam("categoryId") String categoryId) {
     try {
       List<Question> questions = questionManager.getAllQuestionsByCategory(componentId, categoryId);
       return asWebEntities(extractVisibleQuestions(questions));
@@ -142,30 +144,31 @@ public class QuestionResource extends QuestionReplyBaseWebService {
 
   /**
    * Converts the specified list of questions into their corresponding web entities.
+   *
    * @param questions the questions to convert.
-   * @return an array with the corresponding question entities.
+   * @return a list with the corresponding question entities.
    */
-  protected QuestionEntity[] asWebEntities(List<Question> questions) {
-    QuestionEntity[] entities = new QuestionEntity[questions.size()];
-    for (int i = 0; i < questions.size(); i++) {
-      Question question = questions.get(i);
-      URI questionURI = getUri().getRequestUriBuilder().path(question.getPK().getId()).
-          build();
-      entities[i] = asWebEntity(question, identifiedBy(questionURI));
-    }
-    return entities;
+  protected List<QuestionEntity> asWebEntities(List<Question> questions) {
+    return questions.stream()
+        .map(q -> {
+          URI questionURI = getUri().getRequestUriBuilder().path(q.getPK().getId()).
+              build();
+          return asWebEntity(q, identifiedBy(questionURI));
+        })
+        .collect(Collectors.toList());
   }
 
   /**
    * Converts the question into its corresponding web entity.
+   *
    * @param question the question to convert.
    * @param questionURI the URI of the question.
    * @return the corresponding question entity.
    */
   protected QuestionEntity asWebEntity(final Question question, URI questionURI) {
     QuestionEntity entity = QuestionEntity.fromQuestion(question,
-            getUserPreferences().getLanguage()).withURI(questionURI).withUser(getUser(),
-            getUserProfile());
+        getUserPreferences().getLanguage()).withURI(questionURI).withUser(getUser(),
+        getUserProfile());
     AuthorEntity author = AuthorEntity.fromUser(question.readAuthor(getOrganisationController()));
     author.setAvatar(getHttpServletRequest().getContextPath() + author.getAvatar());
     entity.setCreator(author);

@@ -23,12 +23,13 @@
  */
 package org.silverpeas.processmanager.service;
 
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.attachment.model.*;
 import org.silverpeas.core.contribution.content.form.*;
 import org.silverpeas.core.contribution.content.form.field.*;
@@ -64,6 +65,11 @@ import static org.silverpeas.processmanager.ProcessManagerException.PROCESS_INST
 @Service
 public class DefaultProcessManagerService implements ProcessManagerService {
 
+  @Inject
+  private OrganizationController organizationController;
+  @Inject
+  private AttachmentService attachmentService;
+
   /**
    * Default role for creating workflow processes.
    */
@@ -78,6 +84,7 @@ public class DefaultProcessManagerService implements ProcessManagerService {
    * of those defined in a given workflow definition. The contents of a file is passed in as a
    * single parameter. This file is uploaded into the process data and stored in the first field of
    * the file type.
+   *
    * @param componentId the ID of the component which defines the workflow (must be a workflow
    * component).
    * @param userId the current user ID.
@@ -108,6 +115,7 @@ public class DefaultProcessManagerService implements ProcessManagerService {
    * <p>
    * {@link FileContent} are used to pass in as an argument a complete file of binary data, loaded
    * into memory. </p>
+   *
    * @param componentId the ID of the component which defines the workflow (must be a workflow
    * component).
    * @param userId the current user ID.
@@ -186,6 +194,7 @@ public class DefaultProcessManagerService implements ProcessManagerService {
   /**
    * Retrieve and return the name of the data type, as expected by form templates in workflow
    * processing, from the Java data type of given value object.
+   *
    * @param value the value object we want to set into a form field
    * @return the corresponding data type of value (or values if the argument is a data collection),
    * or return <code>null</code> if the value is an empty or null value (which means that any type
@@ -221,6 +230,7 @@ public class DefaultProcessManagerService implements ProcessManagerService {
    * Find and return the matching field in the current form, knowing its name and type name. If name
    * is
    * <code>null</code>, then search the first mandatory field of the right type.
+   *
    * @param form the form template.
    * @param data the data of the current form.
    * @param name the searched name or <code>null</code> for looking for the first mandatory field of
@@ -257,8 +267,9 @@ public class DefaultProcessManagerService implements ProcessManagerService {
   }
 
   /**
-   * Transform and return a given value into a string value suitable for a form field, depending
-   * on the given field type name.
+   * Transform and return a given value into a string value suitable for a form field, depending on
+   * the given field type name.
+   *
    * @param value the value to convert into a string.
    * @param type the field type name.
    * @return the converted string value.
@@ -278,6 +289,7 @@ public class DefaultProcessManagerService implements ProcessManagerService {
 
   /**
    * Fill a form field in with a given value.
+   *
    * @param field the field object to fill in.
    * @param name the name of the field.
    * @param value the value object (to be converted into a string value during the execution of this
@@ -464,8 +476,7 @@ public class DefaultProcessManagerService implements ProcessManagerService {
         .setCreationData(userId, new Date()).build();
     SimpleDocument doc = new SimpleDocument(simpleDocPk, foreignId, 0, versioned, userId,
         attachment);
-    return AttachmentServiceProvider.getAttachmentService()
-        .createAttachment(doc, new ByteArrayInputStream(content));
+    return attachmentService.createAttachment(doc, new ByteArrayInputStream(content));
   }
 
   private String getLanguage() {
@@ -516,8 +527,9 @@ public class DefaultProcessManagerService implements ProcessManagerService {
       Map<String, Object> metadata, GenericDataRecord data, XmlForm form)
       throws ProcessManagerException {
     List<String> attachmentIds = new ArrayList<>();
-    boolean versioningUsed = StringUtil.getBooleanValue(OrganizationControllerProvider.
-        getOrganisationController().getComponentParameterValue(componentId, VERSION_MODE));
+    boolean versioningUsed =
+        StringUtil.getBooleanValue(organizationController.getComponentParameterValue(componentId,
+        VERSION_MODE));
 
     PagesContext pagesContext = new PagesContext("creationForm", "0", getLanguage(), true,
         componentId, userId);

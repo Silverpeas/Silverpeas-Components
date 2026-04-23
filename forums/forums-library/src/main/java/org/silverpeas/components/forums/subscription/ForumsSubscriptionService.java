@@ -52,8 +52,6 @@ public class ForumsSubscriptionService extends AbstractResourceSubscriptionServi
 
   @Inject
   private ForumService forumService;
-  @Inject
-  private SubscriptionService subscriptionService;
 
   @Override
   public void init()  {
@@ -108,14 +106,14 @@ public class ForumsSubscriptionService extends AbstractResourceSubscriptionServi
   private void verifyForum(final ForumPK forumPK,
       final Collection<SubscriptionSubscriber> subscribers) {
     subscribers.addAll(
-        getSubscribeService().getSubscribers(ForumSubscriptionResource.from(forumPK)));
+        getSubscriptionService().getSubscribers(ForumSubscriptionResource.from(forumPK)));
 
     // Subscribers of parent forums if any
     Forum currentForum = getForumsService().getForum(forumPK);
     while (!currentForum.isRoot()) {
       currentForum = getForumsService().getForum(
           new ForumPK(forumPK.getInstanceId(), currentForum.getParentIdAsString()));
-      subscribers.addAll(getSubscribeService().getSubscribers(
+      subscribers.addAll(getSubscriptionService().getSubscribers(
           ForumSubscriptionResource.from(currentForum.getPk())));
     }
   }
@@ -123,7 +121,7 @@ public class ForumsSubscriptionService extends AbstractResourceSubscriptionServi
   private Message verifyMessage(final MessagePK messagePK,
       final Collection<SubscriptionSubscriber> subscribers) {
     subscribers.addAll(
-        getSubscribeService().getSubscribers(ForumMessageSubscriptionResource.from(messagePK)));
+        getSubscriptionService().getSubscribers(ForumMessageSubscriptionResource.from(messagePK)));
 
     // Subscribers of parent forum messages if any
     Message message = getForumsService().getMessage(messagePK);
@@ -131,7 +129,7 @@ public class ForumsSubscriptionService extends AbstractResourceSubscriptionServi
     while (!currentMessage.isSubject()) {
       currentMessage = getForumsService().getMessage(
           new MessagePK(messagePK.getInstanceId(), currentMessage.getParentIdAsString()));
-      subscribers.addAll(getSubscribeService().getSubscribers(
+      subscribers.addAll(getSubscriptionService().getSubscribers(
           ForumMessageSubscriptionResource.from(currentMessage.getPk())));
     }
 
@@ -142,7 +140,4 @@ public class ForumsSubscriptionService extends AbstractResourceSubscriptionServi
     return forumService;
   }
 
-  private SubscriptionService getSubscribeService() {
-    return subscriptionService;
-  }
 }

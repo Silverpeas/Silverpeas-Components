@@ -27,7 +27,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="org.silverpeas.core.node.model.NodeDetail" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view" %>
 <%@ include file="checkYellowpages.jsp" %>
 
 <%

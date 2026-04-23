@@ -67,7 +67,7 @@ public class GalleryLoadMetaDataProcess extends AbstractFileProcess<ProcessExecu
     }
   }
 
-  private static void setMetaData(final FileHandler fileHandler, final Photo photo)
+  private void setMetaData(final FileHandler fileHandler, final Photo photo)
       throws MediaMetadataException {
     if (MediaMimeType.JPG == photo.getFileMimeType()) {
       final HandledFile handledFile = fileHandler

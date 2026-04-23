@@ -210,7 +210,7 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
         destination = "/quickinfo/jsp/" + function;
       }
     } catch (Exception e) {
-      request.setAttribute("javax.servlet.jsp.jspException", e);
+      request.setAttribute("jakarta.servlet.jsp.jspException", e);
       destination = "/admin/jsp/errorpage.jsp";
     }
     return destination;

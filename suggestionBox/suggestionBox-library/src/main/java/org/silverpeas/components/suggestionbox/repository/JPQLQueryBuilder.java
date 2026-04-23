@@ -68,6 +68,7 @@ public class JPQLQueryBuilder implements SuggestionCriteriaProcessor {
     done = true;
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public QueryCriteria result() {
     return this.jpqlCriteria;
@@ -94,7 +95,7 @@ public class JPQLQueryBuilder implements SuggestionCriteriaProcessor {
   @Override
   public SuggestionCriteriaProcessor processCreator(User creator) {
     if (!done) {
-      jpqlCriteria.clause().add(conjonction).add("createdBy = :createdBy").parameters()
+      jpqlCriteria.clause().add(conjonction).add("creatorId = :createdBy").parameters()
           .add("createdBy", creator.
               getId());
       conjonction = null;

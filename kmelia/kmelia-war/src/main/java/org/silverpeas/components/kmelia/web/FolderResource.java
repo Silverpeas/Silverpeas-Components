@@ -107,12 +107,13 @@ public class FolderResource extends RESTWebService {
   /**
    * Get all children of any node of the application.
    *
-   * @return an array of NodeEntity representing children
+   * @return a list of NodeEntity representing children
    */
   @GET
   @Path("{path: \\d+(/\\d+)*/path}")
   @Produces(MediaType.APPLICATION_JSON)
-  public NodeEntity[] getPath(@PathParam("path") String path, @QueryParam("lang") String language) {
+  public List<NodeEntity> getPath(@PathParam("path") String path,
+      @QueryParam("lang") String language) {
     String[] nodeIds = path.split("/");
     String nodeId = nodeIds[nodeIds.length - 2];
     NodePK nodePK = new NodePK(nodeId, componentId);
@@ -129,7 +130,8 @@ public class FolderResource extends RESTWebService {
   }
 
   @Nonnull
-  private NodeEntity[] asNodeEntities(final Collection<NodeDetail> nodes, final String language,
+  private List<NodeEntity> asNodeEntities(final Collection<NodeDetail> nodes,
+      final String language,
       final boolean decorate) {
     String requestUri = getUri().getRequestUri().toString();
     String uri = requestUri.substring(0, requestUri.lastIndexOf('/'));
@@ -140,18 +142,18 @@ public class FolderResource extends RESTWebService {
       entities.add(NodeEntity.fromNodeDetail(highestUserRole, node, uri, language));
     }
 
-    return decorate ? decorateRootChildren(entities, language) : entities.toArray(new NodeEntity[0]);
+    return decorate ? decorateRootChildren(entities, language) : entities;
   }
 
   /**
    * Get all children of any node of the application.
    *
-   * @return an array of NodeEntity representing children
+   * @return a list of NodeEntity representing children
    */
   @GET
   @Path("{path: \\d+(/\\d+)*/children}")
   @Produces(MediaType.APPLICATION_JSON)
-  public NodeEntity[] getChildren(@PathParam("path") String path,
+  public List<NodeEntity> getChildren(@PathParam("path") String path,
       @QueryParam("lang") String language) {
     String[] nodeIds = path.split("/");
     String nodeId = nodeIds[nodeIds.length - 2];
@@ -225,10 +227,10 @@ public class FolderResource extends RESTWebService {
   private void decorateRoot(NodeEntity root, String lang) {
     root.getState().setOpened(true);
     root.setType(NodeType.ROOT);
-    decorateRootChildren(Arrays.asList(root.getChildren()), lang);
+    decorateRootChildren(root.getChildren(), lang);
   }
 
-  private NodeEntity[] decorateRootChildren(List<NodeEntity> children, String lang) {
+  private List<NodeEntity> decorateRootChildren(List<NodeEntity> children, String lang) {
     // case of special nodes (bin, to validate)
     LocalizationBundle messages =
         ResourceLocator.getLocalizationBundle("org.silverpeas.kmelia.multilang.kmeliaBundle", lang);
@@ -250,7 +252,7 @@ public class FolderResource extends RESTWebService {
         child.getAttr().setDescription(messages.getString("kmelia.folder.nonvisiblepubs.desc"));
       }
     }
-    return children.toArray(new NodeEntity[0]);
+    return children;
   }
 
   /**
@@ -287,7 +289,7 @@ public class FolderResource extends RESTWebService {
     }
   }
 
-  private void setOpenState(NodeEntity[] children, List<NodeDetail> path) {
+  private void setOpenState(List<NodeEntity> children, List<NodeDetail> path) {
     for (NodeEntity child : children) {
       if (isInPath(child, path)) {
         child.getState().setOpened(true);

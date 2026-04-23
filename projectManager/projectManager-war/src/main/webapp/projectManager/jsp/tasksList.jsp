@@ -23,11 +23,11 @@
   --%>
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="java.util.Collections" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<%@ taglib uri="jakarta.tags.functions" prefix="fn" %>
+<%@ taglib uri="silverpeas.tags.silverFunctions" prefix="silfn" %>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view" %>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 <%@ include file="check.jsp" %>
 
@@ -402,7 +402,7 @@
           <jsp:useBean id="allTasks" type="java.util.List<org.silverpeas.components.projectmanager.model.TaskDetail>"/>
           <view:arrayLines var="task" items='${allTasks}' varStatus="currentLine">
             <jsp:useBean id="task" type="org.silverpeas.components.projectmanager.model.TaskDetail"/>
-            <jsp:useBean id="currentLine" type="javax.servlet.jsp.jstl.core.LoopTagStatus"/>
+            <jsp:useBean id="currentLine" type="jakarta.servlet.jsp.jstl.core.LoopTagStatus"/>
             <c:set var="taskId" value="${task.id}"/>
             <c:set var="isAttachment" value="false"/>
             <c:if test="${fn:length(task.attachments) > 0}">

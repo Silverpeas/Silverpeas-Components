@@ -40,6 +40,7 @@ import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response.Status;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -89,22 +90,24 @@ public class ListDelegatedNewsResource extends RESTWebService {
   @PUT
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
-  public DelegatedNewsEntity[] updateDelegatedNews(final DelegatedNewsEntity[] newDelegatedNews) {
-    DelegatedNewsEntity[] tabResult = new DelegatedNewsEntity[newDelegatedNews.length];
+  public List<DelegatedNewsEntity> updateDelegatedNews(final DelegatedNewsEntity[] newDelegatedNews) {
+    List<DelegatedNewsEntity> updatedEntities;
     List<DelegatedNews> initialListDelegatedNews = getDelegatedNewsService().getAllDelegatedNews();
     try {
       if (initialListDelegatedNews.size() == newDelegatedNews.length) {// Update Order
-        tabResult = updateOrder(newDelegatedNews);
+        updatedEntities = updateOrder(newDelegatedNews);
       } else if (initialListDelegatedNews.size() > newDelegatedNews.length) {// Delete
         deleteList(newDelegatedNews, initialListDelegatedNews);
-        tabResult = newDelegatedNews;
+        updatedEntities = List.of(newDelegatedNews);
+      } else {
+        updatedEntities = List.of();
       }
     } catch (DelegatedNewsRuntimeException ex) {
       throw new WebApplicationException(ex, Status.NOT_FOUND);
     } catch (Exception ex) {
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }
-    return tabResult;
+    return updatedEntities;
   }
 
   private void deleteList(final DelegatedNewsEntity[] newDelegatedNews,
@@ -126,17 +129,17 @@ public class ListDelegatedNewsResource extends RESTWebService {
     }
   }
 
-  private DelegatedNewsEntity[] updateOrder(final DelegatedNewsEntity[] newDelegatedNews) {
-    DelegatedNewsEntity[] tabResult = new DelegatedNewsEntity[newDelegatedNews.length];
+  private List<DelegatedNewsEntity> updateOrder(final DelegatedNewsEntity[] newDelegatedNews) {
+    List<DelegatedNewsEntity> results = new ArrayList<>(newDelegatedNews.length);
     int order = 0;
     for (DelegatedNewsEntity delegatedNewsEntity : newDelegatedNews) {
       // the tab of DelegatedNewsEntity is in the new order
       DelegatedNews delegatedNews = delegatedNewsEntity.toDelegatedNews();
       DelegatedNews delegatedNewsUpdated =
           getDelegatedNewsService().updateOrderDelegatedNews(delegatedNews.getPubId(), order);
-      tabResult[order] = DelegatedNewsEntity.fromDelegatedNews(delegatedNewsUpdated);
+      results.add(DelegatedNewsEntity.fromDelegatedNews(delegatedNewsUpdated));
       order++;
     }
-    return tabResult;
+    return results;
   }
 }

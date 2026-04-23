@@ -29,12 +29,14 @@
 <%@ page import="org.silverpeas.core.web.http.HttpRequest"%>
 <%@ page import="org.silverpeas.kernel.bundle.SettingBundle"%>
 <%@ page import="java.io.File"%>
+<%@ page import="org.silverpeas.core.util.file.FileItem" %>
+<%@ page import="org.silverpeas.core.util.*" %>
 <%@ include file="checkSurvey.jsp" %>
 
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<%@ taglib uri="jakarta.tags.functions" prefix="fn" %>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view"%>
 
 <c:set var="ctxPath" value="${pageContext.request.contextPath}" />
 <%-- Set resource bundle --%>
@@ -46,6 +48,8 @@
 <c:set var="suggestion" value="${requestScope['Suggestion']}" />
 <c:set var="questions" value="${requestScope['Questions']}" />
 <c:set var="style" value="${requestScope['Style']}" />
+
+<fmt:message var="mandatoryMsg" key="GML.requiredField"/>)
 
 <%
   String action = "";
@@ -98,28 +102,28 @@
     if (item.isFormField()) {
       String mpName = item.getFieldName();
       if ("Action".equals(mpName)) {
-        action = item.getString();
+        action = item.getContent();
       } else if ("question".equals(mpName)) {
-        question = item.getString(FileUploadUtil.DEFAULT_ENCODING);
+        question = item.getContent(Charsets.UTF_8);
       } else if ("nbAnswers".equals(mpName)) {
-        nbAnswers = item.getString(FileUploadUtil.DEFAULT_ENCODING);
+        nbAnswers = item.getContent(Charsets.UTF_8);
       } else if ("SuggestionAllowed".equals(mpName)) {
-        suggestion = item.getString(FileUploadUtil.DEFAULT_ENCODING);
+        suggestion = item.getContent(Charsets.UTF_8);
       } else if ("questionStyle".equals(mpName)) {
-        style = item.getString(FileUploadUtil.DEFAULT_ENCODING);
+        style = item.getContent(Charsets.UTF_8);
       } else if (mpName.startsWith("answer")) {
-        answerInput = item.getString(FileUploadUtil.DEFAULT_ENCODING);
+        answerInput = item.getContent(Charsets.UTF_8);
         answer = new Answer(null, null, answerInput, 0, 0, false, "", 0, false, null);
         answers.add(answer);
       } else if ("suggestionLabel".equals(mpName)) {
-        answerInput = item.getString(FileUploadUtil.DEFAULT_ENCODING);
+        answerInput = item.getContent(Charsets.UTF_8);
         answer = new Answer(null, null, answerInput, 0, 0, false, "", 0, true, null);
         answers.add(answer);
       } else if (mpName.startsWith("valueImageGallery")) {
-        if (StringUtil.isDefined(item.getString(FileUploadUtil.DEFAULT_ENCODING))) {
+        if (StringUtil.isDefined(item.getContent(Charsets.UTF_8))) {
           // traiter les images venant de la gallery si pas d'image externe
           if (!file){
-            answer.setImage(item.getString(FileUploadUtil.DEFAULT_ENCODING));
+            answer.setImage(item.getContent(Charsets.UTF_8));
           }
         }
       }
@@ -128,7 +132,7 @@
       // it's a file part
       if (FileHelper.isCorrectFile(item)) {
         // the part actually contained a file
-        logicalName = item.getName();
+        logicalName = item.getFileName();
         type = logicalName.substring(logicalName.indexOf(".") + 1, logicalName.length());
         physicalName =
             new Long(new Date().getTime()).toString() + attachmentSuffix + "." + type;
@@ -151,8 +155,8 @@
     }
   }
 %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE>
+<html lang="<%= surveyScc.getLanguage() %>">
 <head>
   <title></title>
 <view:looknfeel withCheckFormScript="true"/>
@@ -171,23 +175,23 @@ function sendData() {
 }
 
 function ifCorrectAnswersExecute(callback) {
-     var errorMsg = "";
-     var errorNb = 0;
-     var answerEmpty = false;
-     var imageEmpty = false;
-     var fieldsEmpty = "";
-     for (var i=0; i<document.surveyForm.length; i++)
+  let errorMsg = "";
+  let errorNb = 0;
+  let answerEmpty = false;
+  let imageEmpty = false;
+  let fieldsEmpty = "";
+  for (let i = 0; i<document.surveyForm.length; i++)
      {
-        inputName = document.surveyForm.elements[i].name.substring(0, 5);
-        if (inputName == "answe" ) {
+        const inputName = document.surveyForm.elements[i].name.substring(0, 5);
+        if (inputName === "answe" ) {
             if (isWhitespace(stripInitialWhitespace(document.surveyForm.elements[i].value))) {
                   answerEmpty = true;
             }
         }
 
-        if (inputName == "image")
+        if (inputName === "image")
         {
-            if (answerEmpty == true) {
+            if (answerEmpty === true) {
                   if (isWhitespace(stripInitialWhitespace(document.surveyForm.elements[i].value))) {
                         imageEmpty = true;
                   }
@@ -195,9 +199,9 @@ function ifCorrectAnswersExecute(callback) {
             answerEmpty = false;
         }
 
-        if (inputName == "value")
+        if (inputName === "value")
         {
-            if (imageEmpty == true) {
+            if (imageEmpty === true) {
                   if (isWhitespace(stripInitialWhitespace(document.surveyForm.elements[i].value))) {
                         fieldsEmpty += (parseInt(document.surveyForm.elements[i].name.substring(17, document.surveyForm.elements[i].name.length))+1)+",";
                         errorNb++;
@@ -216,8 +220,8 @@ function ifCorrectAnswersExecute(callback) {
             callback.call(this);
             break;
         default :
-            fields = fieldsEmpty.split(",");
-            for (var i=0; i < fields.length-1; i++) {
+            let fields = fieldsEmpty.split(",");
+            for (let i = 0; i < fields.length-1; i++) {
                 errorMsg += "<fmt:message key="SurveyCreationAnswerNb" /> "+fields[i]+" \n";
             }
             <c:if test="${suggestion != '0' && action == 'SendQuestionForm'}">
@@ -231,11 +235,11 @@ function ifCorrectAnswersExecute(callback) {
 
 
 function ifCorrectFormExecute(callback) {
-     var errorMsg = "";
-     var errorNb = 0;
-     var question = stripInitialWhitespace(document.surveyForm.question.value);
-     var nbAnswers = document.surveyForm.nbAnswers.value;
-     if (isWhitespace(question)) {
+  let errorMsg = "";
+  let errorNb = 0;
+  const question = stripInitialWhitespace(document.surveyForm.question.value);
+  const nbAnswers = document.surveyForm.nbAnswers.value;
+  if (isWhitespace(question)) {
            errorMsg+="  - <fmt:message key="GML.theField"/> '<fmt:message key="SurveyCreationQuestion"/>' <fmt:message key="GML.MustBeFilled"/>\n";
            errorNb++;
      }
@@ -298,21 +302,22 @@ function goToEnd() {
     document.surveyForm.submit();
 }
 
-var galleryWindow = window;
-var currentAnswer;
+let galleryWindow = window;
+let currentAnswer;
 
 function choixGallery(liste, idAnswer)
 {
 	currentAnswer = idAnswer;
 	index = liste.selectedIndex;
-	var componentId = liste.options[index].value;
-	if (index != 0)
+  const componentId = liste.options[index].value;
+  if (index !== 0)
 	{
-		url = "<c:out value="${ctxPath}"/>/gallery/jsp/wysiwygBrowser.jsp?ComponentId="+componentId+"&Language=<%=surveyScc.getLanguage()%>";
-		windowName = "galleryWindow";
-		larg = "820";
-		haut = "600";
-		windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
+		const url =
+        "<c:out value="${ctxPath}"/>/gallery/jsp/wysiwygBrowser.jsp?ComponentId="+componentId+"&Language=<%=surveyScc.getLanguage()%>";
+		const windowName = "galleryWindow";
+		const larg = "820";
+		const haut = "600";
+		const windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
 		if (!galleryWindow.closed && galleryWindow.name=="galleryWindow")
 			galleryWindow.close();
 		galleryWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
@@ -329,17 +334,17 @@ function choixImageInGallery(url)
 {
   deleteImage(currentAnswer);
 
-  var newLink = document.createElement("img");
+  const newLink = document.createElement("img");
   newLink.setAttribute("src", url);
   newLink.setAttribute("height", "40px");
   newLink.setAttribute("align", "top");
 
-  var newLabel = document.createTextNode("<fmt:message key="survey.imageGallery"/>");
+  const newLabel = document.createTextNode("<fmt:message key="survey.imageGallery"/>");
   newLink.appendChild(newLabel);
 
-  var removeLink =  document.createElement("a");
+  const removeLink = document.createElement("a");
   removeLink.setAttribute("href", "javascript:deleteImage('"+currentAnswer+"')");
-  var removeIcon = document.createElement("img");
+  const removeIcon = document.createElement("img");
   removeIcon.setAttribute("src", '<c:url value="/util/icons/delete.gif"/>');
   removeIcon.setAttribute("border", "0");
   removeIcon.setAttribute("align", "top");
@@ -382,9 +387,6 @@ function windowAlert(message) {
 
 </script>
 </head>
-Style=<c:out value="${style}"/><br/>
-NbAnswers= <c:out value="${requestScope['NbAnswers']}" /><br/>
-Suggestion= <c:out value="${suggestion}" />
 <c:choose>
   <c:when test="${action == 'SendNewQuestion'}">
   
@@ -420,14 +422,16 @@ Suggestion= <c:out value="${suggestion}" />
    
    
    
-   <center>
+   <div style="text-align: center;">
   <view:board>
       <!--DEBUT CORPS -->
       <form name="surveyForm" action="questionCreatorBis.jsp" method="post" enctype="multipart/form-data">
-      <table cellpadding="5" cellspacing="0" border="0" width="100%">
-        <tr><td class="txtlibform" width="30%"><fmt:message key="SurveyCreationQuestion"/> <c:out value="${nbQuestion}" /> :</td>
-          <td width="70%">
-            <input type="text" name="question" value="<view:encodeHtml string="<%=question%>" />" size="60" maxlength="<%=DBUtil.getTextFieldLength()%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5">
+      <table>
+        <th></th>
+        <tr><td class="txtlibform"><fmt:message key="SurveyCreationQuestion"/> <c:out value="${nbQuestion}" /> :</td>
+          <td>
+            <input type="text" name="question" value="<view:encodeHtml string="<%=question%>" />" size="60" maxlength="<%=DBUtil.getTextFieldLength()%>">&nbsp;
+            <img src="<%=mandatoryField%>" alt="${mandatoryMsg}" width="5" height="5">
           </td>
         </tr>
     <%
@@ -440,7 +444,7 @@ Suggestion= <c:out value="${suggestion}" />
         
           <c:set var="nbAnswer" value="${requestScope['NbAnswers']}"/>
         <tr>
-          <td class="txtlibform" valign="top"><fmt:message key="survey.style" /> :</td>
+          <td class="txtlibform"><fmt:message key="survey.style" /> :</td>
           <td>
             <c:set var="mykey" value="survey.${style}"></c:set>
             <fmt:message key="${mykey}" />
@@ -464,10 +468,11 @@ Suggestion= <c:out value="${suggestion}" />
     <c:set var="inputName" value="answer${cptAnswer}" />
 
         <tr>
-          <td colspan="2" align="center">
-            <table cellpadding="0" cellspacing="5" width="100%">
+          <td colspan="2">
+            <table>
+              <th></th>
               <tr>
-                <td class="intfdcolor"><img src="<%= px%>" border="0"></td>
+                <td class="intfdcolor"><img alt="1px" src="<%= px%>"></td>
               </tr>
         </table>
           </td>
@@ -503,10 +508,11 @@ Suggestion= <c:out value="${suggestion}" />
 
       <c:if test="${not (suggestion == '0')}">
         <tr>
-              <td colspan="2" align="center">
-                <table cellpadding="0" cellspacing="5" width="100%">
+              <td colspan="2">
+                <table>
+                  <th></th>
                   <tr>
-                    <td class="intfdcolor"><img src="<%=px%>" border="0"></td>
+                    <td class="intfdcolor"><img alt="1px" src="<%=px%>"></td>
                   </tr>
                 </table>
               </td>
@@ -525,14 +531,15 @@ Suggestion= <c:out value="${suggestion}" />
       </c:choose>
 
           <tr>
-            <td>(<img border="0" src="<%= mandatoryField%>" width="5" height="5">&nbsp;:&nbsp;<fmt:message key="GML.requiredField"/>)</td>
+            <td>(<img alt="${mandatoryMsg}" src="<%= mandatoryField%>" width="5"
+              height="5">&nbsp;:&nbsp;${mandatoryMsg}</td>
           </tr>
 
     </c:when>
     <c:otherwise>
     <%-- create a new question form here --%>
       <tr>
-            <td class="txtlibform" valign="top"><fmt:message key="survey.style" /> :</td>
+            <td class="txtlibform"><fmt:message key="survey.style" /> :</td>
             <td>
               <select id="questionStyle" name="questionStyle" onchange="showQuestionOptions(this.value);">
                 <option selected value="null"><fmt:message key="survey.style" /></option>
@@ -545,7 +552,8 @@ Suggestion= <c:out value="${suggestion}" />
           </tr>
       <tr id="trNbQuestions" style="display:none;">
             <td class="txtlibform"><fmt:message key="SurveyCreationNbPossibleAnswer" /> :</td>
-            <td><input type="text" name="nbAnswers" value="<%=nbAnswers %>" size="3" maxlength="2">&nbsp;<img border=0 src="<%=mandatoryField%>" width="5" height="5"></td>
+            <td><input type="text" name="nbAnswers" value="<%=nbAnswers %>" size="3" maxlength="2">&nbsp;
+              <img alt="${mandatoryMsg}" src="<%=mandatoryField%>" width="5" height="5"></td>
           </tr>
           <tr id="trSuggestion" style="display:none;">
             <td class="txtlibform"><fmt:message key="SuggestionAllowed"/> :</td>
@@ -555,7 +563,9 @@ Suggestion= <c:out value="${suggestion}" />
             <td><input type="hidden" name="answer0"></td>
           </tr>
           <tr>
-            <td>(<img border="0" src="<%= mandatoryField%>" width="5" height="5">&nbsp;:&nbsp;<fmt:message key="GML.requiredField"/>)</td>
+            <td>(<img alt="${mandatoryMsg}" src="<%= mandatoryField%>" width="5"
+                      height="5">&nbsp;:&nbsp;
+              ${mandatoryMsg})</td>
           </tr>    
     
     </c:otherwise>
@@ -571,17 +581,17 @@ Suggestion= <c:out value="${suggestion}" />
       </form>
       <!-- FIN CORPS -->
     </view:board>
-</center>
+</div>
 <br/>
-<center><%-- Add button pane --%>
+<div style="text-align: center;"><%-- Add button pane --%>
   <fmt:message key="GML.cancel" var="cancelButtonLabel"></fmt:message>
   <fmt:message key="GML.validate" var="validateButtonLabel"></fmt:message>
   <view:buttonPane>
     <view:button label="${cancelButtonLabel}" action="javascript:onClick=history.back();" disabled="false"></view:button>
     <view:button label="${validateButtonLabel}" action="javascript:sendData();" disabled="false"></view:button>
   </view:buttonPane>
-</center>
-   
+</div>
+
    
     
     </view:frame>
@@ -653,14 +663,16 @@ Suggestion= <c:out value="${suggestion}" />
     out.println(window.printBefore());
     out.println(frame.printBefore());
 %>
-<center>
+<div style="text-align: center;">
   <view:board>
       <!--DEBUT CORPS -->
       <form name="surveyForm" action="questionCreatorBis.jsp" method="post" enctype="multipart/form-data">
-      <table cellpadding="5" cellspacing="0" border="0" width="100%">
-        <tr><td class="txtlibform" width="30%"><fmt:message key="SurveyCreationQuestion"/> <%=questionNb%> :</td>
-          <td width="70%">
-            <input type="text" name="question" value="<view:encodeHtml string="<%=question%>" />" size="60" maxlength="<%=DBUtil.getTextFieldLength()%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5">
+      <table>
+        <th></th>
+        <tr><td class="txtlibform"><fmt:message key="SurveyCreationQuestion"/> <%=questionNb%> :</td>
+          <td>
+            <input type="text" name="question" value="<view:encodeHtml string="<%=question%>" />" size="60" maxlength="<%=DBUtil.getTextFieldLength()%>">&nbsp;
+            <img alt="${mandatoryMsg}" src="<%=mandatoryField%>" width="5" height="5">
           </td>
         </tr>
 		<%
@@ -669,7 +681,7 @@ Suggestion= <c:out value="${suggestion}" />
 		      if (!style.equals("open")) {
             %>
         <tr>
-          <td class="txtlibform" valign="top"><fmt:message key="survey.style" /> :</td>
+          <td class="txtlibform"><fmt:message key="survey.style" /> :</td>
           <td>
             <c:set var="mykey">survey.<%=style%></c:set>
             <fmt:message key="${mykey}" />
@@ -697,10 +709,11 @@ Suggestion= <c:out value="${suggestion}" />
 		          inputName = "answer" + i;
               %>
         <tr>
-          <td colspan="2" align="center">
-            <table cellpadding="0" cellspacing="5" width="100%">
+          <td colspan="2">
+            <table>
+              <th></th>
               <tr>
-                <td class="intfdcolor"><img src="<%= px%>" border="0"></td>
+                <td class="intfdcolor"><img src="<%= px%>" alt="1px"></td>
               </tr>
 		    </table>
           </td>
@@ -739,10 +752,11 @@ Suggestion= <c:out value="${suggestion}" />
                 %>
       <c:if test="${not (suggestion == '0')}">
 		    <tr>
-              <td colspan="2" align="center">
-                <table cellpadding="0" cellspacing="5" width="100%">
+              <td colspan="2">
+                <table>
+                  <th></th>
                   <tr>
-                    <td class="intfdcolor"><img src="<%=px%>" border="0"></td>
+                    <td class="intfdcolor"><img src="<%=px%>" alt="1px"></td>
                   </tr>
                 </table>
               </td>
@@ -760,14 +774,15 @@ Suggestion= <c:out value="${suggestion}" />
 		      }
           %>
           <tr>
-            <td>(<img border="0" src="<%= mandatoryField%>" width="5" height="5">&nbsp;:&nbsp;<fmt:message key="GML.requiredField"/>)</td>
+            <td>(<img alt="${mandatoryMsg}" src="<%= mandatoryField%>" width="5" height="5">&nbsp;:&nbsp;
+              ${mandatoryMsg})</td>
           </tr>
            <%
 		    } else {
 		      // liste déroulante des choix possible
           %>
 		  <tr>
-            <td class="txtlibform" valign="top"><fmt:message key="survey.style" /> :</td>
+            <td class="txtlibform"><fmt:message key="survey.style" /> :</td>
             <td>
               <select id="questionStyle" name="questionStyle" onchange="javascript:showQuestionOptions(this.value);">
                 <option selected value="null"><fmt:message key="survey.style" /></option>
@@ -780,7 +795,8 @@ Suggestion= <c:out value="${suggestion}" />
           </tr>
 		  <tr id="trNbQuestions" style="display:none;">
             <td class="txtlibform"><fmt:message key="SurveyCreationNbPossibleAnswer" /> :</td>
-            <td><input type="text" name="nbAnswers" value="<%=nbAnswers %>" size="3" maxlength="2">&nbsp;<img border=0 src="<%=mandatoryField%>" width="5" height="5"></td>
+            <td><input type="text" name="nbAnswers" value="<%=nbAnswers %>" size="3" maxlength="2">&nbsp;
+              <img alt="${mandatoryMsg}" src="<%=mandatoryField%>" width="5" height="5"></td>
           </tr>
           <tr id="trSuggestion" style="display:none;">
             <td class="txtlibform"><fmt:message key="SuggestionAllowed"/> :</td>
@@ -790,7 +806,8 @@ Suggestion= <c:out value="${suggestion}" />
             <td><input type="hidden" name="answer0"></td>
           </tr>
           <tr>
-            <td>(<img border="0" src="<%= mandatoryField%>" width="5" height="5">&nbsp;:&nbsp;<fmt:message key="GML.requiredField"/>)</td>
+            <td>(<img alt="${mandatoryMsg}" src="<%= mandatoryField%>" width="5" height="5">&nbsp;:&nbsp;
+              ${mandatoryMsg})</td>
           </tr>
               <%
 		    }
@@ -805,7 +822,7 @@ Suggestion= <c:out value="${suggestion}" />
       </form>
       <!-- FIN CORPS -->
     </view:board>
-</center>
+</div>
 
 <%
     out.println(frame.printMiddle());

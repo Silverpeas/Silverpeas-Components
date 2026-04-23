@@ -63,7 +63,7 @@ class MediaTest {
   private final Date endVisibilityDate = DateUtils.addDays(DateUtil.getNow(), 50);
 
   @BeforeEach
-  public void setup(@TestManagedMock final ComponentAccessControl componentAccessController) {
+  void setup(@TestManagedMock final ComponentAccessControl componentAccessController) {
     when(componentAccessController.isUserAuthorized("userIdAccessTest", "instanceIdForTest"))
         .thenReturn(true);
 
@@ -92,19 +92,15 @@ class MediaTest {
     assertThat(media.getContributionType(), is(MediaType.Photo.name()));
     assertThat(media.getTitle(), is(emptyString()));
     assertThat(media.getName(), is(emptyString()));
-    assertThat(media.getName("en"), is(emptyString()));
     assertThat(media.getDescription(), is(emptyString()));
-    assertThat(media.getDescription("en"), is(emptyString()));
     assertThat(media.getAuthor(), is(emptyString()));
     assertThat(media.getKeyWord(), is(emptyString()));
     assertThat(media.getVisibilityPeriod(), sameInstance(Period.UNDEFINED));
     assertThat(media.getCreationDate(), nullValue());
-    assertThat(media.getSilverCreationDate(), nullValue());
     assertThat(media.getCreator(), nullValue());
     assertThat(media.getCreatorId(), nullValue());
     assertThat(media.getCreatorName(), is(emptyString()));
     assertThat(media.getLastUpdateDate(), nullValue());
-    assertThat(media.getDate(), nullValue());
     assertThat(media.getLastUpdater(), nullValue());
     assertThat(media.getLastUpdatedBy(), nullValue());
     assertThat(media.getLastUpdaterName(), is(emptyString()));
@@ -112,10 +108,8 @@ class MediaTest {
     assertThat(media.getPermalink(), is("/silverpeas/Media/null"));
     assertThat(media.isPreviewable(), is(true));
     assertThat(media.getSilverpeasContentId(), nullValue());
-    assertThat(media.getIconUrl(), nullValue());
     assertThat(media.isDownloadable(), is(true));
     assertThat(media.getURL(), is("searchResult?Type=Photo&Id=null"));
-    assertThat(media.getLanguages(), hasSize(0));
     assertThat(media.toString(), is("(pk = (id = null, instanceId = null), name = )"));
   }
 
@@ -132,12 +126,10 @@ class MediaTest {
     media.setLastUpdater(lastUpdaterForTest);
 
     assertThat(media.getCreationDate(), is(createDate));
-    assertThat(media.getSilverCreationDate(), is("2013/02/12"));
     assertThat(media.getCreator(), is(userForTest));
     assertThat(media.getCreatorId(), is(userForTest.getId()));
     assertThat(media.getCreatorName(), is(userForTest.getDisplayedName()));
     assertThat(media.getLastUpdateDate(), is(lastUpdateDate));
-    assertThat(media.getDate(), is("2013/04/02"));
     assertThat(media.getLastUpdater(), is(lastUpdaterForTest));
     assertThat(media.getLastUpdatedBy(), is(lastUpdaterForTest.getId()));
     assertThat(media.getLastUpdaterName(), is(lastUpdaterForTest.getDisplayedName()));
@@ -151,9 +143,7 @@ class MediaTest {
     assertThat(media.getKeyWord(), is(emptyString()));
     assertThat(media.getTitle(), is(emptyString()));
     assertThat(media.getName(), is(emptyString()));
-    assertThat(media.getName("en"), is(emptyString()));
     assertThat(media.getDescription(), is(emptyString()));
-    assertThat(media.getDescription("en"), is(emptyString()));
 
     media.setAuthor("   ");
     media.setKeyWord("      ");
@@ -163,9 +153,7 @@ class MediaTest {
     assertThat(media.getKeyWord(), is(emptyString()));
     assertThat(media.getTitle(), is(emptyString()));
     assertThat(media.getName(), is(emptyString()));
-    assertThat(media.getName("en"), is(emptyString()));
     assertThat(media.getDescription(), is(emptyString()));
-    assertThat(media.getDescription("en"), is(emptyString()));
   }
 
   @Test
@@ -243,7 +231,6 @@ class MediaTest {
     media.setCreationDate(createDate);
     media.setCreator(userForTest);
     media.setSilverpeasContentId("silverObjectId");
-    media.setIconUrl("iconUrl");
     assertDefaultMedia(media);
     return media;
   }
@@ -258,20 +245,16 @@ class MediaTest {
     assertThat(media.getContributionType(), is(MediaType.Photo.name()));
     assertThat(media.getTitle(), is("A title"));
     assertThat(media.getName(), is("A title"));
-    assertThat(media.getName("en"), is("A title"));
     assertThat(media.getDescription(), is("A description"));
-    assertThat(media.getDescription("en"), is("A description"));
     assertThat(media.getAuthor(), is("An author"));
     assertThat(media.getKeyWord(), is("keywords"));
     assertThat(media.getVisibilityPeriod().getBeginDate(), is(beginVisibilityDate));
     assertThat(media.getVisibilityPeriod().getEndDate(), is(endVisibilityDate));
     assertThat(media.getCreationDate(), is(createDate));
-    assertThat(media.getSilverCreationDate(), is("2013/02/12"));
     assertThat(media.getCreator(), is(userForTest));
     assertThat(media.getCreatorId(), is(userForTest.getId()));
     assertThat(media.getCreatorName(), is(userForTest.getDisplayedName()));
     assertThat(media.getLastUpdateDate(), is(createDate));
-    assertThat(media.getDate(), is("2013/02/12"));
     assertThat(media.getLastUpdater(), is(userForTest));
     assertThat(media.getLastUpdatedBy(), is(userForTest.getId()));
     assertThat(media.getLastUpdaterName(), is(userForTest.getDisplayedName()));
@@ -279,10 +262,8 @@ class MediaTest {
     assertThat(media.getPermalink(), is("/silverpeas/Media/mediaId"));
     assertThat(media.isPreviewable(), is(true));
     assertThat(media.getSilverpeasContentId(), is("silverObjectId"));
-    assertThat(media.getIconUrl(), is("iconUrl"));
     assertThat(media.isDownloadable(), is(true));
     assertThat(media.getURL(), is("searchResult?Type=Photo&Id=mediaId"));
-    assertThat(media.getLanguages(), hasSize(0));
     assertThat(media.toString(),
         is("(pk = (id = mediaId, instanceId = instanceId), name = A title)"));
   }

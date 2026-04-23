@@ -40,6 +40,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * A REST Web resource representing a given reply to a question. It is a web service that provides
@@ -77,7 +78,7 @@ public class ReplyResource extends QuestionReplyBaseWebService {
   @GET
   @Path("question/{questionId}")
   @Produces(MediaType.APPLICATION_JSON)
-  public ReplyEntity[] getAllRepliesForQuestion(@PathParam("questionId") String onQuestionId) {
+  public List<ReplyEntity> getAllRepliesForQuestion(@PathParam("questionId") String onQuestionId) {
     try {
       long questionId = Long.parseLong(onQuestionId);
       List<Reply> replies = questionManager.getAllReplies(questionId,
@@ -91,7 +92,7 @@ public class ReplyResource extends QuestionReplyBaseWebService {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   @Path("public/question/{questionId}")
-  public ReplyEntity[] getPublicRepliesForQuestion(@PathParam("questionId") String onQuestionId) {
+  public List<ReplyEntity> getPublicRepliesForQuestion(@PathParam("questionId") String onQuestionId) {
     try {
       List<Reply> replies = questionManager.getQuestionPublicReplies(
           Long.parseLong(onQuestionId), componentId);
@@ -110,16 +111,15 @@ public class ReplyResource extends QuestionReplyBaseWebService {
    *
    * @param replies the replies to convert.
    * @param profile the profile of the user.
-   * @return an array with the corresponding reply entities.
+   * @return a list with the corresponding reply entities.
    */
-  protected ReplyEntity[] asWebEntities(List<Reply> replies, SilverpeasRole profile) {
-    ReplyEntity[] entities = new ReplyEntity[replies.size()];
-    for (int i = 0; i < replies.size(); i++) {
-      Reply reply = replies.get(i);
-      URI commentURI = getUri().getRequestUriBuilder().path(reply.getPK().getId()).build();
-      entities[i] = asWebEntity(reply, identifiedBy(commentURI), profile);
-    }
-    return entities;
+  protected List<ReplyEntity> asWebEntities(List<Reply> replies, SilverpeasRole profile) {
+    return replies.stream()
+        .map(r -> {
+          URI commentURI = getUri().getRequestUriBuilder().path(r.getPK().getId()).build();
+          return asWebEntity(r, identifiedBy(commentURI), profile);
+        })
+        .collect(Collectors.toList());
   }
 
   /**

@@ -32,12 +32,12 @@
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="org.silverpeas.processmanager.LockVO" %>
 
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
-<%@ taglib prefix="tab" uri="http://www.silverpeas.com/tld/viewGenerator" %>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<%@ taglib uri="jakarta.tags.functions" prefix="fn" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view"%>
+<%@ taglib uri="silverpeas.tags.silverFunctions" prefix="silfn" %>
+<%@ taglib prefix="tab" uri="silverpeas.tags.viewGenerator" %>
 
 <%@ include file="checkProcessManager.jsp" %>
 <c:set var="userLanguage" value="${requestScope.resources.language}"/>

@@ -50,8 +50,7 @@ public class Statistic {
   @Inject
   private HistoryDAO historyDAO;
 
-  private Statistic() {
-
+  Statistic() {
   }
 
   private static Connection getConnection() {

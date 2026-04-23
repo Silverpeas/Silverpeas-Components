@@ -24,7 +24,7 @@
 
 --%>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view"%>
 <%@ page import="org.silverpeas.components.gallery.model.Media" %>
 <%@ page import="org.silverpeas.components.gallery.model.Photo" %>
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
@@ -34,9 +34,9 @@
 <%@ page import="java.util.Iterator" %>
 <%@ page import="java.util.List" %>
 
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<%@ taglib uri="jakarta.tags.functions" prefix="fn" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
 
 <%-- Set resource bundle --%>
 <c:set var="language" value="${requestScope.Language}"/>

@@ -28,14 +28,12 @@ import org.silverpeas.components.gallery.model.GalleryRuntimeException;
 import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.notification.user.client.UserRecipient;
-import org.silverpeas.core.scheduler.Scheduler;
-import org.silverpeas.core.scheduler.SchedulerEvent;
-import org.silverpeas.core.scheduler.SchedulerEventListener;
-import org.silverpeas.core.scheduler.SchedulerProvider;
+import org.silverpeas.core.scheduler.*;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.Link;
@@ -52,6 +50,7 @@ import java.util.Map;
 
 import static org.silverpeas.core.notification.user.client.NotificationParameters.PRIORITY_NORMAL;
 
+@Bean
 public class ScheduledAlertUser implements SchedulerEventListener {
 
   public static final String GALLERYENGINE_JOB_NAME = "GalleryEngineJob";
@@ -62,12 +61,14 @@ public class ScheduledAlertUser implements SchedulerEventListener {
   @Inject
   private OrganizationController organizationController;
 
+  @Inject
+  private Scheduler scheduler;
+
   public void initialize() {
     try {
       SettingBundle resources =
           ResourceLocator.getSettingBundle("org.silverpeas.gallery.settings.gallerySettings");
       String cron = resources.getString("cronScheduledAlertUser");
-      Scheduler scheduler = SchedulerProvider.getVolatileScheduler();
       scheduler.unscheduleJob(GALLERYENGINE_JOB_NAME);
       JobTrigger trigger = JobTrigger.triggerAt(cron);
       scheduler.scheduleJob(GALLERYENGINE_JOB_NAME, trigger, this);
@@ -75,6 +76,14 @@ public class ScheduledAlertUser implements SchedulerEventListener {
       SilverLogger.getLogger(this).error(
           "can not initialize successfully the batch in charge of alerting administrators about " +
               "the end of visibility of media", e);
+    }
+  }
+
+  public void release() {
+    try {
+      scheduler.unscheduleJob(GALLERYENGINE_JOB_NAME);
+    } catch (SchedulerException e) {
+      SilverLogger.getLogger(this).error(e);
     }
   }
 

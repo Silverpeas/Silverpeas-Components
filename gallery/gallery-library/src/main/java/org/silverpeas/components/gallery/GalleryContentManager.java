@@ -32,6 +32,7 @@ import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.contentcontainer.content.AbstractSilverpeasContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
 import org.silverpeas.core.contribution.model.Contribution;
+import org.silverpeas.kernel.annotation.NonNull;
 
 import java.io.Serializable;
 import java.util.List;
@@ -85,7 +86,7 @@ public class GalleryContentManager extends AbstractSilverpeasContentManager impl
 
   @Override
   protected <T extends Contribution> SilverContentVisibility computeSilverContentVisibility(
-      final T contribution) {
+      @NonNull final T contribution) {
     return null;
   }
 

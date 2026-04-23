@@ -24,7 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view"%>
 <%@ page import="org.silverpeas.components.whitepages.model.Card"%>
 <%@ page import="org.silverpeas.components.whitepages.record.UserRecord"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.Encode"%>

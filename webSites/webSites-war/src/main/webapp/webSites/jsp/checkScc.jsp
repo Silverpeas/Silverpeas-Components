@@ -25,7 +25,7 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view"%>
 
 <%@ page import="org.silverpeas.components.websites.control.WebSiteSessionController"%>
 <%@ page import="org.silverpeas.components.websites.model.FolderDetail"%>

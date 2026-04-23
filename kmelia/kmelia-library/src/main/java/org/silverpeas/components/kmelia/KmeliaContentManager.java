@@ -31,6 +31,7 @@ import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.security.authorization.PublicationAccessControl;
+import org.silverpeas.kernel.annotation.NonNull;
 
 import java.io.Serializable;
 import java.sql.Connection;
@@ -95,7 +96,7 @@ public class KmeliaContentManager extends AbstractSilverpeasContentManager imple
 
   @Override
   protected <T extends Contribution> SilverContentVisibility computeSilverContentVisibility(
-      final T contribution) {
+      @NonNull final T contribution) {
     final PublicationDetail pubDetail = (PublicationDetail) contribution;
     return new SilverContentVisibility(pubDetail.getBeginDate(), pubDetail.getEndDate(),
         isVisible(pubDetail));

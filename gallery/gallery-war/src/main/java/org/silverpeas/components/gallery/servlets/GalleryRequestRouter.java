@@ -1157,7 +1157,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
       SilverLogger.getLogger(this).warn(afe);
       destination = "/admin/jsp/accessForbidden.jsp";
     } catch (Exception e) {
-      request.setAttribute("javax.servlet.jsp.jspException", e);
+      request.setAttribute("jakarta.servlet.jsp.jspException", e);
       destination = "/admin/jsp/errorpageMain.jsp";
     }
 

@@ -34,6 +34,8 @@ import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 
 import jakarta.inject.Inject;
+import org.silverpeas.kernel.annotation.NonNull;
+
 import java.io.Serializable;
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -91,7 +93,7 @@ public class BlogContentManager extends AbstractSilverpeasContentManager impleme
 
   @Override
   protected <T extends Contribution> SilverContentVisibility computeSilverContentVisibility(
-      final T contribution) {
+      @NonNull final T contribution) {
     final PublicationDetail pubDetail = (PublicationDetail) contribution;
     return new SilverContentVisibility(pubDetail.getBeginDate(), pubDetail.getEndDate(),
         isVisible(pubDetail));

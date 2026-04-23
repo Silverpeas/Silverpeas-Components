@@ -200,7 +200,7 @@ public class ForumsRequestRouter extends ComponentRequestRouter<ForumsSessionCon
         destination = ROOT_DEST + function;
       }
     } catch (Exception e) {
-      request.setAttribute("javax.servlet.jsp.jspException", e);
+      request.setAttribute("jakarta.servlet.jsp.jspException", e);
       destination = "/admin/jsp/errorpageMain.jsp";
     }
 

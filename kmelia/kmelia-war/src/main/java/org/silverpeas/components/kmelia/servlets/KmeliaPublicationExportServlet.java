@@ -57,7 +57,7 @@ public class KmeliaPublicationExportServlet extends HttpServlet {
       }
     } catch (Exception ex) {
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);
-      request.setAttribute("javax.servlet.jsp.jspException", ex);
+      request.setAttribute("jakarta.servlet.jsp.jspException", ex);
       getServletConfig().getServletContext().getRequestDispatcher(
           "/admin/jsp/errorpageMain.jsp").forward(request, response);
     }

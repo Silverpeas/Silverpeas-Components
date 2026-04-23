@@ -114,7 +114,7 @@ public class MailingListRequestRouter extends ComponentRequestRouter<MailingList
           .processActivities(rest, request, componentSC.getUserId());
 
     } catch (Exception e) {
-      request.setAttribute("javax.servlet.jsp.jspException", e);
+      request.setAttribute("jakarta.servlet.jsp.jspException", e);
       return "/admin/jsp/errorpageMain.jsp";
     }
   }

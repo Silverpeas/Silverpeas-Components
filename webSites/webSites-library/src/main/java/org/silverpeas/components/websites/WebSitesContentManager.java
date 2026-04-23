@@ -32,6 +32,7 @@ import org.silverpeas.core.contribution.contentcontainer.content.AbstractSilverp
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
 import org.silverpeas.core.contribution.model.Contribution;
+import org.silverpeas.kernel.annotation.NonNull;
 
 import java.io.Serializable;
 import java.sql.Connection;
@@ -82,7 +83,7 @@ public class WebSitesContentManager extends AbstractSilverpeasContentManager imp
 
   @Override
   protected <T extends Contribution> SilverContentVisibility computeSilverContentVisibility(
-      final T contribution) {
+      @NonNull final T contribution) {
     final SiteDetail siteDetail = (SiteDetail) contribution;
     return new SilverContentVisibility(isVisible(siteDetail));
   }

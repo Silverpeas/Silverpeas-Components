@@ -25,9 +25,9 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@taglib uri="jakarta.tags.core" prefix="c"%>
+<%@taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<%@taglib uri="silverpeas.tags.viewGenerator" prefix="view"%>
 <%@taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 
 <%@page import="org.silverpeas.components.kmelia.model.KmeliaPublication"%>
@@ -36,7 +36,6 @@
 <%@page import="org.silverpeas.core.contribution.content.form.PagesContext" %>
 <%@page import="org.silverpeas.core.i18n.I18NHelper" %>
 <%@ page import="org.silverpeas.core.io.media.image.thumbnail.ThumbnailSettings" %>
-<%@ page import="org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail" %>
 <%@ page import="org.silverpeas.core.notification.user.NotificationContext" %>
 <%@ page import="java.util.Date" %>
 <%@ page import="java.util.StringTokenizer" %>
@@ -73,7 +72,7 @@
     String nextAction = "";
 
     KmeliaPublication kmeliaPublication = (KmeliaPublication) request.getAttribute("Publication");
-    User ownerDetail = null;
+    User ownerDetail;
     User updater = null;
 
     PublicationDetail pubDetail = null;
@@ -108,7 +107,7 @@
   	String favoriteAddSrc		= m_context + "/util/icons/addFavorit.gif";
 
     //Vrai si le user connecte est le createur de cette publication ou si il est admin
-    boolean isOwner = false;
+    boolean isOwner = kmeliaScc.getSessionOwner();
 
     boolean suppressionAllowed = false;
 
@@ -568,9 +567,9 @@
 				</div>
 				<% } %>
 
-				<% if (I18NHelper.isI18nContentActivated) { %>
+				<% if (I18NHelper.isI18nContentActivated()) { %>
 				<div class="field" id="languageArea">
-					<label for="language" class="txtlibform"><%=resources.getString("GML.language")%></label>
+					<label for="<%= I18NHelper.HTML_SELECT_OBJECT_NAME%>" class="txtlibform"><%=resources.getString("GML.language")%></label>
 					<div class="champs">
 						<%=I18NHelper.getHTMLSelectObject(resources.getLanguage(), pubDetail, language) %>
 					</div>

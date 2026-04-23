@@ -34,6 +34,7 @@ import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
+import org.silverpeas.kernel.annotation.NonNull;
 
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -78,7 +79,7 @@ public class QuickInfoContentManager extends AbstractSilverpeasContentManager {
 
   @Override
   protected <T extends Contribution> SilverContentVisibility computeSilverContentVisibility(
-      final T contribution) {
+      @NonNull final T contribution) {
     final PublicationDetail pubDetail = (PublicationDetail) contribution;
     return new SilverContentVisibility(pubDetail.getBeginDate(), pubDetail.getEndDate(), false);
   }

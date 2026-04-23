@@ -26,10 +26,8 @@ package org.silverpeas.components.gallery.service;
 import jakarta.inject.Inject;
 import org.silverpeas.components.gallery.model.GalleryRuntimeException;
 import org.silverpeas.components.gallery.model.Order;
-import org.silverpeas.core.scheduler.Scheduler;
-import org.silverpeas.core.scheduler.SchedulerEvent;
-import org.silverpeas.core.scheduler.SchedulerEventListener;
-import org.silverpeas.core.scheduler.SchedulerProvider;
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.scheduler.*;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
@@ -37,6 +35,7 @@ import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.util.List;
 
+@Bean
 public class ScheduledDeleteOrder implements SchedulerEventListener {
 
   public static final String GALLERYENGINE_JOB_NAME = "GalleryEngineJobOrder";
@@ -44,16 +43,26 @@ public class ScheduledDeleteOrder implements SchedulerEventListener {
   @Inject
   private GalleryService galleryService;
 
+  @Inject
+  private Scheduler scheduler;
+
   public void initialize() {
     try {
       SettingBundle resources =
           ResourceLocator.getSettingBundle("org.silverpeas.gallery.settings.gallerySettings");
       String cron = resources.getString("cronScheduledDeleteOrder");
-      Scheduler scheduler = SchedulerProvider.getVolatileScheduler();
       scheduler.unscheduleJob(GALLERYENGINE_JOB_NAME);
       JobTrigger trigger = JobTrigger.triggerAt(cron);
       scheduler.scheduleJob(GALLERYENGINE_JOB_NAME, trigger, this);
     } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e);
+    }
+  }
+
+  public void release() {
+    try {
+      scheduler.unscheduleJob(GALLERYENGINE_JOB_NAME);
+    } catch (SchedulerException e) {
       SilverLogger.getLogger(this).error(e);
     }
   }

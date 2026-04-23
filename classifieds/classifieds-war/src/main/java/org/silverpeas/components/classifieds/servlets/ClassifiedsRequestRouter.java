@@ -103,7 +103,7 @@ public class ClassifiedsRequestRouter extends ComponentRequestRouter<Classifieds
         destination = rootDest + newFunction;
       }
     } catch (Exception e) {
-      request.setAttribute("javax.servlet.jsp.jspException", e);
+      request.setAttribute("jakarta.servlet.jsp.jspException", e);
       return "/admin/jsp/errorpageMain.jsp";
     }
 
