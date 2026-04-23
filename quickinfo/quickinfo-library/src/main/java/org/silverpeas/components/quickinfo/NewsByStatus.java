@@ -41,7 +41,7 @@ public class NewsByStatus {
   List<News> notYetVisibles = new ArrayList<>();
   List<News> noMoreVisibles = new ArrayList<>();
 
-  public NewsByStatus(List<News> allNews, String userId, String noMoreVisiblesSort, String notYetVisiblesSort) {
+  public NewsByStatus(List<News> allNews, String userId, NewsSort noMoreVisiblesSort, NewsSort notYetVisiblesSort) {
     for (News news : allNews) {
       if (news.isDraft()) {
         if (news.getCreatorId().equals(userId)) {
@@ -57,8 +57,8 @@ public class NewsByStatus {
     }
     sortByDateDesc(drafts);
     sortByDateDesc(visibles);
-    Collections.sort(notYetVisibles, new QuickInfoBeginDateComparatorDesc(notYetVisiblesSort));
-    Collections.sort(noMoreVisibles, new QuickInfoEndDateComparatorDesc(noMoreVisiblesSort));
+    Collections.sort(notYetVisibles, new QuickInfoBeginDateComparator(notYetVisiblesSort));
+    Collections.sort(noMoreVisibles, new QuickInfoEndDateComparator(noMoreVisiblesSort));
   }
 
   private void sortByDateDesc(List<News> listOfNews) {
@@ -82,41 +82,33 @@ public class NewsByStatus {
     return noMoreVisibles;
   }
 
-  class QuickInfoBeginDateComparatorDesc implements Comparator<News> {
+  class QuickInfoBeginDateComparator implements Comparator<News> {
 
-    private static final String ASC = "ASC";
-    private String sort;
-    public QuickInfoBeginDateComparatorDesc(String sort) {
+    private NewsSort sort;
+    public QuickInfoBeginDateComparator(NewsSort sort) {
       this.sort = sort;
     }
 
     public int compare(News pd1, News pd2) {
-      if (sort.equalsIgnoreCase(ASC)) {
-        return asDate(pd1.getVisibility().getPeriod().getStartDate())
-                .compareTo(asDate(pd2.getVisibility().getPeriod().getStartDate()));
-      } else {
-        return asDate(pd2.getVisibility().getPeriod().getStartDate())
-                .compareTo(asDate(pd1.getVisibility().getPeriod().getStartDate()));
-      }
+      int result = asDate(pd1.getVisibility().getPeriod().getStartDate())
+              .compareTo(asDate(pd2.getVisibility().getPeriod().getStartDate()));
+
+      return sort == NewsSort.ASC ? result : -result;
     }
   }
 
-  class QuickInfoEndDateComparatorDesc implements Comparator<News> {
+  class QuickInfoEndDateComparator implements Comparator<News> {
 
-    private static final String ASC = "ASC";
-    private String sort;
-    public QuickInfoEndDateComparatorDesc(String sort) {
+    private NewsSort sort;
+    public QuickInfoEndDateComparator(NewsSort sort) {
       this.sort = sort;
     }
 
     public int compare(News pd1, News pd2) {
-      if (sort.equalsIgnoreCase(ASC)) {
-        return asDate(pd1.getVisibility().getPeriod().getEndDate())
-                .compareTo(asDate(pd2.getVisibility().getPeriod().getEndDate()));
-      } else {
-        return asDate(pd2.getVisibility().getPeriod().getEndDate())
-                .compareTo(asDate(pd1.getVisibility().getPeriod().getEndDate()));
-      }
+      int result = asDate(pd1.getVisibility().getPeriod().getEndDate())
+              .compareTo(asDate(pd2.getVisibility().getPeriod().getEndDate()));
+
+      return sort == NewsSort.ASC ? result : -result;
     }
   }
 
