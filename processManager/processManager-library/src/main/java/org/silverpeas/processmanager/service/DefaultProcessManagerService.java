@@ -32,7 +32,6 @@ import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.contribution.attachment.model.UnlockContext;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
@@ -159,21 +158,8 @@ public class DefaultProcessManagerService implements ProcessManagerService {
     // 2 - Populate form data (save file on disk, populate file field)
     List<String> attachmentIds = populateFields(instanceId, componentId, userId, metadata, data, form);
 
-    // 3 - Update attachment foreign key
-    // Attachment's foreign key must be set with the just created instanceId
-    for (String attachmentId : attachmentIds) {
-      SimpleDocumentPK pk = new SimpleDocumentPK(attachmentId, componentId);
-      SimpleDocument document = AttachmentServiceProvider.getAttachmentService().searchDocumentById(
-          pk, null);
-      document.setForeignId(instanceId);
-      AttachmentServiceProvider.getAttachmentService().lock(attachmentId, userId, null);
-      AttachmentServiceProvider.getAttachmentService().updateAttachment(document, false, false);
-      AttachmentServiceProvider.getAttachmentService()
-          .unlock(new UnlockContext(attachmentId, userId, null));
-    }
     getProcessInstance(instanceId).updateFolder(data);
-    Thread.sleep(4000);
-
+    Thread.sleep(12000);
     return instanceId;
   }
 
