@@ -156,7 +156,7 @@ public class DefaultProcessManagerService implements ProcessManagerService {
     String instanceId = createProcessInstance(processModel, userId, userRole, data);
 
     // 2 - Populate form data (save file on disk, populate file field)
-    List<String> attachmentIds = populateFields(instanceId, componentId, userId, metadata, data, form);
+    populateFields(instanceId, componentId, userId, metadata, data, form);
 
     getProcessInstance(instanceId).updateFolder(data);
     Thread.sleep(12000);
