@@ -1023,9 +1023,13 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
         String stateName = a.getState().getName();
         String roleName = a.getUserRoleName();
         Field field = data.getField(processStateName(stateName) + "_" + roleName + "_" + inc.get());
+        if (field == null) {
+          field = data.getField(processStateName(stateName) + "_" + roleName + "_0");
+        } else {
+          inc.set(inc.get() + 1);
+        }
         String userId = field.getStringValue();
         User user = Workflow.getUserManager().getUser(userId);
-        inc.set(inc.get() + 1);
         return Workflow.getProcessInstanceManager().createActor(user, roleName, a.getState());
       } catch (WorkflowException | FormException e) {
         throw new SilverpeasRuntimeException(e);
