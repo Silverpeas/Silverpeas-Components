@@ -316,6 +316,10 @@ function choixImageInGallery(url) {
   $("#valueImageGallery"+currentAnswer).attr("value", url);
 }
 
+function goToQuestionsUpdate() {
+  document.questionForm.submit();
+}
+
 </script>
 </head>
 <%
@@ -591,18 +595,16 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
  } //End if action = CreateQuestion || SendQuestionForm
 if (action.equals("SendNewQuestion")) {
 %>
-<html>
-<head>
-<script language="Javascript">
-    function goToQuestionsUpdate() {
-        document.questionForm.submit();
-    }
-</script>
-</head>
-<body onload="goToQuestionsUpdate()">
+<body>
 <form name="questionForm" action="questionsUpdate.jsp" method="post">
-<input type="hidden" name="Action" value="UpdateQuestions" />
+  <input type="hidden" name="Action" value="UpdateQuestions" />
+  <input type="hidden" name="X-STKN" value="${param['X-STKN']}"/>
 </form>
+<script type="application/javascript">
+  whenSilverpeasEntirelyLoaded(function () {
+    goToQuestionsUpdate();
+  });
+</script>
 </body>
 </html>
 <% } %>
