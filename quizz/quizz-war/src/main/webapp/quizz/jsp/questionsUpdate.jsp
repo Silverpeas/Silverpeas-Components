@@ -224,7 +224,9 @@ function addQuestion() {
 function SendQuestions(nb)
 {
 	if (Number(nb) > 0) {
-		self.location = "questionsUpdate.jsp?Action=SendQuestions";
+    document.questionForm.action = "questionsUpdate.jsp";
+    document.questionForm[name="Action"].value = "SendQuestions";
+    document.questionForm.submit();
 	} else {
     jQuery.popup.error('<%=resources.getString("MustContainsAQuestion")%>');
 	}
