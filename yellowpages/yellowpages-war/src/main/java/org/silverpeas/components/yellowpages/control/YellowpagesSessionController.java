@@ -833,6 +833,9 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
         csvRow.addCell(contact.getPhone());
         csvRow.addCell(contact.getFax());
 
+        //adding topic
+        csvRow.addCell(contactFatherDetail.getNodeName());
+
         // adding userFull data
         UserFull userFull = contact.getUserFull();
         if (userFull != null) {
