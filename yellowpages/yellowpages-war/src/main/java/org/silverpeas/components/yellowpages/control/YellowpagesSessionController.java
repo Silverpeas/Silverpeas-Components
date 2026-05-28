@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -820,7 +820,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     for (ContactFatherDetail contactFatherDetail : contacts) {
       ContactDetail contact = contactFatherDetail.getContactDetail();
       if (contact != null) {
-        CSVRow csvRow = getCVSRow(contact);
+        CSVRow csvRow = getCVSRow(contactFatherDetail, contact);
 
         // adding xml data
         exportFormData(contactFatherDetail, csvRow);
@@ -832,13 +832,16 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     return csvBuilder;
   }
 
-  private static CSVRow getCVSRow(ContactDetail contact) {
+  private static CSVRow getCVSRow(ContactFatherDetail contactFatherDetail, ContactDetail contact) {
     CSVRow csvRow = new CSVRow();
     csvRow.addCell(contact.getLastName());
     csvRow.addCell(contact.getFirstName());
     csvRow.addCell(contact.getEmail());
     csvRow.addCell(contact.getPhone());
     csvRow.addCell(contact.getFax());
+
+    //adding topic
+    csvRow.addCell(contactFatherDetail.getNodeName());
 
     // adding userFull data
     UserFull userFull = contact.getUserFull();
@@ -962,8 +965,8 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
 
   /**
    * Remove start & end " and replace double " by single "
-   * @param value the value to parse
-   * @return the new formatted valued
+   * @param value the value to parse.
+   * @return the new formatted value
    */
   private String formatStringSeparator(String value) {
     String newValue = value;
