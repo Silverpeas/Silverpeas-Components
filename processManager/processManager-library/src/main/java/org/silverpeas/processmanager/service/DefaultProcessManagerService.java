@@ -30,7 +30,10 @@ import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
-import org.silverpeas.core.contribution.attachment.model.*;
+import org.silverpeas.core.contribution.attachment.model.DocumentType;
+import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.content.form.*;
 import org.silverpeas.core.contribution.content.form.field.*;
 import org.silverpeas.core.contribution.content.form.form.XmlForm;
@@ -39,8 +42,7 @@ import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.workflow.api.Workflow;
-import org.silverpeas.core.workflow.api.WorkflowException;
+import org.silverpeas.core.workflow.api.*;
 import org.silverpeas.core.workflow.api.event.TaskDoneEvent;
 import org.silverpeas.core.workflow.api.instance.ProcessInstance;
 import org.silverpeas.core.workflow.api.model.Action;
@@ -69,6 +71,12 @@ public class DefaultProcessManagerService implements ProcessManagerService {
   private OrganizationController organizationController;
   @Inject
   private AttachmentService attachmentService;
+  @Inject
+  private TaskManager taskManager;
+  @Inject
+  private WorkflowEngine workflowEngine;
+  @Inject
+  private ProcessModelManager modelManager;
 
   /**
    * Default role for creating workflow processes.
@@ -314,7 +322,7 @@ public class DefaultProcessManagerService implements ProcessManagerService {
     }
   }
 
-  private String populateFileField(XmlForm form, GenericDataRecord data, FileField field,
+  private void populateFileField(XmlForm form, GenericDataRecord data, FileField field,
       String name, FileContent content, PagesContext pagesContext) throws ProcessManagerException {
 
     // If metadata name is null, then look for a null-named text field in
@@ -337,7 +345,6 @@ public class DefaultProcessManagerService implements ProcessManagerService {
     String attachmentId =
         processUploadedFile(content.getContent(), content.getName(), pagesContext);
     field.setAttachmentId(attachmentId);
-    return attachmentId;
   }
 
   private void populateListField(Field field, String name, Collection<?> values, String type)
@@ -373,7 +380,7 @@ public class DefaultProcessManagerService implements ProcessManagerService {
       Action creation = processModel.getCreateAction(currentRole);
       TaskDoneEvent event = getCreationTask(processModel, userId, currentRole).
           buildTaskDoneEvent(creation.getName(), data);
-      Workflow.getWorkflowEngine().process(event);
+      workflowEngine.process(event);
       return event.getProcessInstance().getInstanceId();
     } catch (WorkflowException e) {
       throw new ProcessManagerException(PROCESS_INSTANCE_CREATION_FAILURE, e);
@@ -416,7 +423,7 @@ public class DefaultProcessManagerService implements ProcessManagerService {
 
     try {
       User user = new UserImpl(UserDetail.getById(userId));
-      return Workflow.getTaskManager().getCreationTask(user, currentRole, processModel);
+      return taskManager.getCreationTask(user, currentRole, processModel);
     } catch (WorkflowException e) {
       throw new ProcessManagerException(
           failureOnGetting("creation task of model", processModel.getModelId()), e);
@@ -428,7 +435,7 @@ public class DefaultProcessManagerService implements ProcessManagerService {
    */
   private ProcessModel getProcessModel(String modelId) throws ProcessManagerException {
     try {
-      return Workflow.getProcessModelManager().getProcessModel(modelId);
+      return modelManager.getProcessModel(modelId);
     } catch (WorkflowException e) {
       throw new ProcessManagerException(
           failureOnGetting("process model", modelId), e);
@@ -490,7 +497,7 @@ public class DefaultProcessManagerService implements ProcessManagerService {
       Action creation = processModel.getAction(action);
       TaskDoneEvent event = getTask(processInstance, userId, currentRole).buildTaskDoneEvent(
           creation.getName(), data);
-      Workflow.getWorkflowEngine().process(event, true);
+      workflowEngine.process(event, true);
       return event.getProcessInstance().getInstanceId();
     } catch (WorkflowException e) {
       throw new ProcessManagerException("Fail to process action " + action, e);
@@ -501,7 +508,7 @@ public class DefaultProcessManagerService implements ProcessManagerService {
       throws ProcessManagerException {
     try {
       User user = new UserImpl(UserDetail.getById(userId));
-      Task[] tasks = Workflow.getTaskManager().getTasks(user, currentRole, processInstance);
+      Task[] tasks = taskManager.getTasks(user, currentRole, processInstance);
       if (tasks.length > 0) {
         return tasks[0];
       }
@@ -523,10 +530,9 @@ public class DefaultProcessManagerService implements ProcessManagerService {
     }
   }
 
-  private List<String> populateFields(String processId, String componentId, String userId,
+  private void populateFields(String processId, String componentId, String userId,
       Map<String, Object> metadata, GenericDataRecord data, XmlForm form)
       throws ProcessManagerException {
-    List<String> attachmentIds = new ArrayList<>();
     boolean versioningUsed =
         StringUtil.getBooleanValue(organizationController.getComponentParameterValue(componentId,
         VERSION_MODE));
@@ -550,15 +556,13 @@ public class DefaultProcessManagerService implements ProcessManagerService {
       } else if (fieldValue instanceof Collection<?>) {
         populateListField(field, fieldName, (Collection<?>) fieldValue, fieldType);
       } else if (FileField.TYPE.equals(fieldType)) {
-        attachmentIds.add(
-            populateFileField(form, data, (FileField) field, fieldName, (FileContent) fieldValue,
-                pagesContext));
+        populateFileField(form, data, (FileField) field, fieldName, (FileContent) fieldValue,
+                pagesContext);
       } else {
         populateSimpleField(field, fieldName, fieldValue, fieldType);
       }
 
     }
-    return attachmentIds;
   }
 
 }

@@ -23,7 +23,9 @@
  */
 package org.silverpeas.processmanager;
 
+import jakarta.inject.Inject;
 import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.workflow.api.ProcessModelManager;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.ComponentInstancePostConstruction;
 import org.silverpeas.core.workflow.api.Workflow;
@@ -47,13 +49,16 @@ import static org.silverpeas.core.admin.component.ComponentInstancePostConstruct
 @Named(WORKFLOW_POST_CONSTRUCTION)
 public class ProcessManagerInstancePostConstruction implements ComponentInstancePostConstruction {
 
+  @Inject
+  private ProcessModelManager modelManager;
+
   @Override
   public void postConstruct(final String componentInstanceId) {
     String xmlFilename = null;
     try {
       xmlFilename = AdministrationServiceProvider.getAdminService()
           .getComponentParameterValue(componentInstanceId, "XMLFileName");
-      Workflow.getProcessModelManager().createProcessModel(xmlFilename, componentInstanceId);
+      modelManager.createProcessModel(xmlFilename, componentInstanceId);
     } catch (WorkflowException e) {
       throw new SilverpeasRuntimeException("Process model creation failure from " + xmlFilename +
           " for instance " + componentInstanceId);
