@@ -820,7 +820,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     for (ContactFatherDetail contactFatherDetail : contacts) {
       ContactDetail contact = contactFatherDetail.getContactDetail();
       if (contact != null) {
-        CSVRow csvRow = getCVSRow(contact);
+        CSVRow csvRow = getCVSRow(contactFatherDetail, contact);
 
         // adding xml data
         exportFormData(contactFatherDetail, csvRow);
@@ -832,13 +832,16 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     return csvBuilder;
   }
 
-  private static CSVRow getCVSRow(ContactDetail contact) {
+  private static CSVRow getCVSRow(ContactFatherDetail contactFatherDetail, ContactDetail contact) {
     CSVRow csvRow = new CSVRow();
     csvRow.addCell(contact.getLastName());
     csvRow.addCell(contact.getFirstName());
     csvRow.addCell(contact.getEmail());
     csvRow.addCell(contact.getPhone());
     csvRow.addCell(contact.getFax());
+
+    //adding topic
+    csvRow.addCell(contactFatherDetail.getNodeName());
 
     // adding userFull data
     UserFull userFull = contact.getUserFull();
