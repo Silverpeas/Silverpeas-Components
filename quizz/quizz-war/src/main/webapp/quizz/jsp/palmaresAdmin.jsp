@@ -187,6 +187,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
     <!-- moyenne -->
     <div>
       <table>
+        <tr><th/></tr>
         <tr>
           <td width="100%" align="left" valign="middle" class="textePetitBold2">&nbsp;<%=resources.getString("QuizzNbVoters")%>&nbsp;:&nbsp;
             <%=quizzScc.getNbVoters(request.getParameter("quizz_id"))%>
@@ -194,6 +195,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
           <td width="100%" align="right" valign="middle"  class="textePetitBold2"><%=resources.getString("QuizzAverage")%>&nbsp;:&nbsp;</td>
           <td align="right">
             <table border="0" cellspacing="0" cellpadding="0">
+              <tr><th/></tr>
               <tr>
                 <td rowspan="3"><img src="icons/tableProf_1.gif" width="7" height="70"></td>
                 <td><img src="icons/tableProf_2.gif" width="55" height="6"></td>
