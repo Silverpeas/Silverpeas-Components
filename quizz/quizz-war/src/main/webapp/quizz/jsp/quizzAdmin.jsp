@@ -62,7 +62,6 @@
 <view:sp-page>
   <view:sp-head-part>
     <view:includePlugin name="toggle"/>
-<!--    <script type="text/javascript" src="<%=m_context%>/util/javaScript/formUtil.js"></script>  -->
     <script type="text/javascript">
     function SP_openWindow(page,nom,largeur,hauteur,options) {
       var top=(screen.height-hauteur)/2;
