@@ -1,6 +1,3 @@
-<%@ page import="org.silverpeas.core.util.DateUtil" %>
-<%@ page import="org.silverpeas.core.util.URLUtil" %>
-<%@ page import="java.net.URLEncoder" %>
 <%--
 
     Copyright (C) 2000 - 2026 Silverpeas
@@ -44,157 +41,158 @@
   String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
   String iconsPath = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 
-			//Icons
-			String folderSrc = iconsPath + "/util/icons/delete.gif";
-			String linkIcon = iconsPath + "/util/icons/link.gif";
+  String folderSrc = iconsPath + "/util/icons/delete.gif";
+  String linkIcon = iconsPath + "/util/icons/link.gif";
+  String space = quizzScc.getSpaceLabel();
+  String component = quizzScc.getComponentLabel();
+  session.removeAttribute("currentQuizz");
+
+  String pdcUtilizationSrc = m_context
+      + "/pdcPeas/jsp/icons/pdcPeas_paramPdc.gif";
+
+  boolean isAdmin = false;
+
+  if ("admin".equals(quizzScc.getHighestSilverpeasUserRole().getName())) {
+    isAdmin = true;
+  }
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.quizz">
-<head>
-<view:looknfeel/>
-<view:includePlugin name="toggle"/>
-<%
-  SettingBundle settings = quizzScc.getSettings();
-			String space = quizzScc.getSpaceLabel();
-			String component = quizzScc.getComponentLabel();
-			session.removeAttribute("currentQuizz");
+<view:sp-page>
+  <view:sp-head-part>
+    <view:includePlugin name="toggle"/>
+<!--    <script type="text/javascript" src="<%=m_context%>/util/javaScript/formUtil.js"></script>  -->
+    <script type="text/javascript">
+    function SP_openWindow(page,nom,largeur,hauteur,options) {
+      var top=(screen.height-hauteur)/2;
+      var left=(screen.width-largeur)/2;
+      fenetre=window.open(page,nom,"top="+top+",left="+left+",width="+largeur+",height="+hauteur+","+options);
+      fenetre.focus();
+      return fenetre;
+    }
 
-			String pdcUtilizationSrc = m_context
-					+ "/pdcPeas/jsp/icons/pdcPeas_paramPdc.gif";
+    function openSPWindow(fonction, windowName){
+        pdcUtilizationWindow = SP_openWindow(fonction, windowName, '600', '400','scrollbars=yes, resizable, alwaysRaised');
+    }
 
-			boolean isAdmin = false;
+    function deleteQuizz(quizz_id)
+    {
+      var rep = confirm('<%=resources.getString("QuizzDeleteThisQuizz")%>');
+      if (rep==true) {
+        document.quizzList.action = "DeleteQuizz";
+        document.quizzList.quizzId.value = quizz_id;
+        document.quizzList.submit();
+      }
+    }
+    </script>
+  </view:sp-head-part>
+  <view:sp-body-part>
+  <%
+    //objet window
+        Window window = gef.getWindow();
+        window.setWidth("100%");
 
-			if ("admin".equals(quizzScc.getHighestSilverpeasUserRole().getName())) {
-				isAdmin = true;
-			}
-%>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/formUtil.js"></script>
-<script type="text/javascript">
-function SP_openWindow(page,nom,largeur,hauteur,options) {
-	var top=(screen.height-hauteur)/2;
-	var left=(screen.width-largeur)/2;
-	fenetre=window.open(page,nom,"top="+top+",left="+left+",width="+largeur+",height="+hauteur+","+options);
-	fenetre.focus();
-	return fenetre;
-}
+        //browse bar
+        BrowseBar browseBar = window.getBrowseBar();
+        browseBar.setDomainName(space);
+        browseBar.setComponentName(component, "Main");
+        browseBar.setExtraInformation(resources.getString("QuizzList"));
 
-function openSPWindow(fonction, windowName){
-    pdcUtilizationWindow = SP_openWindow(fonction, windowName, '600', '400','scrollbars=yes, resizable, alwaysRaised');
-}
+        OperationPane operationPane = window.getOperationPane();
+        if (isAdmin && quizzScc.isPdcUsed()) {
+          operationPane.addOperation(pdcUtilizationSrc, resources
+              .getString("GML.PDCParam"),
+              "javascript:onClick=openSPWindow('" + m_context
+                  + "/RpdcUtilization/jsp/Main?ComponentId="
+                  + quizzScc.getComponentId()
+                  + "','utilizationPdc1')");
+          operationPane.addLine();
+        }
+        operationPane.addOperationOfCreation(m_context
+            + "/util/icons/create-action/add-quizz.png", resources
+            .getString("QuizzNewQuizz"), "quizzCreator.jsp");
+        if (isAdmin) {
+          operationPane.addOperation(resources.getIcon("quizz.paste"),
+              resources.getString("GML.paste"),
+              "paste");
+        }
+        out.println(window.printBefore());
+  %>
+    <view:frame>
+    <view:componentInstanceIntro componentId="<%=quizzScc.getComponentId()%>" language="<%=quizzScc.getLanguage()%>"/>
+    <view:areaOfOperationOfCreation/>
+    <form name="quizzList" method="post">
+        <input type="hidden" name="quizzId">
+  <%
+        //onglets
+        TabbedPane tabbedPane1 = gef.getTabbedPane();
+        tabbedPane1.addTab(resources.getString("QuizzOnglet1"),
+            "quizzAdmin.jsp", true);
+        tabbedPane1.addTab(resources.getString("QuizzSeeResult"),
+            "quizzResultAdmin.jsp", false);
 
-function deleteQuizz(quizz_id)
-{
-  var rep = confirm('<%=resources.getString("QuizzDeleteThisQuizz")%>');
-  if (rep==true)
-    self.location="deleteQuizz.jsp?quizz_id="+quizz_id
-}
-</script>
-</head>
-<body>
-<%
-  //objet window
-			Window window = gef.getWindow();
-			window.setWidth("100%");
+        out.println(tabbedPane1.print());
 
-			//browse bar
-			BrowseBar browseBar = window.getBrowseBar();
-			browseBar.setDomainName(space);
-			browseBar.setComponentName(component, "Main");
-			browseBar.setExtraInformation(resources.getString("QuizzList"));
+        //Tableau
+        ArrayPane arrayPane = gef.getArrayPane("QuizzList",
+            "quizzAdmin.jsp", request, session);
 
-			OperationPane operationPane = window.getOperationPane();
-			if (isAdmin && quizzScc.isPdcUsed()) {
-				operationPane.addOperation(pdcUtilizationSrc, resources
-						.getString("GML.PDCParam"),
-						"javascript:onClick=openSPWindow('" + m_context
-								+ "/RpdcUtilization/jsp/Main?ComponentId="
-								+ quizzScc.getComponentId()
-								+ "','utilizationPdc1')");
-				operationPane.addLine();
-			}
-			operationPane.addOperationOfCreation(m_context
-					+ "/util/icons/create-action/add-quizz.png", resources
-					.getString("QuizzNewQuizz"), "quizzCreator.jsp");
-			if (isAdmin) {
-				operationPane.addOperation(resources.getIcon("quizz.paste"),
-						resources.getString("GML.paste"),
-						"paste");
-			}
-			out.println(window.printBefore());
-%>
-  <view:frame>
-  <view:componentInstanceIntro componentId="<%=quizzScc.getComponentId()%>" language="<%=quizzScc.getLanguage()%>"/>
-  <view:areaOfOperationOfCreation/>
-<%
-			//onglets
-			TabbedPane tabbedPane1 = gef.getTabbedPane();
-			tabbedPane1.addTab(resources.getString("QuizzOnglet1"),
-					"quizzAdmin.jsp", true);
-			tabbedPane1.addTab(resources.getString("QuizzSeeResult"),
-					"quizzResultAdmin.jsp", false);
+        ArrayColumn arrayColumn0 = arrayPane.addArrayColumn("&nbsp;");
+        arrayColumn0.setSortable(false);
+        arrayPane.addArrayColumn(resources.getString("GML.name"));
+        arrayPane.addArrayColumn(resources.getString("GML.description"));
+        arrayPane.addArrayColumn(resources.getString("QuizzCreationDate"));
+        arrayPane.addArrayColumn(resources.getString("GML.operation"));
 
-			out.println(tabbedPane1.print());
+        Collection quizzList = quizzScc.getAdminQuizzList();
+        Iterator i = quizzList.iterator();
+        while (i.hasNext()) {
+          QuestionContainerHeader quizzHeader = (QuestionContainerHeader) i
+              .next();
+          // gestion des permaliens sur les quizz
+          String permalink = quizzHeader.getPermalink();
+          String link = "&nbsp;<a class=\"sp-permalink\" href=\"" + permalink + "\"><img src=\""
+              + linkIcon + "\" border=\"0\" align=\"bottom\" alt=\""
+              + resources.getString("quizz.CopyQuizzLink")
+              + "\" title=\""
+              + resources.getString("quizz.CopyQuizzLink")
+              + "\"></a>";
+          String name = "<a href=\"quizzQuestionsNew.jsp?QuizzId="
+              + quizzHeader.getPK().getId() + "&Action=ViewQuizz"
+              + "\">" + quizzHeader.getTitle() + "</a>";
 
-			//Tableau
-			ArrayPane arrayPane = gef.getArrayPane("QuizzList",
-					"quizzAdmin.jsp", request, session);
+          IconPane folderPane1 = gef.getIconPane();
+          Icon folder1 = folderPane1.addIcon();
+          folder1.setProperties(folderSrc, "", "javascript:deleteQuizz("
+              + quizzHeader.getPK().getId() + ");");
+          ArrayLine arrayLine = arrayPane.addArrayLine();
+          arrayLine.addArrayCellLink(
+              "<img src=\"icons/palmares_30x15.gif\" border=0>",
+              "palmaresAdmin.jsp?quizz_id="
+                  + quizzHeader.getPK().getId());
+          arrayLine.addArrayCellText(name + link);
+          arrayLine.addArrayCellText(Encode
+              .javaStringToHtmlParagraphe(quizzHeader
+                  .getDescription()));
 
-			ArrayColumn arrayColumn0 = arrayPane.addArrayColumn("&nbsp;");
-			arrayColumn0.setSortable(false);
-			arrayPane.addArrayColumn(resources.getString("GML.name"));
-			arrayPane.addArrayColumn(resources.getString("GML.description"));
-			arrayPane.addArrayColumn(resources.getString("QuizzCreationDate"));
-			arrayPane.addArrayColumn(resources.getString("GML.operation"));
+          Date creationDate = quizzHeader.getCreationDate();
+          ArrayCellText arrayCellText = arrayLine
+              .addArrayCellText(resources.getOutputDate(creationDate));
+          arrayCellText.setCompareOn(creationDate);
 
-			Collection quizzList = quizzScc.getAdminQuizzList();
-			Iterator i = quizzList.iterator();
-			while (i.hasNext()) {
-				QuestionContainerHeader quizzHeader = (QuestionContainerHeader) i
-						.next();
-				// gestion des permaliens sur les quizz
-				String permalink = quizzHeader.getPermalink();
-				String link = "&nbsp;<a class=\"sp-permalink\" href=\"" + permalink + "\"><img src=\""
-						+ linkIcon + "\" border=\"0\" align=\"bottom\" alt=\""
-						+ resources.getString("quizz.CopyQuizzLink")
-						+ "\" title=\""
-						+ resources.getString("quizz.CopyQuizzLink")
-						+ "\"></a>";
-				String name = "<a href=\"quizzQuestionsNew.jsp?QuizzId="
-						+ quizzHeader.getPK().getId() + "&Action=ViewQuizz"
-						+ "\">" + quizzHeader.getTitle() + "</a>";
-
-				IconPane folderPane1 = gef.getIconPane();
-				Icon folder1 = folderPane1.addIcon();
-				folder1.setProperties(folderSrc, "", "javascript:deleteQuizz("
-						+ quizzHeader.getPK().getId() + ");");
-				ArrayLine arrayLine = arrayPane.addArrayLine();
-				arrayLine.addArrayCellLink(
-						"<img src=\"icons/palmares_30x15.gif\" border=0>",
-						"palmaresAdmin.jsp?quizz_id="
-								+ quizzHeader.getPK().getId());
-				//arrayLine.addArrayCellLink(quizzHeader.getTitle(),"quizzQuestionsNew.jsp?QuizzId="+quizzHeader.getPK().getId()+"&Action=ViewQuizz");
-				arrayLine.addArrayCellText(name + link);
-				arrayLine.addArrayCellText(Encode
-						.javaStringToHtmlParagraphe(quizzHeader
-								.getDescription()));
-
-				Date creationDate = quizzHeader.getCreationDate();
-				ArrayCellText arrayCellText = arrayLine
-						.addArrayCellText(resources.getOutputDate(creationDate));
-				arrayCellText.setCompareOn(creationDate);
-
-				arrayLine.addArrayCellIconPane(folderPane1);
-			}
-			out.println(arrayPane.print());
-%>
-</view:frame>
-<%
-	out.println(window.printAfter());
-%>
-<script type="text/javascript">
-  /* declare the module myapp and its dependencies (here in the silverpeas module) */
-  var myapp = angular.module('silverpeas.quizz', ['silverpeas.services', 'silverpeas.directives']);
-</script>
-</body>
-</html>
+          arrayLine.addArrayCellIconPane(folderPane1);
+        }
+        out.println(arrayPane.print());
+  %>
+    </form>
+  </view:frame>
+  <%
+    out.println(window.printAfter());
+  %>
+  <script type="text/javascript">
+    /* declare the module myapp and its dependencies (here in the silverpeas module) */
+    var myapp = angular.module('silverpeas.quizz', ['silverpeas.services', 'silverpeas.directives']);
+  </script>
+  </view:sp-body-part>
+</view:sp-page>
