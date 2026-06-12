@@ -35,6 +35,7 @@ import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
@@ -151,6 +152,12 @@ public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionContr
         quizzSC.createQuizz(quizzDetail);
         session.removeAttribute("quizzUnderConstruction");
         quizzSC.setPositions(null);
+        destination = getDestination("Main", quizzSC, request);
+      } else if (function.equals("DeleteQuizz")) {
+          String quizzId = request.getParameter("quizzId");
+          if (StringUtil.isDefined(quizzId)) {
+            quizzSC.closeQuizz(quizzId);
+          }
         destination = getDestination("Main", quizzSC, request);
       } else {
         destination = rootDest + function;
