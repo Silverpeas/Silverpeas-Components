@@ -96,7 +96,7 @@ function cancel() {
 
 $(document).ready(function() {
 	<view:wysiwyg replace="contentR" language="<%=language%>" width="600" height="300" componentId="<%=componentId%>"
-	              toolbar="questionReply" displayFileBrowser="${false}" activateWysiwygBackupManager="true"/>
+	              toolbar="questionReply" displayFileBrowser="${true}" activateWysiwygBackupManager="true"/>
 });
 //-->
 </script>

@@ -246,7 +246,7 @@
         function initCKeditor(messageId) {
           return new Promise(function(resolve) {
             if (wysiwygEditorInstance == null) {
-              wysiwygEditorInstance = <view:wysiwyg replace="messageText" language="<%=fsc.getLanguage()%>" width="600" height="300" toolbar="forum" displayFileBrowser="${false}"/>;
+              wysiwygEditorInstance = <view:wysiwyg replace="messageText" language="<%=fsc.getLanguage()%>" width="600" height="300" componentId="<%=instanceId%>" objectId="<%=String.valueOf(messageId)%>" toolbar="forum" displayFileBrowser="${true}" activateWysiwygBackupManager="true"/>;
               wysiwygEditorInstance.on('instanceReady', function() {
                 resolve();
               });

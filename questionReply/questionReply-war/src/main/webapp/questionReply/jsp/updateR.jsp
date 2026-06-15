@@ -81,7 +81,7 @@ function cancel() {
 
 $(document).ready(function() {
 	<view:wysiwyg replace="content" language="<%=language%>" width="600" height="300" objectId="<%=reply.getPK().getId()%>"
-	              componentId="<%=componentId%>" toolbar="questionReply" displayFileBrowser="${false}" activateWysiwygBackupManager="true"/>
+	              componentId="<%=componentId%>" toolbar="questionReply" displayFileBrowser="${true}" activateWysiwygBackupManager="true"/>
 });
 //-->
 </script>
