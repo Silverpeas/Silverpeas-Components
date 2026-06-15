@@ -37,10 +37,6 @@ import java.util.*;
 @Repository
 public class ClassifiedsDAO {
 
-  private ClassifiedsDAO() {
-    throw new IllegalAccessError("Utility class");
-  }
-
   /**
    * Create a classified
    * @param con connection to the database
