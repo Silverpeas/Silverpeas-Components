@@ -147,7 +147,7 @@ function validateMessage() {
 function init() {
 	<view:wysiwyg replace="messageText" language="<%=fsc.getLanguage()%>" width="600" height="300"
 	              componentId="<%=instanceId%>"
-	              toolbar="forum" displayFileBrowser="${false}" activateWysiwygBackupManager="true"/>
+	              toolbar="forum" displayFileBrowser="${true}" activateWysiwygBackupManager="true"/>
     document.forms["forumsForm"].elements["messageTitle"].focus();
 }
 
