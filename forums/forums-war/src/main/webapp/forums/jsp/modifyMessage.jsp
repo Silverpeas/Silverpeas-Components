@@ -55,7 +55,7 @@
         function init() {
         	<view:wysiwyg replace="messageText" language="<%=fsc.getLanguage()%>" width="600" height="300"
         	              componentId="<%=instanceId%>" objectId="<%=String.valueOf(messageId)%>"
-        	              toolbar="forum" displayFileBrowser="${false}" activateWysiwygBackupManager="true"/>
+        	              toolbar="forum" displayFileBrowser="${true}" activateWysiwygBackupManager="true"/>
         }
 
         function validateMessage()
