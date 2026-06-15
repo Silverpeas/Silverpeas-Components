@@ -49,7 +49,7 @@ String displayCredits(int nb_max_user_votes , int nb_user_votes) throws QuizzExc
 			Html_display += "<img src=\"icons/creditOff.gif\">";
 		}
 	}catch( Exception e){
-		throw new QuizzException ("palmares_JSP.displayCredits",QuizzException.WARNING,"Quizz.EX_CANNOT_DISPLAY_PALMARES",e);
+		throw new QuizzException (e);
 	}
 	return Html_display;
 }

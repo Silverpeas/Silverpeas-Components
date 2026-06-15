@@ -28,7 +28,7 @@ package org.silverpeas.components.quizz;
 import org.silverpeas.kernel.SilverpeasException;
 
 /**
- * Non runtime exception management for this jobPeas.
+ * Non-runtime exception management for this jobPeas.
  */
 public class QuizzException extends SilverpeasException {
 

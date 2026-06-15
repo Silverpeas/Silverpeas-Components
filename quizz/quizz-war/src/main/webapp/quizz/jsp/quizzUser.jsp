@@ -52,7 +52,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 				Html_display += "<img src=\"icons/creditOff.gif\">";
 		}
 	}catch (Exception e){
-		throw new QuizzException ("quizzUser_JSP.displayCredits",QuizzException.WARNING,"Quizz.EX_CANNOT_DISPLAY_CREDITS",e);
+		throw new QuizzException (e);
 	}
 
 	return Html_display;

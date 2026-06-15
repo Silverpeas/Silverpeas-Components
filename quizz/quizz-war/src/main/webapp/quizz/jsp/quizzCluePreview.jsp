@@ -64,7 +64,7 @@ Vector infos(JspWriter out, Collection Questions, String questionId)  throws Qui
 			}
 		}
 	} catch (Exception e){
-			throw new QuizzException ("questionCluePreview_JSP.infos",QuizzException.WARNING,"Quizz.EX_CANNOT_OBTAIN_QUESTIONS_INFOS",e);
+			throw new QuizzException (e);
 	}
 
     return infos;

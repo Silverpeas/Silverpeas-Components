@@ -114,7 +114,7 @@ String displayQuizz(QuestionContainerDetail quizz, GraphicElementFactory gef, St
 			r += "<table><tr><td>"+resources.getString("QuizzUnavailable")+"</td></tr>";
 		}
 	} catch (Exception e){
-		throw new QuizzException ("quizzQuestionNew_JSP.displayQuizz",QuizzException.WARNING,"Quizz.EX_CANNOT_DISPLAY_QUIZZ",e);
+		throw new QuizzException (e);
 	}
 
   return r;
@@ -184,7 +184,7 @@ List<String> displayQuestions(QuestionContainerDetail quizz, int roundId,Graphic
 		displayQuestions.add(r);
 		displayQuestions.add(s);
 	} catch (Exception e){
-		throw new QuizzException ("quizzQuestionNew_JSP.displayQuestion",QuizzException.WARNING,"Quizz.EX_CANNOT_DISPLAY_QUESTIONS",e);
+		throw new QuizzException (e);
 	}
 
   return displayQuestions;
@@ -471,7 +471,7 @@ String displayQuizzPreview(QuestionContainerDetail quizz, GraphicElementFactory 
 			r += "<table><tr><td>"+resources.getString("QuizzUnavailable")+"</td></tr></table>";
 		}
 	} catch(Exception e){
-		throw new QuizzException ("quizzQuestionNew_JSP.displayQuizzPreview",QuizzException.WARNING,"Quizz.EX_CANNOT_DISPLAY_QUIZZPREVIEW",e);
+		throw new QuizzException (e);
 	}
 
 	return r;
@@ -624,7 +624,7 @@ String displayQuizzResult(QuestionContainerDetail quizz, GraphicElementFactory g
 		        r += "<table><tr><td>"+resources.getString("QuizzUnavailable")+"</td></tr>";
 			}
 		}catch( Exception e){
-			throw new QuizzException ("quizzQuestionNew_JSP.displayQuizzResult",QuizzException.WARNING,"Quizz.EX_CANNOT_DISPLAY_RESULT",e);
+			throw new QuizzException (e);
 		}
 
 		return r;
@@ -689,7 +689,7 @@ String displayQuizzResult(QuestionContainerDetail quizz, GraphicElementFactory g
 				r += "<table><tr><td>"+resources.getString("QuizzUnavailable")+"</td></tr>";
 			}
 		} catch(Exception e){
-			throw new QuizzException ("quizzQuestionNew_JSP.displayQuizzResultAdmin",QuizzException.WARNING,"Quizz.EX_CANNOT_DISPLAY_RESULT",e);
+			throw new QuizzException (e);
 		}
 
 		return r;

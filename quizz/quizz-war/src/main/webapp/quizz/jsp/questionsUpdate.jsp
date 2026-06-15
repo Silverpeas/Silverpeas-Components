@@ -154,7 +154,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
       r += "<table><tr><td align=\"center\"><br><table border=\"0\"><tr><td>"+voteButton.print()+"</td><td>"+cancelButton.print()+"</td></tr></table></td></tr>";
       r += "</table>";
     } catch(Exception e){
-      throw new QuizzException ("questionUtils_JSP.displayQuestionsUpdateView",QuizzException.WARNING,"Quizz.EX_CANNOT_DISPLAY_UPDATEVIEW",e);
+      throw new QuizzException (e);
     }
         return r;
   }
