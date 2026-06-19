@@ -31,6 +31,7 @@ import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.contribution.content.form.field.TextFieldImpl;
 import org.silverpeas.core.i18n.I18NHelper;
 
@@ -41,6 +42,7 @@ public class UserRecord implements DataRecord {
 
   private static final long serialVersionUID = 4372981095216600600L;
   private final User user;
+  private final RecordTemplate template;
 
   public boolean isConnected() {
     return user.isConnected();
@@ -50,8 +52,9 @@ public class UserRecord implements DataRecord {
    * A UserRecord is built from a {@link UserDetail}
    * @param user a user in Silverpeas.
    */
-  public UserRecord(User user) {
+  public UserRecord(User user, RecordTemplate template) {
     this.user = user;
+    this.template = template;
   }
 
   public User getUserDetail() {
@@ -156,5 +159,10 @@ public class UserRecord implements DataRecord {
   @Override
   public ResourceReference getResourceReference() {
     return null;
+  }
+
+  @Override
+  public RecordTemplate getTemplate() {
+    return template;
   }
 }

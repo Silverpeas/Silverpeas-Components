@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -66,6 +66,7 @@ import org.silverpeas.core.workflow.api.model.Action;
 import org.silverpeas.core.workflow.api.model.Parameter;
 import org.silverpeas.core.workflow.api.model.State;
 import org.silverpeas.core.workflow.external.impl.ExternalActionImpl;
+import org.silverpeas.core.workflow.util.DataRecordUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.StringUtil;
 
@@ -191,7 +192,9 @@ public class SendInKmelia extends ExternalActionImpl {
     if (StringUtil.isDefined(text)) {
       try {
         result = DataRecordUtil.applySubstitution(text,
-            getProcessInstance().getAllDataRecord(role, "fr"), "fr");
+            getProcessInstance().getAllDataRecord(role, "fr"),
+            getProcessInstance().getProcessModel().getDataFolder().getItems(),
+            "fr");
       } catch (WorkflowException e) {
         SilverLogger.getLogger(this).error(e.getMessage(), e);
       }
@@ -544,7 +547,9 @@ public class SendInKmelia extends ExternalActionImpl {
         if (paramTopicPath != null && StringUtil.isDefined(paramTopicPath.getValue())) {
           try {
             String path = DataRecordUtil.applySubstitution(paramTopicPath.getValue(),
-                getProcessInstance().getAllDataRecord(role, "fr"), "fr");
+                getProcessInstance().getAllDataRecord(role, "fr"),
+                getProcessInstance().getProcessModel().getDataFolder().getItems(),
+                "fr");
             topicId = getNodeId(path, targetId, userId);
           } catch (WorkflowException e) {
             SilverLogger.getLogger(SendInKmelia.this).error(e.getMessage(), e);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2024 Silverpeas
+ * Copyright (C) 2000 - 2026 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -64,6 +64,7 @@ import org.silverpeas.core.workflow.engine.instance.LockingUser;
 import org.silverpeas.core.workflow.engine.model.ActionRefs;
 import org.silverpeas.core.workflow.engine.model.ItemImpl;
 import org.silverpeas.core.workflow.engine.user.UserSettingsService;
+import org.silverpeas.core.workflow.util.DataRecordUtil;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.Mutable;
@@ -1729,7 +1730,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
                 final long elapsedTimeBetweenActionAndQuestion =
                     questionDate.getTime() - actionDate.getTime();
                 return 0 < elapsedTimeBetweenActionAndQuestion &&
-                       elapsedTimeBetweenActionAndQuestion < 30000;
+                    elapsedTimeBetweenActionAndQuestion < 30000;
               }
               return false;
             }).findFirst();
@@ -1743,7 +1744,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
                 final long elapsedTimeBetweenActionAndResponse =
                     responseDate != null ? responseDate.getTime() - actionDate.getTime() : -1;
                 return 0 < elapsedTimeBetweenActionAndResponse &&
-                       elapsedTimeBetweenActionAndResponse < 30000;
+                    elapsedTimeBetweenActionAndResponse < 30000;
               }
               return false;
             }).findFirst();
@@ -2160,7 +2161,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   private String getComputedFieldValue(String fieldName, ProcessInstanceRowRecord instance,
       Item[] items) {
     if (fieldName.startsWith("${")) {
-      return DataRecordUtil.applySubstitution(fieldName, instance, "fr");
+      return DataRecordUtil.applySubstitution(fieldName, instance, items, "fr");
     }
     return getFieldValue(instance, items, fieldName);
   }

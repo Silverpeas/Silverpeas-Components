@@ -29,7 +29,7 @@ import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.Priority;
-import org.silverpeas.core.contribution.content.form.DataRecordUtil;
+import org.silverpeas.core.workflow.util.DataRecordUtil;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
@@ -203,8 +203,9 @@ public class SendInAlmanach extends ExternalActionImpl {
     if (StringUtil.isDefined(triggerParamValue)) {
       try {
         evaluateValue =
-            DataRecordUtil.applySubstitution(triggerParamValue, getProcessInstance()
-                .getAllDataRecord(getRole(), "fr"), "fr");
+            DataRecordUtil.applySubstitution(triggerParamValue,
+                getProcessInstance().getAllDataRecord(getRole(), "fr"),
+                getProcessInstance().getProcessModel().getDataFolder().getItems(), "fr");
       } catch (WorkflowException e) {
         SilverLogger.getLogger(this).error(e);
       }
