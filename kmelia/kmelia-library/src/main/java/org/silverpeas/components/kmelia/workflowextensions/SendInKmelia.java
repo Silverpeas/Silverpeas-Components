@@ -60,6 +60,7 @@ import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.workflow.util.DataRecordUtil;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.workflow.api.WorkflowException;
@@ -194,7 +195,9 @@ public class SendInKmelia extends ExternalActionImpl {
     if (StringUtil.isDefined(text)) {
       try {
         result = DataRecordUtil.applySubstitution(text,
-            getProcessInstance().getAllDataRecord(role, "fr"), "fr");
+            getProcessInstance().getAllDataRecord(role, "fr"),
+            getProcessInstance().getProcessModel().getDataFolder().getItems(),
+            "fr");
       } catch (WorkflowException e) {
         SilverLogger.getLogger(this).error(e.getMessage(), e);
       }
@@ -549,7 +552,9 @@ public class SendInKmelia extends ExternalActionImpl {
         if (paramTopicPath != null && StringUtil.isDefined(paramTopicPath.getValue())) {
           try {
             String path = DataRecordUtil.applySubstitution(paramTopicPath.getValue(),
-                getProcessInstance().getAllDataRecord(role, "fr"), "fr");
+                getProcessInstance().getAllDataRecord(role, "fr"),
+                getProcessInstance().getProcessModel().getDataFolder().getItems(),
+                "fr");
             topicId = getNodeId(path, targetId, userId);
           } catch (WorkflowException e) {
             SilverLogger.getLogger(SendInKmelia.this).error(e.getMessage(), e);

@@ -31,7 +31,7 @@ import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.content.form.DataRecord;
-import org.silverpeas.core.contribution.content.form.DataRecordUtil;
+import org.silverpeas.core.workflow.util.DataRecordUtil;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.Form;
@@ -886,7 +886,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   }
 
   /**
-   * Returns the an empty question record which will be filled with the question form.
+   * Returns an empty question record which will be filled with the question form.
    */
   public DataRecord getEmptyQuestionRecord() {
     return new QuestionRecord("");
@@ -2144,7 +2144,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   private String getComputedFieldValue(String fieldName, ProcessInstanceRowRecord instance,
       Item[] items) {
     if (fieldName.startsWith("${")) {
-      return DataRecordUtil.applySubstitution(fieldName, instance, "fr");
+      return DataRecordUtil.applySubstitution(fieldName, instance, items, "fr");
     }
     return getFieldValue(instance, items, fieldName);
   }
