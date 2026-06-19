@@ -28,8 +28,11 @@ import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.contribution.content.form.field.TextFieldImpl;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,6 +42,7 @@ public class QuestionRecord implements DataRecord {
   private static final long serialVersionUID = 4978363746794966549L;
   private String id = null;
   private final TextFieldImpl contentField;
+  private String language;
 
   /**
    * A QuestionRecord is built from a Question
@@ -127,11 +131,11 @@ public class QuestionRecord implements DataRecord {
   }
 
   public String getLanguage() {
-    return null;
+    return StringUtil.isDefined(language) ? language : I18NHelper.DEFAULT_LANGUAGE;
   }
 
   public void setLanguage(String language) {
-    // nothing to do
+    this.language = language;
   }
 
   @Override
@@ -142,5 +146,10 @@ public class QuestionRecord implements DataRecord {
   @Override
   public ResourceReference getResourceReference() {
     return null;
+  }
+
+  @Override
+  public RecordTemplate getTemplate() {
+    return new QuestionTemplate(getLanguage(), true);
   }
 }

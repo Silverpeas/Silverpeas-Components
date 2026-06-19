@@ -139,6 +139,6 @@ public class UserTemplate implements RecordTemplate {
    */
   public UserRecord getRecord(String idUser) {
     UserDetail userDetail = UserFull.getById(idUser);
-    return new UserRecord(userDetail);
+    return new UserRecord(userDetail, this);
   }
 }
