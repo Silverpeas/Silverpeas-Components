@@ -131,7 +131,7 @@ public class KmeliaTransversal implements PublicationHelper {
 
   protected List<String> getAvailableComponents(String spaceId) {
     List<String> componentIds = new ArrayList<>();
-    if (!StringUtil.isDefined(spaceId)) {
+    if (StringUtil.isNotDefined(spaceId)) {
       String[] cIds = getOrganizationControl().getComponentIdsForUser(userId, "kmelia");
       componentIds.addAll(Arrays.asList(cIds));
       cIds = getOrganizationControl().getComponentIdsForUser(userId, "toolbox");
