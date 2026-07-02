@@ -122,7 +122,7 @@
             } else {
           %>
           <div class="rich-content">
-          <view:displayWysiwyg objectId="<%=componentId%>" componentId="<%=componentId %>" language="<%=I18NHelper.DEFAULT_LANGUAGE %>"/>
+          <view:displayWysiwyg objectId="<%=componentId%>" componentId="<%=componentId %>" language="<%=I18NHelper.getDefaultLanguage() %>"/>
           </div>
           <%
             }
