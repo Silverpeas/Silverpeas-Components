@@ -25,18 +25,14 @@ import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.contribution.publication.dao.PublicationCriteria;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
-import org.silverpeas.kernel.util.StringUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.look.PublicationHelper;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
 
@@ -81,17 +77,19 @@ public class KmeliaTransversal implements PublicationHelper {
   }
 
   @Override
-  public List<PublicationDetail> getPublications(String spaceId, List<String> excluded, int nbPublis) {
+  public List<PublicationDetail> getPublications(String spaceId, List<String> excluded,
+      int nbPublis) {
     final List<String> componentIds = getAvailableComponents(spaceId);
     componentIds.removeAll(excluded);
     try {
-      return getPublicationService().getAuthorizedPublicationsForUserByCriteria(userId, PublicationCriteria
-          .excludingTrashNodeOnComponentInstanceIds(componentIds)
-          .ofStatus(PublicationDetail.VALID_STATUS)
-          .visibleAt(OffsetDateTime.now())
-          .takingAliasesIntoAccount()
-          .orderByDescendingBeginDate()
-          .limitTo(nbPublis));
+      return getPublicationService().getAuthorizedPublicationsForUserByCriteria(userId,
+          PublicationCriteria
+              .excludingTrashNodeOnComponentInstanceIds(componentIds)
+              .ofStatus(PublicationDetail.VALID_STATUS)
+              .visibleAt(OffsetDateTime.now())
+              .takingAliasesIntoAccount()
+              .orderByDescendingBeginDate()
+              .limitTo(nbPublis));
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(failureOnGetting("publications of space", spaceId));
     }
@@ -110,10 +108,12 @@ public class KmeliaTransversal implements PublicationHelper {
     return getPublications(spaceId, nbReturned);
   }
 
-  protected List<PublicationDetail> getUpdatedPublications(String spaceId, Date since, int nbPublis) {
+  protected List<PublicationDetail> getUpdatedPublications(String spaceId, Date since,
+      int nbPublis) {
     final List<String> componentIds = getAvailableComponents(spaceId);
     try {
-      return getPublicationService().getAuthorizedPublicationsForUserByCriteria(userId, PublicationCriteria
+      return getPublicationService().getAuthorizedPublicationsForUserByCriteria(userId,
+          PublicationCriteria
           .excludingTrashNodeOnComponentInstanceIds(componentIds)
           .ofStatus(PublicationDetail.VALID_STATUS)
           .visibleAt(OffsetDateTime.now())
@@ -129,7 +129,7 @@ public class KmeliaTransversal implements PublicationHelper {
 
   protected List<String> getAvailableComponents(String spaceId) {
     List<String> componentIds = new ArrayList<>();
-    if (!StringUtil.isDefined(spaceId)) {
+    if (StringUtil.isNotDefined(spaceId)) {
       String[] cIds = getOrganizationControl().getComponentIdsForUser(userId, "kmelia");
       componentIds.addAll(Arrays.asList(cIds));
       cIds = getOrganizationControl().getComponentIdsForUser(userId, "toolbox");
@@ -148,7 +148,8 @@ public class KmeliaTransversal implements PublicationHelper {
   }
 
   public List<PublicationDetail> getPublicationsByComponentId(String componentId) {
-    return getPublicationService().getAuthorizedPublicationsForUserByCriteria(userId, PublicationCriteria
+    return getPublicationService().getAuthorizedPublicationsForUserByCriteria(userId,
+        PublicationCriteria
         .excludingTrashNodeOnComponentInstanceIds(componentId)
         .ofStatus(PublicationDetail.VALID_STATUS)
         .visibleAt(OffsetDateTime.now())
