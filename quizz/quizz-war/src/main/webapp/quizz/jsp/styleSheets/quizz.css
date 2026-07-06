@@ -77,8 +77,7 @@ fieldset#answersFieldset legend {
 
 #answersFieldset .points {
     width: 45%;
-    text-align:right;
-    padding:5px 0 5px 10px;
+    padding:5px 0 5px 0px;
 }
 
 #answersFieldset .points input{
