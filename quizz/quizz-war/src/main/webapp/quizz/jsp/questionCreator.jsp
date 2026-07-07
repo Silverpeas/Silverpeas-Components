@@ -43,7 +43,6 @@
 <view:setBundle basename="org.silverpeas.quizz.multilang.quizz"/>
 
 <%
-
 //Retrieve parameter
 String nextAction = "";
 String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
@@ -68,6 +67,8 @@ List<FileItem> items = HttpRequest.decorate(request).getFileItems();
 boolean file = false;
 int nb = 0;
 int attachmentSuffix = 0;
+int textareaMaxlength = DBUtil.getTextAreaLength();
+
 String action = FileUploadUtil.getOldParameter(items, "Action", "FirstQuestion");
 String question = FileUploadUtil.getOldParameter(items, "question", "");
 String clue =  FileUploadUtil.getOldParameter(items, "clue", "");
@@ -78,278 +79,18 @@ String nbAnswers = FileUploadUtil.getOldParameter(items, "nbAnswers", "");
 String style = FileUploadUtil.getOldParameter(items, "questionStyle", "");
 QuestionForm form = new QuestionForm(file, attachmentSuffix);
 List<Answer> answers = QuestionHelper.extractAnswer(items, form, quizzScc.getComponentId(), quizzSettings.getString("imagesSubDirectory"));
-file = form.isFile();
-attachmentSuffix = form.getAttachmentSuffix();
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <view:sp-page>
   <view:sp-head-part withCheckFormScript="true" withFieldsetStyle="true">
-<style type="text/css">
-.thumbnailPreviewAndActions {
-  display: none;
-}
-</style>
-  <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
-  <script language="javascript">
-
-    $( document ).ready(function() {
-      $('textarea[name="clue"]').on('keypress blur', function (event) {
-        var textarea = $(this),
-            text = textarea.val();
-        if (text=="") {
-          $("#penaltyField").val("");
-          unmarkFieldRequired($('#optionalField'));
-        }
-        else {
-          markFieldRequired($("#optionalField"));
-        }
-      });
-    });
-
-    function markFieldRequired(fieldObject) {
-      var mandatory = '<img class=\"mandatory\" src=\"<%=mandatoryField%>" alt=\"Obligatoire\" width=\"5\" height=\"5\"/>';
-      if ($(fieldObject).find(".mandatory").length) {
-        // do not add img twice
-      } else {
-        fieldObject.append(mandatory);
-      }
-    }
-    function unmarkFieldRequired(fieldObject) {
-      fieldObject.children(".mandatory").remove();
-    }
-
-    function sendData()
-  {
-     var errorMsg = "";
-     var errorNb = 0;
-     var question = stripInitialWhitespace(document.quizzForm.question.value);
-     var nbAnswers = document.quizzForm.nbAnswers.value;
-     var clue = document.quizzForm.clue.value;
-     var penalty = document.quizzForm.penalty.value;
-     var nbPointsMin = document.quizzForm.nbPointsMin.value;
-     var nbPointsMax = document.quizzForm.nbPointsMax.value;
-
-     if (isWhitespace(nbAnswers))
-     {
-             errorMsg +="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzCreationNbAnswers")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
-             errorNb++;
-     }
-     if (document.quizzForm.questionStyle.options[document.quizzForm.questionStyle.selectedIndex].value=="null") {
-      //choisir au moins un style
-        errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("quizz.style")%>' <%=resources.getString("GML.MustBeFilled")%> \n";
-        errorNb++;
-     }
-     else
-     {
-        if (isInteger(nbAnswers)==false)
-        {
-            errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzCreationNbAnswers")%>' <%=resources.getString("GML.MustContainsFloat")%>\n";
-            errorNb++;
-        }
-        else
-        {
-            if (nbAnswers <= 0)
-            {
-                errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzCreationNbAnswers")%>' <%=resources.getString("MustContainsPositiveNumber")%>\n";
-                errorNb++;
-             }
-        }
-     }
-    if (!isWhitespace(penalty))
-    {
-        if (isInteger(penalty)==false)
-        {
-            errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzPenalty")%>' <%=resources.getString("GML.MustContainsFloat")%>\n";
-            errorNb++;
-        }
-        else
-        {
-            if (penalty <= 0)
-            {
-                errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzPenalty")%>' <%=resources.getString("MustContainsPositiveNumber")%>\n";
-                errorNb++;
-            }
-        }
-        if (isWhitespace(clue))
-        {
-           errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzClue")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
-           errorNb++;
-        }
-    }
-   if (!isWhitespace(clue))
-    {
-        if (!isValidTextArea(document.quizzForm.clue))
-        {
-           errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzClue")%>' <%=resources.getString("MustContainsLessCar")%> <%=DBUtil.getTextAreaLength()%> <%=resources.getString("Caracters")%>\n";
-           errorNb++;
-        }
-        if (isWhitespace(penalty))
-        {
-           errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzPenalty")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
-           errorNb++;
-        }
-    }
-
-    if (!isWhitespace(nbPointsMax))
-    {
-        if (isSignedInteger(nbPointsMax)==false)
-        {
-            errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzCreationNbPointsMax")%>' <%=resources.getString("GML.MustContainsFloat")%>\n";
-            errorNb++;
-        }
-        else
-        {
-            if (nbPointsMax <= 0)
-            {
-                errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzCreationNbPointsMax")%>' <%=resources.getString("MustContainsPositiveNumber")%>\n";
-                errorNb++;
-            }
-        }
-    }
-    if (!isWhitespace(nbPointsMin))
-    {
-        if (isSignedInteger(nbPointsMin)==false)
-        {
-            errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzCreationNbPointsMin")%>' <%=resources.getString("GML.MustContainsFloat")%>\n";
-            errorNb++;
-        }
-        else
-        {
-                if (parseInt(nbPointsMin, 10) >= parseInt(nbPointsMax, 10))
-                {
-                  errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzCreationNbPointsMin")%>' <%=resources.getString("MustContainsStrictlyInfNumber")%> '<%=resources.getString("QuizzCreationNbPointsMax")%>'\n";
-                  errorNb++;
-                }
-        }
-    }
-
-     if (isWhitespace(question)) {
-           errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzCreationQuestion")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
-           errorNb++;
-     }
-     switch(errorNb) {
-        case 0 :
-            document.quizzForm.submit();
-            break;
-        case 1 :
-            errorMsg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
-            jQuery.popup.error(errorMsg);
-            break;
-        default :
-            errorMsg = "<%=resources.getString("GML.ThisFormContains")%> " + errorNb + " <%=resources.getString("GML.errors")%> :\n" + errorMsg;
-            jQuery.popup.error(errorMsg);
-     }
+  <style type="text/css">
+  .thumbnailPreviewAndActions {
+    display: none;
   }
-  function sendData2()
-  {
-       var errorMsg = "";
-       var errorNb = 0;
-       var nb = Number(document.quizzForm.nbAnswers.value);
-       var nbPointsMax = Number(document.quizzForm.nbPointsMax.value);
-       var nbPointsMin = Number(document.quizzForm.nbPointsMin.value);
-       for (var i = 0; i < nb; i++)
-       {
-         var answer = $("#answer"+i).val(); // document.quizzForm.elements[<%=nbZone%>*i+7].value
-         var nbPoints = $("#nbPoints"+i).val(); //document.quizzForm.elements[<%=nbZone%>*i+8].value;
-         var comment = $("#comment"+i).val(); //document.quizzForm.elements[<%=nbZone%>*i+9].value;
-
-           if (isWhitespace(nbPoints))
-           {
-                   errorMsg +="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzNbPoints")%> "+String(i+1)+"' <%=resources.getString("GML.MustBeFilled")%>\n";
-                   errorNb++;
-           }
-           else
-           {
-              if (isSignedInteger(nbPoints)==false)
-              {
-                  errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzNbPoints")%> "+String(i+1)+"' <%=resources.getString("GML.MustContainsFloat")%>\n";
-                  errorNb++;
-              }
-        else
-        {
-      if((document.quizzForm.nbPointsMax.value!='')&&(parseInt(nbPoints, 10) > parseInt(nbPointsMax, 10)))
-      {
-                    errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzNbPoints")%> "+String(i+1)+"' <%=resources.getString("MustContainsInfNumber")%> '<%=resources.getString("QuizzCreationNbPointsMax")%>'\n";
-        errorNb++;
-      }
-      else
-      {
-        if((document.quizzForm.nbPointsMin.value!='')&&(parseInt(nbPoints, 10) < parseInt(nbPointsMin, 10)))
-        {
-          errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzNbPoints")%> "+String(i+1)+"' <%=resources.getString("MustContainsSupNumber")%> '<%=resources.getString("QuizzCreationNbPointsMin")%>'\n";
-          errorNb++;
-        }
-      }
-
-        }
-           }
-           if (isWhitespace(answer)) {
-                 errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzCreationAnswerNb")%> "+String(i+1)+"' <%=resources.getString("GML.MustBeFilled")%>\n";
-                 errorNb++;
-           }
-           if ((!isWhitespace(comment)) && (!isValidTextArea(document.quizzForm.elements[<%=nbZone%>*i+9])))
-            {
-                 errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzCreationAnswerComment")%>' <%=resources.getString("MustContainsLessCar")%> <%=DBUtil.getTextAreaLength()%> <%=resources.getString("Caracters")%>\n";
-                 errorNb++;
-            }
-     }
-    switch(errorNb) {
-        case 0 :
-            document.quizzForm.submit();
-            break;
-        case 1 :
-            errorMsg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
-            jQuery.popup.error(errorMsg);
-            break;
-        default :
-            errorMsg = "<%=resources.getString("GML.ThisFormContains")%> " + errorNb + " <%=resources.getString("GML.errors")%> :\n" + errorMsg;
-            jQuery.popup.error(errorMsg);
-    }
-  }
-  function goToEnd() {
-      document.quizzForm.Action.value = "End";
-      document.quizzForm.submit();
-  }
-  function confirmCancel()
-  {
-    if (confirm('<%=resources.getString("ConfirmCancel")%>'))
-      self.location="Main.jsp";
-  }
-
-  var galleryWindow = window;
-  var currentAnswer;
-
-  function choixGallery(liste, idAnswer)
-  {
-    currentAnswer = idAnswer;
-    index = liste.selectedIndex;
-    var componentId = liste.options[index].value;
-    if (index != 0)
-    {
-      url = "<%=m_context%>/gallery/jsp/wysiwygBrowser.jsp?ComponentId="+componentId+"&Language=<%=quizzScc.getLanguage()%>";
-      windowName = "galleryWindow";
-      larg = "820";
-      haut = "600";
-      windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
-      if (!galleryWindow.closed && galleryWindow.name=="galleryWindow")
-        galleryWindow.close();
-      galleryWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
-    }
-  }
-
-  function deleteImage(idImage) {
-    $("#thumbnailPreviewAndActions"+idImage).css("display", "none");
-    $("#valueImageGallery"+idImage).attr("value", "");
-  }
-
-  function choixImageInGallery(url) {
-    $("#thumbnailPreviewAndActions"+currentAnswer).css("display", "block");
-    $("#thumbnailActions"+currentAnswer).css("display", "block");
-    $("#thumbnail"+currentAnswer).attr("src", url);
-    $("#valueImageGallery"+currentAnswer).attr("value", url);
-  }
-  </script>
+  </style>
+  <view:script src="/util/javaScript/dateUtils.js"/>
+  <view:script src="/quizz/jsp/javascript/question.js"/>
 </view:sp-head-part>
 <view:sp-body-part>
   <%
@@ -505,10 +246,6 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
   </div>  
 </fieldset>
 
-<%
-      Board board = gef.getBoard();
-%>
-
 <% if (action.equals("SendQuestionForm")) {
 %>
   <input type="hidden" name="question" value="<%=WebEncodeHelper.javaStringToHtmlString(question) %>" />
@@ -597,7 +334,7 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
     <div class="field">
       <label for="comment<%=i%>" class="txtlibform"><fmt:message key="QuizzCreationAnswerComment" />&nbsp;<%=(i+1)%></label>
       <div class="champs">
-        <textarea name="comment<%=i%>" id="comment<%=i%>" cols="49" rows="3"></textarea>
+        <textarea name="comment<%=i%>" id="comment<%=i%>" cols="49" rows="3" maxlength="<%=textareaMaxlength%>"></textarea>
       </div>
     </div>
 <%  
@@ -683,12 +420,12 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
     <div class="field" id="clueArea">
       <label for="clue" class="txtlibform"><fmt:message key="QuizzClue" /></label>
       <div class="champs">
-        <textarea name="clue" cols="49" rows="3"><%=WebEncodeHelper.javaStringToHtmlString(clue)%></textarea>
+        <textarea name="clue" cols="49" rows="3" maxlength="<%=textareaMaxlength%>"><%=WebEncodeHelper.javaStringToHtmlString(clue)%></textarea>
       </div>
     </div>
 
     <div class="field" id="penaltyArea">
-      <label for="penalty" class="txtlibform"><fmt:message key="QuizzPenalty" /></label>
+      <label for="penaltyField" class="txtlibform"><fmt:message key="QuizzPenalty" /></label>
       <div class="champs">
         <input type="text" name="penalty" id="penaltyField"  value="<%=penalty%>" size="5" maxlength="3"/>&nbsp;<%=resources.getString("QuizzNbPoints")%><span id="optionalField">&nbsp;</span>
       </div>
