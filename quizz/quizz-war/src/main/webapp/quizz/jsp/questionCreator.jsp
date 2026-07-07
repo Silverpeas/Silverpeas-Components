@@ -262,7 +262,7 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
   <div class="fields">
     <div class="field" id="questionArea"> 
       <label for="question" class="txtlibform"><fmt:message key="QuizzCreationQuestion" />&nbsp;<%=questionNb%></label>
-      <div class="champs"><textarea name="questionBis" cols="49" rows="3" disabled="disabled"><%=WebEncodeHelper
+      <div class="champs"><textarea name="questionBis" id="question" cols="49" rows="3" disabled="disabled"><%=WebEncodeHelper
           .javaStringToHtmlString(question)%></textarea>&nbsp;<img border="0" src="<%=mandatoryField %>" width="5" height="5"/></div>
     </div>
     <div class="field" id="questionStyleArea">
@@ -273,35 +273,35 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
     <div class="field" id="nbAnswersArea">
       <label for="nbAnswers" class="txtlibform"><fmt:message key="QuizzCreationNbAnswers" /></label>
       <div class="champs">
-        <input type="text" name="nbAnswersBis" value="<%=nbAnswers%>" size="5" maxlength="3" disabled="disabled"/>&nbsp;&nbsp;&nbsp;<img border="0" src="<%=mandatoryField %>" width="5" height="5"/>
+        <input type="text" id="nbAnswers" name="nbAnswersBis" value="<%=nbAnswers%>" size="5" maxlength="3" disabled="disabled"/>&nbsp;&nbsp;&nbsp;<img border="0" src="<%=mandatoryField %>" width="5" height="5"/>
       </div>
     </div>
 
     <div class="field" id="nbPointsMinArea">
       <label for="nbPointsMin" class="txtlibform"><fmt:message key="QuizzCreationNbPointsMin" /></label>
       <div class="champs">
-        <input type="text" name="nbPointsMinBis" value="<%=nbPointsMin%>" size="5" maxlength="3" disabled="disabled"/>&nbsp;<%=resources.getString("QuizzNbPoints")%>
+        <input type="text" id="nbPointsMin" name="nbPointsMinBis" value="<%=nbPointsMin%>" size="5" maxlength="3" disabled="disabled"/>&nbsp;<%=resources.getString("QuizzNbPoints")%>
       </div>
     </div>
 
     <div class="field" id="nbPointsMaxArea">
       <label for="nbPointsMax" class="txtlibform"><fmt:message key="QuizzCreationNbPointsMax" /></label>
       <div class="champs">
-        <input type="text" name="nbPointsMaxBis" value="<%=nbPointsMax%>" size="5" maxlength="3" disabled="disabled"/>&nbsp;<%=resources.getString("QuizzNbPoints")%>
+        <input type="text" id="nbPointsMax" name="nbPointsMaxBis" value="<%=nbPointsMax%>" size="5" maxlength="3" disabled="disabled"/>&nbsp;<%=resources.getString("QuizzNbPoints")%>
       </div>
     </div>
 
     <div class="field" id="clueArea">
       <label for="clue" class="txtlibform"><fmt:message key="QuizzClue" /></label>
       <div class="champs">
-        <textarea name="clueBis" cols="49" rows="3" disabled="disabled"><%=WebEncodeHelper.javaStringToHtmlString(clue)%></textarea>
+        <textarea name="clueBis" id="clue" cols="49" rows="3" disabled="disabled"><%=WebEncodeHelper.javaStringToHtmlString(clue)%></textarea>
       </div>
     </div>
 
     <div class="field" id="penaltyArea">
       <label for="penalty" class="txtlibform"><fmt:message key="QuizzPenalty" /></label>
       <div class="champs">
-        <input type="text" name="penaltyBis" value="<%=penalty%>" size="5" maxlength="3" disabled="disabled"/>&nbsp;<%=resources.getString("QuizzNbPoints")%>
+        <input type="text" id="penalty" name="penaltyBis" value="<%=penalty%>" size="5" maxlength="3" disabled="disabled"/>&nbsp;<%=resources.getString("QuizzNbPoints")%>
       </div>
     </div>
 

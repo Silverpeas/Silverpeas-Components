@@ -165,7 +165,7 @@
       <div class="fields">
         <div class="field" id="questionArea">
           <label for="question" class="txtlibform"><fmt:message key="QuizzCreationQuestion" />&nbsp;<%=questionNb%></label>
-          <div class="champs"><textarea name="question" cols="49" rows="3" maxlength="50" readonly="readonly"><%=WebEncodeHelper.javaStringToHtmlString(question)%></textarea>&nbsp;<img border="0" src="<%=mandatoryField %>" width="5" height="5"/></div>
+          <div class="champs"><textarea id="question" name="question" cols="49" rows="3" maxlength="50" readonly="readonly"><%=WebEncodeHelper.javaStringToHtmlString(question)%></textarea>&nbsp;<img border="0" src="<%=mandatoryField %>" width="5" height="5"/></div>
         </div>
         <div class="field" id="questionStyleArea">
           <label for="questionStyle" class="txtlibform"><fmt:message key="quizz.style" /></label>
@@ -175,21 +175,21 @@
         <div class="field" id="nbAnswersArea">
           <label for="nbAnswers" class="txtlibform"><fmt:message key="QuizzCreationNbAnswers" /></label>
           <div class="champs">
-            <input type="text" name="nbAnswers" value="<%=nbAnswers%>" size="5" maxlength="3" readonly="readonly"/>&nbsp;&nbsp;&nbsp;<img border="0" src="<%=mandatoryField %>" width="5" height="5"/>
+            <input type="text" id="nbAnswers" name="nbAnswers" value="<%=nbAnswers%>" size="5" maxlength="3" readonly="readonly"/>&nbsp;&nbsp;&nbsp;<img border="0" src="<%=mandatoryField %>" width="5" height="5"/>
           </div>
         </div>
 
         <div class="field" id="nbPointsMinArea">
           <label for="nbPointsMin" class="txtlibform"><fmt:message key="QuizzCreationNbPointsMin" /></label>
           <div class="champs">
-            <input type="text" name="nbPointsMin" value="<%=nbPointsMin%>" size="5" maxlength="3" readonly="readonly"/>&nbsp;<%=resources.getString("QuizzNbPoints")%>
+            <input type="text" id="nbPointsMin" name="nbPointsMin" value="<%=nbPointsMin%>" size="5" maxlength="3" readonly="readonly"/>&nbsp;<%=resources.getString("QuizzNbPoints")%>
           </div>
         </div>
 
         <div class="field" id="nbPointsMaxArea">
           <label for="nbPointsMax" class="txtlibform"><fmt:message key="QuizzCreationNbPointsMax" /></label>
           <div class="champs">
-            <input type="text" name="nbPointsMax" value="<%=nbPointsMax%>" size="5" maxlength="3" readonly="readonly"/>&nbsp;<%=resources.getString("QuizzNbPoints")%>
+            <input type="text" id="nbPointsMax" name="nbPointsMax" value="<%=nbPointsMax%>" size="5" maxlength="3" readonly="readonly"/>&nbsp;<%=resources.getString("QuizzNbPoints")%>
           </div>
         </div>
 
@@ -203,7 +203,7 @@
         <div class="field" id="penaltyArea">
           <label for="penalty" class="txtlibform"><fmt:message key="QuizzPenalty" /></label>
           <div class="champs">
-            <input type="text" name="penalty" value="<%=penalty%>" size="5" maxlength="3" readonly="readonly"/>&nbsp;<%=resources.getString("QuizzNbPoints")%>
+            <input type="text" id="penalty" name="penalty" value="<%=penalty%>" size="5" maxlength="3" readonly="readonly"/>&nbsp;<%=resources.getString("QuizzNbPoints")%>
           </div>
         </div>
 

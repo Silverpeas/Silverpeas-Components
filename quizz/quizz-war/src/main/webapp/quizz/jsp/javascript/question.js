@@ -26,7 +26,7 @@ $( document ).ready(function() {
 });
 
 function markFieldRequired(fieldObject) {
-  var mandatory = '<img class=\"mandatory\" src=\"'+webContext+'/util/icons/mandatoryField.gif\" alt=\"Obligatoire\" width=\"5\" height=\"5\"/>';
+  var mandatory = '<img class="mandatory" src="'+webContext+'/util/icons/mandatoryField.gif" alt="Obligatoire" width="5" height="5"/>';
   if ($(fieldObject).find(".mandatory").length) {
     // do not add img twice
   } else {
@@ -78,15 +78,13 @@ function sendData()
       errorMsg+="  - " + theFieldMessage+ "'" +getString("QuizzCreationNbAnswers") + "' " + getString("GML.MustContainsFloat")+"\n";
       errorNb++;
     }
-    else
+    else if (nbAnswers <= 0)
     {
-      if (nbAnswers <= 0)
-      {
-        errorMsg+="  - " + theFieldMessage + "'" +getString("QuizzCreationNbAnswers") + "' " + getString("MustContainsPositiveNumber")+ "\n";
-        errorNb++;
-      }
+      errorMsg+="  - " + theFieldMessage + "'" +getString("QuizzCreationNbAnswers") + "' " + getString("MustContainsPositiveNumber")+ "\n";
+      errorNb++;
     }
   }
+
   if (!isWhitespace(penalty))
   {
     if (isInteger(penalty)==false)
@@ -94,21 +92,18 @@ function sendData()
       errorMsg+="  - " + theFieldMessage + "'" +getString("QuizzPenalty") + "' " + getString("GML.MustContainsFloat")+ "\n";
       errorNb++;
     }
-    else
+    else if (penalty <= 0)
     {
-      if (penalty <= 0)
-      {
-        errorMsg+="  - " + theFieldMessage + "'" + getString("QuizzPenalty") + "' " + getString("MustContainsPositiveNumber") + "\n";
-        errorNb++;
-      }
-    }
-    if (isWhitespace(clue))
-    {
-      errorMsg+="  - " + theFieldMessage + "'" + getString("QuizzClue") + "' " + getString("GML.MustBeFilled") + "\n";
+      errorMsg+="  - " + theFieldMessage + "'" + getString("QuizzPenalty") + "' " + getString("MustContainsPositiveNumber") + "\n";
       errorNb++;
     }
   }
-  if (!isWhitespace(clue))
+  if (isWhitespace(clue))
+  {
+    errorMsg+="  - " + theFieldMessage + "'" + getString("QuizzClue") + "' " + getString("GML.MustBeFilled") + "\n";
+    errorNb++;
+  }
+  else if (!isWhitespace(clue))
   {
     if (!isValidTextArea(document.quizzForm.clue))
     {
@@ -129,13 +124,10 @@ function sendData()
       errorMsg+="  - " + theFieldMessage + "'" + getString("QuizzCreationNbPointsMax") + "' " + getString("GML.MustContainsFloat") + "\n";
       errorNb++;
     }
-    else
+    else if (nbPointsMax <= 0)
     {
-      if (nbPointsMax <= 0)
-      {
-        errorMsg+="  - "+ theFieldMessage + "'" + getString("QuizzCreationNbPointsMax") + "' " + getString("MustContainsPositiveNumber") + "\n";
-        errorNb++;
-      }
+      errorMsg+="  - "+ theFieldMessage + "'" + getString("QuizzCreationNbPointsMax") + "' " + getString("MustContainsPositiveNumber") + "\n";
+      errorNb++;
     }
   }
   if (!isWhitespace(nbPointsMin))
@@ -145,13 +137,10 @@ function sendData()
       errorMsg+="  - " + theFieldMessage + "'" + getString("QuizzCreationNbPointsMin") + "' " +  getString("GML.MustContainsFloat") + "\n";
       errorNb++;
     }
-    else
+    else if (Number.parseInt(nbPointsMin, 10) >= Number.parseInt(nbPointsMax, 10))
     {
-      if (parseInt(nbPointsMin, 10) >= parseInt(nbPointsMax, 10))
-      {
-        errorMsg+="  - " + theFieldMessage + "'" + getString("QuizzCreationNbPointsMin") + "' " + getString("MustContainsStrictlyInfNumber") + " " + getString("QuizzCreationNbPointsMax") + "\n";
-        errorNb++;
-      }
+      errorMsg+="  - " + theFieldMessage + "'" + getString("QuizzCreationNbPointsMin") + "' " + getString("MustContainsStrictlyInfNumber") + " " + getString("QuizzCreationNbPointsMax") + "\n";
+      errorNb++;
     }
   }
 
@@ -201,18 +190,15 @@ function sendData2()
       }
       else
       {
-        if((document.quizzForm.nbPointsMax.value!='')&&(parseInt(nbPoints, 10) > parseInt(nbPointsMax, 10)))
+        if (document.quizzForm.nbPointsMax.value!='' && Number.parseInt(nbPoints, 10) > Number.parseInt(nbPointsMax, 10))
         {
           errorMsg+="  - " + theFieldMessage + "'" + getString("QuizzNbPoints") + "' (" + getString("QuizzCreationAnswerNb") + " " +String(i+1)+") " + getString("MustContainsInfNumber") + " " + getString("QuizzCreationNbPointsMax") + "\n";
           errorNb++;
         }
-        else
+        if (document.quizzForm.nbPointsMin.value!='' && Number.parseInt(nbPoints, 10) < Number.parseInt(nbPointsMin, 10))
         {
-          if((document.quizzForm.nbPointsMin.value!='')&&(parseInt(nbPoints, 10) < parseInt(nbPointsMin, 10)))
-          {
-            errorMsg+="  - " + theFieldMessage + "'" + getString("QuizzNbPoints") + "' (" + getString("QuizzCreationAnswerNb") +" " + String(i+1)+") " + getString("MustContainsSupNumber") + " " + getString("QuizzCreationNbPointsMin") + "\n";
-            errorNb++;
-          }
+          errorMsg+="  - " + theFieldMessage + "'" + getString("QuizzNbPoints") + "' (" + getString("QuizzCreationAnswerNb") +" " + String(i+1)+") " + getString("MustContainsSupNumber") + " " + getString("QuizzCreationNbPointsMin") + "\n";
+          errorNb++;
         }
       }
     }
@@ -252,15 +238,15 @@ var currentAnswer;
 function choixGallery(liste, idAnswer)
 {
   currentAnswer = idAnswer;
-  index = liste.selectedIndex;
-  var componentId = liste.options[index].value;
+  let index = liste.selectedIndex;
+  let componentId = liste.options[index].value;
   if (index != 0)
   {
-    url = webContext + "/gallery/jsp/wysiwygBrowser.jsp?ComponentId="+componentId+"&Language="+currentUser.language;
-    windowName = "galleryWindow";
-    larg = "820";
-    haut = "600";
-    windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
+    let url = webContext + "/gallery/jsp/wysiwygBrowser.jsp?ComponentId="+componentId+"&Language="+currentUser.language;
+    let windowName = "galleryWindow";
+    let larg = "820";
+    let haut = "600";
+    let windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
     if (!galleryWindow.closed && galleryWindow.name=="galleryWindow")
       galleryWindow.close();
     galleryWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
