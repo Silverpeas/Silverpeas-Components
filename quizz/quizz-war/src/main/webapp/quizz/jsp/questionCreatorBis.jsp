@@ -83,16 +83,6 @@
         display: none;
       }
     </style>
-    <script type="javascript">
-      function goToEnd() {
-        document.quizzForm.Action.value = "End";
-        document.quizzForm.submit();
-      }
-
-      function goToQuestionsUpdate() {
-        document.questionForm.submit();
-      }
-    </script>
     <view:script src="/util/javaScript/dateUtils.js"/>
     <view:script src="/quizz/jsp/javascript/question.js"/>
   </view:sp-head-part>
@@ -355,6 +345,9 @@
 %>
   <view:sp-head-part>
   <script type="application/javascript">
+    function goToQuestionsUpdate() {
+      document.questionForm.submit();
+    }
     whenSilverpeasEntirelyLoaded(function () {
       goToQuestionsUpdate();
     });
