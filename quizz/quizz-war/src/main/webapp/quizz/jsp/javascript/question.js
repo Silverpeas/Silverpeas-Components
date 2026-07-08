@@ -15,7 +15,7 @@ $( document ).ready(function() {
   $('textarea[name="clue"]').on('keypress blur', function (event) {
     let textarea = $(this),
         text = textarea.val();
-    if (text=="") {
+    if (text==="") {
       $("#penaltyField").val("");
       unmarkFieldRequired($('#optionalField'));
     }
@@ -88,21 +88,18 @@ function validateNbAnswers(nbAnswers, questionStyleValue, errors)
   {
     errors.add("  - " + theFieldMessage + "'" + getString("QuizzCreationNbAnswers") + "' " + getString("GML.MustBeFilled") + "\n");
   }
-  if (questionStyleValue=="null")
+  if (questionStyleValue==="null")
   {
     //choisir au moins un style
     errors.add('  - '+theFieldMessage + "'" + getString("quizz.style") + "' " + getString("GML.MustBeFilled") +'\n');
   }
-  else
+  if (!isInteger(nbAnswers))
   {
-    if (isInteger(nbAnswers)==false)
-    {
-      errors.add("  - " + theFieldMessage+ "'" +getString("QuizzCreationNbAnswers") + "' " + getString("GML.MustContainsFloat")+"\n");
-    }
-    else if (nbAnswers <= 0)
-    {
-      errors.add("  - " + theFieldMessage + "'" +getString("QuizzCreationNbAnswers") + "' " + getString("MustContainsPositiveNumber")+ "\n");
-    }
+    errors.add("  - " + theFieldMessage+ "'" +getString("QuizzCreationNbAnswers") + "' " + getString("GML.MustContainsFloat")+"\n");
+  }
+  else if (nbAnswers <= 0)
+  {
+    errors.add("  - " + theFieldMessage + "'" +getString("QuizzCreationNbAnswers") + "' " + getString("MustContainsPositiveNumber")+ "\n");
   }
 }
 
@@ -114,7 +111,7 @@ function validatePenalty(penalty, clue, errors)
   }
   if (!isWhitespace(penalty))
   {
-    if (isInteger(penalty)==false)
+    if (!isInteger(penalty))
     {
       errors.add("  - " + theFieldMessage + "'" +getString("QuizzPenalty") + "' " + getString("GML.MustContainsFloat")+ "\n");
     }
@@ -131,12 +128,9 @@ function validateClue(clue, penalty, errors)
   {
     errors.add("  - " + theFieldMessage + "'" + getString("QuizzClue") + "' " + getString("GML.MustBeFilled") + "\n");
   }
-  else
+  else if (!isValidTextArea(document.quizzForm.clue))
   {
-    if (!isValidTextArea(document.quizzForm.clue))
-    {
-      errors.add("  - " + theFieldMessage + "'" + getString("QuizzClue") + "' " + getString("MustContainsLessCar") + " " + textAreaLength + " " + getString("Caracters") + "\n");
-    }
+    errors.add("  - " + theFieldMessage + "'" + getString("QuizzClue") + "' " + getString("MustContainsLessCar") + " " + textAreaLength + " " + getString("Caracters") + "\n");
   }
 }
 
@@ -144,7 +138,7 @@ function validatePointsMax(nbPointsMax, errors)
 {
   if (!isWhitespace(nbPointsMax))
   {
-    if (isSignedInteger(nbPointsMax)==false)
+    if (!isSignedInteger(nbPointsMax))
     {
       errors.add("  - " + theFieldMessage + "'" + getString("QuizzCreationNbPointsMax") + "' " + getString("GML.MustContainsFloat") + "\n");
     }
@@ -159,7 +153,7 @@ function validatePointsMin(nbPointsMin, nbPointsMax, errors)
 {
   if (!isWhitespace(nbPointsMin))
   {
-    if (isSignedInteger(nbPointsMin)==false)
+    if (!isSignedInteger(nbPointsMin))
     {
       errors.add("  - " + theFieldMessage + "'" + getString("QuizzCreationNbPointsMin") + "' " +  getString("GML.MustContainsFloat") + "\n");
     }
@@ -208,17 +202,17 @@ function validateAnswerPoints(index, nbPointsMaxRaw, nbPointsMinRaw, nbPointsMax
   {
     errors.add("  - " + theFieldMessage + "'" + getString("QuizzNbPoints") + "' (" + getString("QuizzCreationAnswerNb") + " " +String(index+1)+") " + getString("GML.MustBeFilled") + "\n");
   }
-  else if (isSignedInteger(nbPoints)==false)
+  else if (!isSignedInteger(nbPoints))
   {
     errors.add("  - " + theFieldMessage + "'" + getString("QuizzNbPoints") + "' (" + getString("QuizzCreationAnswerNb") + " " +String(index+1)+") " + getString("GML.MustContainsFloat") +"\n");
   }
   else
   {
-    if (nbPointsMaxRaw!='' && Number.parseInt(nbPoints, 10) > Number.parseInt(nbPointsMax, 10))
+    if (nbPointsMaxRaw!=='' && Number.parseInt(nbPoints, 10) > Number.parseInt(nbPointsMax, 10))
     {
       errors.add("  - " + theFieldMessage + "'" + getString("QuizzNbPoints") + "' (" + getString("QuizzCreationAnswerNb") + " " +String(index+1)+") " + getString("MustContainsInfNumber") + " " + getString("QuizzCreationNbPointsMax") + "\n");
     }
-    if (nbPointsMinRaw!='' && Number.parseInt(nbPoints, 10) < Number.parseInt(nbPointsMin, 10))
+    if (nbPointsMinRaw!=='' && Number.parseInt(nbPoints, 10) < Number.parseInt(nbPointsMin, 10))
     {
       errors.add("  - " + theFieldMessage + "'" + getString("QuizzNbPoints") + "' (" + getString("QuizzCreationAnswerNb") +" " + String(index+1)+") " + getString("MustContainsSupNumber") + " " + getString("QuizzCreationNbPointsMin") + "\n");
     }
@@ -281,14 +275,14 @@ function choixGallery(liste, idAnswer)
   currentAnswer = idAnswer;
   let index = liste.selectedIndex;
   let componentId = liste.options[index].value;
-  if (index != 0)
+  if (index !== 0)
   {
     let url = webContext + "/gallery/jsp/wysiwygBrowser.jsp?ComponentId="+componentId+"&Language="+currentUser.language;
     let windowName = "galleryWindow";
     let larg = "820";
     let haut = "600";
     let windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
-    if (!galleryWindow.closed && galleryWindow.name=="galleryWindow")
+    if (!galleryWindow.closed && galleryWindow.name==="galleryWindow")
       galleryWindow.close();
     galleryWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
   }
@@ -297,11 +291,4 @@ function choixGallery(liste, idAnswer)
 function deleteImage(idImage) {
   $("#thumbnailPreviewAndActions"+idImage).css("display", "none");
   $("#valueImageGallery"+idImage).attr("value", "");
-}
-
-function choixImageInGallery(url) {
-  $("#thumbnailPreviewAndActions"+currentAnswer).css("display", "block");
-  $("#thumbnailActions"+currentAnswer).css("display", "block");
-  $("#thumbnail"+currentAnswer).attr("src", url);
-  $("#valueImageGallery"+currentAnswer).attr("value", url);
 }
