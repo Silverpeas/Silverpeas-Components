@@ -396,7 +396,7 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
     <div class="field" id="nbAnswersAreaBis">
       <label for="nbAnswers" class="txtlibform"><fmt:message key="QuizzCreationNbAnswers" /></label>
       <div class="champs">
-        <input type="text" name="nbAnswers" id="nbAnswersBis" value="<%=nbAnswers%>" size="5" maxlength="3"/>&nbsp;&nbsp;&nbsp;<img border="0" src="${mandatoryIcon}" width="5" height="5" alt="${labelMandatory}"/>
+        <input type="text" name="nbAnswers" id="nbAnswers" value="<%=nbAnswers%>" size="5" maxlength="3"/>&nbsp;&nbsp;&nbsp;<img border="0" src="${mandatoryIcon}" width="5" height="5" alt="${labelMandatory}"/>
       </div>
     </div>
 

@@ -273,7 +273,7 @@
       <div class="fields">
         <div class="field" id="questionArea">
           <label for="question" class="txtlibform"><fmt:message key="QuizzCreationQuestion" />&nbsp;<%=questionNb%></label>
-          <div class="champs"><textarea name="question" cols="49" rows="3"><%=WebEncodeHelper.javaStringToHtmlString(question)%></textarea>&nbsp;<img border="0" src="${mandatoryIcon}" width="5" height="5" alt="${labelMandatory}"/></div>
+          <div class="champs"><textarea id="question" name="question" cols="49" rows="3"><%=WebEncodeHelper.javaStringToHtmlString(question)%></textarea>&nbsp;<img border="0" src="${mandatoryIcon}" width="5" height="5" alt="${labelMandatory}"/></div>
         </div>
         <div class="field" id="questionStyleArea">
           <label for="questionStyle" class="txtlibform"><fmt:message key="quizz.style" /></label>
@@ -289,7 +289,7 @@
         <div class="field" id="nbAnswersArea">
           <label for="nbAnswers" class="txtlibform"><fmt:message key="QuizzCreationNbAnswers" /></label>
           <div class="champs">
-            <input type="text" name="nbAnswers" value="<%=nbAnswers%>" size="5" maxlength="3"/>&nbsp;&nbsp;&nbsp;<img border="0" src="${mandatoryIcon}" width="5" height="5" alt="${labelMandatory}"/>
+            <input type="text" id="nbAnswers" name="nbAnswers" value="<%=nbAnswers%>" size="5" maxlength="3"/>&nbsp;&nbsp;&nbsp;<img border="0" src="${mandatoryIcon}" width="5" height="5" alt="${labelMandatory}"/>
           </div>
         </div>
 
