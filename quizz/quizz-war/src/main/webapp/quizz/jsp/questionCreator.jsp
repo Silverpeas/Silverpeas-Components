@@ -41,20 +41,17 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
 <view:setBundle basename="org.silverpeas.quizz.multilang.quizz"/>
+<fmt:message key="GML.mandatory" var="labelMandatory"/>
+<c:url var="mandatoryIcon" value="/util/icons/mandatoryField.gif"/>
 
 <%
 //Retrieve parameter
 String nextAction = "";
-String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
-
 int nbZone = 4; // number of field to control
 List<ComponentInstLight> galleries = quizzScc.getGalleries();
 if (!galleries.isEmpty()) {
 	nbZone = nbZone + 2;
 }
-
-//Icons
-String mandatoryField = m_context + "/util/icons/mandatoryField.gif";
 
 SettingBundle quizzSettings = quizzScc.getSettings();
 
@@ -186,42 +183,42 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
     <div class="field" id="titleArea">
       <label class="txtlibform" for="title"><fmt:message key="GML.name" /> </label>
       <div class="champs">
-        <input type="text" name="title" size="50" maxlength="<%=DBUtil.getTextFieldLength()%>" value="${quizDetail.title}" disabled="disabled" />
+        <input type="text" id="title" name="title" size="50" maxlength="<%=DBUtil.getTextFieldLength()%>" value="${quizDetail.title}" disabled="disabled" />
       </div>
     </div>
 
     <div class="field" id="nbQuestionsArea">
       <label class="txtlibform" for="nbQuestions"><fmt:message key="QuizzCreationNbQuestionPerPage" /> </label>
       <div class="champs">
-        <input type="text" name="nbQuestions" size="5" maxlength="3" value="${quizDetail.header.nbQuestionsPerPage}" disabled="disabled" />
+        <input type="text" id="nbQuestions" name="nbQuestions" size="5" maxlength="3" value="${quizDetail.header.nbQuestionsPerPage}" disabled="disabled" />
       </div>
     </div>
      
     <div class="field" id="nbAnswersMaxArea">
       <label class="txtlibform" for="nbAnswersMax"><fmt:message key="QuizzCreationNbPossibleAnswer" /> </label>
       <div class="champs">
-        <input type="text" name="nbAnswersMax" size="5" maxlength="3" value="${quizDetail.header.nbMaxParticipations}" disabled="disabled"/>
+        <input type="text" id="nbAnswersMax" name="nbAnswersMax" size="5" maxlength="3" value="${quizDetail.header.nbMaxParticipations}" disabled="disabled"/>
       </div>
     </div>
     
     <div class="field" id="nbAnswersNeededArea">
       <label class="txtlibform" for="nbAnswersNeeded"><fmt:message key="QuizzCreationNbAnswerNeeded" /> </label>
       <div class="champs">
-        <input type="text" name="nbAnswersNeeded" size="5" maxlength="3" value="${quizDetail.header.nbParticipationsBeforeSolution}" disabled="disabled"/>
+        <input type="text" id="nbAnswersNeeded" name="nbAnswersNeeded" size="5" maxlength="3" value="${quizDetail.header.nbParticipationsBeforeSolution}" disabled="disabled"/>
       </div>
     </div>
 
     <div class="field" id="descriptionArea">
       <label class="txtlibform" for="description"><fmt:message key="GML.description" /> </label>
       <div class="champs">
-        <textarea name="description" cols="49" rows="3" disabled="disabled">${quizDetail.header.description}</textarea>
+        <textarea id="description" name="description" cols="49" rows="3" disabled="disabled">${quizDetail.header.description}</textarea>
       </div>
     </div>
 
     <div class="field" id="noticeArea">
       <label class="txtlibform" for="notice"><fmt:message key="QuizzCreationNotice" /> </label>
       <div class="champs">
-        <textarea name="notice" cols="49" rows="3" disabled="disabled">${quizDetail.header.comment}</textarea>
+        <textarea id="notice" name="notice" cols="49" rows="3" disabled="disabled">${quizDetail.header.comment}</textarea>
       </div>
     </div>
     
@@ -234,13 +231,13 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
     <div class="field" id="beginArea">
       <label for="beginDate" class="txtlibform"><fmt:message key="QuizzCreationBeginDate" /></label>
       <div class="champs">
-        <input type="text" class="dateToPick" name="beginDate" size="12" value="<%=beginDate%>" maxlength="<%=DBUtil.getDateFieldLength()%>" disabled="disabled"/>
+        <input id="beginDate" type="text" class="dateToPick" name="beginDate" size="12" value="<%=beginDate%>" maxlength="<%=DBUtil.getDateFieldLength()%>" disabled="disabled"/>
       </div>
     </div>
     <div class="field" id="endArea">
       <label for="endDate" class="txtlibform"><fmt:message key="QuizzCreationEndDate" /></label>
       <div class="champs">
-        <input type="text" class="dateToPick" name="endDate" size="12" value="<%=endDate%>" maxlength="<%=DBUtil.getDateFieldLength()%>" disabled="disabled"/>
+        <input id="endDate" type="text" class="dateToPick" name="endDate" size="12" value="<%=endDate%>" maxlength="<%=DBUtil.getDateFieldLength()%>" disabled="disabled"/>
       </div>
     </div>
   </div>  
@@ -263,7 +260,7 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
     <div class="field" id="questionArea"> 
       <label for="question" class="txtlibform"><fmt:message key="QuizzCreationQuestion" />&nbsp;<%=questionNb%></label>
       <div class="champs"><textarea name="questionBis" id="question" cols="49" rows="3" disabled="disabled"><%=WebEncodeHelper
-          .javaStringToHtmlString(question)%></textarea>&nbsp;<img border="0" src="<%=mandatoryField %>" width="5" height="5"/></div>
+          .javaStringToHtmlString(question)%></textarea>&nbsp;<img border="0" src="${mandatoryIcon}" width="5" height="5" alt="${labelMandatory}"/></div>
     </div>
     <div class="field" id="questionStyleArea">
       <label for="questionStyle" class="txtlibform"><fmt:message key="quizz.style" /></label>
@@ -273,7 +270,7 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
     <div class="field" id="nbAnswersArea">
       <label for="nbAnswers" class="txtlibform"><fmt:message key="QuizzCreationNbAnswers" /></label>
       <div class="champs">
-        <input type="text" id="nbAnswers" name="nbAnswersBis" value="<%=nbAnswers%>" size="5" maxlength="3" disabled="disabled"/>&nbsp;&nbsp;&nbsp;<img border="0" src="<%=mandatoryField %>" width="5" height="5"/>
+        <input type="text" id="nbAnswers" name="nbAnswersBis" value="<%=nbAnswers%>" size="5" maxlength="3" disabled="disabled"/>&nbsp;&nbsp;&nbsp;<img border="0" src="${mandatoryIcon}" width="5" height="5" alt="${labelMandatory}"/>
       </div>
     </div>
 
@@ -324,9 +321,9 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
     <div class="field">
       <label for="<%=inputName%>" class="txtlibform"><fmt:message key="QuizzCreationAnswerNb" />&nbsp;<%=(i+1)%></label>
       <div class="champs">
-        <textarea name="<%=inputName%>" id="<%=inputName%>" cols="49" rows="3"></textarea>&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"/>
+        <textarea name="<%=inputName%>" id="<%=inputName%>" cols="49" rows="3"></textarea>&nbsp;<img border="0" src="${mandatoryIcon}" width="5" height="5" alt="${labelMandatory}"/>
         <div class="points">
-          <input type="text" name="nbPoints<%=i%>" id="nbPoints<%=i%>" value="" size="5" maxlength="3" />&nbsp;<fmt:message key="QuizzNbPoints"/>&nbsp;<img border="0" src="<%=mandatoryField %>" width="5" height="5"/>
+          <input type="text" name="nbPoints<%=i%>" id="nbPoints<%=i%>" value="" size="5" maxlength="3" />&nbsp;<fmt:message key="QuizzNbPoints"/>&nbsp;<img border="0" src="${mandatoryIcon}" width="5" height="5" alt="${labelMandatory}"/>
         </div>
       </div>
     </div>
@@ -381,11 +378,11 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
 <fieldset id="questionFieldset" class="skinFieldset">
   <legend><fmt:message key="quizz.header.fieldset.question" /></legend>
   <div class="fields">
-    <div class="field" id="questionArea"> 
+    <div class="field" id="questionAreaBis">
       <label for="questionField" class="txtlibform"><fmt:message key="QuizzCreationQuestion" />&nbsp;<%=questionNb%></label>
-      <div class="champs"><textarea name="question" id="questionField" cols="49" rows="3"><%=WebEncodeHelper.javaStringToHtmlString(question)%></textarea>&nbsp;<img border="0" src="<%=mandatoryField %>" width="5" height="5"/></div>
+      <div class="champs"><textarea name="question" id="questionField" cols="49" rows="3"><%=WebEncodeHelper.javaStringToHtmlString(question)%></textarea>&nbsp;<img border="0" src="${mandatoryIcon}" width="5" height="5" alt="${labelMandatory}"/></div>
     </div>
-    <div class="field" id="questionStyleArea">
+    <div class="field" id="questionStyleAreaBis">
       <label for="questionStyle" class="txtlibform"><fmt:message key="quizz.style" /></label>
       <div class="champs">
         <select id="questionStyle" name="questionStyle" > 
@@ -393,38 +390,38 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
           <option value="radio"><fmt:message key="quizz.radio" /></option> 
           <option value="checkbox"><fmt:message key="quizz.checkbox" /></option> 
           <option value="list"><fmt:message key="quizz.list" /></option> 
-        </select>&nbsp;&nbsp;&nbsp;<img border="0" src="<%=mandatoryField %>" width="5" height="5"/>
+        </select>&nbsp;&nbsp;&nbsp;<img border="0" src="${mandatoryIcon}" width="5" height="5" alt="${labelMandatory}"/>
       </div>
     </div>
-    <div class="field" id="nbAnswersArea">
+    <div class="field" id="nbAnswersAreaBis">
       <label for="nbAnswers" class="txtlibform"><fmt:message key="QuizzCreationNbAnswers" /></label>
       <div class="champs">
-        <input type="text" name="nbAnswers" id="nbAnswers" value="<%=nbAnswers%>" size="5" maxlength="3"/>&nbsp;&nbsp;&nbsp;<img border="0" src="<%=mandatoryField %>" width="5" height="5"/>
+        <input type="text" name="nbAnswers" id="nbAnswersBis" value="<%=nbAnswers%>" size="5" maxlength="3"/>&nbsp;&nbsp;&nbsp;<img border="0" src="${mandatoryIcon}" width="5" height="5" alt="${labelMandatory}"/>
       </div>
     </div>
 
-    <div class="field" id="nbPointsMinArea">
+    <div class="field" id="nbPointsMinAreaBis">
       <label for="nbPointsMin" class="txtlibform"><fmt:message key="QuizzCreationNbPointsMin" /></label>
       <div class="champs">
         <input type="text" name="nbPointsMin" id="nbPointsMin" value="<%=nbPointsMin%>" size="5" maxlength="3" />&nbsp;<%=resources.getString("QuizzNbPoints")%>
       </div>
     </div>
 
-    <div class="field" id="nbPointsMaxArea">
+    <div class="field" id="nbPointsMaxAreaBis">
       <label for="nbPointsMax" class="txtlibform"><fmt:message key="QuizzCreationNbPointsMax" /></label>
       <div class="champs">
         <input type="text" name="nbPointsMax" id="nbPointsMax" value="<%=nbPointsMax%>" size="5" maxlength="3"/>&nbsp;<%=resources.getString("QuizzNbPoints")%>
       </div>
     </div>
 
-    <div class="field" id="clueArea">
+    <div class="field" id="clueAreaBis">
       <label for="clue" class="txtlibform"><fmt:message key="QuizzClue" /></label>
       <div class="champs">
         <textarea name="clue" id="clue" cols="49" rows="3" maxlength="<%=textareaMaxlength%>"><%=WebEncodeHelper.javaStringToHtmlString(clue)%></textarea>
       </div>
     </div>
 
-    <div class="field" id="penaltyArea">
+    <div class="field" id="penaltyAreaBis">
       <label for="penaltyField" class="txtlibform"><fmt:message key="QuizzPenalty" /></label>
       <div class="champs">
         <input type="text" name="penalty" id="penaltyField"  value="<%=penalty%>" size="5" maxlength="3"/>&nbsp;<%=resources.getString("QuizzNbPoints")%><span id="optionalField">&nbsp;</span>
@@ -439,7 +436,7 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
 %>
 		<input type="hidden" name="Action" value="<%=nextAction%>"/>
     <div class="legend">
-      <img border="0" src="<%=mandatoryField%>" width="5" height="5"/> : <fmt:message key="GML.requiredField"/>
+      <img border="0" src="${mandatoryIcon}" width="5" height="5" alt="${labelMandatory}"/> : <fmt:message key="GML.requiredField"/>
     </div>
   </form>
 <%

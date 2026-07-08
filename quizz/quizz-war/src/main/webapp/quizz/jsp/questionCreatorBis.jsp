@@ -37,18 +37,17 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
 <view:setBundle basename="org.silverpeas.quizz.multilang.quizz"/>
+<fmt:message key="GML.mandatory" var="labelMandatory"/>
+<c:url var="mandatoryIcon" value="/util/icons/mandatoryField.gif"/>
+
 <%
   String nextAction = "";
-
-  String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 
   int nbZone = 4; // nombre de zones à controler
   List<ComponentInstLight> galleries = quizzScc.getGalleries();
   if (!galleries.isEmpty()) {
     nbZone = nbZone + 2;
   }
-
-  String mandatoryField = m_context + "/util/icons/mandatoryField.gif";
 
   SettingBundle quizzSettings = quizzScc.getSettings();
 
@@ -155,7 +154,7 @@
       <div class="fields">
         <div class="field" id="questionArea">
           <label for="question" class="txtlibform"><fmt:message key="QuizzCreationQuestion" />&nbsp;<%=questionNb%></label>
-          <div class="champs"><textarea id="question" name="question" cols="49" rows="3" maxlength="50" readonly="readonly"><%=WebEncodeHelper.javaStringToHtmlString(question)%></textarea>&nbsp;<img border="0" src="<%=mandatoryField %>" width="5" height="5"/></div>
+          <div class="champs"><textarea id="question" name="question" cols="49" rows="3" maxlength="50" readonly="readonly"><%=WebEncodeHelper.javaStringToHtmlString(question)%></textarea>&nbsp;<img border="0" src="${mandatoryIcon}" width="5" height="5" alt="${labelMandatory}"/></div>
         </div>
         <div class="field" id="questionStyleArea">
           <label for="questionStyle" class="txtlibform"><fmt:message key="quizz.style" /></label>
@@ -165,7 +164,7 @@
         <div class="field" id="nbAnswersArea">
           <label for="nbAnswers" class="txtlibform"><fmt:message key="QuizzCreationNbAnswers" /></label>
           <div class="champs">
-            <input type="text" id="nbAnswers" name="nbAnswers" value="<%=nbAnswers%>" size="5" maxlength="3" readonly="readonly"/>&nbsp;&nbsp;&nbsp;<img border="0" src="<%=mandatoryField %>" width="5" height="5"/>
+            <input type="text" id="nbAnswers" name="nbAnswers" value="<%=nbAnswers%>" size="5" maxlength="3" readonly="readonly"/>&nbsp;&nbsp;&nbsp;<img border="0" src="${mandatoryIcon}" width="5" height="5" alt="${labelMandatory}"/>
           </div>
         </div>
 
@@ -216,9 +215,9 @@
         <div class="field">
           <label for="<%=inputName%>" class="txtlibform"><fmt:message key="QuizzCreationAnswerNb" />&nbsp;<%=(i+1)%></label>
           <div class="champs">
-            <textarea name="<%=inputName%>" id="<%=inputName%>" cols="49" rows="3"></textarea>&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"/>
+            <textarea name="<%=inputName%>" id="<%=inputName%>" cols="49" rows="3"></textarea>&nbsp;<img border="0" src="${mandatoryIcon}" width="5" height="5" alt="${labelMandatory}"/>
             <div class="points">
-              <input type="text" name="nbPoints<%=i%>" id="nbPoints<%=i%>" value="" size="5" maxlength="3" />&nbsp;<fmt:message key="QuizzNbPoints"/>&nbsp;<img border="0" src="<%=mandatoryField %>" width="5" height="5"/>
+              <input type="text" name="nbPoints<%=i%>" id="nbPoints<%=i%>" value="" size="5" maxlength="3" />&nbsp;<fmt:message key="QuizzNbPoints"/>&nbsp;<img border="0" src="${mandatoryIcon}" width="5" height="5" alt="${labelMandatory}"/>
             </div>
           </div>
         </div>
@@ -274,7 +273,7 @@
       <div class="fields">
         <div class="field" id="questionArea">
           <label for="question" class="txtlibform"><fmt:message key="QuizzCreationQuestion" />&nbsp;<%=questionNb%></label>
-          <div class="champs"><textarea name="question" cols="49" rows="3"><%=WebEncodeHelper.javaStringToHtmlString(question)%></textarea>&nbsp;<img border="0" src="<%=mandatoryField %>" width="5" height="5"/></div>
+          <div class="champs"><textarea name="question" cols="49" rows="3"><%=WebEncodeHelper.javaStringToHtmlString(question)%></textarea>&nbsp;<img border="0" src="${mandatoryIcon}" width="5" height="5" alt="${labelMandatory}"/></div>
         </div>
         <div class="field" id="questionStyleArea">
           <label for="questionStyle" class="txtlibform"><fmt:message key="quizz.style" /></label>
@@ -284,13 +283,13 @@
               <option value="radio"><fmt:message key="quizz.radio" /></option>
               <option value="checkbox"><fmt:message key="quizz.checkbox" /></option>
               <option value="list"><fmt:message key="quizz.list" /></option>
-            </select>&nbsp;&nbsp;&nbsp;<img border="0" src="<%=mandatoryField %>" width="5" height="5"/>
+            </select>&nbsp;&nbsp;&nbsp;<img border="0" src="${mandatoryIcon}" width="5" height="5" alt="${labelMandatory}"/>
           </div>
         </div>
         <div class="field" id="nbAnswersArea">
           <label for="nbAnswers" class="txtlibform"><fmt:message key="QuizzCreationNbAnswers" /></label>
           <div class="champs">
-            <input type="text" name="nbAnswers" value="<%=nbAnswers%>" size="5" maxlength="3"/>&nbsp;&nbsp;&nbsp;<img border="0" src="<%=mandatoryField %>" width="5" height="5"/>
+            <input type="text" name="nbAnswers" value="<%=nbAnswers%>" size="5" maxlength="3"/>&nbsp;&nbsp;&nbsp;<img border="0" src="${mandatoryIcon}" width="5" height="5" alt="${labelMandatory}"/>
           </div>
         </div>
 
@@ -329,7 +328,7 @@
       } //end if CreateQuestion
     %>
     <div class="legend">
-      <img border="0" src="<%=mandatoryField%>" width="5" height="5"/> : <fmt:message key="GML.requiredField"/>
+      <img border="0" src="${mandatoryIcon}" width="5" height="5" alt="${labelMandatory}"/> : <fmt:message key="GML.requiredField"/>
     </div>
     <input type="hidden" name="Action" value="<%=nextAction%>"/>
   </form>
