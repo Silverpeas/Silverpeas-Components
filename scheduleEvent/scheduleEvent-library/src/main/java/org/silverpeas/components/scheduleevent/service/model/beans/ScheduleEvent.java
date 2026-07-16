@@ -171,7 +171,7 @@ public class ScheduleEvent implements SilverpeasToolContent, ScheduleEventBean, 
 
   /**
    * Is the specified user can access this content?
-   * <p/>
+   * <p>
    * The user can access this event if it is either the author or a contributor of this event.
    *
    * @param user a user in Silverpeas.

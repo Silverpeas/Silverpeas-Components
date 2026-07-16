@@ -90,7 +90,7 @@ public class SuggestionCollection implements Collection<Suggestion> {
 
   /**
    * Adds the specified suggestion among the other suggestions of the suggestion box.
-   * <p/>
+   * <p>
    * The suggestion will be persisted automatically once added.
    * @param suggestion the suggestion to add.
    * @param uploadedFiles a collection of file to attach to the suggestion.
@@ -113,7 +113,7 @@ public class SuggestionCollection implements Collection<Suggestion> {
 
   /**
    * Removes the specified suggestion from the suggestion box.
-   * <p/>
+   * <p>
    * If the suggestion doesn't exist in the suggestion box, then nothing is done.
    * @param aSuggestion the suggestion to remove.
    * @return true if the suggestion exists in this collection and then is removed.
@@ -226,7 +226,7 @@ public class SuggestionCollection implements Collection<Suggestion> {
 
   /**
    * Finds the list of suggestions that are published and which the creator is those specified.
-   * @param @param user the creator of the returned suggestions.
+   * @param user the creator of the returned suggestions.
    * @return the list of suggestions as described above and ordered by ascending last update date.
    */
   public List<Suggestion> findPublishedFor(final User user) {
@@ -256,11 +256,11 @@ public class SuggestionCollection implements Collection<Suggestion> {
 
   /**
    * Publishes from the specified suggestion box the specified suggestion.
-   * <p/>
+   * <p>
    * The publication of a suggestion consists in changing its status from DRAFT to
    * PENDING_VALIDATION and sending a notification to the moderator if the updater is at most a
    * writer on the suggestion box.
-   * <p/>
+   * <p>
    * If the suggestion doesn't exist in the suggestion box, then nothing is done.
    * @param suggestion the suggestion to publish.
    * @return the suggestion updated.
@@ -314,11 +314,11 @@ public class SuggestionCollection implements Collection<Suggestion> {
   /**
    * Validates the specified suggestion in the current suggestion box with the specified
    * validation information.
-   * <p/>
+   * <p>
    * The publication of a suggestion consists in changing its status to VALIDATED or REFUSED
    * and sending a notification to the creator in order to inform him about the validation
    * result.
-   * <p/>
+   * <p>
    * If the suggestion doesn't exist in the suggestion box, then nothing is done.
    * @param suggestion the suggestion to validate.
    * @param validation the validation information.

@@ -32,12 +32,12 @@ import java.util.Optional;
 /**
  * A business service to provide a high level interface in the management of the suggestion boxes
  * and of the suggestions.
- * <p/>
+ * <p>
  * This service isn't intended to be used as such but within the business objects SuggestionBox and
  * Suggestion. All the operations requiring interaction with other business services or persistence
  * repositories are delegated to this service by the SuggestionBox objects and by the Suggestion
  * objects.
- * <p/>
+ * <p>
  * @author mmoquillon
  */
 public interface SuggestionBoxService extends ApplicationService {

@@ -135,7 +135,7 @@ public class BetterMimeMessage extends MimeMessage {
    * report or a disposition notification report.
    * @param contentType the content-type for the mail part.
    * @return true if it is a content-type for delivery status.
-   * @see <a href="https://www.ietf.org/rfc/rfc3462.txt>RFC 3462</a>
+   * @see <a href="https://www.ietf.org/rfc/rfc3462.txt">RFC 3462</a>
    */
   protected boolean isMessageReport(String contentType) {
     return contentType.startsWith("multipart/report");

@@ -38,7 +38,6 @@ import org.silverpeas.core.contribution.model.ContributionValidation;
  *   <li>the type of the validation, cf. {@link FormInstanceValidationType}</li>
  *   <li>the following of the next validations by the specified validator</li>
  * </ul>
- * </p>
  * <p>
  * Into the context of FormsOnline component, there is only 3 possible statuses:
  * <ul>
@@ -46,7 +45,6 @@ import org.silverpeas.core.contribution.model.ContributionValidation;
  *   <li>{@link ContributionStatus#VALIDATED}</li>
  *   <li>{@link ContributionStatus#REFUSED}</li>
  * </ul>
- * </p>
  * @author silveryocha
  */
 public class FormInstanceValidation extends ContributionValidation {

@@ -155,7 +155,7 @@ public enum MediaMimeType {
   /**
    * Indicates if the mime type is a photo one and if it is readable by ImageIo.
    * @return true if it is a photo media type that is readable by ImageIo
-   * @see http://docs.oracle.com/javase/6/docs/api/javax/imageio/package-summary.html
+   * @see <a href="http://docs.oracle.com/javase/6/docs/api/javax/imageio/package-summary.html">javax.imageio</a>
    */
   @SuppressWarnings("JavadocReference")
   public boolean isReadablePhoto() {

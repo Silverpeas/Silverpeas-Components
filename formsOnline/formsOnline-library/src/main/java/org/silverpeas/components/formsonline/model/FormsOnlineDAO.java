@@ -60,7 +60,6 @@ public interface FormsOnlineDAO {
   /**
    * Update form in database
    * @param formDetail the form detail
-   * @return a List of FormDetail object
    * @throws FormsOnlineException
    */
   void updateForm(FormDetail formDetail) throws FormsOnlineException;

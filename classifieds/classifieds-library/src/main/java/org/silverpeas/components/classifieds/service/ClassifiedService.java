@@ -102,7 +102,6 @@ public interface ClassifiedService extends ApplicationService {
    * get the number of classifieds for an instance corresponding to instanceId
    * @param instanceId : String
    * @return the number of classified : String
-   * @
    */
   String getNbTotalClassifieds(String instanceId);
 
@@ -154,7 +153,6 @@ public interface ClassifiedService extends ApplicationService {
   /**
    * create a subscription
    * @param subscribe : Subscribe
-   * @
    */
   void createSubscribe(Subscribe subscribe);
 

@@ -1781,7 +1781,6 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
    * @param userId the unique identifier of a user. It allows to check if a linked publication is
    * accessible for the specified user.
    * @return a list of Kmelia publications.
-   * @ if an error occurs while communicating with the remote business service.
    */
   @Override
   public List<KmeliaPublication> getLinkedPublications(KmeliaPublication publication,
@@ -3907,7 +3906,6 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
    * @param topicId the node where the publications are
    * @param userId the user who wants to perform deletion
    * @return the list of publication ids which has been really deleted
-   * @
    */
   @Override
   @Transactional(Transactional.TxType.REQUIRED)

@@ -667,7 +667,7 @@ public class MediaDAO {
    * MMS).
    * @param userId the identifier of a user.
    * @param period the period on which the data are requested.
-   * @return List<SocialInformation>
+   * @return a {@code List<SocialInformation>}
    * @throws SQLException on SQL error
    */
   public static List<SocialInformation> getAllMediaIdByUserId(String userId, Period period)

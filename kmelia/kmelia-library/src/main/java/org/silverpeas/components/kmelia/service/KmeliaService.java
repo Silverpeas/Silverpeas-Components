@@ -196,7 +196,6 @@ public interface KmeliaService extends ApplicationService {
    * @param fatherPK the unique identifier of the topic into which the publication is published.
    * @param classification the classification on the PdC of the publication content.
    * @return the unique identifier of the created publication.
-   * @ if an error occurs while communicating with the remote business logic.
    */
   String createPublicationIntoTopic(PublicationDetail pubDetail, NodePK fatherPK,
       PdcClassification classification);
@@ -346,7 +345,6 @@ public interface KmeliaService extends ApplicationService {
    * @param userId the unique identifier of a user. It allows to check if a linked publication is
    * accessible for the specified user.
    * @return a list of Kmelia publications.
-   * @ if an error occurs while communicating with the remote business service.
    */
   List<KmeliaPublication> getLinkedPublications(KmeliaPublication publication, String userId);
 
@@ -366,7 +364,6 @@ public interface KmeliaService extends ApplicationService {
    * @param hasUserNoMoreValidationRight true if the given id represents a user which has no more
    * validation right (deleted user for example)
    * @return true if the validation process is complete (ie all validators have validated)
-   * @
    */
   boolean validatePublication(PublicationPK pubPK, String userId, boolean force,
       final boolean hasUserNoMoreValidationRight);
@@ -405,7 +402,6 @@ public interface KmeliaService extends ApplicationService {
    * alert that an external elements of publication (wysiwyg, attachment, versioning) has been
    * created, updated or removed
    * @param pubPK - id of the publication which contains this external elements
-   * @
    */
   void externalElementsOfPublicationHaveChanged(PublicationPK pubPK, String userId);
 
@@ -490,7 +486,6 @@ public interface KmeliaService extends ApplicationService {
    * @param id the unique identifier of a node
    * @param componentId the unique identifier of the component instance in which the node is.
    * @return a {@link NodeDetail} instance.
-   * @
    */
   NodeDetail getNodeHeader(String id, String componentId);
 

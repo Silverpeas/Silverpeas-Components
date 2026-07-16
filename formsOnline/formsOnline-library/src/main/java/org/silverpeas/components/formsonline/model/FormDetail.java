@@ -520,7 +520,6 @@ public class FormDetail {
    *     <li>{@link #setReceiversAsUsers(List)}</li>
    *     <li>{@link #setReceiversAsGroups(List)}</li>
    *   </ul>
-   * </p>
    *
    * @return a map of validation type associated to a validator list supplier. Keys of map are
    * sorted as the {@link FormInstanceValidationType} enum.

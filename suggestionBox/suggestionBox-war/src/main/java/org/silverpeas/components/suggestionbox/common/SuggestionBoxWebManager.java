@@ -138,7 +138,7 @@ public class SuggestionBoxWebManager {
    * Gets the list of suggestions that match the specified criteria.
    * The criteria are applying in web level and aren't propagated down to the business level and
    * hence the persistence level.
-   * <p/>
+   * <p>
    * The user asking for the suggestions is required in the criteria as some caching is performed
    * for the given user for better performance.
    * @param criteria the criteria the suggestions to return must match.

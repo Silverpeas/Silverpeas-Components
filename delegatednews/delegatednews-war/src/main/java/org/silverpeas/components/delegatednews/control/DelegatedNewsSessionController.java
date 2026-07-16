@@ -96,7 +96,7 @@ public class DelegatedNewsSessionController extends AbstractComponentSessionCont
   /**
    * Récupère toutes les actualités déléguées inter Theme Tracker dont l'utilisateur courant a des
    * droits
-   * @return List<DelegatedNews> : liste d'actualités déléguées
+   * @return a {@code List<DelegatedNews>} : liste d'actualités déléguées
    */
   public List<DelegatedNews> getAllAvailDelegatedNews() {
     List<DelegatedNews> listResult = new ArrayList<>();

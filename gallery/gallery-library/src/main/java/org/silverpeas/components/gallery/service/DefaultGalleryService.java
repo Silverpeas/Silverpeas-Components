@@ -631,7 +631,7 @@ public class DefaultGalleryService implements GalleryService {
    * get my list of SocialInformationGallery according to options and number of Item and the first
    * Index.
    * @param period the period on which the data are requested.
-   * @return List <SocialInformation>
+   * @return a {@code List<SocialInformation>}
    */
   @Override
   public List<SocialInformation> getAllMediaByUserId(final String userId, final Period period) {
@@ -646,7 +646,7 @@ public class DefaultGalleryService implements GalleryService {
    * get list of SocialInformationGallery of my contacts according to options and number of Item and
    * the first Index.
    * @param period the period on which the data are requested.
-   * @return List <SocialInformation>
+   * @return a {@code List<SocialInformation>}
    */
   @Override
   public List<SocialInformation> getSocialInformationListOfMyContacts(

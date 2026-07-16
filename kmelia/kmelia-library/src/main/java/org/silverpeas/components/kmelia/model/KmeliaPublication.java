@@ -457,7 +457,7 @@ public class KmeliaPublication
 
   /**
    * Is the specified user can access this publication?
-   * <p/>
+   * <p>
    * A user can access a publication if he has enough rights to access both the Kmelia instance in
    * which is managed this publication and the topics to which this publication belongs to.
    * @param user a user in Silverpeas.

@@ -152,7 +152,6 @@ public class RequestsByStatus {
    *     <li>{@link FormDetail#setReceiversAsUsers(List)}</li>
    *     <li>{@link FormDetail#setReceiversAsGroups(List)}</li>
    *   </ul>
-   * </p>
    * @return a set of possible request validations sorted as the {@link FormInstanceValidationType} enum.
    */
   public static Set<FormInstanceValidationType> possibleRequestValidationsFrom(
