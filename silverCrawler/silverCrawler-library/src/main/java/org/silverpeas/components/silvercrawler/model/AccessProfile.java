@@ -26,7 +26,6 @@ package org.silverpeas.components.silvercrawler.model;
 
 /**
  * There are 3 kinds of profile :
- * <p>
  * <ul>
  * <li>manager</li>
  * <li>publisher</li>

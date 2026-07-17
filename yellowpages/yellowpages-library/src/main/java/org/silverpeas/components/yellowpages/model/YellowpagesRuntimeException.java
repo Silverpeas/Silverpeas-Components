@@ -28,7 +28,6 @@ import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 /**
  * Class declaration
- * @author
  */
 public class YellowpagesRuntimeException extends SilverpeasRuntimeException {
 
