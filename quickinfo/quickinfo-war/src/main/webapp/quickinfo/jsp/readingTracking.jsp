@@ -29,36 +29,26 @@
 <%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view"%>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 
-<%@ include file="checkKmelia.jsp" %>
-
 <c:set var="currentLang" value="${requestScope.Language}"/>
 <fmt:setLocale value="${currentLang}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 
-<fmt:message var="title" key="ReadingControlTitle"/>
-<c:set var="publication" value="${requestScope.Publication}"/>
-<jsp:useBean id="publication"
-             type="org.silverpeas.core.contribution.publication.model.PublicationDetail"/>
-<c:set var="linkedPath" value="${requestScope.LinkedPathString}"/>
+<fmt:message var="title" key="GML.ReadingControlTitle"/>
+<c:set var="news" value="${requestScope['News']}"/>
+<jsp:useBean id="news" type="org.silverpeas.components.quickinfo.model.News"/>
 
 <view:sp-page>
   <view:sp-head-part title="${title}"/>
   <view:sp-body-part>
-    <view:browseBar path="${linkedPath}" extraInformations="${publication.getName(currentLang)}"/>
+    <view:browseBar>
+      <view:browseBarElt label="${news.title}" link="View?Id=${news.id}"/>
+    </view:browseBar>
     <view:window>
-      <%
-        if (kmeliaScc.getSessionOwner()) {
-          KmeliaDisplayHelper.displayAllOperations(publication.getId(), kmeliaScc, gef,
-              "ViewReadingControl", resources, out, kmaxMode);
-        } else {
-          KmeliaDisplayHelper.displayUserOperations(kmeliaScc, out);
-        }
-      %>
       <view:frame>
         <viewTags:displayReadingControl
-            componentInstanceId="${publication.instanceId}"
-            contributionId="${publication.id}"
-            type="Publication"/>
+            componentInstanceId="${news.publication.instanceId}"
+            contributionId="${news.id}"
+            type="${news.contributionType}"/>
       </view:frame>
     </view:window>
   </view:sp-body-part>
