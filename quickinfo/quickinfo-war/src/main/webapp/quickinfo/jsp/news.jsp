@@ -45,6 +45,7 @@
 <c:set var="highestUserRole" value="<%=SilverpeasRole.fromString(role)%>"/>
 <jsp:useBean id="highestUserRole" type="org.silverpeas.core.admin.user.model.SilverpeasRole"/>
 <c:set var="contributor" value="${role == 'admin' || role == 'publisher'}"/>
+<c:set var="manager" value="${role == 'admin' || role == 'Manager'}"/>
 <c:set var="userId" value="${sessionScope['SilverSessionController'].userId}"/>
 <c:set var="appSettings" value="${requestScope['AppSettings']}"/>
 <c:set var="viewOnly" value="${not empty requestScope['ViewOnly'] ? requestScope['ViewOnly'] : false}"/>
@@ -105,6 +106,11 @@ function clipboardCopy() {
   top.IdleFrame.location.href = '<c:url value="${componentURL}"/>copy?&Id=${news.id}';
 }
 
+function displayReadingTracking() {
+  $("#newsForm").attr("action", "DisplayReadingTracking");
+  $("#newsForm").submit();
+}
+
 function putNewsInBasket() {
   const basketManager = new BasketManager();
   basketManager.putContributionInBasket('${news.identifier.asString()}');
@@ -151,6 +157,12 @@ function putNewsInBasket() {
       <view:operationSeparator/>
       <view:operation altText="${putInSelectionBasketMsg}" action="javascript:onclick=putNewsInBasket()"/>
     </c:if>
+  </c:if>
+  <c:if test="${manager}">
+    <view:operationSeparator/>
+    <fmt:message var="readingTrackingMsg" key="GML.ReadingControlTitle"/>
+    <view:operation action="javascript:onclick=displayReadingTracking()"
+                    altText="${readingTrackingMsg}"/>
   </c:if>
 </view:operationPane>
 </c:if>

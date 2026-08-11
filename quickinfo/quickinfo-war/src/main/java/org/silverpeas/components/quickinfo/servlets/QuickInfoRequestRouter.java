@@ -28,6 +28,7 @@ import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailController;
 import org.silverpeas.core.io.upload.UploadedFile;
+import org.silverpeas.core.security.authorization.ForbiddenRuntimeException;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.kernel.util.StringUtil;
@@ -149,6 +150,15 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
         request.setAttribute("News", news);
         request.setAttribute("ViewOnly", true);
         destination = getDestination("View", quickInfo, request);
+      } else if ("DisplayReadingTracking".equals(function)) {
+        String id = request.getParameter("Id");
+        News news = quickInfo.getNews(id, false);
+        request.setAttribute("News", news);
+        SilverpeasRole role = quickInfo.getHighestSilverpeasUserRole();
+        if (!role.isGreaterThanOrEquals(SilverpeasRole.MANAGER)) {
+          throwHttpForbiddenError();
+        }
+        destination = "/quickinfo/jsp/readingTracking.jsp";
       } else if ("Previous".equals(function)) {
         request.setAttribute("News", quickInfo.getPrevious());
         destination = getDestination("View", quickInfo, request);
