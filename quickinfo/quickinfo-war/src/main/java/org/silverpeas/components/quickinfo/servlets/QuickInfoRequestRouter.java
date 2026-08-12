@@ -150,7 +150,7 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
         request.setAttribute("News", news);
         request.setAttribute("ViewOnly", true);
         destination = getDestination("View", quickInfo, request);
-      } else if ("DisplayReadingTracking".equals(function)) {
+      } else if ("ReadingControl".equals(function)) {
         String id = request.getParameter("Id");
         News news = quickInfo.getNews(id, false);
         request.setAttribute("News", news);

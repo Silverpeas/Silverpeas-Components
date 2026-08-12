@@ -107,7 +107,7 @@ function clipboardCopy() {
 }
 
 function displayReadingTracking() {
-  $("#newsForm").attr("action", "DisplayReadingTracking");
+  $("#newsForm").attr("action", "ReadingControl");
   $("#newsForm").submit();
 }
 
