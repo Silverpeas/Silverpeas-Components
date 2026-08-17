@@ -1,6 +1,6 @@
 $senderName$ vous signale l'actualité suivante...
 
-<b>$title$</b>
+$if(thumbnail)$<img src="$thumbnail$" alt="$title$" height="60"/> $endif$<b>$title$</b>
 $description$
 
 $if(senderMessage)$
