@@ -1,4 +1,4 @@
 L'actualité a été mise à jour.<br/>
 
-<b>$title$</b>
+$if(thumbnail)$<img src="$thumbnail$" alt="$title$" height="60"/> $endif$<b>$title$</b>
 $description$
