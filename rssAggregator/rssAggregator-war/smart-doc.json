@@ -1,0 +1,10 @@
+{
+  "serverUrl": "https://www.silverpeas.org/silverpeas/services",
+  "outPath": "target/site/restapi/components",
+  "projectName": "Silverpeas rssAggregator REST API",
+  "framework": "JAX-RS",
+  "packageFilters": "org.silverpeas.components.*",
+  "recursionLimit": 3,
+  "allInOne": false,
+  "createDebugPage": false
+}
