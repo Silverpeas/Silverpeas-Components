@@ -17,11 +17,17 @@ import java.util.List;
 @Authenticated
 public class TickerResource extends AbstractNewsResource {
 
+  /**
+   * @ignore
+   */
   @Override
   public String getComponentId() {
     return null;
   }
 
+  /**
+   * @ignore
+   */
   @Override
   public void validateUserAuthentication(final UserPrivilegeValidation validation) {
     super.validateUserAuthentication(

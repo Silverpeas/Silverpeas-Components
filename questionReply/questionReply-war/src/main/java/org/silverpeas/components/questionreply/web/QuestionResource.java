@@ -55,6 +55,9 @@ public class QuestionResource extends QuestionReplyBaseWebService {
   @Inject
   private QuestionManager questionManager;
 
+  /**
+   * @ignore
+   */
   @Override
   public String getComponentId() {
     return this.componentId;
@@ -122,6 +125,9 @@ public class QuestionResource extends QuestionReplyBaseWebService {
     }
   }
 
+  /**
+   * @ignore
+   */
   List<Question> extractVisibleQuestions(List<Question> questions) {
     SilverpeasRole profile = getUserProfile();
     List<Question> visibleQuestions;
@@ -138,6 +144,9 @@ public class QuestionResource extends QuestionReplyBaseWebService {
     return visibleQuestions;
   }
 
+  /**
+   * @ignore
+   */
   protected URI identifiedBy(URI uri) {
     return uri;
   }
@@ -147,6 +156,7 @@ public class QuestionResource extends QuestionReplyBaseWebService {
    *
    * @param questions the questions to convert.
    * @return a list with the corresponding question entities.
+   * @ignore
    */
   protected List<QuestionEntity> asWebEntities(List<Question> questions) {
     return questions.stream()
@@ -164,6 +174,7 @@ public class QuestionResource extends QuestionReplyBaseWebService {
    * @param question the question to convert.
    * @param questionURI the URI of the question.
    * @return the corresponding question entity.
+   * @ignore
    */
   protected QuestionEntity asWebEntity(final Question question, URI questionURI) {
     QuestionEntity entity = QuestionEntity.fromQuestion(question,

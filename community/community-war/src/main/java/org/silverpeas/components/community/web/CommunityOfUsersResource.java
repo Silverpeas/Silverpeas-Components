@@ -51,6 +51,9 @@ public class CommunityOfUsersResource extends CommunityWebResource {
   @PathParam("componentInstanceId")
   private String componentInstanceId;
 
+  /**
+   * @ignore
+   */
   @Override
   public String getComponentId() {
     return componentInstanceId;

@@ -149,6 +149,7 @@ public class GalleryResource extends AbstractGalleryResource {
    * @param photoId the identifier of the photo
    * @param size not used for the moment
    * @return the response to the HTTP GET request content of the asked photo.
+   * @ignore
    */
   @GET
   @Path(GALLERY_PHOTOS_PART + "/{photoId}/{size:([0-9]*x[0-9]*/)?}" + GALLERY_MEDIA_CONTENT_PART)
@@ -185,6 +186,7 @@ public class GalleryResource extends AbstractGalleryResource {
    * @param videoId the identifier of the video
    * @param size not used for the moment
    * @return the response to the HTTP GET request content of the asked video.
+   * @ignore
    */
   @GET
   @Path(GALLERY_VIDEOS_PART + "/{videoId}/" +

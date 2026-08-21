@@ -25,6 +25,9 @@ public class NewsResource extends AbstractNewsResource {
   @PathParam("componentId")
   protected String componentId;
 
+  /**
+   * @ignore
+   */
   @Override
   public String getComponentId() {
     return componentId;

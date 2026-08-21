@@ -37,6 +37,10 @@ import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.List;
 
+/**
+ * A REST Web resource giving the items of the RSS channels that are aggregated by a given instance
+ * of the RSS Aggregator application.
+ */
 @WebService
 @Path(RSSResource.PATH + "/{componentId}")
 @Authorized
@@ -50,11 +54,21 @@ public class RSSResource extends RESTWebService {
   @PathParam("componentId")
   protected String componentId;
 
+  /**
+   * Gets the unique identifier of the RSS Aggregator instance to which this resource belongs.
+   * @return the unique identifier of the component instance.
+   * @ignore
+   */
   @Override
   public String getComponentId() {
     return this.componentId;
   }
 
+  /**
+   * Gets the base path of this web resource, relative to the root URI of the REST API.
+   * @return the base path of this web resource.
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return PATH;
@@ -84,6 +98,12 @@ public class RSSResource extends RESTWebService {
     }
   }
 
+  /**
+   * Encapsulates the specified exception into an exception carrying the HTTP status to answer.
+   * @param ex the exception to encapsulate.
+   * @return the web application exception to throw.
+   * @ignore
+   */
   WebApplicationException encapsulateException(Exception ex) {
     if (ex instanceof WebApplicationException) {
       return (WebApplicationException) ex;

@@ -276,6 +276,12 @@
     </profile>
     <profile>
       <id>restapi</id>
+      <!-- the documentation generated for each application is gathered by a module of its own,
+           so that the whole REST API is published in a single place, aside from the Maven site
+           of the applications. -->
+      <modules>
+        <module>components-restapi</module>
+      </modules>
       <build>
         <plugins>
           <plugin>

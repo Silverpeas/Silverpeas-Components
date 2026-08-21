@@ -59,16 +59,25 @@ public class CommunityMembershipResource extends CommunityWebResource {
   @PathParam("componentInstanceId")
   private String componentInstanceId;
 
+  /**
+   * @ignore
+   */
   @Override
   public String getComponentId() {
     return componentInstanceId;
   }
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return super.getResourceBasePath() + "/" + getComponentId() + "/memberships";
   }
 
+  /**
+   * @ignore
+   */
   @Override
   protected WebResourceUri initWebResourceUri() {
     return createWebResourceUri(getResourceBasePath());

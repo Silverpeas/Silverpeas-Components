@@ -58,11 +58,17 @@ public class KmeliaResource extends RESTWebService {
   @Inject
   private KmeliaService kmeliaService;
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return PATH;
   }
 
+  /**
+   * @ignore
+   */
   @Override
   public String getComponentId() {
     return componentId;

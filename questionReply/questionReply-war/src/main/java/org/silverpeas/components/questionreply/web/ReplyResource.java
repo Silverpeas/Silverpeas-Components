@@ -60,6 +60,9 @@ public class ReplyResource extends QuestionReplyBaseWebService {
   @Inject
   private AttachmentService attachmentService;
 
+  /**
+   * @ignore
+   */
   @Override
   public String getComponentId() {
     return this.componentId;
@@ -102,6 +105,9 @@ public class ReplyResource extends QuestionReplyBaseWebService {
     }
   }
 
+  /**
+   * @ignore
+   */
   protected URI identifiedBy(URI uri) {
     return uri;
   }
@@ -112,6 +118,7 @@ public class ReplyResource extends QuestionReplyBaseWebService {
    * @param replies the replies to convert.
    * @param profile the profile of the user.
    * @return a list with the corresponding reply entities.
+   * @ignore
    */
   protected List<ReplyEntity> asWebEntities(List<Reply> replies, SilverpeasRole profile) {
     return replies.stream()
@@ -129,6 +136,7 @@ public class ReplyResource extends QuestionReplyBaseWebService {
    * @param replyURI the URI of the reply.
    * @param profile the profile of the user.
    * @return the corresponding reply entity.
+   * @ignore
    */
   protected ReplyEntity asWebEntity(final Reply reply, URI replyURI, SilverpeasRole profile) {
     ReplyEntity entity = ReplyEntity.fromReply(reply, getUserPreferences().getLanguage()).withURI(
@@ -142,6 +150,9 @@ public class ReplyResource extends QuestionReplyBaseWebService {
     return entity;
   }
 
+  /**
+   * @ignore
+   */
   boolean isReplyVisible(String questionAuthor, Reply reply, SilverpeasRole role,
       String userId) {
     boolean isPrivate = reply.getPublicReply() <= 0;
@@ -152,6 +163,9 @@ public class ReplyResource extends QuestionReplyBaseWebService {
     return true;
   }
 
+  /**
+   * @ignore
+   */
   List<Reply> extractVisibleReplies(long questionId, List<Reply> replies) throws
       QuestionReplyException {
     List<Reply> visibleReplies = new ArrayList<>(replies.size());

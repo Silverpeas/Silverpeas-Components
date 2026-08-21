@@ -1,6 +1,6 @@
 {
   "serverUrl": "https://www.silverpeas.org/silverpeas/services",
-  "outPath": "target/site/restapi/components",
+  "outPath": "target/restapi",
   "projectName": "Silverpeas gallery REST API",
   "framework": "JAX-RS",
   "packageFilters": "org.silverpeas.components.*",

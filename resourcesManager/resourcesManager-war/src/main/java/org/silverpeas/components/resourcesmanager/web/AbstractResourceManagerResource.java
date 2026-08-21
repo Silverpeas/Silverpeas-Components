@@ -50,6 +50,9 @@ public abstract class AbstractResourceManagerResource extends RESTWebService {
   @Inject
   private ResourcesManager resourcesManager;
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return ResourceManagerResourceURIs.RESOURCE_MANAGER_BASE_URI;
@@ -58,6 +61,7 @@ public abstract class AbstractResourceManagerResource extends RESTWebService {
   /*
    * (non-Javadoc)
    * @see com.silverpeas.web.RESTWebService#getComponentId()
+   * @ignore
    */
   @Override
   public String getComponentId() {
@@ -69,6 +73,7 @@ public abstract class AbstractResourceManagerResource extends RESTWebService {
    * @param reservationId the identifier of the linked reservation.
    * @param resources the resources to convert.
    * @return the corresponding list of resource entity.
+   * @ignore
    */
   protected Collection<ReservedResourceEntity> asWebEntities(Long reservationId,
       List<Resource> resources) {
@@ -95,6 +100,7 @@ public abstract class AbstractResourceManagerResource extends RESTWebService {
    * @param reservationId the identifier of the linked reservation.
    * @param resource the resource to convert.
    * @return the corresponding resource entity.
+   * @ignore
    */
   protected ReservedResourceEntity asWebEntity(Long reservationId, Resource resource) {
     checkNotFoundStatus(resource);
@@ -108,6 +114,7 @@ public abstract class AbstractResourceManagerResource extends RESTWebService {
    * Converts the resource into its corresponding web entity.
    * @param resource the resource to convert.
    * @return the corresponding resource entity.
+   * @ignore
    */
   protected ResourceEntity asWebEntity(Resource resource) {
     checkNotFoundStatus(resource);
@@ -120,6 +127,7 @@ public abstract class AbstractResourceManagerResource extends RESTWebService {
    * Converts the reservations into its corresponding web entity list.
    * @param reservations the reservation events to convert.
    * @return the corresponding list of reservation entity.
+   * @ignore
    */
   protected Collection<ReservationEntity> asWebEntities(List<Reservation> reservations) {
     checkNotFoundStatus(reservations);
@@ -145,6 +153,7 @@ public abstract class AbstractResourceManagerResource extends RESTWebService {
    * Converts the reservation into its corresponding web entity.
    * @param reservation the reservation event to convert.
    * @return the corresponding reservation entity.
+   * @ignore
    */
   protected ReservationEntity asWebEntity(Reservation reservation) {
     checkNotFoundStatus(reservation);
@@ -157,6 +166,7 @@ public abstract class AbstractResourceManagerResource extends RESTWebService {
    * Converts the category into its corresponding web entity.
    * @param category the category to convert.
    * @return the corresponding category entity.
+   * @ignore
    */
   protected ResourceCategoryEntity asWebEntity(Category category) {
     checkNotFoundStatus(category);
@@ -167,6 +177,7 @@ public abstract class AbstractResourceManagerResource extends RESTWebService {
    * Centralized build of reservation URI.
    * @param reservation a reservation
    * @return reservation URI
+   * @ignore
    */
   protected URI buildReservationURI(Reservation reservation) {
     if (reservation == null) {
@@ -190,6 +201,7 @@ public abstract class AbstractResourceManagerResource extends RESTWebService {
    * Centralized build of resource reservation URI.
    * @param reservation a reservation
    * @return reservation URI
+   * @ignore
    */
   protected URI buildResourceReservationURI(Reservation reservation) {
     if (reservation == null) {
@@ -205,6 +217,7 @@ public abstract class AbstractResourceManagerResource extends RESTWebService {
    * Centralized build of resource reservation URI.
    * @param category a category
    * @return reservation URI
+   * @ignore
    */
   protected URI buildResourceCategoryURI(Category category) {
     if (category == null) {
@@ -220,6 +233,7 @@ public abstract class AbstractResourceManagerResource extends RESTWebService {
    * Centralized build of resource reservation URI.
    * @param resource a resource
    * @return reservation URI
+   * @ignore
    */
   protected URI buildResourceURI(Resource resource) {
     if (resource == null) {
@@ -242,6 +256,7 @@ public abstract class AbstractResourceManagerResource extends RESTWebService {
 
   /**
    * @return Resource manager service layer
+   * @ignore
    */
   protected ResourcesManager getResourceManager() {
     return resourcesManager;

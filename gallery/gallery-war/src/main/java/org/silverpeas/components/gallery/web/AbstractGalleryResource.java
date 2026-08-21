@@ -74,12 +74,16 @@ abstract class AbstractGalleryResource extends RESTWebService {
   /*
    * (non-Javadoc)
    * @see com.silverpeas.web.RESTWebService#getComponentId()
+   * @ignore
    */
   @Override
   public String getComponentId() {
     return componentInstanceId;
   }
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return GALLERY_BASE_URI;
@@ -226,6 +230,7 @@ abstract class AbstractGalleryResource extends RESTWebService {
    * @param requestedMediaResolution requested media resolution
    * @param size a specific size applied on requested resolution
    * @return the response.
+   * @ignore
    */
   Response getMediaContent(final MediaType expectedMediaType, final String mediaId,
       final MediaResolution requestedMediaResolution, final String size) {
@@ -251,6 +256,7 @@ abstract class AbstractGalleryResource extends RESTWebService {
    *
    * @param expectedMediaType expected media type
    * @param mediaId the media identifier
+   * @ignore
    */
   View getMediaEmbed(final MediaType expectedMediaType, final String mediaId) {
     try {
@@ -309,6 +315,7 @@ abstract class AbstractGalleryResource extends RESTWebService {
    * @param thumbnailId the thumbnail identifier
    * @param sizeDirective the size directive with pattern (optional)
    * @return the response.
+   * @ignore
    */
   Response getMediaThumbnail(final String mediaId,
       final String thumbnailId, final String sizeDirective) {
@@ -354,6 +361,7 @@ abstract class AbstractGalleryResource extends RESTWebService {
   /**
    * Centralization
    * @param object any object
+   * @ignore
    */
   void checkNotFoundStatus(Object object) {
     boolean isNotFound = false;
@@ -396,6 +404,7 @@ abstract class AbstractGalleryResource extends RESTWebService {
    * Verifying that the authenticated user is authorized to view the given media.
    * @param media a media for which the access has to be verified.
    * @throws jakarta.ws.rs.WebApplicationException if user is not authorized to view the media
+   * @ignore
    */
   void verifyUserMediaAccess(Media media) {
     if (!hasUserMediaAccess(media)) {
@@ -426,6 +435,7 @@ abstract class AbstractGalleryResource extends RESTWebService {
 
   /**
    * @return gallery media service layer
+   * @ignore
    */
   GalleryService getGalleryService() {
     return galleryService;

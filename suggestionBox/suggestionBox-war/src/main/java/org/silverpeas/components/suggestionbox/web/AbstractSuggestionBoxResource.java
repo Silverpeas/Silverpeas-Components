@@ -43,16 +43,25 @@ public abstract class AbstractSuggestionBoxResource extends RESTWebService {
 
   private SuggestionBox suggestionBox;
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return SuggestionBoxResourceURIs.BOX_BASE_URI;
   }
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getBundleLocation() {
     return "org.silverpeas.components.suggestionbox.multilang.SuggestionBoxBundle";
   }
 
+  /**
+   * @ignore
+   */
   @Override
   public String getComponentId() {
     return componentInstanceId;
@@ -61,6 +70,7 @@ public abstract class AbstractSuggestionBoxResource extends RESTWebService {
   /**
    * Gets the suggestion box associated to the current request.
    * @return the suggestion box
+   * @ignore
    */
   public SuggestionBox getSuggestionBox() {
     if (suggestionBox == null) {

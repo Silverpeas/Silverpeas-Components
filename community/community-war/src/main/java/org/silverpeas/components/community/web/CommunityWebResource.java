@@ -57,6 +57,9 @@ public abstract class CommunityWebResource extends RESTWebService {
   @Inject
   private CommunityWebManager webManager;
 
+  /**
+   * @ignore
+   */
   @PostConstruct
   protected void initURIBuilder() {
     uriBuilder = new CommunityWebResourceURIBuilder(getUri());
@@ -67,6 +70,7 @@ public abstract class CommunityWebResource extends RESTWebService {
    * application.
    * @return the base path of the resource relative to the URI at which are all exposed the
    * REST-based web services in Silverpeas.
+   * @ignore
    */
   @Override
   protected String getResourceBasePath() {
@@ -77,6 +81,7 @@ public abstract class CommunityWebResource extends RESTWebService {
    * Gets the roles the user requesting currently this web resource plays in the community of
    * users.
    * @return a collection of roles the current user plays.
+   * @ignore
    */
   @Override
   protected Collection<SilverpeasRole> getUserRoles() {
@@ -87,6 +92,7 @@ public abstract class CommunityWebResource extends RESTWebService {
    * Gets the Web Manager to use to fulfill the incoming request. The web manager centralizes all
    * the behavior provided in the website, both by the Web GUI and the REST web resources.
    * @return a community web manager.
+   * @ignore
    */
   protected CommunityWebManager getWebManager() {
     return webManager;
@@ -98,6 +104,7 @@ public abstract class CommunityWebResource extends RESTWebService {
    * @param function the web function to apply.
    * @param <T> the concrete type of the answer.
    * @return the answer of the web function.
+   * @ignore
    */
   protected <T> T process(final WebFunction<T> function) {
     return process(() -> function.applyWith(getCommunity())).execute();

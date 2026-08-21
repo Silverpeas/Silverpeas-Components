@@ -19,11 +19,17 @@ abstract class AbstractNewsResource extends RESTWebService {
   @Inject
   private QuickInfoService quickInfoService;
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return PATH;
   }
 
+  /**
+   * @ignore
+   */
   List<NewsEntity> asWebEntities(List<News> someNews, final boolean withExtraInfo, final int limit) {
     Stream<NewsEntity> newsEntityStream = someNews.stream().map(n -> asWebEntity(n, withExtraInfo));
     if (limit > 0) {
@@ -32,6 +38,9 @@ abstract class AbstractNewsResource extends RESTWebService {
     return newsEntityStream.collect(Collectors.toList());
   }
 
+  /**
+   * @ignore
+   */
   NewsEntity asWebEntity(final News news, final boolean withExtraInfo) {
     final NewsEntity entity = NewsEntity.fromNews(news);
     if (withExtraInfo) {
@@ -40,6 +49,9 @@ abstract class AbstractNewsResource extends RESTWebService {
     return entity.withURI(getUri().getWebResourcePathBuilder().path(news.getId()).build());
   }
 
+  /**
+   * @ignore
+   */
   QuickInfoService getService() {
     return quickInfoService;
   }

@@ -63,16 +63,23 @@ public class ListDelegatedNewsResource extends RESTWebService {
    * Gets a business service on delegatedNews.
    *
    * @return a delegatedNews service instance.
+   * @ignore
    */
   protected DelegatedNewsService getDelegatedNewsService() {
     return this.delegatednewsService;
   }
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return PATH;
   }
 
+  /**
+   * @ignore
+   */
   @Override
   public String getComponentId() {
     return this.instanceId;

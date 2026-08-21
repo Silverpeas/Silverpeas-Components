@@ -53,7 +53,7 @@ public enum MediaResolution {
   private final Integer width;
   private final Integer height;
   private final String thumbnailSuffix;
-  private final Integer watermarkSize;
+  private final String watermarkSizeLabel;
 
   MediaResolution(final boolean displayed, final String label, final Integer width,
       final Integer height, final String bundlePartOfWatermarkSizeLabel) {
@@ -61,7 +61,7 @@ public enum MediaResolution {
     this.label = label;
     this.width = width;
     this.height = height;
-    this.watermarkSize = GalleryComponentSettings.getWatermarkSize(bundlePartOfWatermarkSizeLabel);
+    this.watermarkSizeLabel = bundlePartOfWatermarkSizeLabel;
     this.thumbnailSuffix = "original".equals(label) ? "" : ("_" + label);
   }
 
@@ -109,11 +109,19 @@ public enum MediaResolution {
   }
 
   public boolean isWatermarkApplicable() {
-    return watermarkSize != null;
+    return getWatermarkSize() != null;
   }
 
+  /**
+   * Gets the size of the watermark to apply to a media of this resolution. The settings are read
+   * on demand and not once for all at the initialization of this enumeration: the resources of
+   * Silverpeas aren't necessarily available when the class is loaded (this is the case for
+   * example when the class is loaded by a documentation or a code analysis tool).
+   * @return the size of the watermark or null if no watermark is applicable.
+   */
   public Integer getWatermarkSize() {
-    return watermarkSize;
+    return watermarkSizeLabel == null ? null :
+        GalleryComponentSettings.getWatermarkSize(watermarkSizeLabel);
   }
 
   public boolean isTiny() {

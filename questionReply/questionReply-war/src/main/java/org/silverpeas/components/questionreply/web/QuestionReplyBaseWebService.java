@@ -38,11 +38,17 @@ public abstract class QuestionReplyBaseWebService extends RESTWebService {
 
   static final String PATH = "questionreply";
 
+  /**
+   * @ignore
+   */
   @Override
   protected String getResourceBasePath() {
     return PATH;
   }
 
+  /**
+   * @ignore
+   */
   SilverpeasRole getUserProfile() {
     String[] roles =
         getOrganisationController().getUserProfiles(getUser().getId(), getComponentId());
@@ -70,6 +76,9 @@ public abstract class QuestionReplyBaseWebService extends RESTWebService {
     return profile;
   }
 
+  /**
+   * @ignore
+   */
   WebApplicationException encapsulateException(Exception ex) {
     if (ex instanceof WebApplicationException) {
       return (WebApplicationException) ex;
