@@ -152,6 +152,7 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Serial;
 import java.nio.file.Files;
 import java.text.ParseException;
 import java.util.*;
@@ -173,7 +174,8 @@ import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassifica
 
 public class KmeliaSessionController extends AbstractComponentSessionController
     implements ExportFileNameProducer {
-  private static final long serialVersionUID = -1986747239669483105L;
+  @Serial
+  private static final long serialVersionUID = -1986747239669483106L;
 
   /**
    * The different export formats the KmeliaPublicationExporter should support.
@@ -3533,9 +3535,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   public PublicationDetail prepareNewPublication() {
     String volatileId = newVolatileIntegerIdentifierOn(getComponentId());
-    return PublicationDetail.builder()
+    var publi = PublicationDetail.builder()
         .setPk(getPublicationPK(volatileId))
         .build();
+    setSessionPublication(KmeliaPublication.fromDetail(publi));
+    return publi;
   }
 
   /**

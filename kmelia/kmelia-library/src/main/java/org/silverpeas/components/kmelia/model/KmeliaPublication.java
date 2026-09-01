@@ -57,6 +57,7 @@ import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 
+import java.io.Serial;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -79,7 +80,8 @@ import java.util.function.Predicate;
 public class KmeliaPublication
     implements I18nContribution, SilverpeasContent, WithPermanentLink, WithThumbnail {
 
-  private static final long serialVersionUID = 4861635754389280165L;
+  @Serial
+  private static final long serialVersionUID = 4861635754389280167L;
   private PublicationDetail detail;
   private CompletePublication completeDetail;
   private final PublicationPK pk;
