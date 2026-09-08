@@ -23,6 +23,12 @@
  */
 package org.silverpeas.components.rssaggregator.web;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -33,6 +39,7 @@ import org.silverpeas.components.rssaggregator.service.RSSService;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.annotation.Authorized;
+import org.silverpeas.core.web.rs.annotation.doc.NotFound;
 import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.List;
@@ -72,6 +79,13 @@ public class RSSResource extends RESTWebService {
    * @return the response to the HTTP GET request with the JSON representation of the asked channel
    * items.
    */
+  @Operation(summary = "Gets the items of the RSS channels aggregated by the application.",
+      description = "With the query parameter agregate set to y, the items of all the channels " +
+          "are merged into a single list sorted by date; otherwise they are returned channel " +
+          "by channel.")
+  @ApiResponse(responseCode = "200", description = "The items of the channels.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = RSSItem.class))))
+  @NotFound
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public List<RSSItem> getRSS(@QueryParam("agregate") String aggregate) {

@@ -23,6 +23,12 @@
  */
 package org.silverpeas.components.questionreply.web;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -32,6 +38,7 @@ import org.silverpeas.components.questionreply.service.QuestionManager;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.web.rs.annotation.Authorized;
+import org.silverpeas.core.web.rs.annotation.doc.NotFound;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -70,6 +77,10 @@ public class QuestionResource extends QuestionReplyBaseWebService {
    * @return the response to the HTTP GET request with the JSON representation of the asked
    * question.
    */
+  @Operation(summary = "Gets the specified existing question.")
+  @ApiResponse(responseCode = "200", description = "The asked question.",
+      content = @Content(schema = @Schema(implementation = QuestionEntity.class)))
+  @NotFound
   @GET
   @Path("{questionId}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -87,6 +98,17 @@ public class QuestionResource extends QuestionReplyBaseWebService {
     }
   }
 
+  /**
+   * Gets the questions whose the unique identifier is among the specified ones.
+   *
+   * @param ids the unique identifiers of the questions to get.
+   * @return a list with the asked questions the user can see.
+   */
+  @Operation(summary = "Gets the questions with the given identifiers.",
+      description = "A user playing only the reader role sees exclusively the questions having " +
+          "at least one public reply.")
+  @ApiResponse(responseCode = "200", description = "The questions the user can see.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = QuestionEntity.class))))
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public List<QuestionEntity> getQuestions(@QueryParam("ids") Set<String> ids) {
@@ -98,6 +120,16 @@ public class QuestionResource extends QuestionReplyBaseWebService {
     }
   }
 
+  /**
+   * Gets all the questions asked in the application.
+   *
+   * @return a list with all the questions the user can see.
+   */
+  @Operation(summary = "Gets all the questions asked in the application.",
+      description = "A user playing only the reader role sees exclusively the questions having " +
+          "at least one public reply.")
+  @ApiResponse(responseCode = "200", description = "The questions the user can see.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = QuestionEntity.class))))
   @GET
   @Path("all")
   @Produces(MediaType.APPLICATION_JSON)
@@ -110,6 +142,17 @@ public class QuestionResource extends QuestionReplyBaseWebService {
     }
   }
 
+  /**
+   * Gets all the questions classified into the specified category.
+   *
+   * @param categoryId the unique identifier of the category.
+   * @return a list with all the questions of the category the user can see.
+   */
+  @Operation(summary = "Gets all the questions classified into the given category.",
+      description = "A user playing only the reader role sees exclusively the questions having " +
+          "at least one public reply.")
+  @ApiResponse(responseCode = "200", description = "The questions the user can see.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = QuestionEntity.class))))
   @GET
   @Path("category/{categoryId}")
   @Produces(MediaType.APPLICATION_JSON)

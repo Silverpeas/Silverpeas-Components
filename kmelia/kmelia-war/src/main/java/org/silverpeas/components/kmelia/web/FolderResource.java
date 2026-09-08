@@ -20,6 +20,12 @@
  */
 package org.silverpeas.components.kmelia.web;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import jakarta.annotation.Nonnull;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -69,6 +75,9 @@ public class FolderResource extends RESTWebService {
    *
    * @return the application root and its children
    */
+  @Operation(summary = "Gets the root folder of the application with its children.")
+  @ApiResponse(responseCode = "200", description = "The root folder and its children.",
+      content = @Content(schema = @Schema(implementation = NodeEntity.class)))
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public NodeEntity getRoot(@QueryParam("lang") String language) {
@@ -94,6 +103,11 @@ public class FolderResource extends RESTWebService {
    *
    * @return NodeEntity representing asking node
    */
+  @Operation(summary = "Gets the folder at the given path with its children.",
+      description = "The path is made up of the identifiers of the folders, separated by a " +
+          "slash, from a child of the root down to the asked folder.")
+  @ApiResponse(responseCode = "200", description = "The asked folder and its children.",
+      content = @Content(schema = @Schema(implementation = NodeEntity.class)))
   @GET
   @Path("{path: \\d+(/\\d+)*}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -105,18 +119,21 @@ public class FolderResource extends RESTWebService {
   }
 
   /**
-   * Get all children of any node of the application.
+   * Get the path of any node of the application, from the root down to that node.
    *
-   * @return a list of NodeEntity representing children
+   * @return a list of NodeEntity representing the path of the node
    */
+  @Operation(summary = "Gets the folders making the path of the given folder.",
+      description = "The folders are ordered from the root of the application down to the asked " +
+          "folder, both included.")
+  @ApiResponse(responseCode = "200", description = "The folders making the path.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = NodeEntity.class))))
   @GET
-  @Path("{path: \\d+(/\\d+)*/path}")
+  @Path("{path: \\d+(/\\d+)*}/path")
   @Produces(MediaType.APPLICATION_JSON)
   public List<NodeEntity> getPath(@PathParam("path") String path,
       @QueryParam("lang") String language) {
-    String[] nodeIds = path.split("/");
-    String nodeId = nodeIds[nodeIds.length - 2];
-    NodePK nodePK = new NodePK(nodeId, componentId);
+    NodePK nodePK = new NodePK(getNodeIdFromURI(path), componentId);
 
     List<NodeDetail> nodes;
     try {
@@ -150,14 +167,15 @@ public class FolderResource extends RESTWebService {
    *
    * @return a list of NodeEntity representing children
    */
+  @Operation(summary = "Gets the direct children of the given folder.")
+  @ApiResponse(responseCode = "200", description = "The children of the asked folder.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = NodeEntity.class))))
   @GET
-  @Path("{path: \\d+(/\\d+)*/children}")
+  @Path("{path: \\d+(/\\d+)*}/children")
   @Produces(MediaType.APPLICATION_JSON)
   public List<NodeEntity> getChildren(@PathParam("path") String path,
       @QueryParam("lang") String language) {
-    String[] nodeIds = path.split("/");
-    String nodeId = nodeIds[nodeIds.length - 2];
-    NodePK nodePK = new NodePK(nodeId, componentId);
+    NodePK nodePK = new NodePK(getNodeIdFromURI(path), componentId);
 
     try {
       Collection<NodeDetail> children =
@@ -176,6 +194,12 @@ public class FolderResource extends RESTWebService {
    * @param nodeEntity The description of the node to create.
    * @return a response containing the entity describing the newly created node.
    */
+  @Operation(summary = "Creates a folder as a child of the folder at the specified path.")
+  @ApiResponse(responseCode = "201", description = "The newly created folder.",
+      content = @Content(schema = @Schema(implementation = NodeEntity.class)))
+  @ApiResponse(responseCode = "204", description = "No name was given to the folder to create.")
+  @ApiResponse(responseCode = "406",
+      description = "A folder with the same name already exists at the specified path.")
   @Path("{path: \\d+(/\\d+)*}")
   @POST
   @Produces(MediaType.APPLICATION_JSON)
@@ -256,16 +280,20 @@ public class FolderResource extends RESTWebService {
   }
 
   /**
-   * Get all children of any node of the application.
+   * Get the tree of the folders of the application, expanded down to the given folder.
    *
-   * @return an array of NodeEntity representing children
+   * @return the root of the application with the branch leading to the given folder expanded
    */
+  @Operation(summary = "Gets the tree of folders expanded down to the given folder.",
+      description = "The whole tree of the application is returned, but only the branch leading " +
+          "to the asked folder is expanded.")
+  @ApiResponse(responseCode = "200", description = "The root folder with the expanded branch.",
+      content = @Content(schema = @Schema(implementation = NodeEntity.class)))
   @GET
-  @Path("{path: \\d+/treeview}")
+  @Path("{path: \\d+}/treeview")
   @Produces(MediaType.APPLICATION_JSON)
   public NodeEntity getTreeview(@PathParam("path") String path, @QueryParam("lang") String language) {
-    String[] nodeIds = path.split("/");
-    String nodeId = nodeIds[nodeIds.length - 2];
+    String nodeId = getNodeIdFromURI(path);
 
     try {
       List<NodeDetail> nodes = new ArrayList<>(getNodeService().getPath(new NodePK(nodeId,

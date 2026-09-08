@@ -23,6 +23,12 @@
  */
 package org.silverpeas.components.resourcesmanager.web;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response.Status;
@@ -34,6 +40,7 @@ import org.silverpeas.core.date.period.PeriodType;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.web.rs.annotation.Authorized;
+import org.silverpeas.core.web.rs.annotation.doc.NotFound;
 import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.Calendar;
@@ -58,6 +65,10 @@ public class ResourceManagerResource extends AbstractResourceManagerResource {
    * @return the response to the HTTP GET request with the JSON representation of the asked
    * category.
    */
+  @Operation(summary = "Gets a category of bookable resources.")
+  @ApiResponse(responseCode = "200", description = "The asked category.",
+      content = @Content(schema = @Schema(implementation = ResourceCategoryEntity.class)))
+  @NotFound
   @GET
   @Path(ResourceManagerResourceURIs.RESOURCE_MANAGER_RESERVATIONS_URI_PART + "/" + ResourceManagerResourceURIs.RESOURCE_MANAGER_RESOURCES_URI_PART + "/" +
       ResourceManagerResourceURIs.RESOURCE_MANAGER_CATEGORIES_URI_PART + "/{categoryId}")
@@ -80,6 +91,10 @@ public class ResourceManagerResource extends AbstractResourceManagerResource {
    * @return the response to the HTTP GET request with the JSON representation of the asked
    * resource.
    */
+  @Operation(summary = "Gets a bookable resource.")
+  @ApiResponse(responseCode = "200", description = "The asked bookable resource.",
+      content = @Content(schema = @Schema(implementation = ResourceEntity.class)))
+  @NotFound
   @GET
   @Path(ResourceManagerResourceURIs.RESOURCE_MANAGER_RESERVATIONS_URI_PART + "/" + ResourceManagerResourceURIs.RESOURCE_MANAGER_RESOURCES_URI_PART +
       "/{resourceId}")
@@ -103,6 +118,10 @@ public class ResourceManagerResource extends AbstractResourceManagerResource {
    * @return the response to the HTTP GET request with the JSON representation of the asked
    * reservation.
    */
+  @Operation(summary = "Gets a reservation of bookable resources.")
+  @ApiResponse(responseCode = "200", description = "The asked reservation.",
+      content = @Content(schema = @Schema(implementation = ReservationEntity.class)))
+  @NotFound
   @GET
   @Path(ResourceManagerResourceURIs.RESOURCE_MANAGER_RESERVATIONS_URI_PART + "/{reservationId}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -126,6 +145,10 @@ public class ResourceManagerResource extends AbstractResourceManagerResource {
    * @return the response to the HTTP GET request with the JSON representation of list of resources
    * of a reservation.
    */
+  @Operation(summary = "Gets the bookable resources booked by the given reservation.")
+  @ApiResponse(responseCode = "200", description = "The booked resources.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = ReservedResourceEntity.class))))
+  @NotFound
   @GET
   @Path(ResourceManagerResourceURIs.RESOURCE_MANAGER_RESERVATIONS_URI_PART + "/{reservationId}/" +
       ResourceManagerResourceURIs.RESOURCE_MANAGER_RESOURCES_URI_PART)
@@ -158,6 +181,12 @@ public class ResourceManagerResource extends AbstractResourceManagerResource {
    * @return the response to the HTTP GET request with the JSON representation of the asked list of
    * reservation.
    */
+  @Operation(summary = "Gets the reservations covering the given period.",
+      description = "The period is given by its type (year, month, week or day) and by a date " +
+          "it contains, split into a year, a month and a day.")
+  @ApiResponse(responseCode = "200", description = "The asked reservations.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = ReservationEntity.class))))
+  @NotFound
   @GET
   @Path(ResourceManagerResourceURIs.RESOURCE_MANAGER_RESERVATIONS_URI_PART + "/{periodType}/{year}/{month}/{day}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -179,6 +208,13 @@ public class ResourceManagerResource extends AbstractResourceManagerResource {
    * @return the response to the HTTP GET request with the JSON representation of the asked list of
    * reservation.
    */
+  @Operation(summary = "Gets the reservations of the resources of the given category over the " +
+      "given period.",
+      description = "The period is given by its type (year, month, week or day) and by a date " +
+          "it contains, split into a year, a month and a day.")
+  @ApiResponse(responseCode = "200", description = "The asked reservations.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = ReservationEntity.class))))
+  @NotFound
   @GET
   @Path(
       ResourceManagerResourceURIs.RESOURCE_MANAGER_RESERVATIONS_URI_PART + "/{periodType}/{year}/{month}/{day}/" +
@@ -204,6 +240,12 @@ public class ResourceManagerResource extends AbstractResourceManagerResource {
    * @return the response to the HTTP GET request with the JSON representation of the asked list of
    * reservation.
    */
+  @Operation(summary = "Gets the reservations of the given resource over the given period.",
+      description = "The period is given by its type (year, month, week or day) and by a date " +
+          "it contains, split into a year, a month and a day.")
+  @ApiResponse(responseCode = "200", description = "The asked reservations.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = ReservationEntity.class))))
+  @NotFound
   @GET
   @Path(
       ResourceManagerResourceURIs.RESOURCE_MANAGER_RESERVATIONS_URI_PART + "/{periodType}/{year}/{month}/{day}/" +
@@ -228,6 +270,12 @@ public class ResourceManagerResource extends AbstractResourceManagerResource {
    * @return the response to the HTTP GET request with the JSON representation of the asked list of
    * reservation.
    */
+  @Operation(summary = "Gets the reservations made by the given user over the given period.",
+      description = "The period is given by its type (year, month, week or day) and by a date " +
+          "it contains, split into a year, a month and a day.")
+  @ApiResponse(responseCode = "200", description = "The asked reservations.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = ReservationEntity.class))))
+  @NotFound
   @GET
   @Path(ResourceManagerResourceURIs.RESOURCE_MANAGER_RESERVATIONS_URI_PART + "/{periodType}/{year}/{month}/{day}/user/{userId}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -251,6 +299,13 @@ public class ResourceManagerResource extends AbstractResourceManagerResource {
    * @return the response to the HTTP GET request with the JSON representation of the asked list of
    * reservation.
    */
+  @Operation(summary = "Gets the reservations made by the given user on the resources of the " +
+      "given category over the given period.",
+      description = "The period is given by its type (year, month, week or day) and by a date " +
+          "it contains, split into a year, a month and a day.")
+  @ApiResponse(responseCode = "200", description = "The asked reservations.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = ReservationEntity.class))))
+  @NotFound
   @GET
   @Path(
       ResourceManagerResourceURIs.RESOURCE_MANAGER_RESERVATIONS_URI_PART + "/{periodType}/{year}/{month}/{day}/user/{userId}/" +
@@ -277,6 +332,13 @@ public class ResourceManagerResource extends AbstractResourceManagerResource {
    * @return the response to the HTTP GET request with the JSON representation of the asked list of
    * reservation.
    */
+  @Operation(summary = "Gets the reservations made by the given user on the given resource over " +
+      "the given period.",
+      description = "The period is given by its type (year, month, week or day) and by a date " +
+          "it contains, split into a year, a month and a day.")
+  @ApiResponse(responseCode = "200", description = "The asked reservations.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = ReservationEntity.class))))
+  @NotFound
   @GET
   @Path(
       ResourceManagerResourceURIs.RESOURCE_MANAGER_RESERVATIONS_URI_PART + "/{periodType}/{year}/{month}/{day}/user/{userId}/" +
@@ -300,6 +362,13 @@ public class ResourceManagerResource extends AbstractResourceManagerResource {
    * @return the response to the HTTP GET request with the JSON representation of the asked list of
    * reservation.
    */
+  @Operation(summary = "Gets the reservations waiting for validation over the given period.",
+      description = "The period is given by its type (year, month, week or day) and by a date " +
+          "it contains, split into a year, a month and a day. Only the reservations the user " +
+          "behind the request is in charge of validating are returned.")
+  @ApiResponse(responseCode = "200", description = "The asked reservations.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = ReservationEntity.class))))
+  @NotFound
   @GET
   @Path(ResourceManagerResourceURIs.RESOURCE_MANAGER_RESERVATIONS_URI_PART + "/{periodType}/{year}/{month}/{day}/validation")
   @Produces(MediaType.APPLICATION_JSON)
