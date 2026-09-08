@@ -23,6 +23,12 @@
  */
 package org.silverpeas.components.questionreply.web;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -35,6 +41,7 @@ import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.web.rs.annotation.Authorized;
+import org.silverpeas.core.web.rs.annotation.doc.NotFound;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -75,6 +82,13 @@ public class ReplyResource extends QuestionReplyBaseWebService {
    * @return the response to the HTTP GET request with the JSON representation of the asked question
    * replies.
    */
+  @Operation(summary = "Gets the replies to the given question.",
+      description = "Only the replies the user is allowed to see are returned. The public " +
+          "replies are visible to everybody whereas a private one is visible only to the " +
+          "managers of the application and to the author of the question.")
+  @ApiResponse(responseCode = "200", description = "The replies the user can see.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = ReplyEntity.class))))
+  @NotFound
   @GET
   @Path("question/{questionId}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -89,6 +103,15 @@ public class ReplyResource extends QuestionReplyBaseWebService {
     }
   }
 
+  /**
+   * Gets the public replies to the specified question.
+   *
+   * @param onQuestionId the unique identifier of the question.
+   * @return a list with the public replies to the question.
+   */
+  @Operation(summary = "Gets only the public replies to the given question.")
+  @ApiResponse(responseCode = "200", description = "The public replies to the question.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = ReplyEntity.class))))
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   @Path("public/question/{questionId}")

@@ -20,6 +20,11 @@
  */
 package org.silverpeas.components.kmelia.web;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import jakarta.inject.Inject;
 import org.silverpeas.components.kmelia.service.KmeliaService;
 import org.silverpeas.core.admin.user.model.UserDetail;
@@ -29,6 +34,7 @@ import org.silverpeas.core.contribution.publication.model.PublicationRuntimeExce
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.annotation.Authorized;
+import org.silverpeas.core.web.rs.annotation.doc.Conflict;
 import org.silverpeas.core.webapi.publication.PublicationEntity;
 
 import jakarta.ws.rs.Consumes;
@@ -76,6 +82,10 @@ public class KmeliaResource extends RESTWebService {
    * @param publicationEntity The description of the publication to create.
    * @return HTTP response
    */
+  @Operation(summary = "Creates a publication into the folder with the given identifier.")
+  @ApiResponse(responseCode = "201", description = "The newly created publication.",
+      content = @Content(schema = @Schema(implementation = PublicationEntity.class)))
+  @Conflict
   @Path("/{nodeId}")
   @POST
   @Produces(MediaType.APPLICATION_JSON)
@@ -108,6 +118,12 @@ public class KmeliaResource extends RESTWebService {
    * @param publicationEntity The description of the publication to update.
    * @return a response containing the entity describing the updated publication.
    */
+  @Operation(summary = "Updates the publication passed in the request.",
+      description = "The status of the publication isn't handled by this operation: it is kept " +
+          "unchanged.")
+  @ApiResponse(responseCode = "200", description = "The updated publication.",
+      content = @Content(schema = @Schema(implementation = PublicationEntity.class)))
+  @Conflict
   @POST
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
