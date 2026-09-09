@@ -70,6 +70,11 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>com.fasterxml.jackson.module</groupId>
+      <artifactId>jackson-module-jakarta-xmlbind-annotations</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.silverpeas.core</groupId>
       <artifactId>silverpeas-core-api</artifactId>
       <version>${core.version}</version>
@@ -591,6 +596,8 @@
           <openapi31>true</openapi31>
           <defaultResponseCode>200</defaultResponseCode>
           <!-- completes each operation with the responses common to all the endpoints -->
+          <!-- the schema resolver must read the JAXB annotations of the web entities -->
+          <modelConverterClasses>org.silverpeas.components.restapi.JaxbAwareModelResolver</modelConverterClasses>
           <filterClass>org.silverpeas.components.restapi.CommonResponsesFilter</filterClass>
           <resourcePackages>
             <package>org.silverpeas.components</package>
