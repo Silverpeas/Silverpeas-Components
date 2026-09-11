@@ -1532,9 +1532,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       indexOfFirstPubToDisplay = 0;
       resetSelectedPublicationPKs();
       setAllPublicationsListSelected(false);
-      if (!KmeliaHelper.isSpecialFolder(id)) {
-        processBreadcrumb(id);
-      }
+      processBreadcrumb(id);
     }
     if (resetSessionPublication) {
       setSessionPublication(null);
@@ -3564,6 +3562,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   private void processBreadcrumb(String id) {
+    if (KmeliaHelper.isSpecialFolder(id)) {
+      // special folders aren't nodes and hence they have no path
+      return;
+    }
     Collection<NodeDetail> pathColl = getTopicPath(id);
     String linkedPathString = displayPath(pathColl, true, 3);
     String pathString = displayPath(pathColl, false, 3);
