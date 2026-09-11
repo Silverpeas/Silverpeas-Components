@@ -254,11 +254,14 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       ProcessInstance instance;
       try {
         instance = Workflow.getProcessInstanceManager().getProcessInstance(instanceId);
+        var instances = processInstancesOfActiveUser();
+        if (!instances.contains(instance)) {
+          throw new WebApplicationException(Response.Status.FORBIDDEN);
+        }
       } catch (WorkflowException e) {
         throw new ProcessManagerException("Unknown process instance " + instanceId, e);
       }
       currentProcessInstance = instance;
-
     }
     if (currentProcessInstance == null) {
       throw new ProcessManagerException("No process instance");
@@ -311,15 +314,8 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       doAPause();
     }
 
-    try {
-      User activeUser = getActiveUser();
-      String[] groupIds = getOrganisationController().getAllGroupIdsOfUser(activeUser.getUserId());
-      var processList = Workflow.getProcessInstanceManager().getProcessInstances(peasId,
-          activeUser, currentRole, getUserRoles(), groupIds);
-      currentProcessList = getCurrentFilter().filter(processList, currentRole, getLanguage());
-    } catch (WorkflowException e) {
-      throw new ProcessManagerException(failureOnGetting("process list of workflow", peasId), e);
-    }
+    var processList = processInstancesOfActiveUser();
+    currentProcessList = getCurrentFilter().filter(processList, currentRole, getLanguage());
     return currentProcessList;
   }
 
@@ -412,7 +408,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     StringBuilder role = new StringBuilder();
     if (relatedUsers != null) {
       for (RelatedUser relatedUser : relatedUsers) {
-        if (role.length() > 0) {
+        if (!role.isEmpty()) {
           role.append(", ");
         }
         // Process participants
@@ -444,14 +440,13 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
                   role.append(user.getDisplayedName());
                 }
               }
-            } else if (field instanceof MultipleUserField) {
-              MultipleUserField multipleUserField = (MultipleUserField) field;
+            } else if (field instanceof MultipleUserField multipleUserField) {
               String[] userIds = multipleUserField.getUserIds();
               for (String userId : userIds) {
                 if (userId != null) {
                   UserDetail user = getUserDetail(userId);
                   if (user != null) {
-                    if (role.length() > 0) {
+                    if (!role.isEmpty()) {
                       role.append(", ");
                     }
                     role.append(user.getDisplayedName());
@@ -469,7 +464,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     UserInRole[] userInRoles = workingUsers.getUserInRoles();
     if (userInRoles != null) {
       for (UserInRole userInRole : userInRoles) {
-        if (role.length() > 0) {
+        if (!role.isEmpty()) {
           role.append(", ");
         }
         role.append(processModel.getRole(userInRole.getRoleName())
@@ -481,7 +476,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     if (relatedGroups != null) {
       for (RelatedGroup relatedGroup : relatedGroups) {
         if (relatedGroup != null) {
-          if (role.length() > 0) {
+          if (!role.isEmpty()) {
             role.append(", ");
           }
 
@@ -575,8 +570,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
                 StringUtil.isNotDefined(role)) {
               users.add(field.getStringValue());
             }
-          } else if (field instanceof MultipleUserField) {
-            MultipleUserField multipleUserField = (MultipleUserField) field;
+          } else if (field instanceof MultipleUserField multipleUserField) {
             if ((isDefined(role) && currentRole.equals(role)) ||
                 StringUtil.isNotDefined(role)) {
               users.addAll(Arrays.asList(multipleUserField.getUserIds()));
@@ -1008,11 +1002,11 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    * Reassign the roles in the active states of the specified process instance to the users defined
    * in the given assignation data.
    *
-   * @param processInstance the instance of the process in which the reassignation will be operated
+   * @param processInstance the instance of the process in which the reassigning will be operated
    * @param data the record data in which are defined the assignation of the working users to the
    * different roles of each active states. Each field of the record should be a mapping between a
    * role in an active state to a working user.
-   * @throws ProcessManagerException if the reassignation failed.
+   * @throws ProcessManagerException if the reassigning failed.
    */
   public void reassignInActiveStates(ProcessInstance processInstance, DataRecord data)
       throws ProcessManagerException {
@@ -1052,12 +1046,12 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    * given process instance. An actor is a user that plays a given role in a given state of a
    * process instance.
    *
-   * @param processInstance the process instance in which the reassignation has to be done.
-   * @param states the name of the states of the process instance concerned by the reassignation.
+   * @param processInstance the process instance in which the reassigning has to be done.
+   * @param states the name of the states of the process instance concerned by the reassigning.
    * @param actorsToReplace a predicate for filtering the actors of each state that has to be
    * replaced.
    * @param substitutes a function providing for a given existing actor his substitute.
-   * @throws ProcessManagerException if the reassignation of roles fails.
+   * @throws ProcessManagerException if the reassigning of roles fails.
    */
   private void reassignRoles(final ProcessInstance processInstance, final String[] states,
       Predicate<Actor> actorsToReplace, FuncActor substitutes) throws ProcessManagerException {
@@ -1074,18 +1068,18 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
         Actor[] actors = processInstance.getWorkingUsers(stateName);
         relatedUsers.addAll(Stream.of(
             processInstance.getProcessModel().getState(stateName).getWorkingUsers()
-                .getRelatedUsers()).collect(Collectors.toList()));
+                .getRelatedUsers()).toList());
 
         // filter only the actors to replace
         previousActors.addAll(Stream.of(actors)
             .filter(actorsToReplace)
-            .collect(Collectors.toList()));
+            .toList());
       }
 
       // for each actor to replace get their substitute
       List<Actor> newActors = previousActors.stream()
           .map(substitutes)
-          .collect(Collectors.toList());
+          .toList();
 
       // now define the change of users to do for each folder item of type "user" among the
       // related users of the given process state
@@ -1099,7 +1093,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
                       i -> addAnyChanges(processInstance, a.getUser().getUserId(), i, changes))
           );
 
-      // apply the reassignation
+      // apply the reassigning
       WorkflowEngine engine = Workflow.getWorkflowEngine();
       engine.reAssignActors((UpdatableProcessInstance) processInstance,
           previousActors.toArray(new Actor[0]),
@@ -1118,10 +1112,10 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    * Reassign in all the states of the specified process instance the roles of the given user to the
    * specified substitute.
    *
-   * @param processInstance the instance of the process in which the reassignation will be operated
+   * @param processInstance the instance of the process in which the reassigning will be operated
    * @param user the user playing one or several roles in the states of the process instance.
    * @param substitute the user to whom the roles in the states will be reassigned.
-   * @throws ProcessManagerException if the reassignation fails.
+   * @throws ProcessManagerException if the reassigning fails.
    */
   private void reassignInAssignedStates(ProcessInstance processInstance, final User user,
       final User substitute) throws ProcessManagerException {
@@ -2331,7 +2325,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   private List<String> getSubstituteRolesOf(final User user) {
     final List<String> listOfUserRoles = Stream.of(userRoles)
         .filter(r -> !SUPERVISOR_ROLE.equals(r))
-        .collect(Collectors.toList());
+        .toList();
     final String[] roles = getOrganisationController().getUserProfiles(user.getUserId(), peasId);
     return Stream.of(roles)
         .filter(listOfUserRoles::contains)
@@ -2412,6 +2406,17 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       }
     }
     return activeUser;
+  }
+
+  private List<ProcessInstance> processInstancesOfActiveUser() throws ProcessManagerException {
+    try {
+      User activeUser = getActiveUser();
+      String[] groupIds = getOrganisationController().getAllGroupIdsOfUser(activeUser.getUserId());
+      return Workflow.getProcessInstanceManager()
+          .getProcessInstances(peasId, activeUser, currentRole, getUserRoles(), groupIds);
+    } catch (WorkflowException e) {
+      throw new ProcessManagerException(failureOnGetting("process list of workflow", peasId), e);
+    }
   }
 
   /**
