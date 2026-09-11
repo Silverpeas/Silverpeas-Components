@@ -24,6 +24,7 @@
 package org.silverpeas.processmanager;
 
 import org.silverpeas.core.SilverpeasExceptionMessages;
+import org.silverpeas.core.security.authorization.ForbiddenRuntimeException;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.user.model.Group;
@@ -267,14 +268,28 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       ProcessInstance instance;
       try {
         instance = Workflow.getProcessInstanceManager().getProcessInstance(instanceId);
+        var instances = processInstancesOfActiveUser();
+        if (!instances.contains(instance)) {
+          throw new WebApplicationException(Response.Status.FORBIDDEN);
+        }
       } catch (WorkflowException e) {
         throw new ProcessManagerException("Unknown process instance " + instanceId, e);
       }
       currentProcessInstance = instance;
-
     }
     if (currentProcessInstance == null) {
       throw new ProcessManagerException("No process instance");
+    }
+  }
+
+  private List<ProcessInstance> processInstancesOfActiveUser() throws ProcessManagerException {
+    try {
+      User activeUser = getActiveUser();
+      String[] groupIds = getOrganisationController().getAllGroupIdsOfUser(activeUser.getUserId());
+      return Workflow.getProcessInstanceManager()
+          .getProcessInstances(peasId, activeUser, currentRole, getUserRoles(), groupIds);
+    } catch (WorkflowException e) {
+      throw new ProcessManagerException(failureOnGetting("process list of workflow", peasId), e);
     }
   }
 
@@ -323,15 +338,8 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       doAPause();
     }
 
-    try {
-      User activeUser = getActiveUser();
-      String[] groupIds = getOrganisationController().getAllGroupIdsOfUser(activeUser.getUserId());
-      List<ProcessInstance> processList = Workflow.getProcessInstanceManager()
-          .getProcessInstances(peasId, activeUser, currentRole, getUserRoles(), groupIds);
-      currentProcessList = getCurrentFilter().filter(processList, currentRole, getLanguage());
-    } catch (WorkflowException e) {
-      throw new ProcessManagerException(failureOnGetting("process list of workflow", peasId), e);
-    }
+    var processList = processInstancesOfActiveUser();
+    currentProcessList = getCurrentFilter().filter(processList, currentRole, getLanguage());
     return currentProcessList;
   }
 
