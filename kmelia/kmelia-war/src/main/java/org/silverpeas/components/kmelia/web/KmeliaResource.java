@@ -34,7 +34,7 @@ import org.silverpeas.core.contribution.publication.model.PublicationRuntimeExce
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.annotation.Authorized;
-import org.silverpeas.core.web.rs.annotation.doc.Conflict;
+import org.silverpeas.core.rs.doc.Conflict;
 import org.silverpeas.core.webapi.publication.PublicationEntity;
 
 import jakarta.ws.rs.Consumes;

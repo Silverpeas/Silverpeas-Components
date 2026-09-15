@@ -32,7 +32,7 @@
   <parent>
     <groupId>org.silverpeas</groupId>
     <artifactId>silverpeas-project</artifactId>
-    <version>2.0-swagger</version>
+    <version>2.0-build260915</version>
   </parent>
 
   <groupId>org.silverpeas</groupId>
@@ -81,7 +81,6 @@
     <dependency>
       <groupId>io.swagger.core.v3</groupId>
       <artifactId>swagger-annotations-jakarta</artifactId>
-      <version>2.2.54</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

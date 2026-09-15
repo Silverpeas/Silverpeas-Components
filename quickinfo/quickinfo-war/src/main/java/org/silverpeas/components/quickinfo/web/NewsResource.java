@@ -33,7 +33,7 @@ import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.web.rs.annotation.Authorized;
-import org.silverpeas.core.web.rs.annotation.doc.NotFound;
+import org.silverpeas.core.rs.doc.NotFound;
 
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;

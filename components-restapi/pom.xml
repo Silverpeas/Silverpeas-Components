@@ -62,17 +62,6 @@
        Silverpeas Core (declared provided by the applications, hence non-transitive) and those of
        the libraries of the applications. The WARs provide the web resources themselves. -->
   <dependencies>
-    <!-- required to compile the filter completing the generated documentation -->
-    <dependency>
-      <groupId>io.swagger.core.v3</groupId>
-      <artifactId>swagger-core-jakarta</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.module</groupId>
-      <artifactId>jackson-module-jakarta-xmlbind-annotations</artifactId>
-      <scope>provided</scope>
-    </dependency>
     <dependency>
       <groupId>org.silverpeas.core</groupId>
       <artifactId>silverpeas-core-api</artifactId>
@@ -600,10 +589,6 @@
         <groupId>io.swagger.core.v3</groupId>
         <artifactId>swagger-maven-plugin-jakarta</artifactId>
         <configuration>
-          <!-- the schema resolver must read the JAXB annotations of the web entities,
-               and the filter completes each operation with the common responses -->
-          <modelConverterClasses>org.silverpeas.components.restapi.JaxbAwareModelResolver</modelConverterClasses>
-          <filterClass>org.silverpeas.components.restapi.CommonResponsesFilter</filterClass>
           <resourcePackages>
           <package>org.silverpeas.components</package>
           </resourcePackages>
