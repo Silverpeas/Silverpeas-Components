@@ -40,7 +40,7 @@ import org.silverpeas.components.gallery.model.MediaPK;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.web.rs.annotation.Authorized;
-import org.silverpeas.core.web.rs.annotation.doc.NotFound;
+import org.silverpeas.core.rs.doc.NotFound;
 import org.silverpeas.kernel.util.StringUtil;
 
 import static org.silverpeas.components.gallery.constant.GalleryResourceURIs.*;
