@@ -25,6 +25,11 @@
 
 package org.silverpeas.components.community.web;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.silverpeas.components.community.model.CommunityMembership;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.user.model.User;
@@ -33,6 +38,7 @@ import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.WebResourceUri;
 import org.silverpeas.core.web.rs.annotation.Authorized;
+import org.silverpeas.core.rs.doc.NotFound;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.NotFoundException;
@@ -79,6 +85,10 @@ public class CommunityMembershipResource extends CommunityWebResource {
    * @param page a pagination page to restrict the memberships to get.
    * @return a web entity representing a paginated collection of memberships.
    */
+  @Operation(summary = "Gets all the memberships to the community of users, whatever their " +
+      "status.")
+  @ApiResponse(responseCode = "200", description = "A paginated collection of memberships.",
+      content = @Content(schema = @Schema(implementation = CommunityMembershipEntities.class)))
   @GET
   @Path("all")
   @Produces(MediaType.APPLICATION_JSON)
@@ -96,6 +106,11 @@ public class CommunityMembershipResource extends CommunityWebResource {
    * @param page a pagination page to restrict the memberships to get.
    * @return a web entity representing a paginated collection of memberships.
    */
+  @Operation(summary = "Gets all the memberships to the community of users pending for " +
+      "validation.")
+  @ApiResponse(responseCode = "200",
+      description = "A paginated collection of pending memberships.",
+      content = @Content(schema = @Schema(implementation = CommunityMembershipEntities.class)))
   @GET
   @Path("pending")
   @Produces(MediaType.APPLICATION_JSON)
@@ -114,6 +129,12 @@ public class CommunityMembershipResource extends CommunityWebResource {
    * @param page a pagination page to restrict the memberships to get.
    * @return a web entity representing a paginated collection of memberships.
    */
+  @Operation(summary = "Gets all the actual memberships to the community of users.",
+      description = "These memberships are the committed ones; in other terms, the memberships " +
+          "of those who are really members of the community of users.")
+  @ApiResponse(responseCode = "200",
+      description = "A paginated collection of committed memberships.",
+      content = @Content(schema = @Schema(implementation = CommunityMembershipEntities.class)))
   @GET
   @Path("members")
   @Produces(MediaType.APPLICATION_JSON)
@@ -132,6 +153,13 @@ public class CommunityMembershipResource extends CommunityWebResource {
    * @param userId the unique identifier of the user.
    * @return the web entity representing a membership to the community of users.
    */
+  @Operation(summary = "Gets the membership of the specified user.",
+      description = "The keyword `me` can be passed as userId to refer the user behind the " +
+          "request.")
+  @ApiResponse(responseCode = "200", description = "The membership of the user.",
+      content = @Content(schema = @Schema(implementation = CommunityMembershipEntity.class)))
+  @ApiResponse(responseCode = "404",
+      description = "The user has no membership to the community of users.")
   @GET
   @Path("users/{userId}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -152,6 +180,10 @@ public class CommunityMembershipResource extends CommunityWebResource {
    * @param memberId the unique identifier of a membership.
    * @return the web entity representing a membership to the community of users.
    */
+  @Operation(summary = "Gets a given existing membership to the community of users.")
+  @ApiResponse(responseCode = "200", description = "The asked membership.",
+      content = @Content(schema = @Schema(implementation = CommunityMembershipEntity.class)))
+  @NotFound
   @GET
   @Path("all/{membershipId}")
   @Produces(MediaType.APPLICATION_JSON)
