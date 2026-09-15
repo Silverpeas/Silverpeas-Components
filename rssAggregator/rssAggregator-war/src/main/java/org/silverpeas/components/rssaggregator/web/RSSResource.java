@@ -39,7 +39,7 @@ import org.silverpeas.components.rssaggregator.service.RSSService;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.annotation.Authorized;
-import org.silverpeas.core.web.rs.annotation.doc.NotFound;
+import org.silverpeas.core.rs.doc.NotFound;
 import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.List;

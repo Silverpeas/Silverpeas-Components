@@ -30,7 +30,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 import org.silverpeas.components.community.model.CommunityOfUsers;
 import org.silverpeas.core.annotation.WebService;
-import org.silverpeas.core.web.rs.annotation.doc.NotFound;
+import org.silverpeas.core.rs.doc.NotFound;
 
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.BadRequestException;

@@ -46,7 +46,7 @@ import org.silverpeas.core.util.PaginationList;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.annotation.Authorized;
-import org.silverpeas.core.web.rs.annotation.doc.NotFound;
+import org.silverpeas.core.rs.doc.NotFound;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.DELETE;
