@@ -57,6 +57,7 @@
 <%@ page import="org.silverpeas.core.admin.user.model.User" %>
 <%@ page import="org.silverpeas.core.web.http.HttpRequest" %>
 <%@ page import="org.silverpeas.core.admin.user.model.SilverpeasRole" %>
+<%@ page import="org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformer" %>
 <%@ include file="checkForums.jsp"%>
 <%
     int messageId = 0;
@@ -396,7 +397,8 @@
             if(author != null) {
                avatar = author.getAvatar();
             }
-            String text = currentMessage.getText();
+            String text = WysiwygContentTransformer.on(currentMessage.getText())
+                .applySanitizeForRenderingDirective().transform();
           boolean isSubscriber = fsc.isMessageSubscriber(currentId);
           if (!isAllMessageSubscriberByInheritance) {
             isMessageSubscriberByInheritance = fsc.isMessageSubscriberByInheritance(currentId);
@@ -423,7 +425,7 @@
                           </div>
                               <div class="message">
                                 <div class="messageHeader">
-                                  <span class="txtnav"><%=currentMessage.getTitle()%></span>&nbsp;<span class="txtnote"><%=convertDate(currentMessage.getDate(), resources)%></span>
+                                  <span class="txtnav"><%=WebEncodeHelper.javaStringToHtmlString(currentMessage.getTitle())%></span>&nbsp;<span class="txtnote"><%=convertDate(currentMessage.getDate(), resources)%></span>
                                       <% if (displayAllMessages) { %>
                                           <a href="javascript:scrollTop()"><img alt="" src="<%=context%>/util/icons/arrow/arrowUp.gif" border="0"/></a>
                                       <% } %>
