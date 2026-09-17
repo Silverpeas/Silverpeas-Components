@@ -69,7 +69,7 @@
 	   <table border="0" cellspacing="0" cellpadding="5" width="100%">
 	       <tr>
 	           <td class="txtlibform"><%=resource.getString("messageTitle")%> :</td>
-	           <td><%=message.getTitle()%></td>
+	           <td><%=WebEncodeHelper.javaStringToHtmlString(message.getTitle())%></td>
 	       </tr>
 	       <tr>
 	           <td class="txtlibform"><%=resource.getString("messageText")%> :</td>
