@@ -94,6 +94,7 @@ import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.security.authorization.NodeAccessControl;
 import org.silverpeas.core.security.authorization.PublicationAccessControl;
+import org.silverpeas.core.silverstatistics.access.model.HistoryByUser;
 import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
 import org.silverpeas.core.util.*;
@@ -122,6 +123,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static java.text.MessageFormat.format;
+import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
 import static java.util.Comparator.comparing;
 import static java.util.Optional.ofNullable;
@@ -2436,30 +2438,30 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
   public List<HistoryObjectDetail> getLastAccess(PublicationPK pk, NodePK nodePK,
       String excludedUserId, final int maxResult) {
     final Set<String> userIds = new HashSet<>(getUserIdsOfFolder(nodePK));
-    final Set<String> readerIds = new HashSet<>();
-    readerIds.add(excludedUserId);
-    final Pagination<HistoryObjectDetail> pagination = new Pagination<HistoryObjectDetail>(
+    final ResourceReference publication = new ResourceReference(pk);
+    // the accesses are grouped by reader by the datasource so that each of them is returned only
+    // once, with the date of its last access
+    final Pagination<HistoryByUser> pagination = new Pagination<HistoryByUser>(
         new PaginationPage(1, maxResult)).limitDataSourceCallsTo(10)
         .withMinPerPage(200)
         .paginatedDataSource(
-            p -> statisticService.getHistoryByAction(new ResourceReference(pk), 1, PUBLICATION,
-                readerIds, p.originalSizeIsNotRequired()))
+            p -> statisticService.getHistoryByUser(publication, 1, PUBLICATION,
+                singleton(excludedUserId), p.originalSizeIsNotRequired()))
         .filter(r -> {
-          final SilverpeasList<HistoryObjectDetail> currentLastAccess = new SilverpeasArrayList<>();
-          for (HistoryObjectDetail access : r) {
+          final SilverpeasList<HistoryByUser> currentLastAccess = new SilverpeasArrayList<>();
+          for (HistoryByUser access : r) {
             final String readerId = access.getUserId();
             if ((CollectionUtil.isEmpty(userIds) || userIds.contains(readerId)) &&
-                !readerIds.contains(readerId)) {
-              readerIds.add(readerId);
-              if (!User.getById(readerId).isAnonymous()) {
-                currentLastAccess.add(access);
-              }
+                !User.getById(readerId).isAnonymous()) {
+              currentLastAccess.add(access);
             }
           }
           return currentLastAccess;
         });
     try {
-      return pagination.execute();
+      return pagination.execute().stream()
+          .map(a -> new HistoryObjectDetail(a.getLastAccess(), a.getUserId(), publication))
+          .collect(Collectors.toList());
     } finally {
       if (pagination.isNbMaxDataSourceCallLimitReached()) {
         SilverLogger.getLogger(this)
