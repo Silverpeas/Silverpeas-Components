@@ -52,6 +52,7 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
   private static final long serialVersionUID = 5722456216811272025L;
   private static final String ADMIN = "admin";
   private static final String PUBLISHER = "publisher";
+  private static final String POST_METHOD = "POST";
   private static final String PUBLICATION = "parution";
   private static final String PUBLICATION_TITLE = "parutionTitle";
   private static final String TITLE = "title";
@@ -202,6 +203,15 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
             final boolean resetWithTemplate = request.getParameterAsBoolean("resetWithTemplate");
             final String publicationParam = "?parution=" + publication;
             if (resetWithTemplate) {
+              if (!PUBLISHER.equals(flag) && !ADMIN.equals(flag)) {
+                throwHttpForbiddenError("Only publishers and managers can reset the content");
+              }
+              // unlike the edition itself, which is a mere navigation, resetting the content
+              // overwrites it and has therefore to be stamped with the synchronizer token, which
+              // is required on a POST whatever the URL
+              if (!POST_METHOD.equals(request.getMethod())) {
+                throwHttpForbiddenError("Resetting the content has to be requested by POST");
+              }
               infoLetterSC.resetWithTemplateFor(ilp);
               return getDestination(PREVIEW, infoLetterSC, request);
             }
@@ -244,6 +254,9 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
         request.setAttribute(BROWSE_BAR_PATH, browsBarPath);
         destination = HEADER_LETTER_JSP;
       } else if (function.startsWith("ValidateParution")) {
+        if (!PUBLISHER.equals(flag) && !ADMIN.equals(flag)) {
+          throwHttpForbiddenError("Only publishers and managers can publish an issue");
+        }
         String publication = param(request, PUBLICATION);
         String[] emailErrors = new String[0];
         if (StringUtil.isDefined(publication)) {
@@ -391,6 +404,10 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
         }
         destination = "exportEmailsCsv.jsp";
       } else if (function.startsWith("SendLetterTo")) {
+        // the issue being mailed isn't published yet, so its content isn't for every reader
+        if (!PUBLISHER.equals(flag) && !ADMIN.equals(flag)) {
+          throwHttpForbiddenError("Only publishers and managers can mail an issue being written");
+        }
         String publication = param(request, PUBLICATION);
         String[] emailErrors = new String[0];
         if (StringUtil.isDefined(publication)) {
