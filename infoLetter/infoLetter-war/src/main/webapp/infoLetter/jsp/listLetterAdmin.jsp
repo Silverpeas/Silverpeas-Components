@@ -148,6 +148,16 @@
         sp.navRequest('View').withParam('parution', par).go();
       }
 
+      // subscribing is submitted by POST so that it is stamped with the synchronizer token, a GET
+      // being requestable from another site
+      function suscribeMe() {
+        sp.formRequest('SuscribeMe').byPostMethod().submit();
+      }
+
+      function unsuscribeMe() {
+        sp.formRequest('UnsuscribeMe').byPostMethod().submit();
+      }
+
       function openSPWindow(fonction, windowName) {
         window.pdcUtilizationWindow = SP_openWindow(fonction, windowName, '600', '400',
             'scrollbars=yes, resizable, alwaysRaised');
@@ -179,10 +189,10 @@
       <c:if test="${not isAnonymous and not isAccessGuest}">
         <c:choose>
           <c:when test="${isSuscriber}">
-            <view:operation action="UnsuscribeMe" icon="${unsubscribeIcon}" altText="${unsubscribeLabel}"/>
+            <view:operation action="javascript:unsuscribeMe()" icon="${unsubscribeIcon}" altText="${unsubscribeLabel}"/>
           </c:when>
           <c:otherwise>
-            <view:operation action="SuscribeMe" icon="${subscribeIcon}" altText="${subscribeLabel}"/>
+            <view:operation action="javascript:suscribeMe()" icon="${subscribeIcon}" altText="${subscribeLabel}"/>
           </c:otherwise>
         </c:choose>
       </c:if>
