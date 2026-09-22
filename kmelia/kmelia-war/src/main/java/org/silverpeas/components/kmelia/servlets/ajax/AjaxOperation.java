@@ -27,6 +27,8 @@ import org.silverpeas.components.kmelia.control.KmeliaSessionController;
 import org.silverpeas.components.kmelia.servlets.ajax.handlers.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.EnumSet;
+import java.util.Set;
 
 public enum AjaxOperation {
 
@@ -48,6 +50,14 @@ public enum AjaxOperation {
   GetPublicationAuthorizations(new GetPublicationAuthorizationsHandler(), true),
   SELECTALLPUBLICATIONS(new SelectAllPublicationsHandler(), true);
 
+  /**
+   * The operations reading something and which can therefore be answered to a GET. Every other
+   * operation is taken as writing something, so that adding one to this enumeration doesn't expose
+   * it by mistake.
+   */
+  private static final Set<AjaxOperation> READ_ONLY =
+      EnumSet.of(GetProfile, GetTopicWysiwyg, GetClipboardState, GetPublicationAuthorizations);
+
   private AjaxHandler handler;
   private boolean controllerRequired;
 
@@ -58,6 +68,16 @@ public enum AjaxOperation {
 
   public boolean requiresController() {
     return this.controllerRequired;
+  }
+
+  /**
+   * Does this operation write something, and has therefore to be requested by POST? The
+   * synchronizer token is required on a POST whatever its URL, whereas it is required on a GET
+   * only when its URL holds one of a few keywords, which no URL of this servlet holds.
+   * @return true if the operation writes something, false if it only reads.
+   */
+  public boolean isWriting() {
+    return !READ_ONLY.contains(this);
   }
 
   public String handleRequest(HttpServletRequest request, KmeliaSessionController controller) {
