@@ -32,6 +32,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.silverpeas.components.delegatednews.DelegatedNewsRuntimeException;
 import org.silverpeas.components.delegatednews.model.DelegatedNews;
 import org.silverpeas.components.delegatednews.service.DelegatedNewsService;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.annotation.Authorized;
@@ -104,6 +105,7 @@ public class ListDelegatedNewsResource extends RESTWebService {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   public List<DelegatedNewsEntity> updateDelegatedNews(final DelegatedNewsEntity[] newDelegatedNews) {
+    checkIsManager();
     List<DelegatedNewsEntity> updatedEntities;
     List<DelegatedNews> initialListDelegatedNews = getDelegatedNewsService().getAllDelegatedNews();
     try {
@@ -121,6 +123,19 @@ public class ListDelegatedNewsResource extends RESTWebService {
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }
     return updatedEntities;
+  }
+
+  /**
+   * Checks the user manages the delegated news, their modification and their deletion being
+   * reserved to the managers of this application. The authorization performed by the REST
+   * framework only validates the access to the component instance, whatever the role played in it,
+   * so it isn't enough here.
+   */
+  void checkIsManager() {
+    final SilverpeasRole role = getHighestUserRole();
+    if (role == null || !role.isGreaterThanOrEquals(SilverpeasRole.ADMIN)) {
+      throw new WebApplicationException(Status.FORBIDDEN);
+    }
   }
 
   private void deleteList(final DelegatedNewsEntity[] newDelegatedNews,
