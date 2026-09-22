@@ -22,6 +22,7 @@ package org.silverpeas.components.kmelia.web;
 
 import jakarta.inject.Inject;
 import org.silverpeas.components.kmelia.service.KmeliaService;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
@@ -83,6 +84,7 @@ public class KmeliaResource extends RESTWebService {
   public Response savePublication(@PathParam("nodeId") String nodeId,
       PublicationEntity publicationEntity) {
     try {
+      checkIsWriter();
       publicationEntity.setCreator(UserDetail.from(getUser()));
       PublicationDetail publication = publicationEntity.toPublicationDetail();
 
@@ -114,6 +116,7 @@ public class KmeliaResource extends RESTWebService {
   public Response updatePublication(final PublicationEntity publicationEntity) {
     try {
       PublicationDetail publication = publicationEntity.toPublicationDetail();
+      checkIsUpdatable(publication);
 
       // Publication status is a mandatory data into the context of publication update.
       // As this data is not handled by this service, it is retrieved from the silverpeas data
@@ -131,6 +134,33 @@ public class KmeliaResource extends RESTWebService {
       throw new WebApplicationException(ex, Status.CONFLICT);
     } catch (Exception ex) {
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
+    }
+  }
+
+  /**
+   * Checks the publication can be updated by the current user. The authorization performed by the
+   * REST framework validates the access of the user to the component instance referred by the URL,
+   * whereas the publication to update is entirely defined by the request body. Without the check
+   * below, a user could hence update a publication of any other component instance by referring it
+   * in the body. Accessing a component instance isn't either enough to write into it.
+   * @param publication the publication the request asks to update.
+   */
+  void checkIsUpdatable(final PublicationDetail publication) {
+    if (!getComponentId().equals(publication.getPK().getInstanceId())) {
+      throw new WebApplicationException(Status.FORBIDDEN);
+    }
+    checkIsWriter();
+  }
+
+  /**
+   * Checks the current user is entitled to write publications into the component instance referred
+   * by the URL. The authorization performed by the REST framework only validates the access to
+   * that instance, whatever the role played in it, so it isn't enough to write into it.
+   */
+  void checkIsWriter() {
+    final SilverpeasRole role = getHighestUserRole();
+    if (role == null || !role.isGreaterThanOrEquals(SilverpeasRole.WRITER)) {
+      throw new WebApplicationException(Status.FORBIDDEN);
     }
   }
 
