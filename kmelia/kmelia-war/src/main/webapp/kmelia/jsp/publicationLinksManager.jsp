@@ -190,7 +190,9 @@
     function sendPubId(pubId,checked){
       let action = checked ? "Action=bindToPub" : "Action=unbindToPub";
       const ieFix = new Date().getTime();
-      $.get('${webContext}/KmeliaAJAXServlet?'+action, {
+      // binding and unbinding write the links of the publication, so they are requested by POST
+      // in order to be checked against the synchronizer token
+      $.post('${webContext}/KmeliaAJAXServlet?'+action, {
         TopicToLinkId: pubId,
         IEFix: ieFix
         });
