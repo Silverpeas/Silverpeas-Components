@@ -52,6 +52,7 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
   private static final long serialVersionUID = 5722456216811272025L;
   private static final String ADMIN = "admin";
   private static final String PUBLISHER = "publisher";
+  private static final String POST_METHOD = "POST";
   private static final String PUBLICATION = "parution";
   private static final String PUBLICATION_TITLE = "parutionTitle";
   private static final String TITLE = "title";
@@ -166,6 +167,9 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
 
         }
       } else if (function.startsWith(PREVIEW)) {
+        // the preview shows an issue being written, which the readers get through View once it is
+        // published only
+        checkIsPublisherOrManager(flag, "preview an issue being written");
         String publication = param(request, PUBLICATION);
         if (StringUtil.isDefined(publication)) {
           InfoLetterPublicationPdC ilp = infoLetterSC.getInfoLetterPublication(publication);
@@ -177,9 +181,7 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
           destination = setMainContext(infoLetterSC, request);
         }
       } else if (function.startsWith("EditTemplateContent")) {
-        if (!ADMIN.equals(flag)) {
-          throwHttpForbiddenError("Only managers can modify the template");
-        }
+        checkIsManager(flag, "modify the template");
         final DragAndDropWbeFile file = infoLetterSC.getTemplateFileForEdition();
         return WbeFileEdition.get()
             .initializeWith(request, file,
@@ -189,11 +191,13 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
                     .build()::applyTo)
             .orElse(null);
       } else if (function.startsWith("SaveTemplateContent")) {
+        checkIsManager(flag, "modify the template");
         final String manualContent = param(request, "editor");
         final InfoLetter infoLetter = infoLetterSC.getInfoLetter();
         infoLetter.saveTemplateContent(manualContent);
         destination = setMainContext(infoLetterSC, request);
       } else if (function.startsWith("EditContent")) {
+        checkIsPublisherOrManager(flag, "modify the content of an issue");
         String publication = param(request, PUBLICATION);
         if (StringUtil.isDefined(publication)) {
           destination = null;
@@ -202,6 +206,10 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
             final boolean resetWithTemplate = request.getParameterAsBoolean("resetWithTemplate");
             final String publicationParam = "?parution=" + publication;
             if (resetWithTemplate) {
+              checkIsPublisherOrManager(flag, "reset the content of an issue");
+              // unlike the edition itself, which is a mere navigation and hence remains a GET,
+              // resetting the content overwrites it
+              checkIsPostRequest(request, "Resetting the content of an issue");
               infoLetterSC.resetWithTemplateFor(ilp);
               return getDestination(PREVIEW, infoLetterSC, request);
             }
@@ -228,6 +236,7 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
           destination = setMainContext(infoLetterSC, request);
         }
       } else if (function.startsWith("ParutionHeaders")) {
+        checkIsPublisherOrManager(flag, "create or modify an issue");
         String publication = param(request, PUBLICATION);
         String title = "";
         String description = "";
@@ -244,6 +253,7 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
         request.setAttribute(BROWSE_BAR_PATH, browsBarPath);
         destination = HEADER_LETTER_JSP;
       } else if (function.startsWith("ValidateParution")) {
+        checkIsPublisherOrManager(flag, "publish an issue");
         String publication = param(request, PUBLICATION);
         String[] emailErrors = new String[0];
         if (StringUtil.isDefined(publication)) {
@@ -257,6 +267,10 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
         request.setAttribute(EMAIL_ERRORS_ATTR, emailErrors);
         destination = INFO_LETTER_SENT_JSP;
       } else if (function.startsWith("ChangeParutionHeaders")) {
+        // the form is already submitted by POST, but the parameters would be read as well from the
+        // query string of a GET, which no keyword of its URL makes the token required on
+        checkIsPublisherOrManager(flag, "create or modify an issue");
+        checkIsPostRequest(request, "Creating or modifying an issue");
         String publication = param(request, PUBLICATION);
         String title = param(request, TITLE);
         String description = param(request, DESCRIPTION);
@@ -287,16 +301,20 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
         request.setAttribute(BROWSE_BAR_PATH, title);
         destination = HEADER_LETTER_JSP;
       } else if (function.equals("DeletePublication")) {
+        checkIsPublisherOrManager(flag, "delete an issue");
         final String id = request.getParameter("id");
         if (isDefined(id)) {
           infoLetterSC.deleteInfoLetterPublication(id);
         }
         destination = setMainContext(infoLetterSC, request);
       } else if (function.equals("DeletePublications")) {
+        // deleting several issues at once is offered to the managers only
+        checkIsManager(flag, "delete several issues at once");
         request.getParameterAsList("selectedIds")
             .forEach(infoLetterSC::deleteInfoLetterPublication);
         destination = setMainContext(infoLetterSC, request);
       } else if (function.startsWith("LetterHeaders")) {
+        checkIsPublisherOrManager(flag, "modify the headers of the newsletter");
         InfoLetter defaultLetter = infoLetterSC.getInfoLetter();
         String letterName = defaultStringIfNotDefined(defaultLetter.getName());
         String letterDescription = defaultStringIfNotDefined(defaultLetter.getDescription());
@@ -306,6 +324,8 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
         request.setAttribute("letterFrequence", letterFrequency);
         destination = "modifHeaders.jsp";
       } else if (function.startsWith("ChangeLetterHeaders")) {
+        checkIsPublisherOrManager(flag, "modify the headers of the newsletter");
+        checkIsPostRequest(request, "Modifying the headers of the newsletter");
         InfoLetter defaultLetter = infoLetterSC.getInfoLetter();
         String letterName = param(request, "name");
         String letterDescription = param(request, DESCRIPTION);
@@ -316,16 +336,21 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
         infoLetterSC.updateInfoLetter(defaultLetter);
         destination = setMainContext(infoLetterSC, request);
       } else if (function.startsWith("Emails")) {
+        checkIsPublisherOrManager(flag, "list the external subscribers");
         Set<String> listEmails = infoLetterSC.getEmailsExternalsSubscribers();
         request.setAttribute(LIST_EMAILS, listEmails);
         destination = EMAILS_MANAGER_JSP;
       } else if (function.startsWith("SuscribeMe")) {
+        // any user is entitled to subscribe themselves, but not to be lured into doing so
+        checkIsPostRequest(request, "Subscribing");
         infoLetterSC.subscribeUser();
         destination = setMainContext(infoLetterSC, request);
       } else if (function.startsWith("UnsuscribeMe")) {
+        checkIsPostRequest(request, "Unsubscribing");
         infoLetterSC.unsubscribeUser();
         destination = setMainContext(infoLetterSC, request);
       } else if (function.startsWith("DeleteEmails")) {
+        checkIsPublisherOrManager(flag, "delete external subscribers");
         String[] emails = request.getParameterValues("mails");
         if (emails != null) {
           infoLetterSC.deleteExternalsSubscribers(emails);
@@ -334,21 +359,30 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
         request.setAttribute(LIST_EMAILS, listEmails);
         destination = EMAILS_MANAGER_JSP;
       } else if (function.startsWith("DeleteAllEmails")) {
+        checkIsPublisherOrManager(flag, "delete external subscribers");
         infoLetterSC.deleteAllExternalsSubscribers();
         Set<String> listEmails = infoLetterSC.getEmailsExternalsSubscribers();
         request.setAttribute(LIST_EMAILS, listEmails);
         destination = EMAILS_MANAGER_JSP;
       } else if (function.startsWith("AddMail")) {
+        checkIsPublisherOrManager(flag, "add external subscribers");
         destination = "addEmail.jsp";
       } else if (function.startsWith("NewMail")) {
+        checkIsPublisherOrManager(flag, "add external subscribers");
+        checkIsPostRequest(request, "Adding external subscribers");
         String newMails = param(request, "newmails");
         infoLetterSC.addExternalsSubscribers(newMails);
         Set<String> listEmails = infoLetterSC.getEmailsExternalsSubscribers();
         request.setAttribute(LIST_EMAILS, listEmails);
         destination = EMAILS_MANAGER_JSP;
       } else if (function.startsWith("Suscribers")) {
+        checkIsPublisherOrManager(flag, "manage the internal subscribers");
         destination = infoLetterSC.initUserPanel();
       } else if (function.startsWith("RetourPanel")) {
+        // the subscribers applied here are the ones selected in the user panel, held by the
+        // session and not carried by the request, so a GET is harmless enough to be kept: it is
+        // the URL the user panel of Silverpeas goes back to
+        checkIsPublisherOrManager(flag, "manage the internal subscribers");
         infoLetterSC.retourUserPanel();
         destination = setMainContext(infoLetterSC, request);
       } else if (function.equals("ViewTemplateInlinedCssHtml")) {
@@ -361,6 +395,11 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
       }  else if (function.equals("ViewInlinedCssHtml")) {
         final String id = request.getParameter("id");
         final InfoLetterPublicationPdC pub = infoLetterSC.getInfoLetterPublication(id);
+        // this is the way the readers get an issue from the list, so the role isn't the criterion
+        // here: it is the issue itself, which is for everyone once published only
+        if (!pub.isValid()) {
+          checkIsPublisherOrManager(flag, "read an issue being written");
+        }
         request.setAttribute(INLINED_CSS_HTML, pub.getWysiwygContent()
             .map(ContributionContent::getRenderer)
             .map(r -> r.renderView(true))
@@ -379,10 +418,12 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
           }
         }
       } else if (function.startsWith("ImportEmailsCsv")) {
+        checkIsPublisherOrManager(flag, "import external subscribers");
         FileItem fileItem = request.getSingleFile();
         infoLetterSC.importCsvEmails(fileItem);
         destination = "importEmailsCsv.jsp?Result=OK";
       } else if (function.equals("ExportEmailsCsv")) {
+        checkIsPublisherOrManager(flag, "export the external subscribers");
         boolean exportOk = infoLetterSC.exportCsvEmails();
         request.setAttribute("ExportOk", Boolean.toString(exportOk));
         if (exportOk) {
@@ -391,6 +432,8 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
         }
         destination = "exportEmailsCsv.jsp";
       } else if (function.startsWith("SendLetterTo")) {
+        // the issue being mailed isn't published yet, so its content isn't for every reader
+        checkIsPublisherOrManager(flag, "mail an issue being written");
         String publication = param(request, PUBLICATION);
         String[] emailErrors = new String[0];
         if (StringUtil.isDefined(publication)) {
@@ -405,6 +448,7 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
         request.setAttribute(RETURN_URL_ATTR, returnUrl + "?parution=" + publication);
         destination = INFO_LETTER_SENT_JSP;
       } else if (function.startsWith("SaveContent")) {
+        checkIsPublisherOrManager(flag, "modify the content of an issue");
         String publication = param(request, PUBLICATION);
         String manualContent = param(request, "editor");
         if (StringUtil.isDefined(publication)) {
@@ -426,6 +470,40 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
     }
 
     return destination;
+  }
+
+  /**
+   * Checks the user is entitled to the operation, whose functional label is given, otherwise a
+   * forbidden error is thrown.
+   */
+  private void checkIsPublisherOrManager(final String flag, final String operation) {
+    if (!PUBLISHER.equals(flag) && !ADMIN.equals(flag)) {
+      throwHttpForbiddenError("Only publishers and managers can " + operation);
+    }
+  }
+
+  /**
+   * Checks the user manages the newsletter, otherwise a forbidden error is thrown. This is meant
+   * for the operations the publishers aren't entitled to, such as the ones on the template or the
+   * ones applying to several issues at once.
+   */
+  private void checkIsManager(final String flag, final String operation) {
+    if (!ADMIN.equals(flag)) {
+      throwHttpForbiddenError("Only managers can " + operation);
+    }
+  }
+
+  /**
+   * Checks the operation, whose functional label is given, is requested by POST, otherwise a
+   * forbidden error is thrown. The synchronizer token is required on a POST whatever its URL,
+   * whereas it is required on a GET only when its URL holds one of a few keywords. An operation
+   * writing something has therefore to refuse the GET, otherwise it could be requested from
+   * another site on behalf of the user being lured.
+   */
+  private void checkIsPostRequest(final HttpRequest request, final String operation) {
+    if (!POST_METHOD.equals(request.getMethod())) {
+      throwHttpForbiddenError(operation + " has to be requested by POST");
+    }
   }
 
   private String getFlag(String[] profiles) {

@@ -81,26 +81,29 @@
       }
 
       function sendLetterToMe() {
-        $.progressMessage();
-        setupCommonParams(sp.navRequest('SendLetterToMe')).go();
+        // mailing an issue not yet published is submitted by POST so that it is stamped with the
+        // synchronizer token, a GET being requestable from another site
+        setupCommonParams(sp.formRequest('SendLetterToMe').byPostMethod()).submit();
       }
 
       function sendLetterToManager() {
-        $.progressMessage();
-        setupCommonParams(sp.navRequest('SendLetterToManager')).go();
+        setupCommonParams(sp.formRequest('SendLetterToManager').byPostMethod()).submit();
       }
 
       function goValidate() {
         jQuery.popup.confirm('${silfn:escapeJs(sendLetterMsg)}', function() {
-          $.progressMessage();
-          setupCommonParams(sp.navRequest('ValidateParution')).go();
+          // publishing an issue is submitted by POST so that it is stamped with the synchronizer
+          // token, a GET being requestable from another site
+          setupCommonParams(sp.formRequest('ValidateParution').byPostMethod()).submit();
         });
       }
 
       function goResetWithTemplate() {
         jQuery.popup.confirm('${silfn:escapeJs(confirmResetWithTemplate)}', function() {
-          $.progressMessage();
-          setupCommonParams(sp.navRequest('EditContent')).withParam('resetWithTemplate', true).go();
+          // resetting the content overwrites it, so it is submitted by POST in order to be
+          // stamped with the synchronizer token, a GET being requestable from another site
+          setupCommonParams(sp.formRequest('EditContent').byPostMethod())
+              .withParam('resetWithTemplate', true).submit();
         });
       }
 

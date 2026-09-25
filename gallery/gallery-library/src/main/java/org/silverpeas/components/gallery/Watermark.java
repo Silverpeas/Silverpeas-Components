@@ -3,22 +3,32 @@ package org.silverpeas.components.gallery;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.kernel.logging.SilverLogger;
 
+import org.apache.commons.io.input.BoundedInputStream;
+
 import javax.ws.rs.core.MediaType;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetAddress;
+import java.net.URI;
+import java.net.UnknownHostException;
+import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
 
 import static java.net.http.HttpResponse.BodyHandlers.ofInputStream;
 import static org.apache.commons.io.FilenameUtils.*;
-import static org.silverpeas.core.util.HttpUtil.httpClient;
+import static org.silverpeas.core.util.HttpUtil.httpClientBuilder;
 import static org.silverpeas.core.util.HttpUtil.toUrl;
 import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 public class Watermark {
+
+  private static final Duration FETCH_TIMEOUT = Duration.ofSeconds(10);
+  private static final long MAX_IMAGE_SIZE = 10L * 1024 * 1024;
 
   private boolean enabled = false;
 
@@ -120,13 +130,29 @@ public class Watermark {
         SilverLogger.getLogger(this).warn(e);
         SilverLogger.getLogger(this).warn("impossible to save image from URL {0}", imageUrl);
       }
+    } else if (!isFetchable(imageUrl)) {
+      cachedFile = null;
+      SilverLogger.getLogger(this).warn("refused to fetch the watermark image from URL {0}",
+          imageUrl);
     } else {
       try {
-        final HttpResponse<InputStream> response =  httpClient().send(toUrl(imageUrl)
+        final HttpClient client = httpClientBuilder()
+            // a redirection would escape the verification performed by isFetchable above
+            .followRedirects(HttpClient.Redirect.NEVER)
+            .connectTimeout(FETCH_TIMEOUT)
+            .build();
+        final HttpResponse<InputStream> response = client.send(toUrl(imageUrl)
+            .timeout(FETCH_TIMEOUT)
             .header("Accept", MediaType.WILDCARD)
             .build(), ofInputStream());
-        try (final InputStream body = response.body()) {
+        try (final InputStream body = new BoundedInputStream(response.body(), MAX_IMAGE_SIZE)) {
           Files.copy(body, cachedPath);
+        }
+        if (Files.size(cachedPath) >= MAX_IMAGE_SIZE) {
+          Files.deleteIfExists(cachedPath);
+          cachedFile = null;
+          SilverLogger.getLogger(this)
+              .warn("watermark image from URL {0} exceeds {1} bytes", imageUrl, MAX_IMAGE_SIZE);
         }
       } catch (Exception e) {
         cachedFile = null;
@@ -138,6 +164,43 @@ public class Watermark {
       }
     }
     return cachedFile;
+  }
+
+  /**
+   * Can the image be fetched from the given URL? Only the HTTP and HTTPS schemes are handled, and
+   * the host must resolve to neither a loopback nor a link-local address, so that a watermark URL
+   * cannot be used to reach the services the server deliberately keeps for itself nor the metadata
+   * endpoint of a cloud provider. The addresses of the private networks of an organization are
+   * deliberately allowed: they are where the internal resources of an intranet legitimately live,
+   * and no address range can tell them from the internal services one would rather protect. Only
+   * an explicit list of allowed hosts could, which is left to a further decision.
+   * @param imageUrl the URL set as an instance parameter.
+   * @return true if the URL can be requested, false otherwise.
+   */
+  static boolean isFetchable(final String imageUrl) {
+    try {
+      final URI uri = URI.create(imageUrl);
+      final String scheme = uri.getScheme();
+      if (!"http".equalsIgnoreCase(scheme) && !"https".equalsIgnoreCase(scheme)) {
+        return false;
+      }
+      final String host = uri.getHost();
+      if (host == null) {
+        return false;
+      }
+      // every address the host resolves to is verified, otherwise a host resolving to a forbidden
+      // address beside an allowed one would go through
+      for (final InetAddress address : InetAddress.getAllByName(host)) {
+        if (address.isLoopbackAddress() || address.isLinkLocalAddress() ||
+            address.isAnyLocalAddress() || address.isMulticastAddress()) {
+          return false;
+        }
+      }
+      return true;
+    } catch (IllegalArgumentException | UnknownHostException e) {
+      SilverLogger.getLogger(Watermark.class).warn(e);
+      return false;
+    }
   }
 
   boolean isBasedOnIPTC() {

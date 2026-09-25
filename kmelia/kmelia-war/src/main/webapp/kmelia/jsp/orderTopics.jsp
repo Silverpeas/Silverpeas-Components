@@ -136,7 +136,9 @@ function sendData() {
 function sortItems(orderedList)
 {
 	//alert(orderedList);
-	$.get('<%=m_context%>/KmeliaAJAXServlet', { OrderedList:orderedList,ComponentId:'<%=componentId%>',Action:'SortTopics'}, 
+	// sorting writes the order of the topics, so it is requested by POST in order to be checked
+	// against the synchronizer token
+	$.post('<%=m_context%>/KmeliaAJAXServlet', { OrderedList:orderedList,ComponentId:'<%=componentId%>',Action:'SortTopics'}, 
 			function(data){
 				data = data.replace(/^\s+/g,'').replace(/\s+$/g,'');
 				if (data == "error")

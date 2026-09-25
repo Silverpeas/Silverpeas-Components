@@ -30,7 +30,6 @@ import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
 import javax.inject.Inject;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -42,20 +41,29 @@ import java.io.Writer;
 public class AjaxServlet extends HttpServlet {
 
   private static final long serialVersionUID = 1L;
+  private static final String POST_METHOD = "POST";
 
   @Inject
   private OrganizationController organizationController;
 
   @Override
-  protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-      throws ServletException, IOException {
+  protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
     doPost(req, resp);
   }
 
   @Override
-  protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-      throws ServletException, IOException {
+  protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
     resp.setContentType(MediaType.TEXT_HTML);
+    // the check is performed before the processing below, whose catch-all would swallow the error
+    if (isWritingRequestedByGet(req)) {
+      try {
+        resp.sendError(HttpServletResponse.SC_FORBIDDEN,
+            "A writing operation has to be requested by POST");
+        return;
+      } catch (IOException e) {
+        resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
+      }
+    }
     HttpSession session = req.getSession(true);
     String componentId = req.getParameter("ComponentId");
     KmeliaSessionController kmeliaSC =
@@ -76,12 +84,36 @@ public class AjaxServlet extends HttpServlet {
     } catch (Exception ignored) {
       result = "";
     }
-    Writer writer = resp.getWriter();
-    writer.write(result);
+    try {
+      Writer writer = resp.getWriter();
+      writer.write(result);
+    } catch (IOException e) {
+      resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+    }
   }
 
   private String getAction(HttpServletRequest req) {
     return req.getParameter("Action");
+  }
+
+  /**
+   * Is the requested operation writing something whereas it is requested by a GET? This servlet
+   * answers the GET as the POST, and no URL of it holds any of the keywords making the
+   * synchronizer token required on a GET. Such an operation could hence be requested from another
+   * site on behalf of the user being lured, so it is refused.
+   * @param req the incoming request.
+   * @return true if the operation has to be refused, false otherwise. An unknown operation is
+   * taken in charge as before, by the processing itself.
+   */
+  private boolean isWritingRequestedByGet(final HttpServletRequest req) {
+    if (POST_METHOD.equals(req.getMethod())) {
+      return false;
+    }
+    try {
+      return AjaxOperation.valueOf(getAction(req)).isWriting();
+    } catch (IllegalArgumentException | NullPointerException e) {
+      return false;
+    }
   }
 
   private KmeliaSessionController createSessionController(HttpSession session, String componentId) {
