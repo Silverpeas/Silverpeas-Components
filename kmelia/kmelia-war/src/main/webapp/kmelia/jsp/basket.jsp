@@ -67,7 +67,7 @@ function emptyTrash()
 	const label = "<%=kmeliaScc.getString("ConfirmFlushTrashBean")%>";
 	jQuery.popup.confirm(label, function() {
 		$.progressMessage();
-		$.get('<%=m_context%>/KmeliaAJAXServlet', {ComponentId:'<%=componentId%>',Action:'EmptyTrash'},
+		$.post('<%=m_context%>/KmeliaAJAXServlet', {ComponentId:'<%=componentId%>',Action:'EmptyTrash'},
 				function(data){
 					$.closeProgressMessage();
 					if (data === "ok")

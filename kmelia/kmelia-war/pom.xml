@@ -78,6 +78,12 @@
       <groupId>com.rometools</groupId>
       <artifactId>rome</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.silverpeas.core</groupId>
+      <artifactId>silverpeas-core-test</artifactId>
+      <version>${core.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
 </project>
