@@ -30,7 +30,6 @@ import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
 import javax.inject.Inject;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -48,20 +47,22 @@ public class AjaxServlet extends HttpServlet {
   private OrganizationController organizationController;
 
   @Override
-  protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-      throws ServletException, IOException {
+  protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
     doPost(req, resp);
   }
 
   @Override
-  protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-      throws ServletException, IOException {
+  protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
     resp.setContentType(MediaType.TEXT_HTML);
     // the check is performed before the processing below, whose catch-all would swallow the error
     if (isWritingRequestedByGet(req)) {
-      resp.sendError(HttpServletResponse.SC_FORBIDDEN,
-          "A writing operation has to be requested by POST");
-      return;
+      try {
+        resp.sendError(HttpServletResponse.SC_FORBIDDEN,
+            "A writing operation has to be requested by POST");
+        return;
+      } catch (IOException e) {
+        resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
+      }
     }
     HttpSession session = req.getSession(true);
     String componentId = req.getParameter("ComponentId");
@@ -83,8 +84,12 @@ public class AjaxServlet extends HttpServlet {
     } catch (Exception ignored) {
       result = "";
     }
-    Writer writer = resp.getWriter();
-    writer.write(result);
+    try {
+      Writer writer = resp.getWriter();
+      writer.write(result);
+    } catch (IOException e) {
+      resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+    }
   }
 
   private String getAction(HttpServletRequest req) {
