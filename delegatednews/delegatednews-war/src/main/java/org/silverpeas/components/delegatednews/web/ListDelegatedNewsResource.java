@@ -23,12 +23,19 @@
  */
 package org.silverpeas.components.delegatednews.web;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.silverpeas.components.delegatednews.DelegatedNewsRuntimeException;
 import org.silverpeas.components.delegatednews.model.DelegatedNews;
 import org.silverpeas.components.delegatednews.service.DelegatedNewsService;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.annotation.Authorized;
+import org.silverpeas.core.rs.doc.NotFound;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
@@ -87,6 +94,12 @@ public class ListDelegatedNewsResource extends RESTWebService {
    * @param newDelegatedNews an array of delegated news to update order or to delete
    * @return the new list of delegated news after update or delete
    */
+  @Operation(summary = "Reorders or deletes the delegated news.",
+      description = "The whole list of the delegated news to keep is expected, in the order they " +
+          "have to be displayed. The delegated news missing from that list are deleted.")
+  @ApiResponse(responseCode = "200", description = "The delegated news once reordered or deleted.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = DelegatedNewsEntity.class))))
+  @NotFound
   @PUT
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)

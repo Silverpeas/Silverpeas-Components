@@ -23,8 +23,14 @@
  */
 package org.silverpeas.components.community.web;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.silverpeas.components.community.model.CommunityOfUsers;
 import org.silverpeas.core.annotation.WebService;
+import org.silverpeas.core.rs.doc.NotFound;
 
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.BadRequestException;
@@ -63,6 +69,10 @@ public class CommunityOfUsersResource extends CommunityWebResource {
    * @return the JSON representation of a community resource.
    * @see WebProcess#execute()
    */
+  @Operation(summary = "Gets the community of users managed by the given application.")
+  @ApiResponse(responseCode = "200", description = "The asked community of users.",
+      content = @Content(schema = @Schema(implementation = CommunityOfUsersEntity.class)))
+  @NotFound
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public CommunityOfUsersEntity getCommunityOfUsers() {
@@ -77,6 +87,14 @@ public class CommunityOfUsersResource extends CommunityWebResource {
    * @param entity the new state of the community of users.
    * @return the JSON representation of the updated state of the community of users.
    */
+  @Operation(summary = "Updates the community of users with the new state passed in the request.",
+      description = "Because the space for which the community has been defined is permanent, " +
+          "and because the memberships of the community are handled by another resource " +
+          "(referred by a URI), only the home page and the charter can be modified.")
+  @ApiResponse(responseCode = "200", description = "The updated community of users.",
+      content = @Content(schema = @Schema(implementation = CommunityOfUsersEntity.class)))
+  @ApiResponse(responseCode = "400",
+      description = "The community passed in the request doesn't match the community to update.")
   @PUT
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)

@@ -23,6 +23,12 @@
  */
 package org.silverpeas.components.suggestionbox.web;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.silverpeas.components.suggestionbox.common.SuggestionBoxWebManager;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
@@ -40,6 +46,7 @@ import org.silverpeas.core.util.PaginationList;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.annotation.Authorized;
+import org.silverpeas.core.rs.doc.NotFound;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.DELETE;
@@ -86,6 +93,10 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
    * suggestion.
    * @see RESTWebService.WebProcess#execute()
    */
+  @Operation(summary = "Gets a suggestion of the suggestion box.")
+  @ApiResponse(responseCode = "200", description = "The asked suggestion.",
+      content = @Content(schema = @Schema(implementation = SuggestionEntity.class)))
+  @NotFound
   @GET
   @Path(BOX_SUGGESTION_URI_PART + "/{suggestionId}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -102,6 +113,10 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
    *
    * @param suggestionId the identifier of the suggestion.
    */
+  @Operation(summary = "Deletes the given suggestion.",
+      description = "Only a contributor of the suggestion box can delete a suggestion.")
+  @ApiResponse(responseCode = "204", description = "The suggestion has been deleted.")
+  @NotFound
   @DELETE
   @Path(BOX_SUGGESTION_URI_PART + "/{suggestionId}")
   public void deleteSuggestion(@PathParam("suggestionId") final String suggestionId) {
@@ -120,6 +135,12 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
    * @return the response to the HTTP PUT request with the JSON representation of the published
    * suggestion.
    */
+  @Operation(summary = "Publishes the given suggestion.",
+      description = "Once published, the suggestion leaves the draft state and enters the " +
+          "validation circuit of the suggestion box.")
+  @ApiResponse(responseCode = "200", description = "The published suggestion.",
+      content = @Content(schema = @Schema(implementation = SuggestionEntity.class)))
+  @NotFound
   @PUT
   @Path(BOX_SUGGESTION_URI_PART + "/{suggestionId}/publish")
   @Produces(MediaType.APPLICATION_JSON)
@@ -139,6 +160,9 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
    * @see SuggestionBoxWebManager#getSuggestionsInDraftFor(SuggestionBox, User)
    * @see WebProcess#execute()
    */
+  @Operation(summary = "Gets the suggestions the user behind the request has left in draft.")
+  @ApiResponse(responseCode = "200", description = "The suggestions in draft.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = SuggestionEntity.class))))
   @GET
   @Path(BOX_SUGGESTION_URI_PART + "/inDraft")
   @Produces(MediaType.APPLICATION_JSON)
@@ -156,6 +180,10 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
    * @see SuggestionBoxWebManager#getSuggestionsInDraftFor(SuggestionBox, User)
    * @see WebProcess#execute()
    */
+  @Operation(summary = "Gets the suggestions of the user behind the request that are no more " +
+      "in draft.")
+  @ApiResponse(responseCode = "200", description = "The suggestions out of draft.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = SuggestionEntity.class))))
   @GET
   @Path(BOX_SUGGESTION_URI_PART + "/outOfDraft")
   @Produces(MediaType.APPLICATION_JSON)
@@ -172,6 +200,9 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
    * @see SuggestionBoxWebManager#getSuggestionsInPendingValidation(SuggestionBox)
    * @see WebProcess#execute()
    */
+  @Operation(summary = "Gets the suggestions waiting for validation.")
+  @ApiResponse(responseCode = "200", description = "The suggestions pending validation.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = SuggestionEntity.class))))
   @GET
   @Path(BOX_SUGGESTION_URI_PART + "/pendingValidation")
   @Produces(MediaType.APPLICATION_JSON)
@@ -197,6 +228,12 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
    * @see SuggestionBoxWebManager#getPublishedSuggestions(SuggestionBox)
    * @see WebProcess#execute()
    */
+  @Operation(summary = "Gets the suggestions that are published.",
+      description = "By default the suggestions are sorted by date of validation, from the " +
+          "newer to the older one. They can be restricted to those of a given author, " +
+          "sorted by another property and paginated.")
+  @ApiResponse(responseCode = "200", description = "The published suggestions.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = SuggestionEntity.class))))
   @GET
   @Path(BOX_SUGGESTION_URI_PART + "/published")
   @Produces(MediaType.APPLICATION_JSON)
@@ -241,6 +278,12 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
    *              5 last comments are sent back.
    * @return a collection of comments on the suggestions, ready to be serialized in JSON.
    */
+  @Operation(summary = "Gets the last comments posted on the suggestions of the suggestion " +
+      "box.",
+      description = "The comments are sorted from the newer to the older one. Without the " +
+          "count query parameter, the five last comments are returned.")
+  @ApiResponse(responseCode = "200", description = "The last comments on the suggestions.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = SuggestionCommentEntity.class))))
   @GET
   @Path(BOX_SUGGESTION_URI_PART + "/lastComments")
   @Produces(MediaType.APPLICATION_JSON)
