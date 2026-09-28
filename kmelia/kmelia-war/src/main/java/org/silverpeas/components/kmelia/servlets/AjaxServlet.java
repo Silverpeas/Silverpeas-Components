@@ -36,30 +36,38 @@ import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Writer;
 
 public class AjaxServlet extends HttpServlet {
 
+  @Serial
   private static final long serialVersionUID = 1L;
   private static final String POST_METHOD = "POST";
 
+  private final OrganizationController organizationController;
+
   @Inject
-  private OrganizationController organizationController;
+  public AjaxServlet(OrganizationController organizationController) {
+    this.organizationController = organizationController;
+  }
 
   @Override
-  protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-      throws IOException {
+  protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
     doPost(req, resp);
   }
 
   @Override
-  protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-      throws IOException {
+  protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
     resp.setContentType(MediaType.TEXT_HTML);
     // the check is performed before the processing below, whose catch-all would swallow the error
     if (isWritingRequestedByGet(req)) {
-      resp.sendError(HttpServletResponse.SC_FORBIDDEN,
-          "A writing operation has to be requested by POST");
+      try {
+        resp.sendError(HttpServletResponse.SC_FORBIDDEN,
+            "A writing operation has to be requested by POST");
+      } catch (IOException e) {
+        resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
+      }
       return;
     }
     HttpSession session = req.getSession(true);
@@ -82,8 +90,13 @@ public class AjaxServlet extends HttpServlet {
     } catch (Exception ignored) {
       result = "";
     }
-    Writer writer = resp.getWriter();
-    writer.write(result);
+
+    try {
+      Writer writer = resp.getWriter();
+      writer.write(result);
+    } catch (IOException e) {
+      resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+    }
   }
 
   private String getAction(HttpServletRequest req) {
