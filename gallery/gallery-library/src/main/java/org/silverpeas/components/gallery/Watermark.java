@@ -105,7 +105,8 @@ public class Watermark {
     File cachedFile = null;
     if (isDefined(imageUrl)) {
       final String imageUrlWithoutProtocol =
-          imageUrl.replaceAll("(file|https?):/+", "").replaceAll("[&=%!;*?]", "").replaceAll(":([0-9]+)", "$1");
+          imageUrl.replaceAll("(file|https?):/+", "").replaceAll("[&=%!;*?]", "")
+              .replaceAll(":(\\d+)", "$1");
       final String normalizedName = normalize(imageUrlWithoutProtocol.replaceAll("[/\\\\:]", ""));
       final String extension = getExtension(normalizedName);
       final Path cachedPath = Paths.get(FileRepositoryManager.getTemporaryPath(),
@@ -135,17 +136,19 @@ public class Watermark {
       SilverLogger.getLogger(this).warn("refused to fetch the watermark image from URL {0}",
           imageUrl);
     } else {
-      try {
-        final HttpClient client = httpClientBuilder()
+      try (HttpClient client = httpClientBuilder()
             // a redirection would escape the verification performed by isFetchable above
             .followRedirects(HttpClient.Redirect.NEVER)
             .connectTimeout(FETCH_TIMEOUT)
-            .build();
+            .build()) {
         final HttpResponse<InputStream> response = client.send(toUrl(imageUrl)
             .timeout(FETCH_TIMEOUT)
             .header("Accept", MediaType.WILDCARD)
             .build(), ofInputStream());
-        try (final InputStream body = new BoundedInputStream(response.body(), MAX_IMAGE_SIZE)) {
+        try (final InputStream body = BoundedInputStream.builder()
+            .setInputStream(response.body())
+            .setMaxCount(MAX_IMAGE_SIZE)
+            .get()) {
           Files.copy(body, cachedPath);
         }
         if (Files.size(cachedPath) >= MAX_IMAGE_SIZE) {
