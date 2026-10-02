@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.kmelia.notification;
 
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
@@ -36,6 +37,7 @@ import org.silverpeas.core.subscription.constant.SubscriberType;
 import org.silverpeas.core.subscription.util.SubscriptionSubscriberMapBySubscriberType;
 
 import java.util.Collection;
+import java.util.Optional;
 
 import static java.util.function.Predicate.not;
 import static org.silverpeas.core.contribution.publication.subscription.LocationFilterDirective.withLocationFilter;
@@ -70,6 +72,17 @@ public class KmeliaSubscriptionPublicationUserNotification
   protected void perform(final PublicationDetail resource) {
     super.perform(resource);
     getNotificationMetaData().displayReceiversInFooter();
+  }
+
+  /**
+   * A notification is sent for each location of the publication: its main one and each of its
+   * aliases. The users concerned by the publication itself, whatever its location (like the
+   * subscribers to a position on the PdC on which it is classified), are notified only with the
+   * subscribers of its main location, otherwise they would be notified several times.
+   */
+  @Override
+  protected Optional<ContributionIdentifier> getSubscribedContribution() {
+    return getResource().isAlias() ? Optional.empty() : super.getSubscribedContribution();
   }
 
   @Override

@@ -83,7 +83,6 @@ import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
-import org.silverpeas.core.pdc.subscription.service.PdcSubscriptionManager;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.personalorganizer.model.Attendee;
 import org.silverpeas.core.personalorganizer.model.TodoDetail;
@@ -188,8 +187,6 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
   private SilverpeasCalendar calendar;
   @Inject
   private PdcClassificationService pdcClassificationService;
-  @Inject
-  private PdcSubscriptionManager pdcSubscriptionManager;
   @Inject
   private KmeliaContentManager kmeliaContentManager;
   @Inject
@@ -1549,7 +1546,8 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
     NodePK father = null;
     // We alert subscribers only if publication is Valid
     if (!pubDetail.haveGotClone() && pubDetail.isValid() && pubDetail.isVisible()) {
-      // Subscription to the main topic
+      // Subscription to the main topic. The subscribers to the positions on the PdC on which the
+      // publication is classified are notified with those of the main topic
       father = getPublicationFatherPK(pubDetail.getPK());
       if (!sendOnlyToAliases && father != null) {
         sendSubscriptionsNotification(father, pubDetail, action);
@@ -1562,23 +1560,6 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
         locations = getAliases(pubDetail.getPK());
       }
       sendSubscriptionNotificationForAliases(pubDetail, action, locations);
-
-      // PDC subscriptions
-      try {
-        int silverObjectId = getSilverObjectId(pubDetail.getPK());
-        List<ClassifyPosition> positions = pdcManager.getPositions(silverObjectId,
-            pubDetail.getPK().getInstanceId());
-        if (positions != null) {
-          for (ClassifyPosition position : positions) {
-            pdcSubscriptionManager.checkSubscriptions(position.getValues(),
-                pubDetail.getPK().getInstanceId(), silverObjectId);
-          }
-        }
-      } catch (PdcException e) {
-        SilverLogger.getLogger(this)
-            .error("PdC subscriptions notification failure for publication {0}",
-                new String[]{pubDetail.getPK().getId()}, e);
-      }
     } else {
       KmeliaDelayedVisibilityUserNotificationReminder.get().setAbout(pubDetail);
     }

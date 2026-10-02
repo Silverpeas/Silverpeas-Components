@@ -51,8 +51,10 @@ import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.security.authorization.NodeAccessControl;
+import org.silverpeas.core.subscription.ContributionSubscribersProvider;
 import org.silverpeas.core.subscription.ResourceSubscriptionService;
 import org.silverpeas.core.subscription.SubscriberDirective;
+import org.silverpeas.core.subscription.SubscriptionSubscriber;
 import org.silverpeas.core.subscription.service.GroupSubscriptionSubscriber;
 import org.silverpeas.core.subscription.service.ResourceSubscriptionProvider;
 import org.silverpeas.core.subscription.service.UserSubscriptionSubscriber;
@@ -63,6 +65,7 @@ import org.silverpeas.kernel.test.annotations.TestManagedMock;
 import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 import org.silverpeas.kernel.test.extension.LocalizationBundleStub;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -80,7 +83,9 @@ import static org.mockito.Mockito.when;
 
 /**
  * Unit tests on the recipients of the notifications sent to the subscribers of a Kmelia
- * application when a publication is created, updated or published into a folder.
+ * application when a publication is created, updated or published into a folder. The subscribers
+ * to a position on the PdC on which the publication is classified are notified with those of its
+ * main folder.
  * @author mmoquillon
  */
 @EnableSilverTestEnv(context = JEETestContext.class)
@@ -94,6 +99,11 @@ class KmeliaSubscriptionPublicationUserNotificationTest {
   private static final String ANOTHER_SUBSCRIBER = "5";
   private static final String AN_ALIAS_SUBSCRIBER = "7";
   private static final String A_SUBSCRIBED_GROUP = "12";
+  private static final String A_SUBSCRIBER_ON_THE_PDC = "21";
+  private static final String ANOTHER_SUBSCRIBER_ON_THE_PDC = "23";
+  private static final ContributionIdentifier PUBLICATION =
+      ContributionIdentifier.from(COMPONENT_ID, PUBLICATION_ID,
+          PublicationDetail.getResourceType());
 
   private static final NodePK FOLDER = new NodePK("4", COMPONENT_ID);
   private static final NodePK ALIAS_FOLDER = new NodePK("8", COMPONENT_ID);
@@ -110,6 +120,8 @@ class KmeliaSubscriptionPublicationUserNotificationTest {
   private Administration administration;
   @TestManagedBean
   private UserSubscriptionNotificationSendingHandler sendingHandler;
+  @TestManagedBean
+  private SubscribersOnThePdcProvider pdc;
 
   private Map<String, ResourceSubscriptionService> subscriptionServicesByComponent;
   private final SubscriptionSubscriberList subscribers = new SubscriptionSubscriberList();
@@ -244,15 +256,68 @@ class KmeliaSubscriptionPublicationUserNotificationTest {
         contains(AN_ALIAS_SUBSCRIBER));
   }
 
+  @Test
+  void theSubscribersOnThePdcAreNotifiedWithTheSubscribersOfTheFolder() {
+    subscribers.add(UserSubscriptionSubscriber.from(A_SUBSCRIBER));
+    pdc.subscribe(PUBLICATION, A_SUBSCRIBER_ON_THE_PDC, ANOTHER_SUBSCRIBER_ON_THE_PDC);
+
+    final UserNotification notification = new KmeliaSubscriptionPublicationUserNotification(FOLDER,
+        aPublication(false), NotifAction.CREATE).build();
+
+    final NotificationMetaData metaData = notification.getNotificationMetaData();
+    assertThat(metaData.getAction(), is(NotifAction.CREATE));
+    assertThat(usersIn(metaData.getUserRecipients()),
+        containsInAnyOrder(A_SUBSCRIBER, A_SUBSCRIBER_ON_THE_PDC, ANOTHER_SUBSCRIBER_ON_THE_PDC));
+  }
+
+  @Test
+  void theSubscribersOnThePdcAreNotifiedEvenIfTheFolderHasNoSubscriber() {
+    pdc.subscribe(PUBLICATION, A_SUBSCRIBER_ON_THE_PDC);
+
+    final UserNotification notification = new KmeliaSubscriptionPublicationUserNotification(FOLDER,
+        aPublication(false), NotifAction.CREATE).build();
+
+    assertThat(usersIn(notification.getNotificationMetaData().getUserRecipients()),
+        contains(A_SUBSCRIBER_ON_THE_PDC));
+  }
+
+  @Test
+  void aSubscriberOnThePdcWithoutAccessToTheFolderIsNotNotified() {
+    pdc.subscribe(PUBLICATION, A_SUBSCRIBER_ON_THE_PDC, ANOTHER_SUBSCRIBER_ON_THE_PDC);
+    when(accessControl.isUserAuthorized(ANOTHER_SUBSCRIBER_ON_THE_PDC, FOLDER)).thenReturn(false);
+
+    final UserNotification notification = new KmeliaSubscriptionPublicationUserNotification(FOLDER,
+        aPublication(false), NotifAction.CREATE).build();
+
+    assertThat(usersIn(notification.getNotificationMetaData().getUserRecipients()),
+        contains(A_SUBSCRIBER_ON_THE_PDC));
+  }
+
+  /**
+   * A notification is sent for the main folder of the publication and for each of its aliases:
+   * the subscribers on the PdC, already notified with those of the main folder, mustn't be
+   * notified again with those of each alias.
+   */
+  @Test
+  void theSubscribersOnThePdcAreNotNotifiedAboutAnAliasOfThePublication() {
+    aliasSubscribers.add(UserSubscriptionSubscriber.from(AN_ALIAS_SUBSCRIBER));
+    pdc.subscribe(PUBLICATION, A_SUBSCRIBER_ON_THE_PDC);
+
+    final UserNotification notification =
+        new KmeliaSubscriptionPublicationUserNotification(ALIAS_FOLDER, aPublication(true),
+            NotifAction.CREATE).build();
+
+    assertThat(usersIn(notification.getNotificationMetaData().getUserRecipients()),
+        contains(AN_ALIAS_SUBSCRIBER));
+  }
+
   private static PublicationDetail aPublication(final boolean alias) {
     final PublicationDetail publication = mock(PublicationDetail.class);
     when(publication.getPK()).thenReturn(new PublicationPK(PUBLICATION_ID, COMPONENT_ID));
     when(publication.getId()).thenReturn(PUBLICATION_ID);
     when(publication.getInstanceId()).thenReturn(COMPONENT_ID);
     when(publication.getContributionType()).thenReturn(PublicationDetail.getResourceType());
-    when(publication.getIdentifier()).thenReturn(
-        ContributionIdentifier.from(COMPONENT_ID, PUBLICATION_ID,
-            PublicationDetail.getResourceType()));
+    when(publication.getIdentifier()).thenReturn(PUBLICATION);
     when(publication.isAlias()).thenReturn(alias);
     when(publication.getName(anyString())).thenReturn("A publication");
     when(publication.getDescription(anyString())).thenReturn("The description");
@@ -268,5 +333,27 @@ class KmeliaSubscriptionPublicationUserNotificationTest {
 
   private static List<String> groupsIn(final Collection<GroupRecipient> recipients) {
     return recipients.stream().map(GroupRecipient::getGroupId).toList();
+  }
+
+  /**
+   * A provider of the users concerned by a contribution in another way than by a subscription to
+   * a resource of the application, like the subscribers to a position on the PdC on which the
+   * contribution is classified.
+   */
+  static class SubscribersOnThePdcProvider implements ContributionSubscribersProvider {
+
+    private final List<SubscriptionSubscriber> subscribers = new ArrayList<>();
+    private ContributionIdentifier classified;
+
+    void subscribe(final ContributionIdentifier classified, final String... userIds) {
+      this.classified = classified;
+      List.of(userIds).forEach(u -> subscribers.add(UserSubscriptionSubscriber.from(u)));
+    }
+
+    @Override
+    public SubscriptionSubscriberList getSubscribersOf(final ContributionIdentifier contribution) {
+      return contribution.equals(classified) ? new SubscriptionSubscriberList(subscribers) :
+          new SubscriptionSubscriberList();
+    }
   }
 }

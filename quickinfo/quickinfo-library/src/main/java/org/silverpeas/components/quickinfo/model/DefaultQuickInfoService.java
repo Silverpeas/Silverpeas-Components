@@ -57,13 +57,12 @@ import org.silverpeas.core.index.indexing.model.IndexManager;
 import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailController;
 import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.notification.system.ResourceEvent;
+import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
-import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
-import org.silverpeas.core.pdc.subscription.service.PdcSubscriptionManager;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.reminder.Reminder;
@@ -102,8 +101,6 @@ public class DefaultQuickInfoService implements QuickInfoService {
   private NewsEventNotifier notifier;
   @Inject
   private PdcManager pdcManager;
-  @Inject
-  private PdcSubscriptionManager pdcSubscriptionManager;
   @Inject
   private PublicationService publicationService;
   @Inject
@@ -461,23 +458,10 @@ public class DefaultQuickInfoService implements QuickInfoService {
   private void sendSubscriptionsNotification(final News news, final NotifAction notifAction) {
     if (!news.isDraft()) {
       if (news.isVisible()) {
-        new QuickInfoSubscriptionUserNotification(news, notifAction).build().send();
-        // send notification if PDC subscription
-        try {
-          final PublicationPK pubPK = news.getPublication().getPK();
-          int silverObjectId = quickInfoContentManager.getSilverContentId(pubPK.getId(), pubPK.getInstanceId());
-          List<ClassifyPosition> positions = pdcManager.getPositions(silverObjectId, pubPK
-              .getInstanceId());
-          if (positions != null) {
-            for (ClassifyPosition position : positions) {
-              pdcSubscriptionManager.checkSubscriptions(position.getValues(), pubPK
-                  .getInstanceId(), silverObjectId);
-            }
-          }
-        } catch (PdcException e) {
-          SilverLogger.getLogger(this)
-              .error("PdC subscriber notification failure", e);
-        }
+        // the subscribers to the positions on the PdC on which the news is classified are
+        // notified with the subscribers of the application
+        UserNotificationHelper.buildAndSend(
+            new QuickInfoSubscriptionUserNotification(news, notifAction));
       } else {
         reminder.setAbout(news);
       }

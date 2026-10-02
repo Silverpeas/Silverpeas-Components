@@ -51,11 +51,7 @@ import org.silverpeas.core.node.model.NodeOrderComparator;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
-import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
-import org.silverpeas.core.pdc.pdc.model.PdcException;
-import org.silverpeas.core.pdc.pdc.service.PdcManager;
-import org.silverpeas.core.pdc.subscription.service.PdcSubscriptionManager;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.subscription.SubscriptionService;
 import org.silverpeas.core.subscription.SubscriptionServiceProvider;
@@ -96,10 +92,6 @@ public class DefaultBlogService implements BlogService, Initialization {
   private static final String USELESS = "useless";
   @Inject
   private CommentService commentService;
-  @Inject
-  private PdcManager pdcManager;
-  @Inject
-  private PdcSubscriptionManager pdcSubscriptionManager;
   @Inject
   private BlogContentManager blogContentManager;
   @Inject
@@ -175,9 +167,10 @@ public class DefaultBlogService implements BlogService, Initialization {
       // Create silver content
       createSilverContent(con, pub, pub.getCreatorId());
 
-      // classify the publication on the PdC if its classification is defined
+      // classify the publication on the PdC if its classification is defined. The subscribers
+      // are notified later about the post itself, once it is published
       if (classification != null) {
-        classification.classifyContent(pub);
+        classification.classifyContent(pub, false);
       }
 
       return pk.getId();
@@ -189,24 +182,10 @@ public class DefaultBlogService implements BlogService, Initialization {
   @Override
   public void sendSubscriptionsNotification(final NodePK fatherPK, final PostDetail post,
       final Comment comment, final String type, final String senderId) {
+    // the subscribers to the positions on the PdC on which the post is classified are notified
+    // with the subscribers of the blog
     UserNotificationHelper.buildAndSend(
         new BlogUserSubscriptionNotification(post, comment, type, senderId));
-    // send notification if PDC subscription
-    try {
-      final PublicationPK pubPK = post.getPublication().getPK();
-      int silverObjectId = getSilverObjectId(pubPK);
-      List<ClassifyPosition> positions = pdcManager.getPositions(silverObjectId, pubPK
-          .getInstanceId());
-      if (positions != null) {
-        for (ClassifyPosition position : positions) {
-          pdcSubscriptionManager.checkSubscriptions(position.getValues(), pubPK
-              .getInstanceId(), silverObjectId);
-        }
-      }
-    } catch (PdcException e) {
-      SilverLogger.getLogger(this)
-          .error("PdC subscriber notification failure", e);
-    }
   }
 
   @Transactional
@@ -636,35 +615,6 @@ public class DefaultBlogService implements BlogService, Initialization {
       stream = stream.limit(maxResult.get());
     }
     return stream;
-  }
-
-  private int createSilverContent(PublicationDetail pubDetail, String creatorId) {
-    Connection con = null;
-    try {
-      con = openConnection();
-      return blogContentManager.createSilverContent(con, pubDetail, creatorId);
-    } catch (Exception e) {
-      throw new BlogRuntimeException(e);
-    } finally {
-      DBUtil.close(con);
-    }
-  }
-
-
-  private int getSilverObjectId(PublicationPK pubPK) {
-
-    int silverObjectId;
-    PublicationDetail pubDetail;
-    try {
-      silverObjectId = blogContentManager.getSilverContentId(pubPK.getId(), pubPK.getInstanceId());
-      if (silverObjectId == -1) {
-        pubDetail = publicationService.getDetail(pubPK);
-        silverObjectId = createSilverContent(pubDetail, pubDetail.getCreatorId());
-      }
-    } catch (Exception e) {
-      throw new BlogRuntimeException(e);
-    }
-    return silverObjectId;
   }
 
   private SubscriptionService getSubscribeService() {
