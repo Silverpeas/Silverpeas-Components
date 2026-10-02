@@ -24,6 +24,7 @@
 
 package org.silverpeas.components.quickinfo.notification;
 
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.notification.user.UserSubscriptionNotificationBehavior;
 import org.silverpeas.core.subscription.constant.SubscriberType;
 import org.silverpeas.core.subscription.service.ResourceSubscriptionProvider;
@@ -32,6 +33,7 @@ import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.components.quickinfo.model.News;
 
 import java.util.Collection;
+import java.util.Optional;
 
 public class QuickInfoSubscriptionUserNotification extends AbstractNewsUserNotification
     implements UserSubscriptionNotificationBehavior {
@@ -48,6 +50,15 @@ public class QuickInfoSubscriptionUserNotification extends AbstractNewsUserNotif
     super.initialize();
     subscriberIdsByTypes.addAll(ResourceSubscriptionProvider
         .getSubscribersOfComponent(getResource().getComponentInstanceId()));
+  }
+
+  /**
+   * The contribution classified on the PdC, and hence the one known of the content manager, is
+   * the publication behind the news and not the news itself.
+   */
+  @Override
+  protected Optional<ContributionIdentifier> getSubscribedContribution() {
+    return Optional.of(getResource().getPublication().getIdentifier());
   }
 
   @Override

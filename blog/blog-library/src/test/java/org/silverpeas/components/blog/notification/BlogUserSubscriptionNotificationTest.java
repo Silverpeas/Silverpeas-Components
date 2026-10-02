@@ -21,15 +21,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package org.silverpeas.components.quickinfo.notification;
+package org.silverpeas.components.blog.notification;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.silverpeas.components.quickinfo.QuickInfoComponentSettings;
-import org.silverpeas.components.quickinfo.model.News;
+import org.silverpeas.components.blog.model.PostDetail;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.component.service.SilverpeasComponentInstanceProvider;
@@ -39,6 +38,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.notification.user.NullUserNotification;
 import org.silverpeas.core.notification.user.UserNotification;
 import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
@@ -63,6 +63,7 @@ import org.silverpeas.kernel.test.extension.LocalizationBundleStub;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -80,32 +81,27 @@ import static org.mockito.Mockito.when;
 import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.COMPONENT;
 
 /**
- * Unit tests on the recipients of the notifications sent to the subscribers of a QuickInfo
- * application when a news is published or updated. The subscribers to a position on the PdC on
- * which the news is classified are notified with them.
+ * Unit tests on the recipients of the notifications sent to the subscribers of a blog when a post
+ * is published or updated. The subscribers to a position on the PdC on which the post is
+ * classified are notified with them.
  * @author mmoquillon
  */
 @EnableSilverTestEnv(context = JEETestContext.class)
-class QuickInfoSubscriptionUserNotificationTest {
+class BlogUserSubscriptionNotificationTest {
 
-  private static final String COMPONENT_NAME = "quickinfo";
-  private static final String COMPONENT_ID = "quickinfo15";
+  private static final String COMPONENT_NAME = "blog";
+  private static final String COMPONENT_ID = "blog7";
+  private static final String POST_ID = "23";
   private static final String AUTHOR = "1";
   private static final String A_SUBSCRIBER = "3";
   private static final String ANOTHER_SUBSCRIBER = "5";
   private static final String A_SUBSCRIBED_GROUP = "12";
   private static final String A_SUBSCRIBER_ON_THE_PDC = "21";
   private static final String ANOTHER_SUBSCRIBER_ON_THE_PDC = "23";
-  private static final String PUBLICATION_ID = "42";
-  private static final ContributionIdentifier NEWS =
-      ContributionIdentifier.from(COMPONENT_ID, "news-1", News.CONTRIBUTION_TYPE);
-  // the content classified on the PdC is the publication behind the news
-  private static final ContributionIdentifier CLASSIFIED_PUBLICATION =
-      ContributionIdentifier.from(COMPONENT_ID, PUBLICATION_ID, PublicationDetail.getResourceType());
 
   @RegisterExtension
-  static LocalizationBundleStub quickInfoBundle = new LocalizationBundleStub(
-      QuickInfoComponentSettings.MESSAGES_PATH, LocalizationBundleStub.LANGUAGE_ALL);
+  static LocalizationBundleStub blogBundle = new LocalizationBundleStub(
+      "org.silverpeas.blog.multilang.blogBundle", LocalizationBundleStub.LANGUAGE_ALL);
 
   @TestManagedMock
   private ComponentAccessControl accessControl;
@@ -123,9 +119,9 @@ class QuickInfoSubscriptionUserNotificationTest {
 
   @BeforeEach
   void setUpBundle() {
-    quickInfoBundle.put("GML.subscription", "Subscription");
-    quickInfoBundle.put("GML.st.notification.subject", "Notification");
-    quickInfoBundle.put("quickinfo.news.notifNewsLinkLabel", "Go to the news");
+    blogBundle.put("blog.subjectSubscription", "Subscription");
+    blogBundle.put("GML.st.notification.subject", "Notification");
+    blogBundle.put("blog.notifPostLinkLabel", "Go to the post");
   }
 
   @SuppressWarnings("unchecked")
@@ -134,7 +130,7 @@ class QuickInfoSubscriptionUserNotificationTest {
       @TestManagedMock SilverpeasComponentInstanceProvider componentInstanceProvider,
       @TestManagedMock UserProvider userProvider) throws Exception {
     final ComponentInstLight componentInstance = new ComponentInstLight();
-    componentInstance.setLocalId(15);
+    componentInstance.setLocalId(7);
     componentInstance.setName(COMPONENT_NAME);
     final Optional<SilverpeasComponentInstance> instance = Optional.of(componentInstance);
     when(organizationController.getComponentInstLight(COMPONENT_ID)).thenReturn(componentInstance);
@@ -167,13 +163,13 @@ class QuickInfoSubscriptionUserNotificationTest {
   }
 
   @Test
-  void theSubscribersOfTheApplicationAreNotifiedAboutAPublishedNews() {
+  void theSubscribersOfTheBlogAreNotifiedAboutAPublishedPost() {
     subscribers.add(UserSubscriptionSubscriber.from(A_SUBSCRIBER));
     subscribers.add(UserSubscriptionSubscriber.from(ANOTHER_SUBSCRIBER));
     subscribers.add(GroupSubscriptionSubscriber.from(A_SUBSCRIBED_GROUP));
 
     final UserNotification notification =
-        new QuickInfoSubscriptionUserNotification(aNews(), NotifAction.CREATE).build();
+        new BlogUserSubscriptionNotification(aPost(), null, "create", AUTHOR).build();
 
     final NotificationMetaData metaData = notification.getNotificationMetaData();
     assertThat(metaData.getAction(), is(NotifAction.CREATE));
@@ -185,11 +181,11 @@ class QuickInfoSubscriptionUserNotificationTest {
   }
 
   @Test
-  void theSubscribersOfTheApplicationAreNotifiedAboutAnUpdatedNews() {
+  void theSubscribersOfTheBlogAreNotifiedAboutAnUpdatedPost() {
     subscribers.add(UserSubscriptionSubscriber.from(A_SUBSCRIBER));
 
     final UserNotification notification =
-        new QuickInfoSubscriptionUserNotification(aNews(), NotifAction.UPDATE).build();
+        new BlogUserSubscriptionNotification(aPost(), null, "update", AUTHOR).build();
 
     final NotificationMetaData metaData = notification.getNotificationMetaData();
     assertThat(metaData.getAction(), is(NotifAction.UPDATE));
@@ -197,12 +193,12 @@ class QuickInfoSubscriptionUserNotificationTest {
   }
 
   @Test
-  void theAuthorOfTheNewsIsExcludedFromTheRecipients() {
+  void theAuthorOfTheModificationIsExcludedFromTheRecipients() {
     subscribers.add(UserSubscriptionSubscriber.from(AUTHOR));
     subscribers.add(UserSubscriptionSubscriber.from(A_SUBSCRIBER));
 
     final UserNotification notification =
-        new QuickInfoSubscriptionUserNotification(aNews(), NotifAction.CREATE).build();
+        new BlogUserSubscriptionNotification(aPost(), null, "create", AUTHOR).build();
 
     final NotificationMetaData metaData = notification.getNotificationMetaData();
     assertThat(metaData.getSender(), is(AUTHOR));
@@ -210,33 +206,25 @@ class QuickInfoSubscriptionUserNotificationTest {
   }
 
   @Test
-  void aSubscriberWithoutAccessToTheApplicationIsNotNotified() {
-    subscribers.add(UserSubscriptionSubscriber.from(A_SUBSCRIBER));
-    subscribers.add(UserSubscriptionSubscriber.from(ANOTHER_SUBSCRIBER));
-    when(accessControl.isUserAuthorized(ANOTHER_SUBSCRIBER, COMPONENT_ID)).thenReturn(false);
-
+  void nothingIsNotifiedWhenTheBlogHasNoSubscriber() {
     final UserNotification notification =
-        new QuickInfoSubscriptionUserNotification(aNews(), NotifAction.CREATE).build();
-
-    assertThat(usersIn(notification.getNotificationMetaData().getUserRecipients()),
-        contains(A_SUBSCRIBER));
-  }
-
-  @Test
-  void nothingIsNotifiedWhenTheApplicationHasNoSubscriber() {
-    final UserNotification notification =
-        new QuickInfoSubscriptionUserNotification(aNews(), NotifAction.CREATE).build();
+        new BlogUserSubscriptionNotification(aPost(), null, "create", AUTHOR).build();
 
     assertThat(notification, instanceOf(NullUserNotification.class));
   }
 
+  /**
+   * The content classified on the PdC is the publication behind the post, and the post has the
+   * identifier of its publication: the subscribers on the PdC are found without any peculiar
+   * treatment.
+   */
   @Test
-  void theSubscribersOnThePdcAreNotifiedWithTheSubscribersOfTheApplication() {
+  void theSubscribersOnThePdcAreNotifiedWithTheSubscribersOfTheBlog() {
     subscribers.add(UserSubscriptionSubscriber.from(A_SUBSCRIBER));
-    pdc.subscribe(CLASSIFIED_PUBLICATION, A_SUBSCRIBER_ON_THE_PDC, ANOTHER_SUBSCRIBER_ON_THE_PDC);
+    pdc.subscribe(POST_ID, A_SUBSCRIBER_ON_THE_PDC, ANOTHER_SUBSCRIBER_ON_THE_PDC);
 
     final UserNotification notification =
-        new QuickInfoSubscriptionUserNotification(aNews(), NotifAction.CREATE).build();
+        new BlogUserSubscriptionNotification(aPost(), null, "create", AUTHOR).build();
 
     final NotificationMetaData metaData = notification.getNotificationMetaData();
     assertThat(metaData.getAction(), is(NotifAction.CREATE));
@@ -245,61 +233,37 @@ class QuickInfoSubscriptionUserNotificationTest {
   }
 
   @Test
-  void theSubscribersOnThePdcAreNotifiedEvenIfTheApplicationHasNoSubscriber() {
-    pdc.subscribe(CLASSIFIED_PUBLICATION, A_SUBSCRIBER_ON_THE_PDC);
+  void theSubscribersOnThePdcAreNotifiedEvenIfTheBlogHasNoSubscriber() {
+    pdc.subscribe(POST_ID, A_SUBSCRIBER_ON_THE_PDC);
 
     final UserNotification notification =
-        new QuickInfoSubscriptionUserNotification(aNews(), NotifAction.CREATE).build();
+        new BlogUserSubscriptionNotification(aPost(), null, "create", AUTHOR).build();
 
     assertThat(usersIn(notification.getNotificationMetaData().getUserRecipients()),
         contains(A_SUBSCRIBER_ON_THE_PDC));
   }
 
   @Test
-  void aSubscriberOnThePdcWithoutAccessToTheApplicationIsNotNotified() {
-    pdc.subscribe(CLASSIFIED_PUBLICATION, A_SUBSCRIBER_ON_THE_PDC, ANOTHER_SUBSCRIBER_ON_THE_PDC);
+  void aSubscriberOnThePdcWithoutAccessToTheBlogIsNotNotified() {
+    pdc.subscribe(POST_ID, A_SUBSCRIBER_ON_THE_PDC, ANOTHER_SUBSCRIBER_ON_THE_PDC);
     when(accessControl.isUserAuthorized(ANOTHER_SUBSCRIBER_ON_THE_PDC, COMPONENT_ID)).thenReturn(
         false);
 
     final UserNotification notification =
-        new QuickInfoSubscriptionUserNotification(aNews(), NotifAction.CREATE).build();
+        new BlogUserSubscriptionNotification(aPost(), null, "create", AUTHOR).build();
 
     assertThat(usersIn(notification.getNotificationMetaData().getUserRecipients()),
         contains(A_SUBSCRIBER_ON_THE_PDC));
   }
 
-  /**
-   * The news itself isn't known of the PdC: a classification got from its own identifier would
-   * be the one of another content.
-   */
-  @Test
-  void theClassificationTakenIntoAccountIsNotTheOneOfAContentIdentifiedAsTheNews() {
-    pdc.subscribe(NEWS, A_SUBSCRIBER_ON_THE_PDC);
-
-    final UserNotification notification =
-        new QuickInfoSubscriptionUserNotification(aNews(), NotifAction.CREATE).build();
-
-    assertThat(notification, instanceOf(NullUserNotification.class));
-  }
-
-  private static News aNews() {
-    final UserDetail creator = mock(UserDetail.class);
-    when(creator.getId()).thenReturn(AUTHOR);
-    when(creator.getDisplayedName()).thenReturn("User " + AUTHOR);
-    final News news = mock(News.class);
-    when(news.getId()).thenReturn("news-1");
-    when(news.getContributionType()).thenReturn(News.CONTRIBUTION_TYPE);
-    when(news.getComponentInstanceId()).thenReturn(COMPONENT_ID);
-    when(news.getIdentifier()).thenReturn(NEWS);
-    final PublicationDetail publication = mock(PublicationDetail.class);
-    when(publication.getIdentifier()).thenReturn(CLASSIFIED_PUBLICATION);
-    when(news.getPublication()).thenReturn(publication);
-    when(news.getTitle()).thenReturn("A news");
-    when(news.getDescription()).thenReturn("The description of a news");
-    when(news.getCreator()).thenReturn(creator);
-    when(news.getCreatorId()).thenReturn(AUTHOR);
-    when(news.getUpdaterId()).thenReturn(AUTHOR);
-    return news;
+  private static PostDetail aPost() {
+    final PublicationDetail publication = PublicationDetail.builder()
+        .setPk(new PublicationPK(POST_ID, COMPONENT_ID))
+        .created(new Date(), AUTHOR)
+        .setNameAndDescription("A post", "")
+        .build();
+    publication.setStatus(PublicationDetail.VALID_STATUS);
+    return new PostDetail(publication, (String) null, new Date());
   }
 
   private static List<String> usersIn(final Collection<UserRecipient> recipients) {
@@ -313,22 +277,24 @@ class QuickInfoSubscriptionUserNotificationTest {
   /**
    * A provider of the users concerned by a contribution in another way than by a subscription to
    * a resource of the application, like the subscribers to a position on the PdC on which the
-   * contribution is classified.
+   * contribution is classified. As the PdC does, the contribution is identified by its local
+   * identifier among the contributions of its application.
    */
   static class SubscribersOnThePdcProvider implements ContributionSubscribersProvider {
 
     private final List<SubscriptionSubscriber> subscribers = new ArrayList<>();
-    private ContributionIdentifier classified;
+    private String classifiedContentId;
 
-    void subscribe(final ContributionIdentifier classified, final String... userIds) {
-      this.classified = classified;
+    void subscribe(final String classifiedContentId, final String... userIds) {
+      this.classifiedContentId = classifiedContentId;
       List.of(userIds).forEach(u -> subscribers.add(UserSubscriptionSubscriber.from(u)));
     }
 
     @Override
     public SubscriptionSubscriberList getSubscribersOf(final ContributionIdentifier contribution) {
-      return contribution.equals(classified) ? new SubscriptionSubscriberList(subscribers) :
-          new SubscriptionSubscriberList();
+      return contribution.getComponentInstanceId().equals(COMPONENT_ID) &&
+          contribution.getLocalId().equals(classifiedContentId) ?
+          new SubscriptionSubscriberList(subscribers) : new SubscriptionSubscriberList();
     }
   }
 }
