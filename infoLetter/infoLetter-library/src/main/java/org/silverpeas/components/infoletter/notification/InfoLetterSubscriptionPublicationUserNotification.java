@@ -31,6 +31,7 @@ import org.silverpeas.core.notification.user.UserSubscriptionNotificationBehavio
 import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
+import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.subscription.constant.SubscriberType;
 import org.silverpeas.core.subscription.util.SubscriptionSubscriberMapBySubscriberType;
 import org.silverpeas.core.template.SilverpeasTemplate;
@@ -62,9 +63,16 @@ public class InfoLetterSubscriptionPublicationUserNotification extends
     subscriberIdsByTypes = getSubscribersOfComponent(getComponentInstanceId()).indexBySubscriberType();
   }
 
+  /**
+   * The subscribers of the newsletter are chosen by its managers: they receive the issue whatever
+   * their access rights on the application. It isn't the case of the other recipients (the
+   * subscribers to a position on the PdC on which the issue is classified): they have to be able
+   * to access the application.
+   */
   @Override
   protected boolean isUserCanBeNotified(final String userId) {
-    return true;
+    return subscriberIdsByTypes.get(SubscriberType.USER).getAllIds().contains(userId) ||
+        ComponentAccessControl.get().isUserAuthorized(userId, getComponentInstanceId());
   }
 
   @Override

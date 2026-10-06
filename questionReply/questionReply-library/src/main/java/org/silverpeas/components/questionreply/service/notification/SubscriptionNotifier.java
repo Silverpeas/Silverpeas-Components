@@ -24,14 +24,17 @@
 package org.silverpeas.components.questionreply.service.notification;
 
 import org.silverpeas.components.questionreply.model.Question;
+import org.silverpeas.components.questionreply.model.QuestionDetail;
 import org.silverpeas.components.questionreply.model.Reply;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.notification.user.UserSubscriptionNotificationBehavior;
 import org.silverpeas.core.subscription.constant.SubscriberType;
 import org.silverpeas.core.subscription.util.SubscriptionSubscriberMapBySubscriberType;
 
 import java.util.Collection;
 import java.util.MissingResourceException;
+import java.util.Optional;
 
 import static org.silverpeas.core.subscription.service.ResourceSubscriptionProvider.getSubscribersOfComponent;
 
@@ -46,6 +49,15 @@ public class SubscriptionNotifier extends AbstractReplyNotifier
   public SubscriptionNotifier(User sender, Question question, Reply reply) {
     super(question, reply, sender);
     this.subscriberIdsByTypes = getSubscribersOfComponent(question.getInstanceId()).indexBySubscriberType();
+  }
+
+  /**
+   * A question can be classified on the PdC: the subscribers to a position on which the question
+   * is classified are notified about its replies with the subscribers of the application.
+   */
+  @Override
+  protected Optional<ContributionIdentifier> getSubscribedContribution() {
+    return Optional.of(new QuestionDetail(getResource()).getIdentifier());
   }
 
   @Override

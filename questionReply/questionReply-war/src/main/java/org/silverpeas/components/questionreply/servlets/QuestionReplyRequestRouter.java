@@ -261,9 +261,8 @@ public class QuestionReplyRequestRouter
             0);
         // Get classification positions
         String positions = request.getParameter("Positions");
-        long questionId = scc.saveNewFAQ(request.getUploadedFiles());
+        long questionId = scc.saveNewFAQ(request.getUploadedFiles(), positions);
         String id = Long.toString(questionId);
-        scc.classifyQuestionReply(questionId, positions);
         scc.getQuestion(questionId);
         request.setAttribute(PARAM_QUESTION_ID, id);
         request.setAttribute("contentId", scc.getCurrentQuestionContentId());

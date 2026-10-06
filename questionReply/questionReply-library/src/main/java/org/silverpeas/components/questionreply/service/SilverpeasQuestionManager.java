@@ -27,6 +27,7 @@ import jakarta.inject.Inject;
 import org.silverpeas.components.questionreply.QuestionReplyException;
 import org.silverpeas.components.questionreply.index.QuestionIndexer;
 import org.silverpeas.components.questionreply.model.Question;
+import org.silverpeas.components.questionreply.model.QuestionDetail;
 import org.silverpeas.components.questionreply.model.Recipient;
 import org.silverpeas.components.questionreply.model.Reply;
 import org.silverpeas.components.questionreply.service.notification.SubscriptionNotifier;
@@ -38,6 +39,7 @@ import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.i18n.I18n;
+import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.bean.*;
 import org.silverpeas.kernel.logging.SilverLogger;
@@ -52,6 +54,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper.buildAndSend;
+import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
 import static org.silverpeas.core.persistence.jdbc.bean.BeanCriteria.OPERATOR.GREATER;
 import static org.silverpeas.core.persistence.jdbc.bean.BeanCriteria.OPERATOR.NOT_EQUALS;
 
@@ -762,6 +765,12 @@ public class SilverpeasQuestionManager implements QuestionManager {
    */
   @Override
   public long createQuestionReply(Question question, Reply reply) throws QuestionReplyException {
+    return createQuestionReply(question, reply, List.of());
+  }
+
+  @Override
+  public long createQuestionReply(Question question, Reply reply, List<PdcPosition> positions)
+      throws QuestionReplyException {
     Connection con = null;
     long idQ;
     try {
@@ -776,6 +785,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
       questionIndexer.createIndex(question, Collections.singletonList(reply));
       Question updatedQuestion = getQuestion(idQ);
       contentManager.createSilverContent(con, updatedQuestion);
+      classify(updatedQuestion, positions);
       notifySubscribers(question, reply);
     } catch (Exception e) {
       throw new QuestionReplyException(e);
@@ -843,6 +853,19 @@ public class SilverpeasQuestionManager implements QuestionManager {
   protected boolean isSortable(String instanceId) {
     return StringUtil
         .getBooleanValue(controller.getComponentParameterValue(instanceId, "sortable"));
+  }
+
+  /**
+   * Classifies the specified question on the PdC. The subscribers on the PdC aren't alerted about
+   * the classification: they are notified, with the other subscribers, about the replies to the
+   * question.
+   */
+  private void classify(Question question, List<PdcPosition> positions) {
+    if (!positions.isEmpty()) {
+      final QuestionDetail questionDetail = new QuestionDetail(question);
+      aPdcClassificationOfContent(questionDetail).withPositions(positions)
+          .classifyContent(questionDetail, false);
+    }
   }
 
   private void notifySubscribers(Question question, Reply reply) {

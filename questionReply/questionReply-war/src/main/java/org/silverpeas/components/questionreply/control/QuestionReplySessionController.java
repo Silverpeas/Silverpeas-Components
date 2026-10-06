@@ -240,11 +240,16 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   }
 
   /**
-   * Persist new FAQ inside database and add positions
+   * Persist new FAQ inside database and classify its question on the PdC. The question is
+   * classified at the creation of the FAQ itself, so that the subscribers on the PdC are notified
+   * about the reply with the subscribers of the application.
+   * @param uploadedFiles the files to attach to the reply
+   * @param positions the JSON representation of the positions on the PdC of the question
    * @return question identifier
-   * @throws QuestionReplyException
+   * @throws QuestionReplyException if the FAQ cannot be created
    */
-  public long saveNewFAQ(Collection<UploadedFile> uploadedFiles) throws QuestionReplyException {
+  public long saveNewFAQ(Collection<UploadedFile> uploadedFiles, String positions)
+      throws QuestionReplyException {
     newQuestion.setStatus(Question.CLOSED); // close
     newQuestion.setReplyNumber(1);
     newQuestion.setPublicReplyNumber(1);
@@ -255,8 +260,8 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     pk.setComponentName(getComponentId());
     newReply.setPK(pk);
 
-    long questionId =
-        QuestionManagerProvider.getQuestionManager().createQuestionReply(newQuestion, newReply);
+    long questionId = QuestionManagerProvider.getQuestionManager()
+        .createQuestionReply(newQuestion, newReply, decodePositions(positions));
 
     addFilesToReply(uploadedFiles, newReply);
 
@@ -840,33 +845,43 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   }
 
   /**
-   * Classify the question reply FAQ on the PdC only if the positions parameter is filled
+   * Classify the question on the PdC only if the positions parameter is filled. The subscribers
+   * on the PdC aren't alerted about the classification: as the subscribers of the application,
+   * they are notified about the public replies given to the question.
    * @param questionId the question identifier
    * @param positions the json string positions
    */
   public void classifyQuestionReply(long questionId, String positions) {
-    // First get the questionSilverpeasContent
-    QuestionDetail questionDetail = null;
-    try {
-      questionDetail = new QuestionDetail(getQuestion(questionId));
-    } catch (QuestionReplyException e1) {
-      SilverLogger.getLogger(this).error(e1);
-    }
-
-    if (StringUtil.isDefined(positions) && questionDetail != null) {
-      PdcClassificationEntity qiClassification = null;
+    List<PdcPosition> pdcPositions = decodePositions(positions);
+    if (!pdcPositions.isEmpty()) {
       try {
-        qiClassification = PdcClassificationEntity.fromJSON(positions);
+        QuestionDetail questionDetail = new QuestionDetail(getQuestion(questionId));
+        PdcClassification classification =
+            aPdcClassificationOfContent(questionDetail).withPositions(pdcPositions);
+        classification.classifyContent(questionDetail, false);
+      } catch (QuestionReplyException e) {
+        SilverLogger.getLogger(this).error(e);
+      }
+    }
+  }
+
+  /**
+   * Decodes the positions on the PdC from their JSON representation.
+   * @param positions the json string positions
+   * @return the positions on the PdC, or an empty list if no position is defined.
+   */
+  private List<PdcPosition> decodePositions(String positions) {
+    if (StringUtil.isDefined(positions)) {
+      try {
+        PdcClassificationEntity classification = PdcClassificationEntity.fromJSON(positions);
+        if (classification != null && !classification.isUndefined()) {
+          return classification.getPdcPositions();
+        }
       } catch (DecodingException e) {
         SilverLogger.getLogger(this).error(e);
       }
-      if (qiClassification != null && !qiClassification.isUndefined()) {
-        List<PdcPosition> pdcPositions = qiClassification.getPdcPositions();
-        PdcClassification classification =
-            aPdcClassificationOfContent(questionDetail).withPositions(pdcPositions);
-        classification.classifyContent(questionDetail);
-      }
     }
+    return List.of();
   }
 
 }
