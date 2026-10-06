@@ -48,6 +48,7 @@ import org.silverpeas.core.util.ServiceProvider;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 /**
  * This is the Service interface controller of the MVC. It controls all the activities that happen
@@ -199,6 +200,33 @@ public interface KmeliaService extends ApplicationService {
    */
   String createPublicationIntoTopic(PublicationDetail pubDetail, NodePK fatherPK,
       PdcClassification classification);
+
+  /**
+   * Creates a new publication into the specified topic, classified on the PdC as predefined for
+   * this topic, and completes it before anyone is notified about its creation.
+   * @param pubDetail the detail about the publication to create.
+   * @param fatherPK the unique identifier of the topic into which the publication is published.
+   * @param completion what remains to do on the publication, once created, for it to be complete:
+   * setting the properties that require the identifier of the publication, like its thumbnail.
+   * The supervisors and the subscribers are notified about the publication only once completed.
+   * @return the unique identifier of the created publication.
+   */
+  String createPublicationIntoTopic(PublicationDetail pubDetail, NodePK fatherPK,
+      Consumer<PublicationDetail> completion);
+
+  /**
+   * Creates a new publication into the specified topic, with the specified classification on the
+   * PdC, and completes it before anyone is notified about its creation.
+   * @param pubDetail the detail about the publication to create.
+   * @param fatherPK the unique identifier of the topic into which the publication is published.
+   * @param classification the classification on the PdC of the publication content.
+   * @param completion what remains to do on the publication, once created, for it to be complete:
+   * setting the properties that require the identifier of the publication, like its thumbnail.
+   * The supervisors and the subscribers are notified about the publication only once completed.
+   * @return the unique identifier of the created publication.
+   */
+  String createPublicationIntoTopic(PublicationDetail pubDetail, NodePK fatherPK,
+      PdcClassification classification, Consumer<PublicationDetail> completion);
 
   /**
    * Update a publication (only the header - parameters)
