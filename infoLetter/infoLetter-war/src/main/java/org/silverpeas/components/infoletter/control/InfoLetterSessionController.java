@@ -46,7 +46,9 @@ import org.silverpeas.core.exception.UtilTrappedException;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
+import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.subscription.constant.SubscriberType;
+import org.silverpeas.core.subscription.service.ResourceSubscriptionProvider;
 import org.silverpeas.core.subscription.util.SubscriptionSubscriberMapBySubscriberType;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.ServiceProvider;
@@ -246,7 +248,8 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
         List<PdcPosition> pdcPositions = ilClassification.getPdcPositions();
         PdcClassification classification = aPdcClassificationOfContent(ilp).
             withPositions(pdcPositions);
-        classification.classifyContent(ilp);
+        // no alert of the subscribers on the PdC: they will receive the issue once it is sent
+        classification.classifyContent(ilp, false);
       }
     }
   }
@@ -277,10 +280,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   public void notifyInternalSubscribers(InfoLetterPublicationPdC ilp) {
     if (isNewsLetterSendByMail()) {
       //Send the newsletter by Mail to internal subscribers
-      SubscriptionSubscriberMapBySubscriberType subscriberIdsByTypes =
-          service.getInternalSubscribers(getComponentId()).indexBySubscriberType();
-      Set<String> internalSubscribersEmails = getEmailsInternalSubscribers(subscriberIdsByTypes);
-      sendLetterByMail(ilp, internalSubscribersEmails);
+      sendLetterByMail(ilp, getEmailsInternalRecipients(ilp));
     } else {
       //Send the newsletter via notification
       UserNotificationHelper.buildAndSend(
@@ -326,10 +326,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     // Removing potential already sent emails
     if (isNewsLetterSendByMail()) {
       // Internal subscribers
-      SubscriptionSubscriberMapBySubscriberType subscriberIdsByTypes =
-          service.getInternalSubscribers(getComponentId()).indexBySubscriberType();
-      Set<String> internalSubscribersEmails = getEmailsInternalSubscribers(subscriberIdsByTypes);
-      extmails.removeAll(internalSubscribersEmails);
+      extmails.removeAll(getEmailsInternalRecipients(ilp));
     }
     return sendLetterByMail(ilp, extmails);
   }
@@ -517,6 +514,30 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
       SubscriptionSubscriberMapBySubscriberType subscriberIdsByTypes) {
     List<String> userIds = subscriberIdsByTypes.getAllUserIds();
     return getEmailAddressOf(userIds, null);
+  }
+
+  /**
+   * Gets the email addresses of all the users in Silverpeas to which the specified issue has to
+   * be sent by mail: the subscribers of the newsletter and the users concerned by the issue in
+   * another way, like the subscribers to a position on the PdC on which the issue is classified.
+   * Unlike the subscribers of the newsletter, chosen by its managers, the latter have to be able
+   * to access the application.
+   * @param ilp the issue of the newsletter to send.
+   * @return a set of email addresses.
+   */
+  private Set<String> getEmailsInternalRecipients(InfoLetterPublicationPdC ilp) {
+    SubscriptionSubscriberMapBySubscriberType subscriberIdsByTypes =
+        service.getInternalSubscribers(getComponentId()).indexBySubscriberType();
+    Set<String> emails = getEmailsInternalSubscribers(subscriberIdsByTypes);
+    ContributionIdentifier issueId =
+        ContributionIdentifier.from(getComponentId(), ilp.getId(), InfoLetterPublicationPdC.TYPE);
+    List<String> otherUserIds = ResourceSubscriptionProvider.getSubscribersConcernedBy(issueId)
+        .getAllUserIds()
+        .stream()
+        .filter(u -> ComponentAccessControl.get().isUserAuthorized(u, getComponentId()))
+        .collect(Collectors.toList());
+    emails.addAll(getEmailAddressOf(otherUserIds, null));
+    return emails;
   }
 
   /**

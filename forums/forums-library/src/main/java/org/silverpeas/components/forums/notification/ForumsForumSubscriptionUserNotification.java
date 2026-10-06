@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.forums.notification;
 
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.notification.user.UserSubscriptionNotificationBehavior;
 import org.silverpeas.core.subscription.constant.SubscriberType;
 import org.silverpeas.core.subscription.util.SubscriptionSubscriberMapBySubscriberType;
@@ -30,6 +31,7 @@ import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.components.forums.model.ForumDetail;
 
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * User: Yohann Chastagnier
@@ -49,6 +51,15 @@ public class ForumsForumSubscriptionUserNotification extends AbstractForumsForum
   protected void initialize() {
     super.initialize();
     subscriberIdsByTypes.addAll(getForumsService().listAllSubscribers(getResource().getPK()));
+  }
+
+  /**
+   * A forum can be classified on the PdC: the subscribers to a position on which the forum is
+   * classified are notified with the subscribers of the forum.
+   */
+  @Override
+  protected Optional<ContributionIdentifier> getSubscribedContribution() {
+    return Optional.of(getResource().getIdentifier());
   }
 
   @Override

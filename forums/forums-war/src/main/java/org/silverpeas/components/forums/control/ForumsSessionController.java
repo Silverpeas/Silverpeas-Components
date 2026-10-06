@@ -177,11 +177,12 @@ public class ForumsSessionController extends AbstractComponentSessionController 
         .createForum(forumPK, truncateTextField(forumName), truncateTextArea(forumDescription),
             forumCreator, forumParent, currentCategoryId, keywords);
 
+    // Classify content here, before notifying the subscribers: those on the PdC are notified
+    // with the other subscribers about the creation of the forum
+    classifyContent(forumPK);
+
     // Send notification
     sendForumNotification(getForumService().getForumDetail(getForumPK(forumId)), NotifAction.CREATE);
-
-    // Classify content here
-    classifyContent(forumPK);
     return forumId;
   }
 
@@ -762,7 +763,8 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   /**
    * this method classify content only when new forum is created. Check if a position has been
-   * defined in header formulary then persist it
+   * defined in header formulary then persist it. The subscribers on the PdC aren't alerted about
+   * the classification: they are notified about the creation of the forum itself.
    * @param forumPK the current ForumDetail
    */
   private void classifyContent(ForumPK forumPK) {
@@ -771,7 +773,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
       ForumDetail forumDetail = getForumService().getForumDetail(forumPK);
       PdcClassification classification =
           aPdcClassificationOfContent(forumDetail).withPositions(this.getPositions());
-      classification.classifyContent(forumDetail);
+      classification.classifyContent(forumDetail, false);
     }
   }
 

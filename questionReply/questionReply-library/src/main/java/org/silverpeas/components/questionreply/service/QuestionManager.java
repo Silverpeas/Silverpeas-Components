@@ -27,6 +27,7 @@ import org.silverpeas.components.questionreply.QuestionReplyException;
 import org.silverpeas.components.questionreply.model.Question;
 import org.silverpeas.components.questionreply.model.Recipient;
 import org.silverpeas.components.questionreply.model.Reply;
+import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 
 import java.util.Collection;
 import java.util.List;
@@ -177,4 +178,19 @@ public interface QuestionManager {
    * @throws QuestionReplyException
    */
   long createQuestionReply(Question question, Reply reply) throws QuestionReplyException;
+
+  /**
+   * Creates and persists a question with its reply, and classifies the question on the PdC on the
+   * specified positions. The question is classified before the subscribers are notified about the
+   * reply, and without alerting the subscribers on the PdC about the classification: they are
+   * notified about the reply with the other subscribers.
+   * @param question the new question
+   * @param reply the answer linked to the given question
+   * @param positions the positions on the PdC on which the question has to be classified. If
+   * empty, the question isn't classified.
+   * @return long identifier of the created question
+   * @throws QuestionReplyException if an error occurs
+   */
+  long createQuestionReply(Question question, Reply reply, List<PdcPosition> positions)
+      throws QuestionReplyException;
 }
