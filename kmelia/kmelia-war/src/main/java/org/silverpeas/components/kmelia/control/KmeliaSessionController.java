@@ -157,6 +157,7 @@ import java.nio.file.Files;
 import java.text.ParseException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -890,21 +891,35 @@ public class KmeliaSessionController extends AbstractComponentSessionController
         getUserId());
   }
 
+  /**
+   * Creates the specified publication into the current folder.
+   * @param pubDetail the publication to create.
+   * @param classification the classification of the publication on the PdC. If null or undefined,
+   * the publication is classified as predefined for the current folder.
+   * @param completion what remains to do on the publication, once created, for it to be complete:
+   * setting the properties that require the identifier of the publication, like its thumbnail.
+   * The publication is completed before anyone is notified about its creation.
+   * @return the identifier of the created publication.
+   */
   public synchronized String createPublication(PublicationDetail pubDetail,
-      final PdcClassificationEntity classification) {
+      final PdcClassificationEntity classification,
+      final Consumer<PublicationDetail> completion) {
     pubDetail.setCreatorId(getUserId());
     pubDetail.setCreationDate(new Date());
 
     String result;
     if (isKmaxMode) {
+      // nobody is notified about the creation of a publication in the Kmax mode
       result = getKmeliaService().createKmaxPublication(pubDetail);
+      completion.accept(pubDetail);
     } else {
       if (classification == null || classification.isUndefined()) {
-        result = getKmeliaService().createPublicationIntoTopic(pubDetail, getCurrentFolderPK());
+        result = getKmeliaService().createPublicationIntoTopic(pubDetail, getCurrentFolderPK(),
+            completion);
       } else {
         PdcClassification withClassification = getPdcClassification(pubDetail, classification);
-        result = getKmeliaService()
-            .createPublicationIntoTopic(pubDetail, getCurrentFolderPK(), withClassification);
+        result = getKmeliaService().createPublicationIntoTopic(pubDetail, getCurrentFolderPK(),
+            withClassification, completion);
       }
     }
     return result;

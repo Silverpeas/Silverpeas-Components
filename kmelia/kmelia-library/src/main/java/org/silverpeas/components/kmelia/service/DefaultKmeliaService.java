@@ -167,6 +167,9 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
   private static final String NODE_PREFIX = "Node_";
   private static final String ADMIN_ROLE = "admin";
   private static final String ALIASES_CACHE_KEY = "NEW_PUB_ALIASES";
+  private static final Consumer<PublicationDetail> NO_COMPLETION = p -> {
+    // nothing remains to do on a just created publication
+  };
   private static final Predicate<PublicationDetail> HAS_CLONE = k -> k.isValid() &&
       k.haveGotClone() && !k.isClone();
   @Inject
@@ -768,20 +771,37 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
   public String createPublicationIntoTopic(PublicationDetail pubDetail, NodePK fatherPK) {
-    PdcClassification predefinedClassification =
-        pdcClassificationService.findAPreDefinedClassification(fatherPK.getId(),
-            fatherPK.getInstanceId());
-    return createPublicationIntoTopic(pubDetail, fatherPK, predefinedClassification);
+    return createPublicationIntoTopic(pubDetail, fatherPK, NO_COMPLETION);
   }
 
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
   public String createPublicationIntoTopic(PublicationDetail pubDetail, NodePK fatherPK,
       PdcClassification classification) {
+    return createPublicationIntoTopic(pubDetail, fatherPK, classification, NO_COMPLETION);
+  }
+
+  @Override
+  @Transactional(Transactional.TxType.REQUIRED)
+  public String createPublicationIntoTopic(PublicationDetail pubDetail, NodePK fatherPK,
+      Consumer<PublicationDetail> completion) {
+    PdcClassification predefinedClassification =
+        pdcClassificationService.findAPreDefinedClassification(fatherPK.getId(),
+            fatherPK.getInstanceId());
+    return createPublicationIntoTopic(pubDetail, fatherPK, predefinedClassification, completion);
+  }
+
+  @Override
+  @Transactional(Transactional.TxType.REQUIRED)
+  public String createPublicationIntoTopic(PublicationDetail pubDetail, NodePK fatherPK,
+      PdcClassification classification, Consumer<PublicationDetail> completion) {
     final String pubId;
     KmeliaOperationContext.about(CREATION);
     try {
       pubId = createPublicationIntoTopicWithoutNotifications(pubDetail, fatherPK, classification);
+
+      // completes the publication before anyone is notified about it
+      completion.accept(pubDetail);
 
       // creates todos for publishers
       createTodosForPublication(pubDetail, true);

@@ -78,10 +78,13 @@ import org.silverpeas.kernel.annotation.NonNull;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.Mutable;
 import org.silverpeas.kernel.util.StringUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.File;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -920,17 +923,16 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         // create publication
         PdcClassificationEntity withClassification = getPdcClassification(kmelia, parameters);
         PublicationDetail pubDetail = getPublicationDetail(parameters, kmelia);
-        String newPubId = kmelia.createPublication(pubDetail, withClassification);
+        // the thumbnail, if any, is set before anyone is notified about the new publication so
+        // that it can be carried by the notifications
+        final Mutable<Boolean> newThumbnail = Mutable.of(false);
+        String newPubId = kmelia.createPublication(pubDetail, withClassification,
+            p -> newThumbnail.set(setThumbnail(p, parameters)));
 
         if (kmelia.isReminderUsed()) {
           PublicationDetail pubDetailCreated = kmelia.getPublicationDetail(newPubId);
           kmelia.addPublicationReminder(pubDetailCreated, parameters);
         }
-
-        // create thumbnail if exists
-        boolean newThumbnail = ThumbnailController
-            .processThumbnail(new ResourceReference(newPubId, kmelia.getComponentId()),
-                parameters);
 
         //process files
         Collection<UploadedFile> attachments = request.getUploadedFiles();
@@ -943,7 +945,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         }
 
         // force indexation to add thumbnail and attachments to publication index
-        if ((newThumbnail || !attachments.isEmpty()) && pubDetail.isIndexable()) {
+        if ((newThumbnail.get() || !attachments.isEmpty()) && pubDetail.isIndexable()) {
           kmelia.getPublicationService().createIndex(pubDetail.getPK());
         }
 
@@ -1888,6 +1890,23 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
       data.setLanguage(language);
     }
     return data;
+  }
+
+  /**
+   * Sets to the specified publication the thumbnail carried by the given request parameters.
+   * @param publication a publication.
+   * @param parameters the parameters of the request.
+   * @return true if the thumbnail of the publication has been changed, false otherwise.
+   */
+  private static boolean setThumbnail(final PublicationDetail publication,
+      final List<FileItem> parameters) {
+    try {
+      final PublicationPK pk = publication.getPK();
+      return ThumbnailController.processThumbnail(
+          new ResourceReference(pk.getId(), pk.getInstanceId()), parameters);
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
+    }
   }
 
   private void setLanguage(HttpServletRequest request, KmeliaSessionController kmelia) {
