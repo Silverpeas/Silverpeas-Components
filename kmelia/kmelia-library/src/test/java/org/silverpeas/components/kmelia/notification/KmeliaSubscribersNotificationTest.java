@@ -40,7 +40,6 @@ import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
-import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.notification.user.builder.UserNotificationBuilder;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
@@ -61,21 +60,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.atLeast;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.silverpeas.components.kmelia.notification.KmeliaDelayedVisibilityUserNotificationReminder.KMELIA_DELAYED_VISIBILITY_USER_NOTIFICATION;
 
 /**
@@ -203,9 +195,9 @@ class KmeliaSubscribersNotificationTest {
         notificationsSentBy(() -> service.setAliases(PUBLICATION_PK, newAliases));
 
     assertThat(notifications, hasSize(1));
-    assertThat(notifications.get(0).getNodePK().getId(), is(AN_ALIAS_FOLDER));
-    assertThat(notifications.get(0).getAction(), is(NotifAction.PUBLISHED));
-    assertThat(notifications.get(0).getSubscribedContribution().isPresent(), is(false));
+    assertThat(notifications.getFirst().getNodePK().getId(), is(AN_ALIAS_FOLDER));
+    assertThat(notifications.getFirst().getAction(), is(NotifAction.PUBLISHED));
+    assertThat(notifications.getFirst().getSubscribedContribution().isPresent(), is(false));
     assertThat(publication.detail.isAlias(), is(false));
   }
 
@@ -286,7 +278,7 @@ class KmeliaSubscribersNotificationTest {
 
     PublicationInFolders withAliasesIn(final String... folderIds) {
       final List<Location> aliases =
-          List.of(folderIds).stream().map(KmeliaSubscribersNotificationTest::anAliasIn).toList();
+          Stream.of(folderIds).map(KmeliaSubscribersNotificationTest::anAliasIn).toList();
       when(publicationService.getAllAliases(PUBLICATION_PK)).thenReturn(aliases);
       return this;
     }

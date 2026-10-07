@@ -160,6 +160,7 @@ public interface KmeliaService extends ApplicationService {
    * @param limit the maximum number of publications to return (0 = no limit).
    * @return a list of {@link KmeliaPublication} instances.
    */
+  @NonNull
   List<KmeliaPublication> getLatestAuthorizedPublications(String instanceId, String userId,
       int limit);
 
