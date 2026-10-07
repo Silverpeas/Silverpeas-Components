@@ -60,20 +60,10 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.atLeast;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * Unit tests on the notifications the blog service asks to send to the subscribers about a post:
@@ -135,9 +125,9 @@ class BlogSubscribersNotificationTest {
         notificationsSentBy(() -> service.draftOutPost(post));
 
     assertThat(notifications, hasSize(1));
-    assertThat(notifications.get(0), instanceOf(BlogUserSubscriptionNotification.class));
+    assertThat(notifications.getFirst(), instanceOf(BlogUserSubscriptionNotification.class));
     final BlogUserSubscriptionNotification notification =
-        (BlogUserSubscriptionNotification) notifications.get(0);
+        (BlogUserSubscriptionNotification) notifications.getFirst();
     assertThat(notification.getAction(), is(NotifAction.CREATE));
     assertThat(notification.getComponentInstanceId(), is(COMPONENT_ID));
   }
@@ -150,7 +140,7 @@ class BlogSubscribersNotificationTest {
         notificationsSentBy(() -> service.updatePost(post, null));
 
     assertThat(notifications, hasSize(1));
-    assertThat(((BlogUserSubscriptionNotification) notifications.get(0)).getAction(),
+    assertThat(((BlogUserSubscriptionNotification) notifications.getFirst()).getAction(),
         is(NotifAction.UPDATE));
   }
 
@@ -180,7 +170,7 @@ class BlogSubscribersNotificationTest {
     assertThat(notifications, is(empty()));
     verify(classification).classifyContent(post.getPublication(), false);
     verify(classification, never()).classifyContent(post.getPublication());
-    verify(classification, never()).classifyContent(eq(post.getPublication()), eq(true));
+    verify(classification, never()).classifyContent(post.getPublication(), true);
   }
 
   @Test
@@ -205,7 +195,7 @@ class BlogSubscribersNotificationTest {
         .setNameAndDescription("A post", "")
         .build();
     publication.setStatus(status);
-    return new PostDetail(publication, (String) null, new Date());
+    return new PostDetail(publication, null, new Date());
   }
 
   /**

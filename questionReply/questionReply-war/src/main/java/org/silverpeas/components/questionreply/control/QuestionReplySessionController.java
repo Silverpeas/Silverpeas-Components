@@ -58,6 +58,7 @@ import org.silverpeas.core.persistence.jdbc.bean.IdPK;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.exception.NotFoundException;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.ZipUtil;
 import org.silverpeas.core.util.file.FileFolderManager;
@@ -69,17 +70,10 @@ import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
+import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -89,7 +83,34 @@ import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassifica
 import static org.silverpeas.core.util.Charsets.UTF_8;
 
 public class QuestionReplySessionController extends AbstractComponentSessionController {
+  @Serial
   private static final long serialVersionUID = -4956263179309397997L;
+
+  private static final String JS_FUNCTIONS = """
+        <script language="javascript">
+        function showHideAnswer() {\s
+          var numericID = this.id.replace(/[^\\d]/g,'');
+          var obj = document.getElementById('a' + numericID);
+          if(obj.style.display=='block'){
+            obj.style.display='none';
+          }else{
+            obj.style.display='block';
+          }  \s
+        }
+        function initShowHideContent()
+        {
+          var divs = document.getElementsByTagName('div');
+          for(var no=0;no<divs.length;no++)
+          {
+            if(divs[no].className=='question')
+            {
+              divs[no].onclick = showHideAnswer;
+            }
+          }
+        }
+        window.onload = initShowHideContent;
+        </script>
+        """;
 
   private SilverpeasRole userProfil;
   private Question currentQuestion;
@@ -101,19 +122,13 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    * Recupère la liste des questions selon le profil de l'utilisateur courant
    */
   public Collection<Question> getQuestions() throws QuestionReplyException {
-    switch (userProfil) {
-      case USER:
-        return getUserQuestions();
-      case WRITER:
-        return getWriterQuestions();
-      case PUBLISHER:
-        return getPublisherQuestions();
-      case ADMIN:
-        return getAdminQuestions();
-      default:
-        break;
-    }
-    return new ArrayList<>();
+    return switch (userProfil) {
+      case USER -> getUserQuestions();
+      case WRITER -> getWriterQuestions();
+      case PUBLISHER -> getPublisherQuestions();
+      case ADMIN -> getAdminQuestions();
+      default -> new ArrayList<>();
+    };
   }
 
   public Collection<Question> getQuestionsByCategory(String categoryId)
@@ -136,18 +151,12 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   }
 
   public Collection<Reply> getRepliesForQuestion(long id) throws QuestionReplyException {
-    switch (userProfil) {
-      case USER:
-        return getPublicRepliesForQuestion(id);
-      case PUBLISHER:
-        return getPrivateRepliesForQuestion(id);
-      case WRITER:
-      case ADMIN:
-        return getAllRepliesForQuestion(id);
-      default:
-        break;
-    }
-    return new ArrayList<>();
+    return switch (userProfil) {
+      case USER -> getPublicRepliesForQuestion(id);
+      case PUBLISHER -> getPrivateRepliesForQuestion(id);
+      case WRITER, ADMIN -> getAllRepliesForQuestion(id);
+      default -> new ArrayList<>();
+    };
   }
 
   /*
@@ -170,6 +179,9 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    */
   public Reply getReply(long replyId) throws QuestionReplyException {
     Reply reply = QuestionManagerProvider.getQuestionManager().getReply(replyId);
+    if (reply == null) {
+      throw new NotFoundException("No reply found with id " + replyId);
+    }
     setCurrentReply(reply);
     return reply;
   }
@@ -499,7 +511,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     }
   }
 
-  public String genericWriters() throws QuestionReplyException {
+  public String genericWriters() {
     // This method is no more used at the moment (Silverpeas 6.0)
     return "";
   }
@@ -515,10 +527,9 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       ContentManagementEngine contentMgtEngine = ContentManagementEngineProvider.getContentManagementEngine();
       // recupere la liste de toutes les instances d'annuaire
       String[] instances = orga.getCompoId("whitePages");
-      List<String> listeInstanceId = new ArrayList<>();
-      for(String id : instances) {
-        listeInstanceId.add("whitePages" + id);
-      }
+      List<String> listeInstanceId = Arrays.stream(instances)
+          .map(id -> "whitePages" + id)
+          .toList();
 
       // recupere la liste de tous les experts du domaine de classement de la
       // question
@@ -558,26 +569,17 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     buildAndSend(new QuestionNotifier(sender, question, recipientIds));
   }
 
-  /**
-   * @param question
-   */
   private void notifyQuestion(Question question) {
     notifyTemplateQuestion(question,
         question.readRecipients().stream().map(Recipient::getUserId).collect(Collectors.toSet()));
   }
 
-  /**
-   * @param question
-   */
   private void notifyQuestionFromExpert(Question question) {
     final List<String> profiles = singletonList(SilverpeasRole.WRITER.getName());
     String[] usersIds = getOrganisationController().getUsersIdsByRoleNames(getComponentId(), profiles);
     notifyTemplateQuestion(question, Stream.of(usersIds).collect(Collectors.toSet()));
   }
 
-  /**
-   * @param reply
-   */
   private void notifyReply(final Reply reply) {
     final User sender = getUserDetail(getUserId());
     final String recipientId = getCurrentQuestion().getCreatorId();
@@ -598,9 +600,8 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
         ContentManagementEngine contentMgtEngine = ContentManagementEngineProvider.getContentManagementEngine();
         contentId = String.valueOf(contentMgtEngine
             .getSilverContentId(currentQuestion.getPK().getId(), currentQuestion.getInstanceId()));
-      } catch (ContentManagerException ignored) {
-        SilverLogger.getLogger(this).error(ignored);
-        contentId = null;
+      } catch (ContentManagerException e) {
+        SilverLogger.getLogger(this).error(e);
       }
     }
 
@@ -751,57 +752,22 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   private String toHTML(File file, MultiSilverpeasBundle resource)
       throws QuestionReplyException, ParseException {
     String fileName = file.getName();
-    StringBuilder sb = new StringBuilder();
 
-    sb.append("<HTML>\n");
-    sb.append("<HEAD>\n");
-
-    sb.append("<TITLE>").append(fileName).append("</TITLE>\n");
-    sb.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n");
-    sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"files/ExportFAQ.css\">\n");
-    sb.append("\n");
-    sb.append(addFunction());
-    sb.append("\n");
-    sb.append("</HEAD>\n");
-
-    sb.append("<BODY>\n");
-    sb.append("\n");
-    sb.append(addBody(resource, file));
-    sb.append("\n");
-    sb.append("</BODY>\n");
-    sb.append("</HTML>\n");
-
-    return sb.toString();
-  }
-
-  private String addFunction() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("<script language=\"javascript\">\n");
-    sb.append("function showHideAnswer() { \n");
-    sb.append("  var numericID = this.id.replace(/[^\\d]/g,'');\n");
-    sb.append("  var obj = document.getElementById('a' + numericID);\n");
-    sb.append("  if(obj.style.display=='block'){\n");
-    sb.append("    obj.style.display='none';\n");
-    sb.append("  }else{\n");
-    sb.append("    obj.style.display='block';\n");
-    sb.append("  }   \n");
-    sb.append("}\n");
-
-    sb.append("function initShowHideContent()\n");
-    sb.append("{\n");
-    sb.append("  var divs = document.getElementsByTagName('div');\n");
-    sb.append("  for(var no=0;no<divs.length;no++)\n");
-    sb.append("  {\n");
-    sb.append("    if(divs[no].className=='question')\n");
-    sb.append("    {\n");
-    sb.append("      divs[no].onclick = showHideAnswer;\n");
-    sb.append("    }\n");
-    sb.append("  }\n");
-    sb.append("}\n");
-
-    sb.append("window.onload = initShowHideContent;\n");
-    sb.append("</script>\n");
-    return sb.toString();
+    return "<HTML>\n" +
+        "<HEAD>\n" +
+        "<TITLE>" + fileName + "</TITLE>\n" +
+        "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n" +
+        "<link rel=\"stylesheet\" type=\"text/css\" href=\"files/ExportFAQ.css\">\n" +
+        "\n" +
+        JS_FUNCTIONS +
+        "\n" +
+        "</HEAD>\n" +
+        "<BODY>\n" +
+        "\n" +
+        addBody(resource, file) +
+        "\n" +
+        "</BODY>\n" +
+        "</HTML>\n";
   }
 
   private String addBody(MultiSilverpeasBundle resource, File file)

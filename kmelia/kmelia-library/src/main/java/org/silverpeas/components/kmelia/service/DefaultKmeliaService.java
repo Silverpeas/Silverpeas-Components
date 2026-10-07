@@ -297,6 +297,7 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
 
   @SuppressWarnings("unchecked")
   @Override
+  @NonNull
   public List<KmeliaPublication> getLatestAuthorizedPublications(String instanceId, String userId,
       int limit) {
     final long start = System.currentTimeMillis();
@@ -315,7 +316,7 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
                           .limitTo(limit));
               return asKmeliaPublication(pubDetails);
             });
-    int size = result == null ? 0 : result.size();
+    int size = result.size();
     SilverLogger.getLogger(this)
         .debug(() -> format("getting {0} latest authorized publications of instance {1} in {2}",
             size, instanceId, formatDurationHMS(System.currentTimeMillis() - start)));
@@ -706,11 +707,12 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
         publicationService.getAllLocationsByPublicationIds(pubIds);
     return pubDetails.stream()
         .map(p -> KmeliaPublication.fromDetail(p, fatherPK, locationsByPublication))
-        .collect(Collectors.toList());
+        .toList();
   }
 
+  @NonNull
   private List<KmeliaPublication> asKmeliaPublication(Collection<PublicationDetail> pubDetails) {
-    return pubDetails.stream().map(KmeliaPublication::fromDetail).collect(Collectors.toList());
+    return pubDetails.stream().map(KmeliaPublication::fromDetail).toList();
   }
 
   /**
@@ -1136,7 +1138,7 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
 
     // check if user can cut publication from source folder
     String profile = getUserTopicProfile(from, userId);
-    @SuppressWarnings("removal") boolean cutAllowed = KmeliaPublicationHelper.isCanBeCut(
+    boolean cutAllowed = KmeliaPublicationHelper.isCanBeCut(
         from.getComponentName(), userId, profile, pub.getCreator());
 
     // check if user can paste publication into target folder
@@ -1732,7 +1734,7 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
       final List<ResourceReference> authorizedReferences = publicationAccessControl
           .filterAuthorizedByUser(indexedReferences.keySet(), userId)
           .map(indexedReferences::get)
-          .collect(Collectors.toList());
+          .toList();
       publications = getPublicationDetails(authorizedReferences);
     } else {
       publications = getPublicationDetails(references);
@@ -1753,18 +1755,18 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
     final List<ResourceReference> authorizedReferences = publicationAccessControl
         .filterAuthorizedByUser(indexedReferences.keySet(), userId, modificationContext)
         .map(indexedReferences::get)
-        .collect(Collectors.toList());
+        .toList();
     final List<PublicationDetail> publications = getPublicationDetails(authorizedReferences);
     final List<String> pubIds = authorizedReferences.stream()
         .map(ResourceReference::getId)
-        .collect(Collectors.toList());
+        .toList();
     final Map<String, List<Location>> locationsByPublication =
         publicationService.getAllLocationsByPublicationIds(pubIds);
     final Map<PublicationPK, PublicationDetail> clones =
         getPublicationDetails(publications.stream()
             .filter(HAS_CLONE)
             .map(PublicationDetail::getClonePK)
-            .collect(Collectors.toList()))
+            .toList())
             .stream()
             .collect(toMap(PublicationDetail::getPK, k -> k));
     return publications.stream()
@@ -1774,7 +1776,7 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
             .map(c -> Pair.of(k, KmeliaPublication.fromDetail(c, k.getLocation(),
                 locationsByPublication)))
             .orElseGet(() -> Pair.of(k, null)))
-        .collect(Collectors.toList());
+        .toList();
   }
 
   /**
@@ -1789,11 +1791,9 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
   public List<KmeliaPublication> getLinkedPublications(KmeliaPublication publication,
       String userId) {
     List<PublicationLink> allLinks = publication.getCompleteDetail().getLinkedPublications(userId);
-    List<KmeliaPublication> authorizedLinks = new ArrayList<>();
-    for (PublicationLink link : allLinks) {
-      authorizedLinks.add(KmeliaPublication.withPK(link.getPubPK()));
-    }
-    return authorizedLinks;
+    return allLinks.stream()
+        .map(link -> KmeliaPublication.withPK(link.getPubPK()))
+        .toList();
   }
 
   @Override
@@ -1943,10 +1943,9 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
     List<ValidationStep> steps = publicationService.getValidationSteps(pubPK);
 
     // get users who have already validate
-    List<String> stepUserIds = new ArrayList<>();
-    for (ValidationStep step : steps) {
-      stepUserIds.add(step.getUserId());
-    }
+    List<String> stepUserIds = steps.stream()
+        .map(ValidationStep::getUserId)
+        .toList();
 
     // check if all users have validated
     boolean validationOK = true;
@@ -2199,13 +2198,11 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
       int validationType) {
     try {
       switch (validationType) {
-        case KmeliaHelper.VALIDATION_COLLEGIATE:
-        case KmeliaHelper.VALIDATION_TARGET_N:
+        case KmeliaHelper.VALIDATION_COLLEGIATE | KmeliaHelper.VALIDATION_TARGET_N:
           // reset other decisions
           publicationService.removeValidationSteps(pubPK);
           break;
-        case KmeliaHelper.VALIDATION_CLASSIC:
-        case KmeliaHelper.VALIDATION_TARGET_1:
+        case KmeliaHelper.VALIDATION_CLASSIC | KmeliaHelper.VALIDATION_TARGET_1:
         default:
           break;// do nothing
       }
@@ -2462,7 +2459,7 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
     try {
       return pagination.execute().stream()
           .map(a -> new HistoryObjectDetail(a.getLastAccess(), a.getUserId(), publication))
-          .collect(Collectors.toList());
+          .toList();
     } finally {
       if (pagination.isNbMaxDataSourceCallLimitReached()) {
         SilverLogger.getLogger(this)
@@ -2555,7 +2552,7 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
     }
   }
 
-  /*
+  /**
    * Creates todos for all publishers of this kmelia instance
    * @param pubDetail publication to be validated
    * @param creation true if it's the creation of the publi
@@ -2613,12 +2610,10 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
     todo.setComponentId(pubDetail.getPK().getComponentName());
     todo.setName(message.getString("ToValidateShort") + " : " + pubDetail.getName());
 
-    List<Attendee> attendees = new ArrayList<>();
-    for (String user : users) {
-      if (user != null) {
-        attendees.add(new Attendee(user));
-      }
-    }
+    List<Attendee> attendees = Arrays.stream(users)
+        .filter(Objects::nonNull)
+        .map(Attendee::new)
+        .toList();
     todo.setAttendees(new ArrayList<>(attendees));
     todo.setDelegatorId(pubDetail.getMostRecentUpdater());
     todo.setExternalId(pubDetail.getPK().getId());
@@ -2626,9 +2621,9 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
     calendar.addToDo(todo);
   }
 
-  /*
-   * Remove todos for all pubishers of this kmelia instance
-   * @param pubDetail corresponding publication
+  /**
+   * Remove todos related to the specified publication.
+   * @param pubPK the publication
    */
   private void removeAllTodosForPublication(PublicationPK pubPK) {
     calendar.removeToDoFromExternal(USELESS, pubPK.getInstanceId(), pubPK.getId());
@@ -2966,8 +2961,9 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
         final List<String> fatherIds =
             coordinatesService.getCoordinateIdsByNodeId(coordinatePK, axisId)
                 .stream()
-                .filter(f -> !NodePK.UNCLASSED_NODE_ID.equals(f) && !NodePK.BIN_NODE_ID.equals(f))
-                .collect(Collectors.toList());
+                .filter(f -> !NodePK.UNCLASSED_NODE_ID.equals(f)
+                    && !NodePK.BIN_NODE_ID.equals(f))
+                .toList();
         if (!fatherIds.isEmpty()) {
           publicationService.removeFathers(pubPK, fatherIds);
         }
@@ -3491,7 +3487,7 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
       // clone attachments
       List<SimpleDocument> documents = getAttachmentService().listDocumentsByForeignKey(
           new ResourceReference(fromId, fromComponentId), null);
-      Map<String, String> attachmentIds = new HashMap<>(documents.size());
+      Map<String, String> attachmentIds = HashMap.newHashMap(documents.size());
       Collections.reverse(documents);
       for (SimpleDocument document : documents) {
         getAttachmentService().cloneDocument(document, cloneId);
@@ -3855,7 +3851,7 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
     String instanceId = pk.getInstanceId();
     List<NodeDetail> nodes = new ArrayList<>(nodeService.getPath(pk));
     Collections.reverse(nodes);
-    nodes.remove(0);
+    nodes.removeFirst();
 
     List<NodeDetail> treeview = null;
     if (isNbItemsDisplayed(instanceId)) {
@@ -3867,7 +3863,7 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
     // set nb objects in nodes
     if (treeview != null) {
       // set nb objects on root
-      root.setNbObjects(treeview.get(0).getNbObjects());
+      root.setNbObjects(treeview.getFirst().getNbObjects());
       // set nb objects in each allowed nodes
       setNbItemsOfFolders(instanceId, nodes, treeview);
     }
@@ -4444,7 +4440,7 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
         k -> isPublicationVisible(k.getDetail(), profile, userId, coWriting);
     return publications.stream()
         .filter(not(removedComponentInstance).and(visiblePublication))
-        .collect(Collectors.toList());
+        .toList();
   }
 
   @Override
@@ -4607,7 +4603,7 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
       // only publications allowed by current user must be returned
       List<PublicationDetail> publications = publicationAccessControl
           .filterAuthorizedByUser(userId, temp)
-          .collect(Collectors.toList());
+          .toList();
       return asKmeliaPublication(publications);
     } catch (Exception e) {
       throw new KmeliaRuntimeException(e);
@@ -4715,29 +4711,26 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
       // User has no more validation right
       final int validationType = getValidationType(pubPK.getInstanceId());
       boolean alertPublicationOwnerThereIsNoMoreValidator = false;
-      switch (validationType) {
-        case KmeliaHelper.VALIDATION_CLASSIC:
-        case KmeliaHelper.VALIDATION_TARGET_1:
+      if (validationType == KmeliaHelper.VALIDATION_CLASSIC ||
+          validationType == KmeliaHelper.VALIDATION_TARGET_1) {
+        alertPublicationOwnerThereIsNoMoreValidator = true;
+      } else {// get all users who have to validate
+        List<String> allValidators = getAllValidators(validatedPK);
+        if (allValidators.isEmpty()) {
           alertPublicationOwnerThereIsNoMoreValidator = true;
-          break;
-        default:
-          // get all users who have to validate
-          List<String> allValidators = getAllValidators(validatedPK);
-          if (allValidators.isEmpty()) {
+        } else {
+          // check if all validators have give their decision
+          validationComplete =
+              DefaultKmeliaService.this.isValidationComplete(validatedPK, allValidators);
+          if (validationComplete) {
+            findLastValidation();
+          } else if (validationType == KmeliaHelper.VALIDATION_TARGET_N &&
+              isNotDefined(currentPubOrCloneDetail.getTargetValidatorId())) {
+            // Case of fallback solution when no more validator is defined, all publishers
+            // must validate (as collegiate method)
             alertPublicationOwnerThereIsNoMoreValidator = true;
-          } else {
-            // check if all validators have give their decision
-            validationComplete =
-                DefaultKmeliaService.this.isValidationComplete(validatedPK, allValidators);
-            if (validationComplete) {
-              findLastValidation();
-            } else if (validationType == KmeliaHelper.VALIDATION_TARGET_N &&
-                StringUtil.isNotDefined(currentPubOrCloneDetail.getTargetValidatorId())) {
-              // Case of fallback solution when no more validator is defined, all publishers
-              // must validate (as collegiate method)
-              alertPublicationOwnerThereIsNoMoreValidator = true;
-            }
           }
+        }
       }
 
       if (alertPublicationOwnerThereIsNoMoreValidator) {

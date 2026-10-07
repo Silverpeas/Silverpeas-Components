@@ -70,6 +70,7 @@ import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serial;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -81,6 +82,7 @@ import static org.silverpeas.kernel.util.StringUtil.EMPTY;
 import static org.silverpeas.kernel.util.StringUtil.getBooleanValue;
 
 public class InfoLetterSessionController extends AbstractComponentSessionController {
+  @Serial
   private static final long serialVersionUID = -4498344315667761189L;
 
   private static final String EMAILS = "Emails";
@@ -163,7 +165,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
    * Gets the newsletter template
    */
   public InfoLetter getInfoLetter() {
-    return getInfoLetters().get(0);
+    return getInfoLetters().getFirst();
   }
 
   public DragAndDropWbeFile getTemplateFileForEdition() {
@@ -451,7 +453,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
       }
     }
 
-    if (listErrors.length() > 0) {
+    if (!listErrors.isEmpty()) {
       UtilTrappedException ie =
           new UtilTrappedException("InfoLetterSessionController.importCsvEmails",
               SilverpeasException.ERROR, "infoLetter.EX_CSV_FILE", listErrors.toString());
@@ -535,7 +537,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
         .getAllUserIds()
         .stream()
         .filter(u -> ComponentAccessControl.get().isUserAuthorized(u, getComponentId()))
-        .collect(Collectors.toList());
+        .toList();
     emails.addAll(getEmailAddressOf(otherUserIds, null));
     return emails;
   }

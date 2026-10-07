@@ -61,30 +61,13 @@ import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 import org.silverpeas.kernel.test.extension.LocalizationBundleStub;
 import org.silverpeas.kernel.test.extension.SettingBundleStub;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anySet;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.atLeast;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * Unit tests on the sending of an issue of a newsletter to its recipients, by mail or by
@@ -172,7 +155,7 @@ class InfoLetterIssueSendingTest {
   void theIssueIsAlsoMailedToTheSubscribersOnThePdc() {
     theIssuesAreSentByMail(true);
     subscribers.add(UserSubscriptionSubscriber.from(A_SUBSCRIBER));
-    pdc.subscribe(ISSUE_ID, A_SUBSCRIBER_ON_THE_PDC, ANOTHER_SUBSCRIBER_ON_THE_PDC);
+    pdc.subscribe(A_SUBSCRIBER_ON_THE_PDC, ANOTHER_SUBSCRIBER_ON_THE_PDC);
 
     controller.notifyInternalSubscribers(anIssue());
 
@@ -184,7 +167,7 @@ class InfoLetterIssueSendingTest {
   @Test
   void theIssueIsMailedToTheSubscribersOnThePdcEvenIfTheNewsletterHasNoSubscriber() {
     theIssuesAreSentByMail(true);
-    pdc.subscribe(ISSUE_ID, A_SUBSCRIBER_ON_THE_PDC);
+    pdc.subscribe(A_SUBSCRIBER_ON_THE_PDC);
 
     controller.notifyInternalSubscribers(anIssue());
 
@@ -195,7 +178,7 @@ class InfoLetterIssueSendingTest {
   void theIssueIsNotMailedToASubscriberOnThePdcWithoutAccessToTheApplication() {
     theIssuesAreSentByMail(true);
     subscribers.add(UserSubscriptionSubscriber.from(A_SUBSCRIBER));
-    pdc.subscribe(ISSUE_ID, A_SUBSCRIBER_ON_THE_PDC, ANOTHER_SUBSCRIBER_ON_THE_PDC);
+    pdc.subscribe(A_SUBSCRIBER_ON_THE_PDC, ANOTHER_SUBSCRIBER_ON_THE_PDC);
     when(accessControl.isUserAuthorized(ANOTHER_SUBSCRIBER_ON_THE_PDC, COMPONENT_ID)).thenReturn(
         false);
 
@@ -212,7 +195,7 @@ class InfoLetterIssueSendingTest {
   @Test
   void theIssueIsNotMailedTwiceToASubscriberOnThePdcThatIsAlsoAnExternalSubscriber() {
     theIssuesAreSentByMail(true);
-    pdc.subscribe(ISSUE_ID, A_SUBSCRIBER_ON_THE_PDC);
+    pdc.subscribe(A_SUBSCRIBER_ON_THE_PDC);
     externalSubscribers.add(AN_EXTERNAL_SUBSCRIBER);
     externalSubscribers.add(emailOf(A_SUBSCRIBER_ON_THE_PDC));
 
@@ -241,7 +224,7 @@ class InfoLetterIssueSendingTest {
         notificationsSentBy(() -> controller.notifyInternalSubscribers(anIssue()));
 
     assertThat(notifications, hasSize(1));
-    assertThat(notifications.get(0),
+    assertThat(notifications.getFirst(),
         instanceOf(InfoLetterSubscriptionPublicationUserNotification.class));
     verify(service, never()).sendLetterByMail(any(), anyString(), anySet(), anyString(), any());
   }
@@ -331,8 +314,8 @@ class InfoLetterIssueSendingTest {
     private final List<SubscriptionSubscriber> subscribers = new ArrayList<>();
     private String classifiedContentId;
 
-    void subscribe(final String classifiedContentId, final String... userIds) {
-      this.classifiedContentId = classifiedContentId;
+    void subscribe(final String... userIds) {
+      this.classifiedContentId = InfoLetterIssueSendingTest.ISSUE_ID;
       List.of(userIds).forEach(u -> subscribers.add(UserSubscriptionSubscriber.from(u)));
     }
 
