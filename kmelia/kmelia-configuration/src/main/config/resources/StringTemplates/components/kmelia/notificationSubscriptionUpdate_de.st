@@ -1,3 +1,4 @@
-$if(thumbnail)$<img src="$thumbnail$" alt="$publicationName$" height="$thumbnailHeight$"/> $endif$Veröffentlichung <b>$publicationName$</b> erstellt worden.
+$if(thumbnail)$<img style="margin:20px 0;" src="$thumbnail$" alt="$publicationName$" height="$thumbnailHeight$"/> $endif$
+<p>Veröffentlichung <b>$publicationName$</b> erstellt worden.</p>
 
 Speicherort : $path$

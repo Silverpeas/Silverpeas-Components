@@ -1,4 +1,5 @@
 Une nouvelle actualité vient d'être créée dans l'un de vos abonnements...<br/>
 
-$if(thumbnail)$<img src="$thumbnail$" alt="$title$" height="$thumbnailHeight$"/> $endif$<b>$title$</b>
+$if(thumbnail)$<img style="margin:20px 0;" src="$thumbnail$" alt="$title$" height="$thumbnailHeight$"/> $endif$
+<p><b>$title$</b>
 $description$

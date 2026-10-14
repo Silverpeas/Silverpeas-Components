@@ -1,4 +1,5 @@
 Die Nachricht erstellt worden.<br/>
 
-$if(thumbnail)$<img src="$thumbnail$" alt="$title$" height="$thumbnailHeight$"/> $endif$<b>$title$</b>
+$if(thumbnail)$<img style="margin:20px 0;" src="$thumbnail$" alt="$title$" height="$thumbnailHeight$"/> $endif$
+<p><b>$title$</b></p>
 $description$
