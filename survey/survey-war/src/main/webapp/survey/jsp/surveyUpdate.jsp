@@ -50,9 +50,12 @@
 %>
 
 <%
-//Retrieve parameter
-String action = request.getParameter("Action");
-String surveyId = request.getParameter("SurveyId");
+//Retrieve the action and the survey: they are set as request attributes when the request router
+//forwards to this page, and as request parameters when this page is directly requested
+String action = request.getAttribute("Action") != null ?
+    (String) request.getAttribute("Action") : request.getParameter("Action");
+String surveyId = request.getAttribute("SurveyId") != null ?
+    (String) request.getAttribute("SurveyId") : request.getParameter("SurveyId");
 
 String title = request.getParameter("title");
 String description = request.getParameter("description");

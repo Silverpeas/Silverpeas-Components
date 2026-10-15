@@ -49,6 +49,7 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
   private static final long serialVersionUID = -1921269596127652643L;
 
   private static final String COMPONENT_NAME = "survey";
+  private static final String ACTION = "Action";
   private static final String SURVEY_ID = "SurveyId";
   private static final String SURVEY = "Survey";
   private static final String PROFILE = "Profile";
@@ -139,7 +140,7 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
         destination = rootDest + "surveyDetail.jsp?Action=PreviewSurvey";
       } else if ("UpdateSurvey".equals(function)) {
         String surveyId = request.getParameter(SURVEY_ID);
-        destination = rootDest + "surveyUpdate.jsp?Action=UpdateSurveyHeader&SurveyId=" + surveyId;
+        destination = forwardToSurveyHeaderUpdate(request, surveyId, rootDest);
       } else if ("ViewListResult".equals(function)) {
         final QuestionContainerDetail sessionSurvey = surveySC.getSessionSurvey();
         if (sessionSurvey.getHeader().isAnonymous()) {
@@ -248,6 +249,13 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
         request.setAttribute(PROFILE, flag);
         setCommonDataToDisplayResult(surveyId, request, surveySC);
         destination = rootDest + destinationUser;
+      } else if (isSubmitAndUpdateSurvey(function, request)) {
+        // the survey under construction is created and then directly opened for modification:
+        // forwarding to the update page avoids a second request that would be rejected by the
+        // CSRF protection as it would carry no security token
+        String surveyId = surveySC.createSurveyUnderConstruction();
+        request.setAttribute(PROFILE, flag);
+        destination = forwardToSurveyHeaderUpdate(request, surveyId, rootDest);
       } else if (function.startsWith("surveyDetail")) {
         String surveyId = request.getParameter(SURVEY_ID);
         request.setAttribute(PROFILE, flag);
@@ -267,6 +275,26 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
       destination = "/admin/jsp/errorpageMain.jsp";
     }
     return destination;
+  }
+
+  private static boolean isSubmitAndUpdateSurvey(String function, HttpServletRequest request) {
+    return function.startsWith("surveyDetail") &&
+        "SubmitAndUpdateSurvey".equals(request.getParameter(ACTION));
+  }
+
+  /**
+   * Prepares the forward to the page for updating the header of the specified survey. The page
+   * reads its inputs from the request attributes before falling back to the request parameters.
+   * @param request the current HTTP request.
+   * @param surveyId the unique identifier of the survey to update.
+   * @param rootDest the root path of the survey pages.
+   * @return the destination page to forward to.
+   */
+  private static String forwardToSurveyHeaderUpdate(HttpServletRequest request, String surveyId,
+      String rootDest) {
+    request.setAttribute(ACTION, "UpdateSurveyHeader");
+    request.setAttribute(SURVEY_ID, surveyId);
+    return rootDest + "surveyUpdate.jsp";
   }
 
   private static QuestionContainerHeader getQuestionContainerHeader(QuestionContainerDetail survey, String checkedViewC, String checkedViewD) {

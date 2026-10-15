@@ -91,7 +91,6 @@
     survey = surveyScc.getSessionSurveyUnderConstruction();
   } else if (action.equals("ViewComments")) {
     survey = surveyScc.getSurvey(surveyId);
-  } else if (action.equals("SubmitAndUpdateSurvey")) {
   } else {
     if (roundId != null) {
       survey = surveyScc.getSessionSurvey();
@@ -201,31 +200,11 @@
   }
 
   if (action.equals("SubmitSurvey")) {
-    QuestionContainerDetail surveyDetail = surveyScc.getSessionSurveyUnderConstruction();
-    //list 2 Collection
-    List<Question> questionsV = surveyScc.getSessionQuestions();
-    List<Question> q = new ArrayList<Question>();
-    for (int j = 0; j < questionsV.size(); j++) {
-      q.add(questionsV.get(j));
-    }
-    surveyDetail.setQuestions(q);
-    surveyScc.createSurvey(surveyDetail);
-    surveyScc.removeSessionSurveyUnderConstruction();
+    surveyScc.createSurveyUnderConstruction();
 %>
 <jsp:forward page='<%=surveyScc.getComponentUrl()+"Main.jsp"%>' />
 <%
   return;
-  } else if (action.equals("SubmitAndUpdateSurvey")) {
-    QuestionContainerDetail surveyDetail = surveyScc.getSessionSurveyUnderConstruction();
-    //list 2 Collection
-    List<Question> questionsV = surveyScc.getSessionQuestions();
-    ArrayList<Question> q = new ArrayList<Question>();
-    for (int j = 0; j < questionsV.size(); j++) {
-      q.add(questionsV.get(j));
-    }
-    surveyDetail.setQuestions(q);
-    surveyId = surveyScc.createSurvey(surveyDetail).getId();
-    surveyScc.removeSessionSurveyUnderConstruction();
   } else if (action.equals("PreviewSurvey")) {
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -680,20 +659,6 @@ out.println(surveyPart);
   </form>
 </div>
 <view:progressMessage/>
-<%
-
-  } else if (action.equals("SubmitAndUpdateSurvey")) {
-%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<script language="Javascript">
-function Replace() {
-  location.replace("surveyUpdate.jsp?Action=UpdateSurveyHeader&SurveyId=<%=surveyId%>");
-}
-</script>
-</head>
-<body onload="Replace()">
 <%
   }
 %>
