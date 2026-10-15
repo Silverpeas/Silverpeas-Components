@@ -334,6 +334,20 @@ public class SurveySessionController extends AbstractComponentSessionController 
   }
 
   /**
+   * Creates the survey currently under construction in the user session, with the questions that
+   * were defined in the session for it. Once created, the construction context is cleared.
+   * @return the unique identifier of the created survey.
+   * @throws SurveyException if the survey cannot be created.
+   */
+  public String createSurveyUnderConstruction() throws SurveyException {
+    QuestionContainerDetail surveyDetail = getSessionSurveyUnderConstruction();
+    surveyDetail.setQuestions(new ArrayList<>(getSessionQuestions()));
+    String surveyId = createSurvey(surveyDetail).getId();
+    removeSessionSurveyUnderConstruction();
+    return surveyId;
+  }
+
+  /**
    * this method clasify content only when new survey is created Check if a position has been
    * defined in header form then persist it
    *

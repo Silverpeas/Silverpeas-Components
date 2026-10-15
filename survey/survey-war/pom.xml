@@ -61,6 +61,13 @@
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
+    <!-- required by the unit tests to instantiate the request router (a servlet) -->
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>3.0.1</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
 </project>
