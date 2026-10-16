@@ -382,7 +382,8 @@ public class ForumsInstancePreDestructionIT {
     }
 
     @Override
-    public void updateIndexEntryWithDocuments(final FullIndexEntry indexEntry) {
+    public void updateIndexEntryWithDocuments(final FullIndexEntry indexEntry,
+        final ResourceReference contribution) {
 
     }
 
