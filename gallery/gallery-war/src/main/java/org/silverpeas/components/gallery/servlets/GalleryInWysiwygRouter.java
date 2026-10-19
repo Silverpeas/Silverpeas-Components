@@ -38,6 +38,7 @@ import org.silverpeas.components.gallery.model.MediaPK;
 import org.silverpeas.components.gallery.model.Photo;
 import org.silverpeas.components.gallery.service.GalleryService;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.contribution.content.LinkUrlDataSource;
 import org.silverpeas.core.contribution.content.LinkUrlDataSourceScanner;
 import org.silverpeas.core.contribution.content.wysiwyg.service.directive.ImageUrlAccordingToHtmlSizeDirective;
@@ -47,10 +48,7 @@ import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.StringUtil;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -69,7 +67,8 @@ import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
  */
 public class GalleryInWysiwygRouter extends HttpServlet {
 
-  private static final long serialVersionUID = 1L;
+  @Serial
+  private static final long serialVersionUID = 2L;
 
   private static SilverpeasFile getSilverpeasFile(final Photo image, final String size,
       final boolean useOriginal) {
@@ -89,14 +88,12 @@ public class GalleryInWysiwygRouter extends HttpServlet {
   }
 
   @Override
-  public void doGet(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException {
+  public void doGet(HttpServletRequest req, HttpServletResponse res) {
     doPost(req, res);
   }
 
   @Override
-  public void doPost(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
+  public void doPost(HttpServletRequest request, HttpServletResponse response) {
 
     String componentId = request.getParameter("ComponentId");
     String albumId = request.getParameter("AlbumId");
@@ -133,9 +130,19 @@ public class GalleryInWysiwygRouter extends HttpServlet {
         RequestDispatcher requestDispatcher =
             getServletConfig().getServletContext().getRequestDispatcher(destination);
         if (requestDispatcher != null) {
-          requestDispatcher.forward(request, response);
+          forward(requestDispatcher, request, response);
         }
       }
+    }
+  }
+
+  private void forward(final RequestDispatcher requestDispatcher,
+      final HttpServletRequest request, final HttpServletResponse response) {
+    try {
+      requestDispatcher.forward(request, response);
+    } catch (ServletException | IOException e) {
+      SilverLogger.getLogger(this).error(e);
+      response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -192,6 +199,7 @@ public class GalleryInWysiwygRouter extends HttpServlet {
     // we must close the in and out streams
   }
 
+  @Bean
   @Singleton
   public static class ImageUrlToDataSourceScanner implements LinkUrlDataSourceScanner {
 
@@ -222,6 +230,7 @@ public class GalleryInWysiwygRouter extends HttpServlet {
     }
   }
 
+  @Bean
   @Singleton
   public static class ImageUrlAccordingToHtmlSizeDirectiveTranslator extends
       ImageUrlAccordingToHtmlSizeDirective.SrcWithSizeParametersTranslator {
