@@ -170,7 +170,7 @@
       planningOfUser : ${not empty viewContext.selectedUserId}
     };
 
-    $(document).ready(function() {
+    $(function() {
 
       // Calendar
       $.ajax({
@@ -178,7 +178,7 @@
         cache : false,
         type : 'GET',
         dataType : 'json'
-      }).success(function(data) {
+      }).done(function(data) {
             <c:choose>
             <c:when test="${viewContext.dataViewType.reservationListingDataView}">
             $("#reservationContent").append(renderReservationListing(data, labels, filters));
@@ -200,7 +200,7 @@
             });
             </c:otherwise>
             </c:choose>
-          }).error(function(jqXHR, textStatus, errorThrown) {
+          }).fail(function(jqXHR, textStatus, errorThrown) {
             notyError(errorThrown);
           });
     });

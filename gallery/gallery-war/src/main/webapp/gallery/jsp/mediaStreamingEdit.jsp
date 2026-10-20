@@ -46,7 +46,7 @@
     <jsp:useBean id="media" scope="request" type="org.silverpeas.components.gallery.model.Streaming"/>
     <mediaTags:streamingLibrary/>
     <script type="text/javascript">
-      $(document).ready(function() {
+      $(function() {
         var $validateButton = $($('.sp_buttonPane a.sp_button')[0]);
         var $dummyValidate = $('<a>').append('${validateLabel}');
         $dummyValidate.addClass('sp_button');
@@ -69,7 +69,7 @@
           }
         };
         $('#fileId').on('blur', function() {
-          var value = $.trim($(this).val());
+          var value = ($(this).val() || "").trim();
           var $title = $(document.getElementById('${mediaTitleInputName}'));
           var $author = $('#author');
           if (value && value != oldValue) {
@@ -86,7 +86,7 @@
             releaseValidateButton();
           }
         }).on('focus', function() {
-          oldValue = $.trim($(this).val());
+          oldValue = ($(this).val() || "").trim();
           $validateButton.detach();
           $validateButtonContainer.prepend($dummyValidate);
           $validateButtonContainer.addClass('validateNotAvailable');

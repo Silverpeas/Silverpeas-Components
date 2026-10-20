@@ -53,7 +53,7 @@
             return "";
           }
 
-          $(document).ready(function () {
+          $(function () {
             setCurrentNodeId(getNonVisiblePubsFolderId());
             displayPublications(getNonVisiblePubsFolderId());
           });

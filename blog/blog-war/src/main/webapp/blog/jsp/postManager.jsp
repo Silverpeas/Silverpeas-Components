@@ -141,14 +141,14 @@
 			document.postForm.submit();
 		}
 		
-		$(document).ready(function() {
+		$(function() {
 			<view:wysiwyg replace="editor" language="${language}" width="90%" height="300" toolbar="blog"
 				spaceLabel="<%=spaceLabel%>" componentId="<%=instanceId%>" componentLabel="<%=componentLabel%>"
 				browseInfo="<%=title%>" objectId="<%=post.getId()%>"
 				activateWysiwygBackupManager="true"/>
 		
 			<% if ("CreatePost".equals(action)) {	%>
-			$("#Title").click(function() {
+			$("#Title").on('click', function() {
 				if ($('#Title').attr('value') === "${blog_postUntitled}") {
 					$("#Title").attr('value','');
 				}

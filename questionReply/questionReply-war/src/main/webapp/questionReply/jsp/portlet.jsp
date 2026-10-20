@@ -131,7 +131,7 @@ function bindCategoryEvent() {
     });
 }
 
-$(document).ready(function() {
+$(function() {
   bindCategoryEvent();
   bindQuestionsEvent();
   $('.questions').hide();
@@ -139,12 +139,11 @@ $(document).ready(function() {
   $("ul li:first-child").addClass('select');
   $("ul li:first-child .categoryTitle").trigger($.Event("click"));
 
-  $('.category').hover(function() {
+  $('.category').on('mouseenter', function() {
       $(this).addClass('hover');
-    }, function() {
+    }).on('mouseleave', function() {
       $(this).removeClass('hover');
-    }
-  );
+    });
 
 });
   <fmt:message key="questionReply.link" bundle="${icons}" var="hyperlinkIcon"/>

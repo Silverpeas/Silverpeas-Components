@@ -162,11 +162,11 @@
     }
 
     whenSilverpeasReady(function() {
-      $("#searchButton a").click(function() {
+      $("#searchButton a").on('click', function() {
         search();
       });
 
-      $("#searchInput").keypress(function(e) {
+      $("#searchInput").on('keypress', function(e) {
         if (e.which === 13) {
           e.preventDefault();
           search();

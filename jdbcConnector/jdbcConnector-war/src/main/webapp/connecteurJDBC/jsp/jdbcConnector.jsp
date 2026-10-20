@@ -80,7 +80,7 @@
   <view:includePlugin name="toggle"/>
   <script type="application/javascript">
     function restrictResults() {
-      $('#result-filter').submit();
+      $('#result-filter').trigger('submit');
     }
     whenSilverpeasReady(function() {
       TipManager.simpleHelp(".filter-info-button", "${filterValueInfo}");

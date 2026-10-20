@@ -165,7 +165,7 @@ function callExport() {
   $.progressMessage();
 }
 
-$(document).ready(function() {
+$(function() {
   <c:if test="${userSelectionAlert}">
   <fmt:message var="msgAlert" key="gallery.basket.media.type.alert"/>
   notyWarning('${msgAlert}');

@@ -85,17 +85,17 @@ function notify() {
 
 function publish() {
   $("#newsForm").attr("action", "Publish");
-  $("#newsForm").submit();
+  $("#newsForm").trigger('submit');
 }
 
 function update() {
   $("#newsForm").attr("action", "Edit");
-  $("#newsForm").submit();
+  $("#newsForm").trigger('submit');
 }
 
 function submitOnHomepage() {
   $("#newsForm").attr("action", "SubmitOnHomepage");
-  $("#newsForm").submit();
+  $("#newsForm").trigger('submit');
 }
 
 function onDelete(id) {
@@ -108,7 +108,7 @@ function clipboardCopy() {
 
 function displayReadingTracking() {
   $("#newsForm").attr("action", "ReadingControl");
-  $("#newsForm").submit();
+  $("#newsForm").trigger('submit');
 }
 
 function putNewsInBasket() {

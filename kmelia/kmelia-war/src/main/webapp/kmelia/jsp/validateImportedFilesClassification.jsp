@@ -98,7 +98,7 @@
       function setModified() {
         if (!modified) {
           modified = true;
-          $('.field input:radio').not(':checked').attr('disabled', true);
+          $('.field input:radio').not(':checked').prop('disabled', true);
         }
       }
       
@@ -336,7 +336,7 @@
          * As the publications have been automatically classified through the import process,
          * their classification on the PdC is first loaded.
          */
-        $(document).ready(function() {
+        $(function() {
           var okForAll = 0, modifyForAll = 1, modifyForEach = 2, publicationsURI = [];
           var selection = okForAll; // the default selected choice.
         
@@ -393,7 +393,7 @@
               append($('<span>', {id: 'modifyForEach'}).html(modificationText)).
               appendTo($('#default-classification'));
         
-            $('#validation.field input:radio').change(function() {
+            $('#validation.field input:radio').on('change', function() {
               var userChoice = $('.field input:radio:checked').val();
               if (userChoice == okForAll) validateDefaultClassificationForAllPublications();
               else if (userChoice == modifyForAll) modifyClassificationForAllPublications();

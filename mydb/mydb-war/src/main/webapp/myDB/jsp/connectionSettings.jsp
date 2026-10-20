@@ -116,7 +116,7 @@
         SilverpeasError.add('<b>${maxLineField}</b> ${msgNotNumberField}');
       }
       if (!SilverpeasError.show()) {
-        $('#processForm').submit();
+        $('#processForm').trigger('submit');
       }
     }
 

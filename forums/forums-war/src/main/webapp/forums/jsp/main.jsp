@@ -97,26 +97,26 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
 
       function subscribe() {
         $('#action').val('20');
-        $('#forumForm').attr('action', 'main.jsp').submit();
+        $('#forumForm').attr('action', 'main.jsp').trigger('submit');
       }
 
       function unsubscribe() {
         $('#action').val('19');
-        $('#forumForm').attr('action', 'main.jsp').submit();
+        $('#forumForm').attr('action', 'main.jsp').trigger('submit');
       }
 
       function subscribeOneForum(forumId, parentForumId) {
         $('#action').val('18');
         $('#params').val(forumId);
         $('#forumId').val(parentForumId);
-        $('#forumForm').attr('action', 'main.jsp').submit();
+        $('#forumForm').attr('action', 'main.jsp').trigger('submit');
       }
 
       function unsubscribeOneForum(forumId, parentForumId) {
         $('#action').val('17');
         $('#params').val(forumId);
         $('#forumId').val(parentForumId);
-        $('#forumForm').attr('action', 'main.jsp').submit();
+        $('#forumForm').attr('action', 'main.jsp').trigger('submit');
       }
 
       function confirmDeleteForum(forumId)
@@ -124,7 +124,7 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
         jQuery.popup.confirm("<view:encodeJs string="${removeForum}"/>", function() {
           $('#action').val('4');
           $('#params').val(forumId);
-          $('#forumForm').attr('action', 'main.jsp').submit();
+          $('#forumForm').attr('action', 'main.jsp').trigger('submit');
         });
       }
 
@@ -132,7 +132,7 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
       {
         jQuery.popup.confirm("<view:encodeJs string="${removeCategory}"/>", function() {
           $('#CategoryId').val(categoryId);
-          $('#forumForm').attr('action', 'DeleteCategory').submit();
+          $('#forumForm').attr('action', 'DeleteCategory').trigger('submit');
         });
       }
 

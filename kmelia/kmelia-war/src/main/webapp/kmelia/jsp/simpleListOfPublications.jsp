@@ -130,12 +130,12 @@
 
       function focusOnSearch()
       {
-        $("#topicQuery").focus();
+        $("#topicQuery").trigger('focus');
       }
 
       let searchInProgress = <%=searchContext != null%>;
 
-      $(document).ready(function() {
+      $(function() {
         if (searchInProgress) {
           doPagination(<%=currentPageIndex%>);
         } else {
@@ -274,7 +274,7 @@
       /* declare the module myapp and its dependencies (here in the silverpeas module) */
       var myapp = angular.module('silverpeas.kmelia', ['silverpeas.services', 'silverpeas.directives']);
       if (isSearchTopicEnabled)
-        $("#topicQuery").focus();
+        $("#topicQuery").trigger('focus');
     </script>
   </view:sp-body-part>
 </view:sp-page>

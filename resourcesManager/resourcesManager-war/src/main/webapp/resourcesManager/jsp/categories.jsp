@@ -43,7 +43,7 @@
 	function deleteCategory(categoryId, name) {
 		  if (confirm("<%=resource.getString("resourcesManager.deleteCategorie")%>" + " " + name + " ?")) {
         $('input[name="id"]').val(categoryId);
-        $('form[name="categoryForm"]').submit();
+        $('form[name="categoryForm"]').trigger('submit');
 		  }
 	}
 	</script>

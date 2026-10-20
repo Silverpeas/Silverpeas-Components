@@ -184,7 +184,7 @@ function openCategory(id, exclusive) {
   }
 }
 
-$(document).ready(function() {
+$(function() {
   $firstCategoryClickEventProcessedPromise = $.Deferred();
   bindCategoryEvent();
   bindQuestionsEvent();
@@ -207,12 +207,11 @@ $(document).ready(function() {
     });
   </c:if>
 
-  $('.category').hover(function() {
+  $('.category').on('mouseenter', function() {
       $(this).addClass('hover');
-    }, function() {
+    }).on('mouseleave', function() {
       $(this).removeClass('hover');
-    }
-  );
+    });
 
 });
   <fmt:message key="questionReply.link" bundle="${icons}" var="hyperlinkIcon"/>

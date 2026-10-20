@@ -79,7 +79,7 @@ function cancel() {
   sp.formConfig('ConsultQuestionQuery').submit();
 }
 
-$(document).ready(function() {
+$(function() {
 	<view:wysiwyg replace="content" language="<%=language%>" width="600" height="300" objectId="<%=reply.getPK().getId()%>"
 	              componentId="<%=componentId%>" toolbar="questionReply" displayFileBrowser="${true}" activateWysiwygBackupManager="true"/>
 });

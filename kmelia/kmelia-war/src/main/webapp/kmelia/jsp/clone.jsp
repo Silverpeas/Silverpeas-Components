@@ -231,7 +231,7 @@ $(function() {
         resizable : false,
         buttons: {
           'OK': function() {
-        	  if (!$.trim($("#refusal-motive").val())) {
+        	  if (!($("#refusal-motive").val() || "").trim()) {
               jQuery.popup.error("'<%=kmeliaScc.getString("RefusalMotive")%>' <%=resources.getString("GML.MustBeFilled")%>");
         		  return true;
         	  } else {

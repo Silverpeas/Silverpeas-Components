@@ -78,7 +78,7 @@
         
         whenSilverpeasReady().then(function() {
           chartinit();
-          $("a").click(function() {
+          $("a").on('click', function() {
             if ($(this).attr("target") != "_blank" && !$(this).attr("href").startsWith("javascript:")) {
               $.progressMessage();
             }

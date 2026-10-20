@@ -80,18 +80,18 @@
     <c:if test="${isEditable}">
     function modify() {
       $('#actions').attr('method', 'GET').attr('action',
-          '${componentUriBase}suggestions/${target}/edit').submit();
+          '${componentUriBase}suggestions/${target}/edit').trigger('submit');
     }
     </c:if>
 
     <c:if test="${isPublishable}">
     function publish() {
-      $('#actions').attr('action', '${componentUriBase}suggestions/${target}/publish').submit();
+      $('#actions').attr('action', '${componentUriBase}suggestions/${target}/publish').trigger('submit');
     }
     </c:if>
 
     function cancel() {
-      $('#actions').attr('method', 'GET').attr('action', '${backUri}').submit();
+      $('#actions').attr('method', 'GET').attr('action', '${backUri}').trigger('submit');
     }
     function notify() {
       sp.messager.open('${componentId}', {<%=NotificationContext.CONTRIBUTION_ID%>: '${target}'});

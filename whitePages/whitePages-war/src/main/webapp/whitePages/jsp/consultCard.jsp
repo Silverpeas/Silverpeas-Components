@@ -154,12 +154,12 @@ function B_UPDATE_ONCLICK(idCard) {
 		$("#expert-classification").show();
 	}
 
-    $(document).ready(function(){
+    $(function(){
 
 			$(".divSee").hide();
 			$(".active").show();
 
-			$(".linkSee").click(function() {
+			$(".linkSee").on('click', function() {
 				var divAAfficher = this.id.substring(5);
 				$(".linkSee").removeClass('active');
 				$('#'+this.id).addClass('active');
@@ -167,7 +167,7 @@ function B_UPDATE_ONCLICK(idCard) {
 				$('#'+divAAfficher).show();
 			});
 
-			if ($.trim($("#sheetIdentity").text()).length == 0) {
+			if ($("#sheetIdentity").text().trim().length === 0) {
 				$(".linkSee").removeClass('active');
 				$('#link_sheetExpert').addClass('active');
 				$('#sheetExpert').show();

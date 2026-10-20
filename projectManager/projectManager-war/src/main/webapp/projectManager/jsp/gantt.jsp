@@ -53,9 +53,9 @@
 <script type="text/javascript" src="<c:out value="${ctxPath}"/>/projectManager/jsp/js/ajax_project.js"></script>
 <script language="javascript" type="text/javascript">
 
-$(document).ready(function(){
+$(function(){
   var triAll = true;
-  $(".linkTri").click(function() {
+  $(".linkTri").on('click', function() {
     // Lien Toutes
     if (this.id=='link_all')
     {
@@ -90,7 +90,7 @@ $(document).ready(function(){
 
   highlightResponsible();
 
-  $('#legendLabelId').click(function() {
+  $('#legendLabelId').on('click', function() {
 	  if ($('#legende').is(':visible')) {
 		    $('#legende').hide();
 		} else {

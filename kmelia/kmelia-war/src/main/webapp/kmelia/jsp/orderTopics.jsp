@@ -111,7 +111,7 @@ while(items.hasNext())
 </form>
 <script type='text/javascript'>
 
-$(document).ready(function(){
+$(function(){
 	$("#items").sortable({opacity: 0.4}); 
 });
 

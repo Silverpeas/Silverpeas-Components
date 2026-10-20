@@ -220,15 +220,15 @@ function removeAllUsers() {
   $('option:not(:disabled)', $source).detach().appendTo($target);
 }
 
-$(document).ready(function() {
-  $("select[name='forumFolder']").change(function() {
+$(function() {
+  $("select[name='forumFolder']").on('change', function() {
     var $categoryContainer = $("#categoryContainer");
     var $categories = $("select[name='CategoryId']");
     if (('' + $(this).val()) !== '0') {
       $categories.attr('disabled', '');
       $categoryContainer.hide();
     } else {
-      $categories.removeAttr('disabled', '');
+      $categories.prop('disabled', false);
       $categoryContainer.show();
     }
   });

@@ -123,7 +123,7 @@
         notyError('${noValue}');
       } else {
         spProgressMessage.show();
-        $('#table-filter').submit();
+        $('#table-filter').trigger('submit');
       }
     }
 

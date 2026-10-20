@@ -94,7 +94,7 @@ function cancel() {
   sp.formConfig('Main').submit();
 }
 
-$(document).ready(function() {
+$(function() {
 	<view:wysiwyg replace="contentR" language="<%=language%>" width="600" height="300" componentId="<%=componentId%>"
 	              toolbar="questionReply" displayFileBrowser="${true}" activateWysiwygBackupManager="true"/>
 });
