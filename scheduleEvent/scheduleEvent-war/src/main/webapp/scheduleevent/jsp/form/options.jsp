@@ -42,7 +42,7 @@
 <view:looknfeel />
 <view:includePlugin name="datepicker"/>
 <script type="text/javascript">
-	$(document).ready(function() {
+	$(function() {
 		$("#datepicker").datepicker({
 			minDate : 0,
 			onSelect : function(dateText, inst) {

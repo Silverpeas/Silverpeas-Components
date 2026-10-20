@@ -77,7 +77,7 @@
   <script type="text/javascript">
     function sendLocationData() {
       $.progressMessage();
-      $('#pathsId').submit();
+      $('#pathsId').trigger('submit');
     }
   </script>
 </div>

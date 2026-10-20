@@ -245,10 +245,10 @@
    */
   function __onDialogClose() {
     $('#slideshow').find('.embed').remove();
-    context.$slider.unbind("play");
-    context.$slider.unbind("pause");
-    context.$slider.unbind("fullscreen_enter");
-    context.$slider.unbind("fullscreen_exit");
+    context.$slider.off("play");
+    context.$slider.off("pause");
+    context.$slider.off("fullscreen_enter");
+    context.$slider.off("fullscreen_exit");
     context.$slider.detachKeyboard();
     context.$slider.pause();
   }
@@ -261,7 +261,7 @@
    * @private
    */
   function __configureSlider($base, sliderOptions, options) {
-    context.$slider.bind("thumbnail", function(event) {
+    context.$slider.on("thumbnail", function(event) {
       setTimeout(function() {
         var $thumbContainer = $(event.thumbTarget).parent();
         var currentMedia = sliderOptions.dataSource[event.index];
@@ -285,15 +285,15 @@
         });
       }, 100);
     });
-    context.$slider.bind("loadfinish", function(event) {
+    context.$slider.on("loadfinish", function(event) {
       context.$currentImageTarget = $(event.imageTarget);
       context.$currentMediaContainer = context.$currentImageTarget.parent();
       context.currentMedia = sliderOptions.dataSource[event.index];
       if (context.currentMedia.type === $.gallerySlider.mediaType.video ||
           context.currentMedia.type === $.gallerySlider.mediaType.sound) {
         var $playerStartButton = $('.galleria-videoicon', context.$currentMediaContainer);
-        $playerStartButton.unbind("click");
-        $playerStartButton.bind("click", function() {
+        $playerStartButton.off("click");
+        $playerStartButton.on("click", function() {
           __buildEmbedPlayer();
           context.$slider.enterMediaPlayerFullscreen = function() {
             __buildEmbedPlayer();
@@ -307,19 +307,19 @@
         context.$slider.exitMediaPlayerFullscreen = initialValue;
       }
     });
-    context.$slider.bind("play", function() {
+    context.$slider.on("play", function() {
       $base.trigger('galleryTogglePlay');
       if (options.callbackPlay) {
         options.callbackPlay();
       }
     });
-    context.$slider.bind("pause", function() {
+    context.$slider.on("pause", function() {
       $base.trigger('galleryTogglePlay');
       if (options.callbackPause) {
         options.callbackPause();
       }
     });
-    context.$slider.bind("fullscreen_enter", function() {
+    context.$slider.on("fullscreen_enter", function() {
       if (typeof context.$slider.enterMediaPlayerFullscreen === 'function') {
         setTimeout(function() {
           context.$slider.enterMediaPlayerFullscreen();
@@ -329,7 +329,7 @@
         options.callbackEnterFullScreen();
       }
     });
-    context.$slider.bind("fullscreen_exit", function() {
+    context.$slider.on("fullscreen_exit", function() {
       $base.trigger('_fromFullScreen', [context.$slider]);
       if (typeof context.$slider.exitMediaPlayerFullscreen === 'function') {
         setTimeout(function() {
@@ -524,7 +524,7 @@
         __configureVisualButtonAspect(type, $buttonContainer, $button, $this);
       });
     }
-    $buttonContainer.click(function() {
+    $buttonContainer.on('click', function() {
       if (type == 'playPause') {
         __togglePlay();
         $base.trigger('galleryTogglePlay');

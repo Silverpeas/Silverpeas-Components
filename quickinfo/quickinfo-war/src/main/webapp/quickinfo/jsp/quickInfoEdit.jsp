@@ -159,7 +159,7 @@ function saveNews() {
 	if (isCorrectForm()) {
     sp.editor.wysiwyg.lastBackupManager.clear();
       <view:pdcPositions setIn="document.newsForm.Positions.value"/>;
-   		$("#newsForm").submit();
+   		$("#newsForm").trigger('submit');
 	}
 }
 
@@ -168,14 +168,14 @@ function publish() {
     sp.editor.wysiwyg.lastBackupManager.clear();
     <view:pdcPositions setIn="document.newsForm.Positions.value"/>;
 	  $("#newsForm").attr("action", "SaveAndPublish");
-	  $("#newsForm").submit();
+	  $("#newsForm").trigger('submit');
   }
 }
 
 function abortNews() {
   sp.editor.wysiwyg.lastBackupManager.clear();
   $("#newsForm").attr("action", "Remove");
-  $("#newsForm").submit();
+  $("#newsForm").trigger('submit');
 }
 
 function onDelete(id) {
@@ -188,7 +188,7 @@ function cancel(id) {
   location.href="Main";
 }
 
-$(document).ready(function() {
+$(function() {
 	<view:wysiwyg replace="editorContent" language="<%=language%>" width="98%" height="300"
 	toolbar="quickInfo" displayFileBrowser="${true}" componentId="${curQuickInfo.componentInstanceId}"
 	objectId="${curQuickInfo.publicationId}" activateWysiwygBackupManager="true"/>

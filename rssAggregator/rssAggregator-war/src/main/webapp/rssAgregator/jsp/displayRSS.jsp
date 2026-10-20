@@ -162,23 +162,23 @@ function loadChannelsItem() {
   });
 }
 
-$(document).ready(function(){
+$(function(){
 
 	$('.description-item-rssNews a').attr( "target" , "_blank"  ) ;
 
-	$('.deploy-item').click(function() {
+	$('.deploy-item').on('click', function() {
 		$(this).parent().children('.itemDeploy').toggle();
 	});
-	$('.deploy-all-item').click(function() {
+	$('.deploy-all-item').on('click', function() {
 		$('.itemDeploy').show();
 		$('.btn-deploy-all-item').toggle();
 	});
-	$('.bend-all-item').click(function() {
+	$('.bend-all-item').on('click', function() {
 		$('.itemDeploy').hide();
 		$('.btn-deploy-all-item').toggle();
 	});
 
-  /*	$('.filter-channel').click(function() {
+  /*	$('.filter-channel').on('click', function() {
 		$('.item-channel').hide();
 		$('.'+this.id).show();
 	});*/

@@ -441,7 +441,7 @@
     displayTopicDescription(id);
 
     if (isSearchTopicEnabled)
-      $("#topicQuery").focus();
+      $("#topicQuery").trigger('focus');
 
   }
 
@@ -456,7 +456,7 @@
         modal: true,
         resizable: false,
         width: 400,
-        dialogClass: 'help-modal-message',
+        classes: {'ui-dialog': 'ui-corner-all help-modal-message'},
         buttons: {
           "<%=resources.getString("kmelia.help.rightclick.buttons.ok") %>": function() {
             $.cookie(rightClickCookieName, "IKnowIt", { expires: 3650, path: '/', secure: ${pageContext.request.secure} });
@@ -793,7 +793,7 @@
     return sp.i18n.get(key);
   }
 
-  $(document).ready(function() {
+  $(function() {
         //build the tree
         $("#treeDiv1").jstree({
           "core" : {

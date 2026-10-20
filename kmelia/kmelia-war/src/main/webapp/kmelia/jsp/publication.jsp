@@ -232,7 +232,7 @@
       screenMessage += link;
       screenMessage += "</form></div>";
       screenMessage +=
-          "<a href=\"#\" onclick=\"javascript:$('#form-pub-validator').submit();\" class=\"button\"><span>" +
+          "<a href=\"#\" onclick=\"javascript:$('#form-pub-validator').trigger('submit');\" class=\"button\"><span>" +
               resources.getString("GML.validate") + "</span></a>";
       screenMessage +=
           "<a href=\"#\" onclick=\"javascript:$('#validationArea').hide('slow');\" class=\"button\"><span>" +
@@ -278,7 +278,7 @@
         minWidth: 350,
         buttons: {
           '<%= resources.getString("kmelia.export") %>': function() {
-            $("#exportForm").submit();
+            $("#exportForm").trigger('submit');
             $( this ).dialog( "close" );
           },
           '<%= resources.getString("GML.cancel") %>': function() {
@@ -308,7 +308,7 @@
         resizable : false,
         buttons: {
           'OK': function() {
-            if (!$.trim($("#refusal-motive").val())) {
+            if (!($("#refusal-motive").val() || "").trim()) {
               jQuery.popup.error("'<%=kmeliaScc.getString("RefusalMotive")%>' <%=resources.getString("GML.MustBeFilled")%>");
               return true;
             } else {

@@ -82,7 +82,7 @@
 
       <%--The below triggered function has to be defined as soon as possible in HTML code in order to
       increase chances to perform the treatment when "menuRender" event is fired --%>
-      $(document).ready(function() {
+      $(function() {
         menuRenderedPromise.then(function(){
 
           sp.i18n.load({
@@ -140,7 +140,7 @@
 
       function focusOnSearch()
       {
-        $("#topicQuery").focus();
+        $("#topicQuery").trigger('focus');
       }
 
       function _isInBin(nodeId) {

@@ -139,9 +139,9 @@ function dynamicSearchLaunch(){
 </script>
 <script type="text/javascript">
 
-  $(document).ready(function(){
+  $(function(){
 
-		$(".linkMore").click(function() {
+		$(".linkMore").on('click', function() {
 			var divAAfficher = this.id.substring(5);
 			$('#'+this.id).hide();
 			$('#'+divAAfficher).show('slow');

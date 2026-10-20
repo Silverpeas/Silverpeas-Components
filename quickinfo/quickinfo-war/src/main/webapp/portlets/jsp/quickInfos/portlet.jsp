@@ -71,7 +71,7 @@
 <link rel="stylesheet" href="<%=m_sContext %>/portlets/jsp/quickInfos/css/responsiveslides.css" />
 <link rel="stylesheet" href="<%=m_sContext %>/portlets/jsp/quickInfos/css/themes.css" />
 <script type="text/javascript" >
-$(document).ready(function() {
+$(function() {
   $(".slider-actuality-portlet").responsiveSlides({
 			auto: true,
 			pager: false,
@@ -94,7 +94,7 @@ $(document).ready(function() {
 
 <c:if test="${not slideshow}">
 <script type="text/javascript" >
-  $(document).ready(function() {
+  $(function() {
     const step = 5;
     const $lis = $(".listing-actuality-portlet li");
     const $pag = $(".listing-actuality-portlet .list-pane-nav");
@@ -106,7 +106,7 @@ $(document).ready(function() {
       $pag.hide();
       $lis.slice(0, step).show();
       let end = step;
-      $('#portlet-nextNews').click(function() {
+      $('#portlet-nextNews').on('click', function() {
         <c:choose>
         <c:when test="${fromApp}">
         $lis.show();

@@ -89,7 +89,7 @@ function valideResource(resourceId, objectView) {
        $('#ResourceId').val(resourceId);
        $('#reservationId').val('<%=reservationId%>');
        $('#objectView').val(objectView);
-       $('#reservationForm').attr('action', 'ValidateResource').submit();
+       $('#reservationForm').attr('action', 'ValidateResource').trigger('submit');
     }
 }
 
@@ -99,7 +99,7 @@ function refuseResource(resourceId, resourceName, objectView) {
     $('#reservationId').val('<%=reservationId%>');
     $('#reservationName').val(resourceName);
     $('#objectView').val(objectView);
-    $('#reservationForm').attr('action', 'ForRefuseResource').submit();
+    $('#reservationForm').attr('action', 'ForRefuseResource').trigger('submit');
 }
 
 </script>

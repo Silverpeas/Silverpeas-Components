@@ -147,7 +147,7 @@ function updateTimeInterval() {
   }
 }
 
-$(document).ready(function() {
+$(function() {
   // do stuff when DOM is ready
   $("#filterIdGroup").val("${filterIdGroup}");
   $("#filterLibGroup").val("${filterLibGroup}");

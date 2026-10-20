@@ -49,10 +49,10 @@
 <head>
 <view:looknfeel/>
 <script type="text/javascript">
-$(document).ready(function(){
+$(function(){
 	$('.description-item-rssNews a').attr( "target" , "_blank"  ) ;
 
-	$('.deploy-item').click(function() {
+	$('.deploy-item').on('click', function() {
 		$(this).parent().children('.itemDeploy').toggle();
 	});
 

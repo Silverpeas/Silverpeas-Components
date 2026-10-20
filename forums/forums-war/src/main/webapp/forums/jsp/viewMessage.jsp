@@ -233,7 +233,7 @@
           jQuery.popup.confirm('<%=resource.getString("emptyMessageText")%>');
         } else {
           sp.editor.wysiwyg.lastBackupManager.clear();
-          $(document.forumsForm).submit();
+          $(document.forumsForm).trigger('submit');
         }
       }
 

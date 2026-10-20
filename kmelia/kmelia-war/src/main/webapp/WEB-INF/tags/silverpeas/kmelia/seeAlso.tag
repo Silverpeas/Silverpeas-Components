@@ -85,7 +85,7 @@
                 sp.ajaxRequest(webContext+"/services/private/publications/${publicationPK.instanceId}/${publicationPK.id}/links/"+id).byDeleteMethod();
         ajaxRequest.send().then(function() {
           $("#link-"+id).remove();
-          if ($("#block-seeAlso ul li").size() === 0) {
+          if ($("#block-seeAlso ul li").length === 0) {
             $("#block-seeAlso").remove();
           }
         });

@@ -191,7 +191,7 @@ function showDialog(params) {
   $("#modalDialog").dialog({
     buttons : {
       "Ok" : function() {
-        $('form', this).submit();
+        $('form', this).trigger('submit');
       },
       "Cancel" : function() {
         $(this).dialog("close");
@@ -205,7 +205,7 @@ function showDialog(params) {
       "Form?oldName=" + encodeURIComponent(options.oldName);
   $("#modalDialog").load(url, function() {
     applyTokenSecurity(this);
-    $('form', this).submit(function(){
+    $('form', this).on('submit', function(){
       $.progressMessage();
       if (options.isFileUpload) {
         return true;
@@ -232,13 +232,13 @@ function performPost(url, formId) {
       } else {
         $.closeProgressMessage();
         notyError(data);
-        $("#newName").focus();
+        $("#newName").trigger('focus');
       }
     },
     error : function() {
       $.closeProgressMessage();
       notyError('erreur inconnue');
-      $("#newName").focus();
+      $("#newName").trigger('focus');
     }
   });
 }
@@ -343,7 +343,7 @@ function goToDirectory(path) {
 	location.href = "SubDirectory?DirectoryPath="+encodeURIComponent(path);
 }
 
-$(document).ready(function(){
+$(function(){
     var dialogOpts = {
             modal: true,
             autoOpen: false,
