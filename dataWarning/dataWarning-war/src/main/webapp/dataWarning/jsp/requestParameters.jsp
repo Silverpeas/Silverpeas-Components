@@ -31,6 +31,7 @@
 	DataWarning data = (DataWarning)request.getAttribute("data");
     int currentQuery = ((Integer)request.getAttribute("currentQuery")).intValue();
 %>
+<!DOCTYPE html>
 <HTML>
 <HEAD>
 <view:looknfeel withCheckFormScript="true"/>

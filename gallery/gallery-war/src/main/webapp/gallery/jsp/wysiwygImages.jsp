@@ -63,6 +63,7 @@ int nbParLigne = 4;
           language);
 %>
 
+<!DOCTYPE html>
 <html>
 <head>
 <view:looknfeel/>

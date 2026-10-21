@@ -55,6 +55,7 @@
 <c:set var="path" value="${requestScope.Path}"/>
 <c:set var="indexation" value="0"/>
 
+<!DOCTYPE html>
 <html>
   <head>
     <view:looknfeel/>

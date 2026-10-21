@@ -76,6 +76,7 @@
 		cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "ViewCategories",false);
 
 	%>
+<!DOCTYPE html>
 <html>
 <head>
 <view:looknfeel withCheckFormScript="true"/>

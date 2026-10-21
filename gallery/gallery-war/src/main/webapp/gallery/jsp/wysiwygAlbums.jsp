@@ -38,6 +38,7 @@
       String language = (String) request.getAttribute("Language");
 %>
 
+<!DOCTYPE html>
 <html>
 <head>
 <view:looknfeel/>

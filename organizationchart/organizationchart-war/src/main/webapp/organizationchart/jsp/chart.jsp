@@ -44,6 +44,7 @@
 <c:set var="displayLabels" value="${requestScope['DisplayLabels']}"/>
 <c:set var="breadcrumb" value="${requestScope['Breadcrumb']}"/>
 
+<!DOCTYPE html>
 <html>
   <head>
 	<view:link href="/organizationchart/css/organizationchart.css"/>

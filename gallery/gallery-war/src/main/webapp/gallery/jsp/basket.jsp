@@ -54,6 +54,7 @@
 <fmt:message key="gallery.export.basket" var="exportBasketLabel"/>
 <fmt:message key="gallery.exported.basket" var="exportedBasketLabel"/>
 
+<!DOCTYPE html>
 <html>
 <head>
 <view:looknfeel/>

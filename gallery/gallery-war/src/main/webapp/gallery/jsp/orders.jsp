@@ -45,6 +45,7 @@
 <c:set var="orders" value="${requestScope.Orders}"/>
 <c:set var="nbOrdersProcess" value="${requestScope.NbOrdersProcess}"/>
 
+<!DOCTYPE html>
 <html>
 <head>
 <view:looknfeel/>

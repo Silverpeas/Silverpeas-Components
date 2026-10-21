@@ -33,6 +33,7 @@ List listOfReservation = (List)request.getAttribute("listOfReservation");
 
 ArrayLine arrayLine;
 %>
+<!DOCTYPE html>
 <html>
 <head>
 <view:looknfeel/>

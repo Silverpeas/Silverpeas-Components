@@ -46,6 +46,7 @@ String pubId = publication.getPK().getId();
 
 %>
 
+<!DOCTYPE html>
 <html>
 <head>
 <view:looknfeel/>

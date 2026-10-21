@@ -35,6 +35,7 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 <fmt:message key="mailingList.icons.attachmentSmall" var="attachmentIcon" bundle="${icons}" />
+<!DOCTYPE html>
 <html id="ng-app" ng-app="silverpeas.mailingList">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />

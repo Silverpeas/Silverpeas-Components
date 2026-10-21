@@ -30,6 +30,7 @@
 	String[] allTables = (String[])request.getAttribute("allTables");
 	DataWarningQuery query = (DataWarningQuery)request.getAttribute("dataQuery");
 %>
+<!DOCTYPE html>
 <HTML>
 <Head>
 <view:looknfeel/>
