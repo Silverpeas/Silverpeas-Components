@@ -76,9 +76,10 @@
     <view:script src="javaScript/publications.js"/>
     <script type="text/javascript">
       let isSearchTopicEnabled = <%=displaySearch.booleanValue()%>;
-      sp.i18n.load({
+      const kmeliaBundleLoading = sp.i18n.load({
         bundle : 'org.silverpeas.kmelia.multilang.kmeliaBundle',
-        language : '<%=language%>'
+        language : '<%=language%>',
+        async : true
       });
 
       function getString(key) {
@@ -136,11 +137,13 @@
       let searchInProgress = <%=searchContext != null%>;
 
       $(function() {
-        if (searchInProgress) {
-          doPagination(<%=currentPageIndex%>);
-        } else {
-          displayPublications("<%=id%>");
-        }
+        kmeliaBundleLoading.then(function() {
+          if (searchInProgress) {
+            doPagination(<%=currentPageIndex%>);
+          } else {
+            displayPublications("<%=id%>");
+          }
+        });
         displayTopicDescription("0");
         if (isSearchTopicEnabled) {
           setTimeout(focusOnSearch,500);

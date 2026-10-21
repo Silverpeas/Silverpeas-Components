@@ -9,7 +9,8 @@ $(function() {
   sp.i18n.load({
     bundle : 'org.silverpeas.quizz.multilang.quizz',
     language : currentUser.language,
-    withGeneral: true
+    withGeneral: true,
+    async : true
   });
 
   $('textarea[name="clue"]').on('keypress blur', function (event) {
