@@ -128,8 +128,8 @@ public void listFolders(JspWriter out, String userId, boolean admin, int rootId,
         fsc.getForumName(folderId > 0 ? folderId : forumId));
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="${requestScope.resources.language}">
+<!DOCTYPE html>
+<html lang="${requestScope.resources.language}">
 <head>
     <title></title>
     <view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>

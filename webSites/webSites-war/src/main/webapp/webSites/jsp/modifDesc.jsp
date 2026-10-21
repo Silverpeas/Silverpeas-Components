@@ -246,8 +246,8 @@ private boolean appartientId(IconDetail iconDetail, Collection c) {
 	String infoPath = displayPath(collectionRep, true, 3, "design.jsp?Action=view&Path=", nom);
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html>
 <head>
 <title><fmt:message key="GML.popupTitle"/></title>
 <view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>

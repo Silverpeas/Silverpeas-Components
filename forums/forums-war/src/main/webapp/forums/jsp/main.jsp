@@ -85,8 +85,8 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
 %>
 <fmt:message key="confirmDeleteForum" var="removeForum" />
 <fmt:message key="confirmDeleteCategory" var="removeCategory" />
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.forums">
+<!DOCTYPE html>
+<html id="ng-app" ng-app="silverpeas.forums">
   <head>
   	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <view:looknfeel />
