@@ -794,6 +794,11 @@
   }
 
   $(function() {
+        sp.i18n.load({
+          bundle : 'org.silverpeas.kmelia.multilang.kmeliaBundle',
+          language : '${sessionScope[sessionController].language}',
+          async : true
+        }).then(function() {
         //build the tree
         $("#treeDiv1").jstree({
           "core" : {
@@ -935,15 +940,11 @@
           }
         });
 
-        sp.i18n.load({
-          bundle : 'org.silverpeas.kmelia.multilang.kmeliaBundle',
-          language : '${sessionScope[sessionController].language}'
-        });
-
         <c:if test="${userCanManageRoot}">
         //Right-click concerns only admins
         showRightClickHelp();
         </c:if>
+        });
       }
   );
 

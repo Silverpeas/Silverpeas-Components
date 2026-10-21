@@ -87,9 +87,11 @@
 
           sp.i18n.load({
             bundle : 'org.silverpeas.kmelia.multilang.kmeliaBundle',
-            language : '<%=language%>'
+            language : '<%=language%>',
+            async : true
+          }).then(function() {
+            displayTopicContent('${currentFolderId}');
           });
-          displayTopicContent('${currentFolderId}');
         });
       });
 
