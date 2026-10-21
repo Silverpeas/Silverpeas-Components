@@ -67,7 +67,7 @@
 </c:choose>
 
 <c:if test="${slideshow}">
-<script src="<%=m_sContext %>/portlets/jsp/quickInfos/js/responsiveslides.min.js" type="text/javascript"></script>
+<view:script src="/portlets/jsp/quickInfos/js/responsiveslides.js"/>
 <link rel="stylesheet" href="<%=m_sContext %>/portlets/jsp/quickInfos/css/responsiveslides.css" />
 <link rel="stylesheet" href="<%=m_sContext %>/portlets/jsp/quickInfos/css/themes.css" />
 <script type="text/javascript" >
