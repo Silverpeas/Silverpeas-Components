@@ -79,7 +79,7 @@ QuestionForm form = new QuestionForm(file, attachmentSuffix);
 List<Answer> answers = QuestionHelper.extractAnswer(items, form, quizzScc.getComponentId(), quizzSettings.getString("imagesSubDirectory"));
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <view:sp-page>
   <view:sp-head-part withCheckFormScript="true" withFieldsetStyle="true">
   <style type="text/css">

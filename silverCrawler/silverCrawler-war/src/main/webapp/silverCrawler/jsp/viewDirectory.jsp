@@ -82,8 +82,8 @@ if ("user".equals(profile) && !allowedNav)
 <c:set var="readWriteActivated" value="<%=readWriteActivated%>"/>
 <c:set var="dragAndDropEnable" value="${highestUserRole.isGreaterThanOrEquals(publisherRole) and folderIsWritable and readWriteActivated}"/>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.silverCrawler">
+<!DOCTYPE html>
+<html id="ng-app" ng-app="silverpeas.silverCrawler">
 <head>
 <view:looknfeel withCheckFormScript="true"/>
 <view:includePlugin name="toggle"/>
