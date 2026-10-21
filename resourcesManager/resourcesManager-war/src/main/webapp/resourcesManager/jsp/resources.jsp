@@ -72,7 +72,7 @@ function deleteResource(resourceId, name,categoryId) {
     var $form = $('#resourceForm');
     $('#resourceId', $form).val(resourceId);
     $('#categoryId', $form).val(categoryId);
-    $form.submit();
+    $form.trigger('submit');
 	}
 }
 </script>

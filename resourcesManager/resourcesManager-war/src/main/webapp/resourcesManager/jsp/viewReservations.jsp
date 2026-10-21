@@ -45,7 +45,7 @@ ArrayLine arrayLine;
 		  if (confirm("Etes vous sûr de vouloir supprimer la réservation liée à l'évènement "+event+"?")) {
         var $form = $('#ReservationDeletion');
         $('#id', $form).val(reservationId);
-        $form.submit();
+        $form.trigger('submit');
 		  }
 	}
 
