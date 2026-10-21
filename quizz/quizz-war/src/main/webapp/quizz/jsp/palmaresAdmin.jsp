@@ -40,6 +40,7 @@ String iconsPath = ResourceLocator.getGeneralSettingBundle().getString("Applicat
 String folderSrc = iconsPath + "/util/icons/delete.gif";
 %>
 
+<!DOCTYPE html>
 <html>
 <head>
 	<title></title>

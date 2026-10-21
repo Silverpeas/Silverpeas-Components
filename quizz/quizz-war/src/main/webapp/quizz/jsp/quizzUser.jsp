@@ -64,6 +64,7 @@ String iconsPath = ResourceLocator.getGeneralSettingBundle().getString("Applicat
 String linkIcon = iconsPath + "/util/icons/link.gif";
 %>
 
+<!DOCTYPE html>
 <html id="ng-app" ng-app="silverpeas.quizz">
 <head>
 <view:looknfeel/>

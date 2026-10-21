@@ -47,6 +47,7 @@ if ("0".equals(fatherId))
 }
 %>
 
+<!DOCTYPE html>
 <HTML>
 <HEAD>
 <view:looknfeel />

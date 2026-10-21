@@ -87,6 +87,7 @@ if (path != null)
 }
 %>
 
+<!DOCTYPE html>
 <html>
 <head>
 <view:looknfeel withCheckFormScript="true"/>

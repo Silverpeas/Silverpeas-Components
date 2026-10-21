@@ -60,6 +60,7 @@
   context.setBorderPrinted(false);
 %>
 
+<!DOCTYPE html>
 <html>
 <head>
 <view:looknfeel/>

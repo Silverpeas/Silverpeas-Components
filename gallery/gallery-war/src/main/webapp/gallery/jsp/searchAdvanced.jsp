@@ -53,6 +53,7 @@
 <c:set var="instanceId" value="${browseContext[3]}"/>
 <c:set var="keyword" value="${requestScope.KeyWord}"/>
 
+<!DOCTYPE html>
 <html>
 <head>
   <view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>

@@ -34,6 +34,7 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 <fmt:message key="mailingList.icons.attachmentBig" var="attachmentIcon" bundle="${icons}" />
+<!DOCTYPE html>
 <html>
 <head>
 <c:set var="message" value="${requestScope.currentMessage}" />

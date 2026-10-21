@@ -30,6 +30,7 @@
 	String table = (String)request.getAttribute("tableName");
 	String[] columns = (String[])request.getAttribute("columns");
 %>
+<!DOCTYPE html>
 <HTML>
 <Head>
 <view:looknfeel/>

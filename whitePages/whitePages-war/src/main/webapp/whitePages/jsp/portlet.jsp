@@ -53,6 +53,7 @@
 
 	boolean isMailHidden = mailHidden.booleanValue();
 %>
+<!DOCTYPE html>
 <HTML>
 <HEAD>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>

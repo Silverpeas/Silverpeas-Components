@@ -57,6 +57,7 @@ String displayCredits(int nb_max_user_votes , int nb_user_votes)  throws QuizzEx
 <%
 String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 %>
+<!DOCTYPE html>
 <html>
 <head>
 <title>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</title>
