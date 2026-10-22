@@ -155,7 +155,7 @@
     }
   }
 %>
-<!DOCTYPE>
+<!DOCTYPE html>
 <html lang="<%= surveyScc.getLanguage() %>">
 <head>
   <title></title>
