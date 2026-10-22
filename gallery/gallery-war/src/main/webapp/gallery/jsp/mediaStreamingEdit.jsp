@@ -39,6 +39,7 @@
 <%-- Constants --%>
 <view:setConstant var="mediaType" constant="org.silverpeas.components.gallery.constant.MediaType.Streaming"/>
 <view:setConstant var="SMALL_RESOLUTION" constant="org.silverpeas.components.gallery.constant.MediaResolution.SMALL"/>
+<view:setConstant var="mediaTitleInputName" constant="org.silverpeas.components.gallery.ParameterNames.MediaTitle"/>
 
 <gallery:editMediaLayout mediaType="${mediaType}">
   <jsp:attribute name="headerBloc">
@@ -57,9 +58,19 @@
           $validateButtonContainer.removeClass('validateNotAvailable');
           $.closeProgressMessage();
         };
+        // a field is filled with the data of the streaming provider only if it is empty or if it
+        // still contains the value given by the provider for a previous URL: the value entered by
+        // the user is kept
+        const fillFromProvider = function($field, value) {
+          const current = ($field.val() || '').trim();
+          if (value && (!current || current === $field.data('providerValue'))) {
+            $field.val(value);
+            $field.data('providerValue', value);
+          }
+        };
         $('#fileId').on('blur', function() {
           var value = $.trim($(this).val());
-          var $title = $('#title');
+          var $title = $(document.getElementById('${mediaTitleInputName}'));
           var $author = $('#author');
           if (value && value != oldValue) {
             $.progressMessage();
@@ -67,12 +78,8 @@
               if (!providerData) {
                 return this;
               }
-              if (providerData.title) {
-                $title.val(providerData.title);
-              }
-              if (providerData.author) {
-                $author.val(providerData.author);
-              }
+              fillFromProvider($title, providerData.title);
+              fillFromProvider($author, providerData.author);
               releaseValidateButton();
             }, releaseValidateButton);
           } else {
