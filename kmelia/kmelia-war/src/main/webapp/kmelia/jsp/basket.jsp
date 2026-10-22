@@ -37,7 +37,7 @@
 <c:set var="translation" value="${requestScope.Language}"/>
 <c:set var="componentId" value="${request.browseContext[3]}"/>
 
-<!DOCTYPE>
+<!DOCTYPE html>
 <html lang="${translation}">
 <head>
 	<title></title>
