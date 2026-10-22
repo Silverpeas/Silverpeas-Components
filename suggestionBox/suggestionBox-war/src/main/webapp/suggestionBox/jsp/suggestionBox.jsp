@@ -143,7 +143,7 @@
               <li ng-if="myOutOfDraftSuggestions.length === 0"><span class="txt-no-content">${noSuggestions}</span></li>
               <li ng-repeat="suggestion in myOutOfDraftSuggestions">
                 <a ng-class="suggestion.validation.status" ng-href="${componentUriBase}suggestions/{{suggestion.id}}">{{suggestion.title}}</a>
-                <span ng-if="suggestion.validation.status === '${STATUS_VALIDATED}'" class="vote"><div silverpeas-rating readonly="true" forcedisplaywhennorating="true" raterrating="suggestion.raterRating"></div></span>
+                <span ng-if="suggestion.validation.status === '${STATUS_VALIDATED}'" class="vote"><div silverpeas-rating readonlymode="true" forcedisplaywhennorating="true" raterrating="suggestion.raterRating"></div></span>
                 <span ng-if="suggestion.validation.status === '${STATUS_VALIDATED}'" class="counter-comments"><span>{{suggestion.commentCount}} <fmt:message key="GML.comments"/></span></span>
               </li>
             </ul>
