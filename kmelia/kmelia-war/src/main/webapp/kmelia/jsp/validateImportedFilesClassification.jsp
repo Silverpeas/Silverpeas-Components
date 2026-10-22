@@ -365,9 +365,8 @@
             }).addClass('field').append($('<input>', {
               type: 'radio', 
               name: 'validation', 
-              value: okForAll, 
-              checked: selection == okForAll
-            })).
+              value: okForAll
+            }).prop('checked', selection == okForAll)).
               append($('<span>', {id: 'okForAll'}).html(validationText));
             
         <c:if test="${fn:length(importedPublications) > 1}">
@@ -376,9 +375,8 @@
               append($('<input>', {
               type: 'radio', 
               name: 'validation', 
-              value: modifyForAll,
-              checked: selection == modifyForAll
-            })).
+              value: modifyForAll
+            }).prop('checked', selection == modifyForAll)).
               append($('<span>', {id: 'modifyForAll'}).html(globalModifText));
         </c:if>
             
@@ -387,9 +385,8 @@
               append($('<input>', {
               type: 'radio', 
               name: 'validation', 
-              value: modifyForEach,
-              checked: selection == modifyForEach
-            })).
+              value: modifyForEach
+            }).prop('checked', selection == modifyForEach)).
               append($('<span>', {id: 'modifyForEach'}).html(modificationText)).
               appendTo($('#default-classification'));
         

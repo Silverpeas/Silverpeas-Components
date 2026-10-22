@@ -225,7 +225,7 @@ $(function() {
     var $categoryContainer = $("#categoryContainer");
     var $categories = $("select[name='CategoryId']");
     if (('' + $(this).val()) !== '0') {
-      $categories.attr('disabled', '');
+      $categories.prop('disabled', true);
       $categoryContainer.hide();
     } else {
       $categories.prop('disabled', false);
