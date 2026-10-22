@@ -74,7 +74,7 @@ function deleteReservation(){
 	if(confirm("<%=resource.getString("resourcesManager.suppressionConfirmation")%>")){
     var $form = $('#reservationForm');
     $('#id', $form).val('<%=reservationId%>');
-    $form.attr('action', 'DeleteReservation').submit();
+    $form.attr('action', 'DeleteReservation').trigger('submit');
 	}
 }
 
