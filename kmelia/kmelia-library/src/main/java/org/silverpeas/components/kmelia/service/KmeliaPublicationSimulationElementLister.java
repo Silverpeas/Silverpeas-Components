@@ -65,7 +65,8 @@ public class KmeliaPublicationSimulationElementLister
   private void listPublicationDocumentsFromNode(NodePK nodePK, String language) {
 
     // Retrieving all publication of a node
-    Collection<PublicationDetail> publications = getPublicationService().getDetailsByFatherPK(nodePK);
+    Collection<PublicationDetail> publications =
+        getPublicationService().getDetailsByFatherPK(nodePK, null, false);
     for (PublicationDetail publication : publications) {
 
       // Using here the default implementation of document lister

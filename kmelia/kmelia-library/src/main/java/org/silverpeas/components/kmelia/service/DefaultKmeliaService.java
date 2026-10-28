@@ -503,9 +503,9 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
       final Collection<NodePK> nodesToDelete = nodeService.getDescendantPKs(pkToDelete);
       nodesToDelete.add(pkToDelete);
       for (final NodePK oneNodeToDelete : nodesToDelete) {
-        // get pubs linked to current node (includes alias)
+        // get pubs linked to current node (includes alias), whatever their visibility period
         final Collection<PublicationDetail> pubsToCheck =
-            publicationService.getDetailsByFatherPK(oneNodeToDelete);
+            publicationService.getDetailsByFatherPK(oneNodeToDelete, null, false);
         // check each pub contained in current node
         for (PublicationDetail onePubToCheck : pubsToCheck) {
           final KmeliaPublication kmeliaPub = fromDetail(onePubToCheck, oneNodeToDelete);
@@ -1478,9 +1478,10 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
     for (final NodeDetail node : nodes) {
       // set the removal status of the child
       nodeService.removeNode(node);
-      // get all the direct publications in the topic child (including aliases)
+      // get all the direct publications in the topic child (including aliases), whatever their
+      // visibility period
       final Collection<PublicationDetail> publications =
-          publicationService.getDetailsByFatherPK(node.getNodePK());
+          publicationService.getDetailsByFatherPK(node.getNodePK(), null, false);
       // check each publication: if it is an alias, remove it, otherwise it is moved into the trash
       // with its topic
       for (PublicationDetail publication : publications) {
@@ -4077,7 +4078,8 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
   }
 
   private void movePublicationsOfTopic(NodePK fromPK, NodePK toPK, KmeliaPasteDetail pasteContext) {
-    Collection<PublicationDetail> publications = publicationService.getDetailsByFatherPK(fromPK);
+    Collection<PublicationDetail> publications =
+        publicationService.getDetailsByFatherPK(fromPK, null, false);
     pasteContext.setFromPK(fromPK);
     for (PublicationDetail publi : publications) {
       movePublication(publi.getPK(), toPK, pasteContext);
@@ -4256,7 +4258,7 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
   @Transactional(Transactional.TxType.REQUIRED)
   public void copyPublications(@SourcePK @TargetPK KmeliaCopyDetail copyDetail) {
     Collection<PublicationDetail> publications =
-        publicationService.getDetailsByFatherPK(copyDetail.getFromNodePK());
+        publicationService.getDetailsByFatherPK(copyDetail.getFromNodePK(), null, false);
     for (PublicationDetail publi : publications) {
       copyPublication(publi, copyDetail);
     }
