@@ -65,7 +65,7 @@ String linkIcon = iconsPath + "/util/icons/link.gif";
 %>
 
 <!DOCTYPE html>
-<html id="ng-app" ng-app="silverpeas.quizz">
+<html id="ng-app" ng-app="silverpeas.quizz" lang="<%=quizzScc.getLanguage()%>">
 <head>
 <view:looknfeel/>
   <view:includePlugin name="toggle"/>
