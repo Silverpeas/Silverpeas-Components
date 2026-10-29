@@ -27,7 +27,6 @@
   --discussion-muted: #586970;
   box-sizing: border-box;
   width: 100%;
-  max-width: 56rem;
   margin: 1.5rem auto;
   padding: 2rem;
   border: 1px solid var(--discussion-border);
