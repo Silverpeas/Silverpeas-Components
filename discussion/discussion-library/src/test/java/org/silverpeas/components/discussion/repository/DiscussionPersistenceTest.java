@@ -23,11 +23,11 @@
  */
 package org.silverpeas.components.discussion.repository;
 
-import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.sql.DriverManager;
 import java.util.List;
-import org.h2.tools.RunScript;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
@@ -61,11 +61,13 @@ class DiscussionPersistenceTest {
   @BeforeEach
   void database() throws Exception {
     try (var connection = DriverManager.getConnection(URL, "sa", "");
-         var statement = connection.createStatement();
-         var sql = new InputStreamReader(getClass().getResourceAsStream("/create_table.sql"),
-             StandardCharsets.UTF_8)) {
+         var statement = connection.createStatement()) {
       statement.execute("DROP ALL OBJECTS");
-      RunScript.execute(connection, sql);
+      // SQLScript in silversetup splits on every semicolon, including those in comments.
+      for (String sql : installerStatements("h2")) {
+        statement.addBatch(sql);
+      }
+      statement.executeBatch();
     }
     factory = new Configuration().addAnnotatedClass(Conversation.class)
         .addAnnotatedClass(DiscussionMessage.class).addAnnotatedClass(DiscussionReadState.class)
@@ -132,6 +134,31 @@ class DiscussionPersistenceTest {
     assertTrue(messages.history("c1", 10, 30).isEmpty());
     assertTrue(reads.find("c1", "user").isEmpty());
     assertEquals(1, messages.history("c2", 10, 30).size());
+  }
+
+  @Test
+  void allVendorScriptsAreCompatibleWithTheInstallerStatementSplitter() throws Exception {
+    for (String database : List.of("h2", "postgresql", "mssql", "oracle")) {
+      List<String> statements = installerStatements(database);
+      assertEquals(4, statements.size(), database);
+      for (String statement : statements) {
+        String executable = statement.lines()
+            .filter(line -> !line.stripLeading().startsWith("--"))
+            .collect(Collectors.joining("\n")).strip();
+        assertTrue(executable.startsWith("CREATE TABLE ") || executable.startsWith("CREATE INDEX "),
+            database + ": " + executable);
+      }
+    }
+  }
+
+  private List<String> installerStatements(String database) throws Exception {
+    String resource = "/migrations/db/" + database + "/discussion/001/create_table.sql";
+    try (var input = getClass().getResourceAsStream(resource)) {
+      assertNotNull(input, resource);
+      String script = new String(input.readAllBytes(), StandardCharsets.UTF_8);
+      return Arrays.stream(script.split(";")).map(String::strip)
+          .filter(statement -> !statement.isEmpty()).toList();
+    }
   }
 
   private void insertMessage(String id, String conversation, long sequence, String author, boolean deleted) {

@@ -51,7 +51,8 @@
         <directory>src/test/resources</directory>
       </testResource>
       <testResource>
-        <directory>../discussion-configuration/src/main/config/migrations/db/h2/discussion/001</directory>
+        <directory>../discussion-configuration/src/main/config/migrations/db</directory>
+        <targetPath>migrations/db</targetPath>
       </testResource>
     </testResources>
   </build>
