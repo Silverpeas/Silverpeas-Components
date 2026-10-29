@@ -26,35 +26,42 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="jakarta.tags.core" prefix="c" %>
 <%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<%@ taglib uri="jakarta.tags.functions" prefix="fn" %>
 <%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view" %>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <c:url var="base" value="${requestScope.componentUriBase}"/>
 <div class="discussion-page" data-before="${messagePage.nextBefore}" data-more="${messagePage.hasMore}">
   <c:forEach items="${messagePage.messages}" var="message">
-    <article class="discussion-message" data-sequence="${message.sequenceNumber}">
-      <p class="discussion-author"><c:out value="${message.creator.displayedName}"/>
-        <time><fmt:formatDate value="${message.creationDate}" type="both" dateStyle="short" timeStyle="short"/></time>
-      </p>
-      <c:choose>
-        <c:when test="${message.deleted}"><p><fmt:message key="discussion.deleted"/></p></c:when>
-        <c:otherwise>
-          <p class="discussion-body"><c:out value="${message.body}"/></p>
-          <c:if test="${canWrite and (currentUser.id eq message.creatorId or highestUserRole.name() eq 'ADMIN')}">
-            <details>
-              <summary><fmt:message key="discussion.edit"/></summary>
-              <form method="post" action="${base}messages/${message.id}/edit">
-                <input type="hidden" name="version" value="${message.version}"/>
-                <textarea name="body" maxlength="2000" required aria-label="<fmt:message key='discussion.message'/>"><c:out value="${message.body}"/></textarea>
-                <button type="submit"><fmt:message key="discussion.edit"/></button>
-              </form>
-            </details>
-            <form method="post" action="${base}messages/${message.id}/delete">
-              <input type="hidden" name="version" value="${message.version}"/>
-              <button type="submit"><fmt:message key="discussion.delete"/></button>
-            </form>
-          </c:if>
-        </c:otherwise>
-      </c:choose>
+    <article class="discussion-message ${currentUser.id eq message.creatorId ? 'discussion-message--own' : ''}" data-sequence="${message.sequenceNumber}">
+      <div class="discussion-avatar" aria-hidden="true"><c:out value="${fn:toUpperCase(fn:substring(message.creator.displayedName, 0, 1))}"/></div>
+      <div class="discussion-message-content">
+        <header class="discussion-message-header">
+          <span class="discussion-author"><c:out value="${message.creator.displayedName}"/></span>
+          <time><fmt:formatDate value="${message.creationDate}" type="both" dateStyle="short" timeStyle="short"/></time>
+        </header>
+        <c:choose>
+          <c:when test="${message.deleted}"><p class="discussion-deleted"><fmt:message key="discussion.deleted"/></p></c:when>
+          <c:otherwise>
+            <p class="discussion-body"><c:out value="${message.body}"/></p>
+            <c:if test="${canWrite and (currentUser.id eq message.creatorId or highestUserRole.name() eq 'ADMIN')}">
+              <div class="discussion-actions">
+                <details class="discussion-edit">
+                  <summary><fmt:message key="discussion.edit"/></summary>
+                  <form method="post" action="${base}messages/${message.id}/edit">
+                    <input type="hidden" name="version" value="${message.version}"/>
+                    <textarea name="body" maxlength="2000" required aria-label="<fmt:message key='discussion.message'/>"><c:out value="${message.body}"/></textarea>
+                    <button class="discussion-button discussion-button--primary" type="submit"><fmt:message key="discussion.save"/></button>
+                  </form>
+                </details>
+                <form class="discussion-delete" method="post" action="${base}messages/${message.id}/delete">
+                  <input type="hidden" name="version" value="${message.version}"/>
+                  <button class="discussion-button discussion-button--danger" type="submit"><fmt:message key="discussion.delete"/></button>
+                </form>
+              </div>
+            </c:if>
+          </c:otherwise>
+        </c:choose>
+      </div>
     </article>
   </c:forEach>
 </div>
