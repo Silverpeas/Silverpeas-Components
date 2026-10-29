@@ -323,6 +323,7 @@
     <module>formsOnline</module>
     <module>scheduleEvent</module>
     <module>suggestionBox</module>
+    <module>discussion</module>
     <module>spaceMembers</module>
     <module>community</module>
   </modules>

@@ -1,0 +1,159 @@
+/*
+ * Copyright (C) 2000 - 2026 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+package org.silverpeas.components.discussion.control;
+
+import java.util.function.Supplier;
+import jakarta.persistence.OptimisticLockException;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.WebApplicationException;
+import org.silverpeas.components.discussion.service.ConversationService;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.webcomponent.annotation.Homepage;
+import org.silverpeas.core.web.mvc.webcomponent.annotation.LowestRoleAccess;
+import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToInternal;
+import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToInternalJsp;
+import org.silverpeas.core.web.mvc.webcomponent.annotation.WebComponentController;
+
+/** Native session controller routed by Silverpeas' generic WebComponentRequestRouter. */
+@WebComponentController("discussion")
+public class DiscussionWebController extends
+    org.silverpeas.core.web.mvc.webcomponent.WebComponentController<DiscussionWebRequestContext> {
+  private static final String BASE = "org.silverpeas.components.discussion.";
+  private transient ConversationService conversations;
+
+  public DiscussionWebController(MainSessionController main, ComponentContext component) {
+    super(main, component, BASE + "multilang.DiscussionBundle",
+        BASE + "settings.DiscussionIcons", BASE + "settings.DiscussionSettings");
+  }
+
+  @Override
+  protected void onInstantiation(DiscussionWebRequestContext context) {
+    // The V1 conversation needs no additional session state.
+  }
+
+  @Override
+  protected void beforeRequestProcessing(DiscussionWebRequestContext context) {
+    super.beforeRequestProcessing(context);
+    context.getResponse().setHeader("Cache-Control", "no-store");
+  }
+
+  @GET
+  @Path("Main")
+  @Homepage
+  @RedirectToInternalJsp("discussion.jsp")
+  public void home(DiscussionWebRequestContext context) {
+    loadHistory(context, Long.MAX_VALUE);
+  }
+
+  @GET
+  @Path("history")
+  @RedirectToInternalJsp("messages.jsp")
+  public void history(DiscussionWebRequestContext context) {
+    loadHistory(context, number(context, "before", Long.MAX_VALUE));
+  }
+
+  private void loadHistory(DiscussionWebRequestContext context, long before) {
+    context.getRequest().setAttribute("messagePage",
+        webResult(() -> conversations().history(context.getComponentInstanceId(), before, 30)));
+    context.getRequest().setAttribute("canWrite", context.getHighestUserRole() != null &&
+        context.getHighestUserRole().isGreaterThanOrEquals(SilverpeasRole.WRITER) &&
+        !context.getUser().isAccessGuest() && !context.getUser().isAnonymous());
+  }
+
+  @POST
+  @Path("messages/add")
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @RedirectToInternal("Main")
+  public void publish(DiscussionWebRequestContext context) {
+    webAction(() -> conversations().publish(context.getComponentInstanceId(),
+        context.getRequest().getParameter("body")));
+  }
+
+  @POST
+  @Path("messages/{id}/edit")
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @RedirectToInternal("Main")
+  public void edit(DiscussionWebRequestContext context) {
+    webAction(() -> conversations().edit(context.getComponentInstanceId(),
+        context.getPathVariables().get("id"), number(context, "version", -1),
+        context.getRequest().getParameter("body")));
+  }
+
+  @POST
+  @Path("messages/{id}/delete")
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @RedirectToInternal("Main")
+  public void delete(DiscussionWebRequestContext context) {
+    webAction(() -> conversations().delete(context.getComponentInstanceId(),
+        context.getPathVariables().get("id"), number(context, "version", -1)));
+  }
+
+  @POST
+  @Path("read")
+  @RedirectToInternal("Main")
+  public void markRead(DiscussionWebRequestContext context) {
+    webAction(() -> conversations().markRead(context.getComponentInstanceId(),
+        number(context, "sequence", -1)));
+  }
+
+  private ConversationService conversations() {
+    if (conversations == null) {
+      conversations = ServiceProvider.getService(ConversationService.class);
+    }
+    return conversations;
+  }
+
+  private void webAction(Runnable action) {
+    webResult(() -> {
+      action.run();
+      return null;
+    });
+  }
+
+  private <T> T webResult(Supplier<T> action) {
+    try {
+      return action.get();
+    } catch (SecurityException e) {
+      throw new WebApplicationException(e, 403);
+    } catch (OptimisticLockException e) {
+      throw new WebApplicationException(e, 409);
+    } catch (IllegalArgumentException e) {
+      throw new WebApplicationException(e, 400);
+    }
+  }
+
+  private long number(DiscussionWebRequestContext context, String parameter, long fallback) {
+    String value = context.getRequest().getParameter(parameter);
+    try {
+      return value == null ? fallback : Long.parseLong(value);
+    } catch (NumberFormatException e) {
+      throw new WebApplicationException(e, 400);
+    }
+  }
+}
