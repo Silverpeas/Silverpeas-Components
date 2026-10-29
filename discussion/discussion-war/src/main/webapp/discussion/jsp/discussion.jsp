@@ -42,23 +42,49 @@
 <view:window>
   <view:frame>
     <main id="discussion" data-history="${base}history">
-      <p><fmt:message key="discussion.unread"/> : <c:out value="${messagePage.unreadCount}"/></p>
+      <header class="discussion-header">
+        <div>
+          <h1><fmt:message key="discussion.title"/></h1>
+          <p class="discussion-subtitle"><fmt:message key="discussion.subtitle"/></p>
+        </div>
+        <div class="discussion-reading">
+          <span class="discussion-unread">
+            <span class="discussion-unread-count"><c:out value="${messagePage.unreadCount}"/></span>
+            <fmt:message key="discussion.unread"/>
+          </span>
+          <c:if test="${messagePage.unreadCount gt 0}">
+            <form method="post" action="${base}read">
+              <input type="hidden" name="sequence" value="${messagePage.lastSequence}"/>
+              <button class="discussion-button discussion-button--quiet" type="submit"><fmt:message key="discussion.read"/></button>
+            </form>
+          </c:if>
+        </div>
+      </header>
       <c:if test="${canWrite}">
-        <form method="post" action="${base}messages/add">
-          <label for="discussion-body"><fmt:message key="discussion.message"/></label>
-          <textarea id="discussion-body" name="body" maxlength="2000" required></textarea>
-          <button type="submit"><fmt:message key="discussion.post"/></button>
+        <form class="discussion-composer" method="post" action="${base}messages/add">
+          <label for="discussion-body"><fmt:message key="discussion.compose"/></label>
+          <textarea id="discussion-body" name="body" maxlength="2000" required aria-describedby="discussion-compose-hint"
+              placeholder="<fmt:message key='discussion.placeholder'/>"></textarea>
+          <div class="discussion-composer-footer">
+            <span id="discussion-compose-hint" class="discussion-hint"><fmt:message key="discussion.hint"/></span>
+            <button class="discussion-button discussion-button--primary" type="submit"><fmt:message key="discussion.post"/></button>
+          </div>
         </form>
       </c:if>
-      <form method="post" action="${base}read">
-        <input type="hidden" name="sequence" value="${messagePage.lastSequence}"/>
-        <button type="submit"><fmt:message key="discussion.read"/></button>
-      </form>
-      <section id="discussion-history" aria-label="<fmt:message key='discussion.message'/>">
+      <section id="discussion-history" aria-label="<fmt:message key='discussion.history'/>">
+        <h2 class="discussion-history-title"><fmt:message key="discussion.history"/></h2>
+        <c:if test="${empty messagePage.messages}">
+          <div class="discussion-empty">
+            <h3><fmt:message key="discussion.empty"/></h3>
+            <p><fmt:message key="discussion.emptyHint"/></p>
+          </div>
+        </c:if>
         <jsp:include page="messages.jsp"/>
       </section>
       <p id="discussion-error" role="status" hidden><fmt:message key="discussion.error"/></p>
-      <button id="discussion-older" type="button"><fmt:message key="discussion.older"/></button>
+      <div class="discussion-pagination">
+        <button id="discussion-older" class="discussion-button discussion-button--quiet" type="button"><fmt:message key="discussion.older"/></button>
+      </div>
     </main>
   </view:frame>
 </view:window>
