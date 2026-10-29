@@ -1,3 +1,4 @@
+**/.sonar/
 .env
 .idea
 **/*.env
@@ -17,18 +18,4 @@ core-war/overlays
 nbactions.xml
 nb-configuration.xml
 nbactions.xml
-/silverpeas-core-web/src/main/java/META-INF
-/core-services/channels/src/main/resources/META-INF/MANIFEST.MF
-/core-services/pdc/src/main/resources/META-INF/MANIFEST.MF
-/core-services/publication/src/main/resources/META-INF/MANIFEST.MF
-/core-services/node/src/main/resources/META-INF/MANIFEST.MF
-/core-services/versioning/src/main/resources/META-INF/MANIFEST.MF
-/core-services/calendar/src/main/resources/META-INF/MANIFEST.MF
-/core-services/questioncontainer/src/main/resources/META-INF/MANIFEST.MF
-silverpeas-core-web/@ErrorDir@/
-
-/core-services/formtemplate/src/main/resources/META-INF/MANIFEST.MF
-/core-services/searchengine/src/main/resources/META-INF/MANIFEST.MF
-/core-services/statistic/src/main/resources/META-INF/MANIFEST.MF
-/core-services/silverstatistics/src/main/resources/META-INF/MANIFEST.MF
 maven.out.log
