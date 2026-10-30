@@ -51,7 +51,7 @@
         data-emoji-label="<fmt:message key='discussion.emoji'/>"
         data-mention-label="<fmt:message key='discussion.mention'/>">
       <header class="discussion-header">
-        <div>
+        <div class="discussion-heading">
           <h1><c:out value="${instanceInfo.title}"/></h1>
           <c:if test="${not empty instanceInfo.description}"><p class="discussion-subtitle"><c:out value="${instanceInfo.description}"/></p></c:if>
         </div>
