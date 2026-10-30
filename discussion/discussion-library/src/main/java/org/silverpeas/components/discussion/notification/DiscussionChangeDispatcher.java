@@ -40,6 +40,10 @@ public class DiscussionChangeDispatcher {
   private DefaultServerEventNotifier notifier;
   @Inject
   private ComponentAccessController access;
+  @Inject
+  private org.silverpeas.core.admin.service.OrganizationController organization;
+  @Inject
+  private Event<DiscussionNewMessage> newMessages;
 
   public DiscussionChangeDispatcher() {
     // CDI constructor.
@@ -55,6 +59,18 @@ public class DiscussionChangeDispatcher {
 
   public void read(String instanceId, String userId) {
     events.fire(new DiscussionChange(instanceId, userId));
+  }
+
+  public void published(String instanceId, String messageId, String authorId, String authorName) {
+    newMessages.fire(new DiscussionNewMessage(instanceId, messageId, authorId, authorName));
+  }
+
+  public void newMessageAfterCommit(
+      @Observes(during = TransactionPhase.AFTER_SUCCESS) DiscussionNewMessage message) {
+    var component = organization.getComponentInstLight(message.instanceId());
+    if (component != null) {
+      notifier.notify(new DiscussionMessageServerEvent(message, component, access));
+    }
   }
 
   public void afterCommit(@Observes(during = TransactionPhase.AFTER_SUCCESS) DiscussionChange change) {

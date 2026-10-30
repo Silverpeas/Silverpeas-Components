@@ -187,6 +187,7 @@ class ConversationServiceTest {
     try (MockedStatic<User> current = mockStatic(User.class)) {
       current.when(User::getCurrentRequester).thenReturn(user);
       service.publish("discussion1", "new message");
+      verify(changes).published(eq("discussion1"), any(), eq("user"), any());
       verify(changes).changed("discussion1");
       var captured = org.mockito.ArgumentCaptor.forClass(DiscussionMessage.class);
       verify(conversations).main("discussion1", true);

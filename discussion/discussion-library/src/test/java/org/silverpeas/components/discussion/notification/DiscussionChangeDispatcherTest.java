@@ -47,6 +47,8 @@ class DiscussionChangeDispatcherTest {
   private DefaultServerEventNotifier notifier;
   @TestManagedMock
   private ComponentAccessController access;
+  @TestManagedMock
+  private org.silverpeas.core.admin.service.OrganizationController organization;
   @TestedBean
   private DiscussionChangeDispatcher dispatcher;
 
@@ -91,6 +93,32 @@ class DiscussionChangeDispatcherTest {
     when(receiver.isAccessGuest()).thenReturn(false);
     when(access.isUserAuthorized("writer", "discussion1")).thenReturn(false);
     assertFalse(event.isConcerned("session", receiver));
+  }
+
+  @Test
+  void newMessageDesktopSignalsAreAfterCommitLiveOnlyAndExcludeTheAuthor() throws Exception {
+    var method = DiscussionChangeDispatcher.class.getMethod("newMessageAfterCommit", DiscussionNewMessage.class);
+    assertEquals(TransactionPhase.AFTER_SUCCESS, method.getParameters()[0].getAnnotation(Observes.class).during());
+    var component = mock(org.silverpeas.core.admin.component.model.ComponentInstLight.class);
+    when(component.getLabel("fr")).thenReturn("Projet IA");
+    when(organization.getComponentInstLight("discussion1")).thenReturn(component);
+    dispatcher.newMessageAfterCommit(new DiscussionNewMessage("discussion1", "m1", "1", "Alice"));
+    var capture = ArgumentCaptor.forClass(DiscussionMessageServerEvent.class);
+    verify(notifier).notify(capture.capture());
+    var event = capture.getValue();
+    assertInstanceOf(org.silverpeas.core.notification.sse.behavior.IgnoreStoring.class, event);
+    var recipient = mock(User.class);
+    when(recipient.getId()).thenReturn("2");
+    var preferences = new org.silverpeas.core.personalization.UserPreferences();
+    preferences.setLanguage("fr");
+    when(recipient.getUserPreferences()).thenReturn(preferences);
+    when(access.isUserAuthorized("2", "discussion1")).thenReturn(true);
+    when(access.getUserRoles(eq("2"), eq("discussion1"), any())).thenReturn(Set.of(SilverpeasRole.WRITER));
+    assertTrue(event.isConcerned("session", recipient));
+    assertTrue(event.getData("session", recipient).contains("Projet IA"));
+    assertTrue(event.getData("session", recipient).contains("messages/m1"));
+    when(recipient.getId()).thenReturn("1");
+    assertFalse(event.isConcerned("session", recipient));
   }
 
   @Test

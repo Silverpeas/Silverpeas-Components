@@ -54,6 +54,8 @@ class DiscussionWebControllerTest {
   private org.silverpeas.components.discussion.service.DiscussionMentionService mentions;
   @TestManagedMock
   private org.silverpeas.components.discussion.web.DiscussionPublicationService publications;
+  @TestManagedMock
+  private org.silverpeas.components.discussion.service.DiscussionTypingService typing;
   private DiscussionWebController controller;
   private DiscussionWebRequestContext context;
   private HttpRequest request;
@@ -205,6 +207,19 @@ class DiscussionWebControllerTest {
     when(publications.list("discussion1", "fr")).thenThrow(SecurityException.class);
     assertEquals(403, assertThrows(WebApplicationException.class,
         () -> controller.publications(context)).getResponse().getStatus());
+  }
+
+  @Test
+  void typingUsesTheAuthenticatedHttpSessionAndRejectsInvalidPayloads() {
+    when(request.getParameter("active")).thenReturn("true");
+    when(request.getParameter("tab")).thenReturn("tab1");
+    var session = mock(jakarta.servlet.http.HttpSession.class);
+    when(session.getId()).thenReturn("authenticated");
+    when(request.getSession()).thenReturn(session);
+    controller.typing(context);
+    verify(typing).typing("discussion1", "authenticated:tab1", true);
+    when(request.getParameter("active")).thenReturn("bad");
+    assertEquals(400, assertThrows(WebApplicationException.class, () -> controller.typing(context)).getResponse().getStatus());
   }
 
   @Test

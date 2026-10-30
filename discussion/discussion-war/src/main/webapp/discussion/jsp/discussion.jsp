@@ -37,6 +37,8 @@
   <title><c:out value="${instanceInfo.title}"/></title>
   <view:looknfeel/>
   <link rel="stylesheet" href="<c:url value='/discussion/jsp/css/discussion.css'/>"/>
+  <script src="<c:url value='/discussion/jsp/javaScript/discussion-desktop.js'/>" defer></script>
+  <script src="<c:url value='/discussion/jsp/javaScript/discussion-activity.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-editor.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-layout.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion.js'/>" defer></script>
@@ -48,7 +50,8 @@
 <view:window>
   <view:frame>
     <main id="discussion" data-history="${base}history" data-participants="${base}participants" data-publications="${base}publications" data-updates="${base}updates"
-        data-instance-id="${discussionInstanceId}" data-read="${base}messages/read"
+        data-instance-id="${discussionInstanceId}" data-read="${base}messages/read" data-typing="${base}typing" data-user-id="${currentUser.id}"
+        data-typing-one="<fmt:message key='discussion.typingOne'/>" data-typing-many="<fmt:message key='discussion.typingMany'/>"
         data-message-id="<c:out value='${focusedMessageId}'/>"
         data-length-error="<fmt:message key='discussion.hint'/>"
         data-profile-base="<c:url value='/Rprofil/jsp/Main'/>"
@@ -61,6 +64,7 @@
           <c:if test="${not empty instanceInfo.description}"><p class="discussion-subtitle"><c:out value="${instanceInfo.description}"/></p></c:if>
         </div>
         <div class="discussion-reading">
+          <button id="discussion-desktop-enable" class="discussion-button--quiet" type="button" hidden><fmt:message key="discussion.enableDesktop"/></button>
           <span class="discussion-unread">
             <span class="discussion-unread-count"><c:out value="${messagePage.unreadCount}"/></span>
             <fmt:message key="discussion.unread"/>
@@ -93,6 +97,7 @@
           <p id="discussion-live-error" class="discussion-hint" role="status" hidden><fmt:message key="discussion.liveError"/></p>
           <c:if test="${canWrite}">
             <form class="discussion-composer" method="post" action="${base}messages/add">
+              <p id="discussion-typing" class="discussion-hint" role="status" aria-live="polite" hidden></p>
               <label for="discussion-body"><fmt:message key="discussion.compose"/></label>
               <textarea id="discussion-body" name="body" maxlength="2000" required aria-describedby="discussion-compose-hint"
                   placeholder="<fmt:message key='discussion.placeholder'/>"></textarea>

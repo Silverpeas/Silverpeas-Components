@@ -53,6 +53,7 @@ public class DiscussionWebController extends
   private transient DiscussionInstanceInfoService instanceInfo;
   private transient DiscussionMentionService mentions;
   private transient DiscussionParticipantService participantService;
+  private transient org.silverpeas.components.discussion.service.DiscussionTypingService typingService;
   private transient DiscussionPublicationService publicationService;
 
   public DiscussionWebController(MainSessionController main, ComponentContext component) {
@@ -168,6 +169,23 @@ public class DiscussionWebController extends
     }
     context.getRequest().setAttribute("citedPublications",
         webResult(() -> publicationService.list(context.getComponentInstanceId(), getLanguage())));
+  }
+
+  @POST
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("typing")
+  @RedirectToInternalJsp("typing.jsp")
+  public void typing(DiscussionWebRequestContext context) {
+    String active = context.getRequest().getParameter("active");
+    String tab = context.getRequest().getParameter("tab");
+    if ((!"true".equals(active) && !"false".equals(active)) || tab == null || !tab.matches("[A-Za-z0-9_-]{1,64}")) {
+      throw new WebApplicationException(400);
+    }
+    if (typingService == null) {
+      typingService = ServiceProvider.getService(org.silverpeas.components.discussion.service.DiscussionTypingService.class);
+    }
+    webAction(() -> typingService.typing(context.getComponentInstanceId(),
+        context.getRequest().getSession().getId() + ":" + tab, Boolean.parseBoolean(active)));
   }
 
   private void loadHistory(DiscussionWebRequestContext context, long before) {

@@ -234,3 +234,27 @@ les publications accessibles à l'utilisateur courant sont affichées, par titre
 s'ouvrent dans un nouvel onglet pour conserver la discussion et le brouillon.
 
 Aucune table et aucun script SQL supplémentaires ne sont nécessaires pour cette évolution.
+
+### Saisie en cours et notifications de bureau
+
+La saisie dans le compositeur envoie un signal éphémère, sans texte de brouillon, via le canal
+SSE/WebSocket existant. Les signaux sont limités en fréquence et expirent sous huit secondes.
+Une pause de deux secondes, l'envoi ou la sortie de la page signale l'arrêt ; plusieurs onglets
+d'un même utilisateur sont agrégés. Les destinataires doivent avoir accès à Discussion et pouvoir
+voir l'auteur connecté selon les règles de visibilité natives de Silverpeas.
+
+Chaque nouvelle publication de message déclenche après commit un signal de bureau distinct des
+notifications de @mention. Il exclut l'auteur, n'est ni stocké ni rejoué aux utilisateurs hors ligne
+et ne contient pas le texte du message. Le client global est inclus par un décorateur du plugin
+natif USERNOTIFICATION, sans modifier Core, afin de fonctionner aussi dans une autre application.
+Les préférences de notification des @mentions restent inchangées.
+
+L'alerte de nouveau message est supprimée si la discussion est consultée dans une fenêtre active,
+y compris un autre onglet du même navigateur. BroadcastChannel vérifie la consultation entre
+onglets ; Web Locks, un historique local borné et le tag du message évitent les doublons des alertes
+de nouveau message. Un clic ouvre le message avec la navigation native. Si le navigateur n'a pas
+encore reçu d'autorisation, le bouton « Activer les notifications de bureau » permet de la demander
+explicitement. Les limites du navigateur (autorisation, fenêtres de navigation privée, stockage
+indisponible) peuvent restreindre les notifications ou leur déduplication entre onglets.
+
+Aucun changement SQL supplémentaire n'est requis.
