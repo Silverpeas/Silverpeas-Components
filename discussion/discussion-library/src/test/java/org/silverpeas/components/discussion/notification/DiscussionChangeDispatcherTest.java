@@ -106,7 +106,7 @@ class DiscussionChangeDispatcherTest {
     var component = mock(org.silverpeas.core.admin.component.model.ComponentInstLight.class);
     when(component.getLabel("fr")).thenReturn("Projet IA");
     when(organization.getComponentInstLight("discussion1")).thenReturn(component);
-    dispatcher.newMessageAfterCommit(new DiscussionNewMessage("discussion1", "m1", "1", "Alice"));
+    dispatcher.newMessageAfterCommit(new DiscussionNewMessage("discussion1", "m1", "1", "Alice", "Bonjour @[Bernard](2) 🚀 https://example.org"));
     var capture = ArgumentCaptor.forClass(DiscussionMessageServerEvent.class);
     verify(notifier).notify(capture.capture());
     var event = capture.getValue();
@@ -121,6 +121,9 @@ class DiscussionChangeDispatcherTest {
     assertTrue(event.isConcerned("session", recipient));
     assertTrue(event.getData("session", recipient).contains("Projet IA"));
     assertTrue(event.getData("session", recipient).contains("messages/m1"));
+    String payload = event.getData("session", recipient);
+    assertTrue(payload.contains("Alice: Bonjour @Bernard 🚀 https://example.org"));
+    assertFalse(payload.contains("@[Bernard](2)"));
     when(recipient.getId()).thenReturn("1");
     assertFalse(event.isConcerned("session", recipient));
   }

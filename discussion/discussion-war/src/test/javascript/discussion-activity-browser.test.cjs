@@ -82,7 +82,12 @@ test('typing signals contain no draft and received indicators expire or stop wit
     await page.waitForFunction(()=>document.getElementById('discussion-typing').hidden);
     await page.evaluate(()=>window.emit('DISCUSSION_TYPING',{instanceId:'discussion1',userId:'2',name:'Self',revision:3,ttl:8000}));
     assert.equal(await page.locator('#discussion-typing').isVisible(),false);
-    await page.waitForFunction(()=>window.requests.some(r=>r.active==='false'));
+    await page.evaluate(()=>{
+      window.dispatchEvent(new Event('blur'));
+      document.dispatchEvent(new Event('visibilitychange'));
+    });
+    assert.equal(await page.evaluate(()=>window.requests.some(r=>r.active==='false')),false);
+    await page.waitForFunction(()=>window.requests.some(r=>r.active==='false'),null,{timeout:7000});
     assert.equal(await page.locator('textarea').inputValue(),'More private draft');
   } finally {await browser.close();}
 });

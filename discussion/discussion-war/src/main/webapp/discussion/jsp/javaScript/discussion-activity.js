@@ -77,7 +77,7 @@
       }
       typing = true;
       window.clearTimeout(stopTimer);
-      stopTimer = window.setTimeout(stop, 2000);
+      stopTimer = window.setTimeout(stop, 5000);
     };
     const render = () => {
       window.clearTimeout(expiryTimer);
@@ -132,12 +132,8 @@
     };
     textarea.addEventListener('input', input);
     textarea.form?.addEventListener('submit', stop);
-    window.addEventListener('blur', stop);
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) {
-        stop();
-      }
-    });
+    // Keep the short-lived signal when focus changes: the observer may be in another window.
+    // Sending, clearing the draft, leaving the page, or the idle timer ends it.
     permission.addEventListener('click', async () => {
       await root.DiscussionDesktop?.requestPermission();
       permission.hidden = !root.Notification || root.Notification.permission !== 'default';
