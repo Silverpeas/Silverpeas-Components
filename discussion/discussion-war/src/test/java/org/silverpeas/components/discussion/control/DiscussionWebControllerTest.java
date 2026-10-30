@@ -80,6 +80,7 @@ class DiscussionWebControllerTest {
     controller.home(context);
     verify(request).setAttribute("messagePage", page);
     verify(request).setAttribute("discussionInstanceId", "discussion1");
+    verify(request).setAttribute("defaultAvatarPath", org.silverpeas.core.admin.user.model.User.DEFAULT_AVATAR_PATH);
     verify(participants).list("discussion1");
     verify(request).setAttribute("canWrite", true);
     verify(service, never()).markRead(anyString(), anyLong());

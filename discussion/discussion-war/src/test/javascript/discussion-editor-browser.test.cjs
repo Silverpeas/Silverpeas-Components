@@ -92,3 +92,36 @@ test('editing saved mentions hides identifiers while preserving the submitted re
     assert.equal((await editor.inputValue()).includes('(2)'),false);
   } finally {await browser.close();}
 });
+
+
+test('personalized message avatars cover initials and failed portraits fall back to the initial', async () => {
+  const browser=await chromium.launch({executablePath:process.env.CHROME_PATH || undefined,args:['--no-sandbox']});
+  try {
+    const page=await browser.newPage();
+    await page.route('https://discussion.test/**',route=>{
+      if(route.request().url().endsWith('/custom.png')) {
+        return route.fulfill({contentType:'image/png',body:Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=','base64')});
+      }
+      return route.fulfill({status:404,body:''});
+    });
+    await page.setContent('<base href="https://discussion.test/"><main id="discussion"><div class="discussion-avatar" id="custom"><span>A</span><img src="/custom.png" alt="" width="30" height="30"></div><div class="discussion-avatar" id="default"><span>B</span></div><div class="discussion-avatar" id="broken"><span>C</span><img src="/missing.png" alt=""></div></main>');
+    await page.addStyleTag({path:path.join(__dirname,'../../main/webapp/discussion/jsp/css/discussion.css')});
+    await page.addScriptTag({path:path.join(__dirname,'../../main/webapp/discussion/jsp/javaScript/discussion-editor.js')});
+    await page.evaluate(()=>document.dispatchEvent(new Event('DOMContentLoaded')));
+    await page.waitForFunction(()=>document.querySelector('#custom img')?.naturalWidth>0);
+    assert.equal(await page.locator('#default img').count(),0);
+    assert.equal(await page.locator('#default span').textContent(),'B');
+    await page.waitForFunction(()=>!document.querySelector('#broken img'));
+    assert.equal(await page.locator('#broken span').isVisible(),true);
+    assert.equal(await page.locator('#custom img').evaluate(node=>getComputedStyle(node).objectFit),'cover');
+    await page.evaluate(()=>{
+      const avatar=document.createElement('div');
+      avatar.id='dynamic';avatar.className='discussion-avatar';
+      avatar.innerHTML='<span>D</span><img src="/missing-later.png" alt="">';
+      document.getElementById('discussion').append(avatar);
+      window.DiscussionEditor.enhance(avatar);
+    });
+    await page.waitForFunction(()=>!document.querySelector('#dynamic img'));
+    assert.equal(await page.locator('#dynamic span').textContent(),'D');
+  } finally {await browser.close();}
+});

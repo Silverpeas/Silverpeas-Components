@@ -163,6 +163,7 @@ public class DiscussionWebController extends
   private void prepareHistory(DiscussionWebRequestContext context,
       org.silverpeas.components.discussion.service.MessagePage page) {
     context.getRequest().setAttribute("messagePage", page);
+    context.getRequest().setAttribute("defaultAvatarPath", org.silverpeas.core.admin.user.model.User.DEFAULT_AVATAR_PATH);
     context.getRequest().setAttribute("messageLikes", webResult(() -> conversations().likeStates(
         context.getComponentInstanceId(), page.messages().stream().map(message -> message.getId()).toList())));
     context.getRequest().setAttribute("canReact", !context.getUser().isAnonymous() && !context.getUser().isAccessGuest());

@@ -311,6 +311,11 @@
     textarea.addEventListener('blur', close);
   }
   function enhance(container) {
+    container.querySelectorAll('.discussion-avatar img').forEach(image => {
+      if (image.complete && image.naturalWidth === 0) {
+        image.remove();
+      }
+    });
     container.querySelectorAll('.discussion-body').forEach(renderBody);
     container.querySelectorAll('textarea[name="body"]').forEach(enhanceEditor);
   }
@@ -324,6 +329,11 @@
     if (directory) {
       people = Array.from(directory.content.querySelectorAll('[data-user-id]'), node => ({id: node.dataset.userId, name: node.dataset.name}));
     }
+    document.addEventListener('error', event => {
+      if (event.target.matches?.('#discussion .discussion-avatar img')) {
+        event.target.remove();
+      }
+    }, true);
     enhance(discussion);
     discussion.addEventListener('submit', async event => {
       const form = event.target;
