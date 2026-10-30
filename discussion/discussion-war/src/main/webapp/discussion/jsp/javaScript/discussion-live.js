@@ -171,9 +171,9 @@
         failure.hidden = false;
         return;
       }
-      source.addEventListener('DISCUSSION_CHANGED', changed);
-      source.addEventListener('OPEN_EVENT_SOURCE', refresh);
-      source.addEventListener('error', disconnected);
+      source.addEventListener('DISCUSSION_CHANGED', changed, 'discussionLiveChanged');
+      source.addEventListener('OPEN_EVENT_SOURCE', refresh, 'discussionLiveOpen');
+      source.addEventListener('error', disconnected, 'discussionLiveError');
       // Close the gap between rendering the JSP and subscribing to the event source.
       refresh();
     };

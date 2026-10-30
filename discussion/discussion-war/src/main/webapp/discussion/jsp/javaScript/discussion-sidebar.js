@@ -70,7 +70,7 @@
       }
       source = window.top.spServerEventSource || window.spServerEventSource;
       if (source?.isEnabled()) {
-        source.addEventListener('OPEN_EVENT_SOURCE', refresh);
+        source.addEventListener('OPEN_EVENT_SOURCE', refresh, 'discussionSidebarOpen');
       }
       refresh();
     };

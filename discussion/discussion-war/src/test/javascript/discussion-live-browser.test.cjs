@@ -42,7 +42,10 @@ async function open(browser, count = 30, focus = '') {
     window.listeners = {};
     window.spServerEventSource = {
       isEnabled: () => true,
-      addEventListener: (name, fn) => { window.listeners[name] = fn; },
+      addEventListener: (name, fn, id) => {
+        if (!id && !window.listeners[name]) throw new TypeError('Native SSE removal before first registration');
+        window.listeners[name] = fn;
+      },
       removeEventListener: name => { delete window.listeners[name]; }
     };
     window.tick = () => window.listeners.OPEN_EVENT_SOURCE();

@@ -125,8 +125,8 @@
       unregister = root.DiscussionDesktop?.register(discussion.dataset.instanceId, discussion.dataset.userId, active);
       source = root.spServerEventSource || window.spServerEventSource;
       if (source?.isEnabled()) {
-        source.addEventListener('DISCUSSION_TYPING', receive);
-        source.addEventListener('OPEN_EVENT_SOURCE', reset);
+        source.addEventListener('DISCUSSION_TYPING', receive, 'discussionTyping');
+        source.addEventListener('OPEN_EVENT_SOURCE', reset, 'discussionTypingOpen');
       }
       permission.hidden = !root.Notification || root.Notification.permission !== 'default';
     };
