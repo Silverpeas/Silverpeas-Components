@@ -300,6 +300,41 @@ class ConversationServiceTest {
     return message;
   }
 
+  @Test
+  void updatesCombineLoadedRowsWithNewRowsAndApplyReadState() {
+    var existing = mock(DiscussionMessage.class);
+    when(existing.getId()).thenReturn("m2");
+    when(existing.getSequenceNumber()).thenReturn(2L);
+    when(existing.getCreatorId()).thenReturn("other");
+    var added = mock(DiscussionMessage.class);
+    when(added.getId()).thenReturn("m5");
+    when(added.getSequenceNumber()).thenReturn(5L);
+    when(added.getCreatorId()).thenReturn("other");
+    when(messages.selected("conversation", List.of("m2", "foreign"))).thenReturn(List.of(existing));
+    when(messages.newer("conversation", 4)).thenReturn(List.of(added));
+    when(readStates.find("conversation", "user")).thenReturn(Optional.empty());
+    when(messages.unread("conversation", "user", 0)).thenReturn(2L);
+    try (var current = mockStatic(User.class)) {
+      current.when(User::getCurrentRequester).thenReturn(user);
+      var result = service.updates("discussion1", 4, List.of("m2", "foreign"));
+      assertEquals(List.of(added, existing), result.messages());
+      assertEquals(2, result.unreadCount());
+      verify(existing).setUnread(true);
+      verify(added).setUnread(true);
+      verify(access).require("discussion1", SilverpeasRole.WRITER);
+    }
+  }
+
+  @Test
+  void updateRequestsAreBoundedAndRequireAccessBeforeQueries() {
+    assertThrows(IllegalArgumentException.class, () -> service.updates("discussion1", -1, List.of()));
+    assertThrows(IllegalArgumentException.class, () -> service.updates("discussion1", 0,
+        java.util.Collections.nCopies(101, "m1")));
+    when(access.require("discussion1", SilverpeasRole.WRITER)).thenThrow(SecurityException.class);
+    assertThrows(SecurityException.class, () -> service.updates("discussion1", 0, List.of()));
+    verifyNoInteractions(messages, conversations);
+  }
+
   private DiscussionMessage existingMessage(String author) {
     var message = mock(DiscussionMessage.class);
     when(messages.getById("message")).thenReturn(message);

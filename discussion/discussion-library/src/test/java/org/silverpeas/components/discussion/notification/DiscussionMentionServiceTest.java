@@ -113,6 +113,44 @@ class DiscussionMentionServiceTest {
     verify(events).fire(event);
   }
 
+  @Test
+  void notificationDeliveryUsesAFreshTransactionAfterCommit() throws Exception {
+    var method = DiscussionMentionDispatcher.class.getMethod("notifyAfterCommit", DiscussionMentionEvent.class);
+    assertEquals(jakarta.transaction.Transactional.TxType.REQUIRES_NEW,
+        method.getAnnotation(jakarta.transaction.Transactional.class).value());
+    assertEquals(jakarta.enterprise.event.TransactionPhase.AFTER_SUCCESS,
+        method.getParameters()[0].getAnnotation(jakarta.enterprise.event.Observes.class).during());
+  }
+
+  @Test
+  void completeNotificationContainsRecipientsLocalizedContentAndMessageLink() {
+    var template = mock(org.silverpeas.core.template.SilverpeasTemplate.class);
+    try (var instances = mockStatic(org.silverpeas.core.admin.component.model.SilverpeasComponentInstance.class);
+         var templates = mockStatic(org.silverpeas.core.template.SilverpeasTemplates.class);
+         var control = mockStatic(org.silverpeas.core.security.authorization.ComponentAccessControl.class);
+         var users = mockStatic(User.class)) {
+      users.when(() -> User.isActivatedStateFor("2")).thenReturn(true);
+      instances.when(() -> org.silverpeas.core.admin.component.model.SilverpeasComponentInstance.getById("discussion1"))
+          .thenReturn(java.util.Optional.of(mock(org.silverpeas.core.admin.component.model.SilverpeasComponentInstance.class)));
+      templates.when(() -> org.silverpeas.core.template.SilverpeasTemplates.createSilverpeasTemplateOnComponents("discussion"))
+          .thenReturn(template);
+      var permission = mock(org.silverpeas.core.security.authorization.ComponentAccessControl.class);
+      control.when(org.silverpeas.core.security.authorization.ComponentAccessControl::get).thenReturn(permission);
+      when(permission.isUserAuthorized("2", "discussion1")).thenReturn(true);
+      var message = mock(DiscussionMessage.class);
+      when(message.getId()).thenReturn("message1");
+      when(message.getBody()).thenReturn("@[Alice](2) <hello>");
+      var builder = new DiscussionMentionNotification("discussion1", message, sender, Set.of("2", "3"));
+      var metadata = builder.build().getNotificationMetaData();
+      assertEquals(List.of("2"), metadata.getUserRecipients().stream().map(r -> r.getUserId()).toList());
+      assertFalse(metadata.isSendImmediately());
+      assertEquals("discussion1", metadata.getComponentId());
+      assertTrue(metadata.getLink("fr").getLinkUrl().endsWith("/Rdiscussion/discussion1/messages/message1#message-message1"));
+      assertTrue(metadata.getLanguages().containsAll(List.of("fr", "en", "de")));
+      verify(template, atLeastOnce()).setAttribute("body", "@[Alice](2) &lt;hello&gt;");
+    }
+  }
+
   private User user(String id, String name) {
     User user = mock(User.class);
     when(user.getId()).thenReturn(id);

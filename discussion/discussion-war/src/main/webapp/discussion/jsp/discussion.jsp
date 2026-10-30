@@ -38,11 +38,12 @@
   <link rel="stylesheet" href="<c:url value='/discussion/jsp/css/discussion.css'/>"/>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-editor.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion.js'/>" defer></script>
+  <script src="<c:url value='/discussion/jsp/javaScript/discussion-live.js'/>" defer></script>
 </head>
 <body>
 <view:window>
   <view:frame>
-    <main id="discussion" data-history="${base}history" data-participants="${base}participants"
+    <main id="discussion" data-history="${base}history" data-participants="${base}participants" data-updates="${base}updates"
         data-profile-base="<c:url value='/Rprofil/jsp/Main'/>"
         data-icons="<c:url value='/discussion/jsp/icons/discussion-icons.svg'/>"
         data-emoji-label="<fmt:message key='discussion.emoji'/>"
@@ -57,12 +58,10 @@
             <span class="discussion-unread-count"><c:out value="${messagePage.unreadCount}"/></span>
             <fmt:message key="discussion.unread"/>
           </span>
-          <c:if test="${messagePage.unreadCount gt 0}">
-            <form method="post" action="${base}read">
-              <input type="hidden" name="sequence" value="${messagePage.lastSequence}"/>
-              <button class="button discussion-button--quiet" type="submit"><fmt:message key="discussion.read"/></button>
-            </form>
-          </c:if>
+          <form class="discussion-read-form" method="post" action="${base}read" ${messagePage.unreadCount eq 0 ? 'hidden' : ''}>
+            <input type="hidden" name="sequence" value="${messagePage.lastSequence}"/>
+            <button class="button discussion-button--quiet" type="submit"><fmt:message key="discussion.read"/></button>
+          </form>
         </div>
       </header>
       <template id="discussion-mention-directory">
@@ -87,6 +86,7 @@
               <jsp:include page="messages.jsp"/>
             </section>
           </div>
+          <p id="discussion-live-error" class="discussion-hint" role="status" hidden><fmt:message key="discussion.liveError"/></p>
           <c:if test="${canWrite}">
             <form class="discussion-composer" method="post" action="${base}messages/add">
               <label for="discussion-body"><fmt:message key="discussion.compose"/></label>

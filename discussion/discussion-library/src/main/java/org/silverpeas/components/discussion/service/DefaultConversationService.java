@@ -75,6 +75,28 @@ public class DefaultConversationService implements ConversationService {
     boolean more = found.size() > limit;
     var page = found.subList(0, Math.min(limit, found.size()));
     long next = page.isEmpty() ? before : page.getLast().getSequenceNumber();
+    return readablePage(conversation, page, next, more);
+  }
+
+  @Override
+  public MessagePage updates(String instanceId, long after, List<String> messageIds) {
+    access.require(instanceId, SilverpeasRole.WRITER);
+    if (after < 0 || messageIds.size() > 100) {
+      throw new IllegalArgumentException("Invalid update range");
+    }
+    Conversation conversation = conversations.main(instanceId, false);
+    var selected = messages.selected(conversation.getId(), messageIds);
+    var newer = messages.newer(conversation.getId(), after);
+    var page = java.util.stream.Stream.concat(selected.stream(), newer.stream())
+        .collect(java.util.stream.Collectors.toMap(DiscussionMessage::getId, message -> message,
+            (first, second) -> second)).values().stream()
+        .sorted(java.util.Comparator.comparingLong(DiscussionMessage::getSequenceNumber).reversed())
+        .toList();
+    return readablePage(conversation, page, 0, false);
+  }
+
+  private MessagePage readablePage(Conversation conversation, List<DiscussionMessage> page,
+      long next, boolean more) {
     String userId = User.getCurrentRequester().getId();
     long lastRead = readStates.find(conversation.getId(), userId)
         .map(DiscussionReadState::getLastReadSequence).orElse(0L);
@@ -116,7 +138,7 @@ public class DefaultConversationService implements ConversationService {
   @Override
   public Map<String, LikeState> likeStates(String instanceId, List<String> messageIds) {
     access.require(instanceId, SilverpeasRole.WRITER);
-    if (messageIds.size() > 100) {
+    if (messageIds.size() > 200) {
       throw new IllegalArgumentException("Too many message identifiers");
     }
     Conversation conversation = conversations.main(instanceId, false);

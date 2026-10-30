@@ -33,6 +33,7 @@ public interface ConversationService {
   LikeState setLike(String instanceId, String messageId, boolean liked);
   MessagePage historyAround(String instanceId, String messageId);
   MessagePage history(String instanceId, long before, int limit);
+  MessagePage updates(String instanceId, long after, List<String> messageIds);
   void publish(String instanceId, String body);
   void edit(String instanceId, String messageId, long version, String body);
   void delete(String instanceId, String messageId, long version);

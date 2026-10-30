@@ -35,7 +35,7 @@
 <fmt:message key="discussion.delete" var="deleteLabel"/>
 <fmt:message key="discussion.like" var="likeLabel"/>
 <fmt:message key="discussion.unlike" var="unlikeLabel"/>
-<div class="discussion-page" data-before="${messagePage.nextBefore}" data-more="${messagePage.hasMore}">
+<div class="discussion-page" data-before="${messagePage.nextBefore}" data-more="${messagePage.hasMore}" data-last-sequence="${messagePage.lastSequence}" data-unread-count="${messagePage.unreadCount}">
   <c:set var="unreadBoundaryShown" value="${false}"/>
   <c:forEach items="${messagePage.chronologicalMessages}" var="message">
     <c:if test="${message.unread and not unreadBoundaryShown}">

@@ -95,6 +95,22 @@ class DiscussionWebControllerTest {
   }
 
   @Test
+  void liveUpdatesUseSessionScopeAndRejectMalformedRequests() {
+    when(request.getParameter("after")).thenReturn("42");
+    when(request.getParameter("ids")).thenReturn("m1,m2");
+    var page = new MessagePage(List.of(), 0, false, 42, 1);
+    when(service.updates("discussion1", 42, List.of("m1", "m2"))).thenReturn(page);
+    controller.updates(context);
+    verify(request).setAttribute("messagePage", page);
+    when(request.getParameter("after")).thenReturn("oops");
+    assertEquals(400, assertThrows(WebApplicationException.class,
+        () -> controller.updates(context)).getResponse().getStatus());
+    when(request.getParameter("ids")).thenReturn("x".repeat(4101));
+    assertEquals(400, assertThrows(WebApplicationException.class,
+        () -> controller.updates(context)).getResponse().getStatus());
+  }
+
+  @Test
   void mutationsUseTheInstanceFromTheSessionAndTheVersionFromTheForm() {
     when(request.getParameter("body")).thenReturn("body");
     when(request.getParameter("version")).thenReturn("3");

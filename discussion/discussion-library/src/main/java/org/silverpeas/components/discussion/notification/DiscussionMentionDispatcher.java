@@ -27,6 +27,7 @@ import jakarta.enterprise.event.Event;
 import jakarta.enterprise.event.Observes;
 import jakarta.enterprise.event.TransactionPhase;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 
@@ -48,6 +49,7 @@ public class DiscussionMentionDispatcher {
     events.fire(event);
   }
 
+  @Transactional(Transactional.TxType.REQUIRES_NEW)
   public void notifyAfterCommit(
       @Observes(during = TransactionPhase.AFTER_SUCCESS) DiscussionMentionEvent event) {
     UserNotificationHelper.buildAndSend(new DiscussionMentionNotification(
