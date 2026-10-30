@@ -30,6 +30,7 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.WebApplicationException;
 import org.silverpeas.components.discussion.service.ConversationService;
+import org.silverpeas.components.discussion.web.DiscussionParticipantService;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
@@ -46,6 +47,7 @@ public class DiscussionWebController extends
     org.silverpeas.core.web.mvc.webcomponent.WebComponentController<DiscussionWebRequestContext> {
   private static final String BASE = "org.silverpeas.components.discussion.";
   private transient ConversationService conversations;
+  private transient DiscussionParticipantService participantService;
 
   public DiscussionWebController(MainSessionController main, ComponentContext component) {
     super(main, component, BASE + "multilang.DiscussionBundle",
@@ -69,6 +71,7 @@ public class DiscussionWebController extends
   @RedirectToInternalJsp("discussion.jsp")
   public void home(DiscussionWebRequestContext context) {
     loadHistory(context, Long.MAX_VALUE);
+    participants(context);
   }
 
   @GET
@@ -76,6 +79,17 @@ public class DiscussionWebController extends
   @RedirectToInternalJsp("messages.jsp")
   public void history(DiscussionWebRequestContext context) {
     loadHistory(context, number(context, "before", Long.MAX_VALUE));
+  }
+
+  @GET
+  @Path("participants")
+  @RedirectToInternalJsp("participants.jsp")
+  public void participants(DiscussionWebRequestContext context) {
+    if (participantService == null) {
+      participantService = ServiceProvider.getService(DiscussionParticipantService.class);
+    }
+    context.getRequest().setAttribute("participants",
+        webResult(() -> participantService.list(context.getComponentInstanceId())));
   }
 
   private void loadHistory(DiscussionWebRequestContext context, long before) {

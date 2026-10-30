@@ -23,8 +23,11 @@
  */
 package org.silverpeas.components.discussion.service;
 
+import java.util.List;
+
 /** Dedicated conversation engine, independent of comments and instant messaging. */
 public interface ConversationService {
+  List<String> participantIds(String instanceId);
   MessagePage history(String instanceId, long before, int limit);
   void publish(String instanceId, String body);
   void edit(String instanceId, String messageId, long version, String body);

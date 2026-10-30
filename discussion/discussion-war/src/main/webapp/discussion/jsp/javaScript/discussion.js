@@ -29,6 +29,36 @@
     const history = document.getElementById('discussion-history');
     const older = document.getElementById('discussion-older');
     const error = document.getElementById('discussion-error');
+    const participants = document.getElementById('discussion-participants');
+    const presenceError = document.getElementById('discussion-presence-error');
+    let presenceLoading = false;
+    const refreshPresence = async () => {
+      if (!participants || document.hidden || presenceLoading) {
+        return;
+      }
+      presenceLoading = true;
+      try {
+        const response = await sp.ajaxRequest(discussion.dataset.participants).send();
+        const fragment = new DOMParser().parseFromString(response.responseText, 'text/html');
+        const list = fragment.querySelector('.discussion-participants-list');
+        if (!list) {
+          throw new Error('Invalid participant response');
+        }
+        participants.replaceChildren(document.importNode(list, true));
+        participants.classList.remove('is-stale');
+        presenceError.hidden = true;
+      } catch (failure) {
+        participants.classList.add('is-stale');
+        presenceError.hidden = false;
+      } finally {
+        presenceLoading = false;
+      }
+    };
+    if (participants) {
+      const presenceTimer = window.setInterval(refreshPresence, 30000);
+      window.addEventListener('pagehide', () => window.clearInterval(presenceTimer), { once: true });
+      document.addEventListener('visibilitychange', refreshPresence);
+    }
     let loading = false;
     const lastPage = () => history.querySelector('.discussion-page:last-child');
     const updateButton = () => {

@@ -50,12 +50,12 @@
                   <form method="post" action="${base}messages/${message.id}/edit">
                     <input type="hidden" name="version" value="${message.version}"/>
                     <textarea name="body" maxlength="2000" required aria-label="<fmt:message key='discussion.message'/>"><c:out value="${message.body}"/></textarea>
-                    <button class="discussion-button discussion-button--primary" type="submit"><fmt:message key="discussion.save"/></button>
+                    <button class="sp_button discussion-button--primary" type="submit"><fmt:message key="discussion.save"/></button>
                   </form>
                 </details>
                 <form class="discussion-delete" method="post" action="${base}messages/${message.id}/delete">
                   <input type="hidden" name="version" value="${message.version}"/>
-                  <button class="discussion-button discussion-button--danger" type="submit"><fmt:message key="discussion.delete"/></button>
+                  <button class="link discussion-button--danger" type="submit"><fmt:message key="discussion.delete"/></button>
                 </form>
               </div>
             </c:if>
