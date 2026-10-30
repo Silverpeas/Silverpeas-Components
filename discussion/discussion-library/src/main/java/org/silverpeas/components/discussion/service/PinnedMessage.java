@@ -27,6 +27,11 @@ import org.silverpeas.components.discussion.model.DiscussionMessage;
 
 /** Sidebar snapshot with readable mentions and a Unicode-safe excerpt. */
 public record PinnedMessage(String id, String author, String excerpt) {
+  // JSP EL resolves JavaBean properties rather than record component methods.
+  public String getId() { return id; }
+  public String getAuthor() { return author; }
+  public String getExcerpt() { return excerpt; }
+
   public static PinnedMessage from(DiscussionMessage message) {
     String text = DiscussionMentionService.displayText(message.getBody());
     int length = text.codePointCount(0, text.length());
