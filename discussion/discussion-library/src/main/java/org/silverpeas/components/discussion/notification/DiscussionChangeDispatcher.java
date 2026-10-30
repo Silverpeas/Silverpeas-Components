@@ -27,6 +27,7 @@ import jakarta.enterprise.event.Event;
 import jakarta.enterprise.event.Observes;
 import jakarta.enterprise.event.TransactionPhase;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.notification.sse.DefaultServerEventNotifier;
 import org.silverpeas.core.security.authorization.ComponentAccessController;
@@ -65,6 +66,9 @@ public class DiscussionChangeDispatcher {
     newMessages.fire(new DiscussionNewMessage(instanceId, messageId, authorId, authorName));
   }
 
+  // AFTER_SUCCESS runs after the publishing transaction has completed. Component lookup
+  // needs its own transaction, just like mention notification delivery.
+  @Transactional(Transactional.TxType.REQUIRES_NEW)
   public void newMessageAfterCommit(
       @Observes(during = TransactionPhase.AFTER_SUCCESS) DiscussionNewMessage message) {
     var component = organization.getComponentInstLight(message.instanceId());
