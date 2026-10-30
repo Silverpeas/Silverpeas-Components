@@ -25,9 +25,12 @@ package org.silverpeas.components.discussion.service;
 
 import java.util.List;
 import java.util.Map;
+import org.silverpeas.components.discussion.model.DiscussionMessage;
 
 /** Dedicated conversation engine, independent of comments and instant messaging. */
 public interface ConversationService {
+  List<PinnedMessage> pinnedMessages(String instanceId);
+  DiscussionMessage setPinned(String instanceId, String messageId, boolean pinned);
   List<String> participantIds(String instanceId);
   Map<String, LikeState> likeStates(String instanceId, List<String> messageIds);
   LikeState setLike(String instanceId, String messageId, boolean liked);

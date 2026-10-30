@@ -37,6 +37,7 @@ CREATE TABLE sc_discussion_message (
   conversationId VARCHAR(40) NOT NULL,
   sequenceNumber BIGINT NOT NULL,
   body NVARCHAR(2000) NOT NULL,
+  pinned BIT DEFAULT 0 NOT NULL,
   deleted BIT NOT NULL,
   createDate DATETIME2 NOT NULL,
   createdBy VARCHAR(40) NOT NULL,

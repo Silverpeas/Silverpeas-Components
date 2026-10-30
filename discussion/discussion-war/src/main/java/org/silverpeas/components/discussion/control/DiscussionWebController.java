@@ -109,6 +109,7 @@ public class DiscussionWebController extends
         ? webResult(() -> mentions.candidates(context.getComponentInstanceId())) : java.util.List.of());
     participants(context);
     publications(context);
+    pins(context);
   }
 
   @POST
@@ -169,6 +170,28 @@ public class DiscussionWebController extends
     }
     context.getRequest().setAttribute("citedPublications",
         webResult(() -> publicationService.list(context.getComponentInstanceId(), getLanguage())));
+  }
+
+  @GET
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("pins")
+  @RedirectToInternalJsp("pins.jsp")
+  public void pins(DiscussionWebRequestContext context) {
+    context.getRequest().setAttribute("pinnedMessages",
+        webResult(() -> conversations().pinnedMessages(context.getComponentInstanceId())));
+  }
+
+  @POST
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("messages/{id}/pin")
+  @RedirectToInternalJsp("pin.jsp")
+  public void pin(DiscussionWebRequestContext context) {
+    String value = context.getRequest().getParameter("pinned");
+    if (!"true".equals(value) && !"false".equals(value)) {
+      throw new WebApplicationException(400);
+    }
+    context.getRequest().setAttribute("pinnedMessage", webResult(() -> conversations().setPinned(
+        context.getComponentInstanceId(), context.getPathVariables().get("id"), Boolean.parseBoolean(value))));
   }
 
   @POST

@@ -210,6 +210,17 @@ class DiscussionWebControllerTest {
   }
 
   @Test
+  void pinRoutesUseTheAuthorizedInstanceAndRejectInvalidFlags() {
+    when(request.getParameter("pinned")).thenReturn("true");
+    controller.pin(context);
+    verify(service).setPinned("discussion1", "message", true);
+    controller.pins(context);
+    verify(service).pinnedMessages("discussion1");
+    when(request.getParameter("pinned")).thenReturn("invalid");
+    assertEquals(400, assertThrows(WebApplicationException.class, () -> controller.pin(context)).getResponse().getStatus());
+  }
+
+  @Test
   void typingUsesTheAuthenticatedHttpSessionAndRejectsInvalidPayloads() {
     when(request.getParameter("active")).thenReturn("true");
     when(request.getParameter("tab")).thenReturn("tab1");

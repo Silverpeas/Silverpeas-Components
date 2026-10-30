@@ -376,6 +376,56 @@ class ConversationServiceTest {
     verify(seen, never()).save(any(org.silverpeas.components.discussion.model.DiscussionSeen.class));
   }
 
+  @Test
+  void pinningIsSharedIdempotentAndLimitedToTheAuthorizedConversation() {
+    var message = existingMessage("other");
+    service.setPinned("discussion1", "message", true);
+    verify(message).setPinned(true);
+    verify(messages).flush();
+    verify(changes).changed("discussion1");
+    clearInvocations(messages, changes);
+    when(message.isPinned()).thenReturn(true);
+    service.setPinned("discussion1", "message", true);
+    verify(messages, never()).save(message);
+    verifyNoInteractions(changes);
+    service.setPinned("discussion1", "message", false);
+    verify(message).setPinned(false);
+    when(message.getConversationId()).thenReturn("other-conversation");
+    assertThrows(IllegalArgumentException.class, () -> service.setPinned("discussion1", "message", true));
+    when(message.getConversationId()).thenReturn("conversation");
+    when(message.isDeleted()).thenReturn(true);
+    assertThrows(IllegalArgumentException.class, () -> service.setPinned("discussion1", "message", true));
+    when(access.require("discussion1", SilverpeasRole.WRITER)).thenThrow(SecurityException.class);
+    clearInvocations(conversations, messages);
+    assertThrows(SecurityException.class, () -> service.setPinned("discussion1", "message", true));
+    assertThrows(SecurityException.class, () -> service.pinnedMessages("discussion1"));
+    verifyNoInteractions(conversations, messages);
+  }
+
+  @Test
+  void pinnedExcerptsHideMentionIdsAndDoNotSplitEmoji() {
+    var message = mock(DiscussionMessage.class);
+    when(message.getId()).thenReturn("old-message");
+    when(message.getCreator()).thenReturn(user);
+    when(user.getDisplayedName()).thenReturn("Alice");
+    when(message.getBody()).thenReturn("@[Bernard](2) " + "🚀".repeat(180));
+    when(messages.pinned("conversation")).thenReturn(List.of(message));
+    var pin = service.pinnedMessages("discussion1").getFirst();
+    assertEquals("old-message", pin.id());
+    assertEquals("Alice", pin.author());
+    assertTrue(pin.excerpt().startsWith("@Bernard 🚀"));
+    assertFalse(pin.excerpt().contains("(2)"));
+    assertEquals(181, pin.excerpt().codePointCount(0, pin.excerpt().length()));
+    assertTrue(pin.excerpt().endsWith("…"));
+    when(message.getCreator()).thenReturn(null);
+    assertEquals("", service.pinnedMessages("discussion1").getFirst().author());
+    var actual = new DiscussionMessage("conversation", 1, "Message");
+    actual.setPinned(true);
+    actual.delete();
+    assertFalse(actual.isPinned());
+    assertThrows(IllegalArgumentException.class, () -> actual.setPinned(true));
+  }
+
   private DiscussionMessage existingMessage(String author) {
     var message = mock(DiscussionMessage.class);
     when(messages.getById("message")).thenReturn(message);

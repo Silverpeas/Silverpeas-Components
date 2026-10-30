@@ -33,6 +33,8 @@
 <c:url var="discussionIcons" value="/discussion/jsp/icons/discussion-icons.svg"/>
 <fmt:message key="discussion.edit" var="editLabel"/>
 <fmt:message key="discussion.delete" var="deleteLabel"/>
+<fmt:message key="discussion.pin" var="pinLabel"/>
+<fmt:message key="discussion.unpin" var="unpinLabel"/>
 <fmt:message key="discussion.like" var="likeLabel"/>
 <fmt:message key="discussion.unlike" var="unlikeLabel"/>
 <div class="discussion-page" data-before="${messagePage.nextBefore}" data-more="${messagePage.hasMore}" data-last-sequence="${messagePage.lastSequence}" data-unread-count="${messagePage.unreadCount}">
@@ -54,6 +56,7 @@
       <div class="discussion-message-content">
         <header class="discussion-message-header">
           <span class="discussion-author"><c:out value="${message.creator.displayedName}"/></span>
+          <c:if test="${message.pinned}"><span class="discussion-pinned-badge"><svg class="discussion-icon" aria-hidden="true"><use href="${discussionIcons}#pin"/></svg> <fmt:message key="discussion.pinned"/></span></c:if>
           <time><fmt:formatDate value="${message.creationDate}" type="both" dateStyle="short" timeStyle="short"/></time>
           <c:if test="${message.unread}"><span class="discussion-unread-badge"><fmt:message key="discussion.unreadMessage"/></span></c:if>
         </header>
@@ -77,6 +80,17 @@
                   <button class="discussion-icon-button discussion-button--danger" type="submit" title="${fn:escapeXml(deleteLabel)}" aria-label="${fn:escapeXml(deleteLabel)}"><svg class="discussion-icon" aria-hidden="true"><use href="${discussionIcons}#delete"/></svg></button>
                 </form>
               </div>
+            </c:if>
+            <c:if test="${canReact}">
+              <form class="discussion-pin-form" method="post" action="${base}messages/${message.id}/pin"
+                  data-pin-label="${fn:escapeXml(pinLabel)}" data-unpin-label="${fn:escapeXml(unpinLabel)}">
+                <input type="hidden" name="pinned" value="${not message.pinned}"/>
+                <button class="discussion-icon-button" type="submit" aria-pressed="${message.pinned}"
+                    title="${fn:escapeXml(message.pinned ? unpinLabel : pinLabel)}" aria-label="${fn:escapeXml(message.pinned ? unpinLabel : pinLabel)}">
+                  <svg class="discussion-icon" aria-hidden="true"><use href="${discussionIcons}#pin"/></svg>
+                </button>
+                <span class="discussion-pin-error" role="status" hidden><fmt:message key="discussion.pinError"/></span>
+              </form>
             </c:if>
             <c:set var="reaction" value="${messageLikes[message.id]}"/>
             <c:choose>

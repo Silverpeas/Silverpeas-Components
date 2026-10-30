@@ -112,6 +112,32 @@ class DiscussionPersistenceTest {
   }
 
   @Test
+  void developmentPinUpgradePreservesExistingMessagesAndDefaultsToUnpinned() throws Exception {
+    session.createNativeMutationQuery("alter table sc_discussion_message drop column pinned").executeUpdate();
+    try (var input = getClass().getResourceAsStream("/migrations/db/h2/discussion/001/add_pins.sql")) {
+      assertNotNull(input);
+      String script = new String(input.readAllBytes(), StandardCharsets.UTF_8);
+      for (String statement : script.split(";")) {
+        if (!statement.isBlank()) {
+          session.createNativeMutationQuery(statement).executeUpdate();
+        }
+      }
+    }
+    session.clear();
+    assertTrue(messages.pinned("c1").isEmpty());
+    assertEquals(4, messages.history("c1", Long.MAX_VALUE, 10).size());
+  }
+
+  @Test
+  void pinnedMessagesIncludeOldHistoryButExcludeDeletedAndOtherConversations() {
+    session.createNativeMutationQuery("update sc_discussion_message set pinned=true where id in ('m1','m3','m4','m5')").executeUpdate();
+    assertEquals(List.of("m4", "m1"), messages.pinned("c1").stream().map(DiscussionMessage::getId).toList());
+    session.createNativeMutationQuery("update sc_discussion_message set pinned=false where id='m1'").executeUpdate();
+    session.clear();
+    assertEquals(List.of("m4"), messages.pinned("c1").stream().map(DiscussionMessage::getId).toList());
+  }
+
+  @Test
   void publicationReferencesIncludeOlderMessagesButExcludeDeletedAndOtherInstances() {
     session.createNativeMutationQuery("update sc_discussion_message set body='/silverpeas/Publication/12' where id in ('m1','m3','m5')").executeUpdate();
     try (var bodies = messages.publicationLinkBodies("c1")) {
