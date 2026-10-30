@@ -158,6 +158,30 @@ public class DefaultConversationService implements ConversationService {
   }
 
   @Override
+  public List<PinnedMessage> pinnedMessages(String instanceId) {
+    access.require(instanceId, SilverpeasRole.WRITER);
+    return messages.pinned(conversations.main(instanceId, false).getId()).stream()
+        .map(PinnedMessage::from).toList();
+  }
+
+  @Override
+  public DiscussionMessage setPinned(String instanceId, String messageId, boolean pinned) {
+    access.require(instanceId, SilverpeasRole.WRITER);
+    var conversation = conversations.main(instanceId, true);
+    var message = messageIn(conversation, messageId);
+    if (message.isDeleted()) {
+      throw new IllegalArgumentException("Deleted message");
+    }
+    if (message.isPinned() != pinned) {
+      message.setPinned(pinned);
+      messages.save(message);
+      messages.flush();
+      changes.changed(instanceId);
+    }
+    return message;
+  }
+
+  @Override
   public LikeState setLike(String instanceId, String messageId, boolean liked) {
     access.require(instanceId, SilverpeasRole.WRITER);
     User user = User.getCurrentRequester();

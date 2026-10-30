@@ -68,7 +68,7 @@
         }
         const selected = existing?.contains(window.getSelection()?.anchorNode);
         // Reconcile deferred rows when the interaction ends, without periodic polling.
-        if (existing?.querySelector('details[open], .discussion-like-button:disabled') ||
+        if (existing?.querySelector('details[open], .discussion-like-button:disabled, .discussion-pin-form button:disabled') ||
             existing?.contains(document.activeElement) || selected) {
           deferred.add(row.id);
           selectionPending ||= selected;

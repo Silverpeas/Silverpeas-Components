@@ -45,12 +45,13 @@
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-live.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-read.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-sidebar.js'/>" defer></script>
+  <script src="<c:url value='/discussion/jsp/javaScript/discussion-pins.js'/>" defer></script>
 </head>
 <body>
 <view:window>
   <view:frame>
     <main id="discussion" data-history="${base}history" data-participants="${base}participants" data-publications="${base}publications" data-updates="${base}updates"
-        data-instance-id="${discussionInstanceId}" data-read="${base}messages/read" data-typing="${base}typing" data-user-id="${currentUser.id}"
+        data-pins="${base}pins" data-instance-id="${discussionInstanceId}" data-read="${base}messages/read" data-typing="${base}typing" data-user-id="${currentUser.id}"
         data-typing-one="<fmt:message key='discussion.typingOne'/>" data-typing-many="<fmt:message key='discussion.typingMany'/>"
         data-message-id="<c:out value='${focusedMessageId}'/>"
         data-length-error="<fmt:message key='discussion.hint'/>"
@@ -121,6 +122,13 @@
             <div class="discussion-sidebar-content">
               <div id="discussion-publications"><jsp:include page="publications.jsp"/></div>
               <p id="discussion-publications-error" class="discussion-presence-error" role="status" hidden><fmt:message key="discussion.publicationsError"/></p>
+            </div>
+          </details>
+          <details class="discussion-sidebar-section" id="discussion-pins-section" name="discussion-sidebar">
+            <summary><h2><fmt:message key="discussion.pinnedMessages"/> <span id="discussion-pin-count" class="discussion-people-count"><c:out value="${fn:length(pinnedMessages)}"/></span></h2></summary>
+            <div class="discussion-sidebar-content">
+              <div id="discussion-pins"><jsp:include page="pins.jsp"/></div>
+              <p id="discussion-pins-error" class="discussion-presence-error" role="status" hidden><fmt:message key="discussion.pinError"/></p>
             </div>
           </details>
         </aside>

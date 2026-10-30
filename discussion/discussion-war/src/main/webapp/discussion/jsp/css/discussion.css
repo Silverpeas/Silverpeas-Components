@@ -231,3 +231,11 @@ html.discussion-document { overflow-anchor: none; scroll-behavior: auto; }
   #discussion .discussion-sidebar-section > summary { padding: 0.4rem 0.75rem; }
   #discussion .discussion-sidebar .discussion-person { flex-basis: auto; }
 }
+
+#discussion .discussion-pin-form { margin: 0; }
+#discussion .discussion-pin-form button[aria-pressed="true"] { color: var(--color-lien-action, #3975b5); }
+#discussion .discussion-pinned-badge { display: inline-flex; align-items: center; gap: 0.25rem; color: var(--color-lien-action, #3975b5); font-size: 0.85em; }
+#discussion .discussion-pins-list ul { margin: 0; padding: 0; list-style: none; }
+#discussion .discussion-pins-list li { margin-bottom: 1rem; overflow-wrap: anywhere; }
+#discussion .discussion-pins-list a { display: block; }
+#discussion .discussion-pin-excerpt { display: block; margin-top: 0.25rem; color: var(--color-text, #333); white-space: pre-wrap; }

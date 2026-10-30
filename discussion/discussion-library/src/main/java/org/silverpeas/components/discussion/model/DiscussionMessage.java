@@ -47,6 +47,18 @@ public class DiscussionMessage extends SilverpeasJpaEntity<DiscussionMessage, Uu
   @Column(nullable = false)
   private boolean deleted;
 
+  @Column(nullable = false)
+  private boolean pinned;
+
+  public boolean isPinned() { return pinned; }
+
+  public void setPinned(boolean pinned) {
+    if (deleted) {
+      throw new IllegalArgumentException("Deleted message");
+    }
+    this.pinned = pinned;
+  }
+
   @Transient
   private boolean unread;
 
@@ -78,5 +90,6 @@ public class DiscussionMessage extends SilverpeasJpaEntity<DiscussionMessage, Uu
   public void delete() {
     body = " ";
     deleted = true;
+    pinned = false;
   }
 }

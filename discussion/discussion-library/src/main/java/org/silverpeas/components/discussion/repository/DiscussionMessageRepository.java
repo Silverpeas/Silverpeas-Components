@@ -30,6 +30,13 @@ import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEn
 
 @Repository
 public class DiscussionMessageRepository extends SilverpeasJpaEntityRepository<DiscussionMessage> {
+  public List<DiscussionMessage> pinned(String conversationId) {
+    return getEntityManager().createQuery("""
+        select m from DiscussionMessage m where m.conversationId = :conversation
+        and m.pinned = true and m.deleted = false order by m.sequenceNumber desc
+        """, DiscussionMessage.class).setParameter("conversation", conversationId).getResultList();
+  }
+
   public List<String> authorIds(String conversationId) {
     return getEntityManager().createQuery("""
         select distinct m.creatorId from DiscussionMessage m
