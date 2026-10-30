@@ -46,6 +46,8 @@ import static org.mockito.Mockito.*;
 class DiscussionWebControllerTest {
   @TestManagedMock
   private ConversationService service;
+  @TestManagedMock
+  private org.silverpeas.components.discussion.web.DiscussionParticipantService participants;
   private DiscussionWebController controller;
   private DiscussionWebRequestContext context;
   private HttpRequest request;
@@ -72,6 +74,7 @@ class DiscussionWebControllerTest {
     when(service.history("discussion1", Long.MAX_VALUE, 30)).thenReturn(page);
     controller.home(context);
     verify(request).setAttribute("messagePage", page);
+    verify(participants).list("discussion1");
     verify(request).setAttribute("canWrite", true);
     verify(service, never()).markRead(anyString(), anyLong());
   }
@@ -115,6 +118,16 @@ class DiscussionWebControllerTest {
     when(request.getParameter("version")).thenReturn("3");
     assertEquals(409, assertThrows(WebApplicationException.class,
         () -> controller.delete(context)).getResponse().getStatus());
+  }
+
+  @Test
+  void participantRefreshChecksPermissionsWithoutReloadingHistory() {
+    controller.participants(context);
+    verify(participants).list("discussion1");
+    verifyNoInteractions(service);
+    when(participants.list("discussion1")).thenThrow(SecurityException.class);
+    assertEquals(403, assertThrows(WebApplicationException.class,
+        () -> controller.participants(context)).getResponse().getStatus());
   }
 
   @Test

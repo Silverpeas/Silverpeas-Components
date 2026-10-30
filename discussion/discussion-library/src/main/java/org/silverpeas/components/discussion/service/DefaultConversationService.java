@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.discussion.service;
 
+import java.util.List;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.persistence.OptimisticLockException;
@@ -47,6 +48,13 @@ public class DefaultConversationService implements ConversationService {
   private DiscussionReadStateRepository readStates;
   @Inject
   private DiscussionAccess access;
+
+  @Override
+  public List<String> participantIds(String instanceId) {
+    access.require(instanceId, SilverpeasRole.READER);
+    Conversation conversation = conversations.main(instanceId, false);
+    return messages.authorIds(conversation.getId());
+  }
 
   @Override
   public MessagePage history(String instanceId, long before, int limit) {

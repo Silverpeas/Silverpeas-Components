@@ -119,6 +119,13 @@ class DiscussionPersistenceTest {
   }
 
   @Test
+  void authorsAreDistinctAndIncludeOlderHistoryButExcludeDeletedMessagesAndOtherInstances() {
+    insertMessage("deleted-only", "c1", 6, "deleted-author", true);
+    insertMessage("other-instance", "c2", 2, "outside-author", false);
+    assertEquals(List.of("other", "user"), messages.authorIds("c1"));
+  }
+
+  @Test
   void unreadExcludesOwnAndDeletedMessagesAndOtherConversations() {
     assertEquals(2, messages.unread("c1", "user", 0));
     assertEquals(1, messages.unread("c1", "user", 1));

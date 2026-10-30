@@ -200,6 +200,16 @@ class ConversationServiceTest {
     }
   }
 
+  @Test
+  void participantListingIsScopedToTheAuthorizedConversation() {
+    when(messages.authorIds("conversation")).thenReturn(List.of("a", "b"));
+    assertEquals(List.of("a", "b"), service.participantIds("discussion1"));
+    when(access.require("discussion1", SilverpeasRole.READER)).thenThrow(SecurityException.class);
+    clearInvocations(conversations, messages);
+    assertThrows(SecurityException.class, () -> service.participantIds("discussion1"));
+    verifyNoInteractions(conversations, messages);
+  }
+
   private DiscussionMessage existingMessage(String author) {
     var message = mock(DiscussionMessage.class);
     when(messages.getById("message")).thenReturn(message);

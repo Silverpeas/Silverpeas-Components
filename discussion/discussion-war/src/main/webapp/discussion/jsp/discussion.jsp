@@ -41,7 +41,7 @@
 <body>
 <view:window>
   <view:frame>
-    <main id="discussion" data-history="${base}history">
+    <main id="discussion" data-history="${base}history" data-participants="${base}participants">
       <header class="discussion-header">
         <div>
           <h1><fmt:message key="discussion.title"/></h1>
@@ -55,11 +55,13 @@
           <c:if test="${messagePage.unreadCount gt 0}">
             <form method="post" action="${base}read">
               <input type="hidden" name="sequence" value="${messagePage.lastSequence}"/>
-              <button class="discussion-button discussion-button--quiet" type="submit"><fmt:message key="discussion.read"/></button>
+              <button class="button discussion-button--quiet" type="submit"><fmt:message key="discussion.read"/></button>
             </form>
           </c:if>
         </div>
       </header>
+      <div class="discussion-workspace">
+        <div class="discussion-stream">
       <c:if test="${canWrite}">
         <form class="discussion-composer" method="post" action="${base}messages/add">
           <label for="discussion-body"><fmt:message key="discussion.compose"/></label>
@@ -67,7 +69,7 @@
               placeholder="<fmt:message key='discussion.placeholder'/>"></textarea>
           <div class="discussion-composer-footer">
             <span id="discussion-compose-hint" class="discussion-hint"><fmt:message key="discussion.hint"/></span>
-            <button class="discussion-button discussion-button--primary" type="submit"><fmt:message key="discussion.post"/></button>
+            <button class="sp_button discussion-button--primary" type="submit"><fmt:message key="discussion.post"/></button>
           </div>
         </form>
       </c:if>
@@ -83,7 +85,13 @@
       </section>
       <p id="discussion-error" role="status" hidden><fmt:message key="discussion.error"/></p>
       <div class="discussion-pagination">
-        <button id="discussion-older" class="discussion-button discussion-button--quiet" type="button"><fmt:message key="discussion.older"/></button>
+        <button id="discussion-older" class="button discussion-button--quiet" type="button"><fmt:message key="discussion.older"/></button>
+      </div>
+        </div>
+        <aside class="discussion-sidebar" aria-labelledby="discussion-people-heading">
+          <div id="discussion-participants"><jsp:include page="participants.jsp"/></div>
+          <p id="discussion-presence-error" class="discussion-presence-error" role="status" hidden><fmt:message key="discussion.presenceUnavailable"/></p>
+        </aside>
       </div>
     </main>
   </view:frame>

@@ -29,7 +29,7 @@ const path = require('node:path');
 const source = fs.readFileSync(path.join(__dirname,
     '../../main/webapp/discussion/jsp/javaScript/discussion.js'), 'utf8');
 
-function browser({ more = true, fail = false } = {}) {
+function browser({ more = true, fail = false, presence = false } = {}) {
   const pages = [{ dataset: { before: '31', more: String(more) } }];
   const listeners = {};
   const older = { hidden: false, disabled: false,
@@ -38,10 +38,28 @@ function browser({ more = true, fail = false } = {}) {
   const history = { querySelector: () => pages.at(-1), appendChild: page => pages.push(page) };
   const nodes = { discussion: { dataset: { history: '/Rdiscussion/discussion1/history' } },
     'discussion-history': history, 'discussion-older': older, 'discussion-error': error };
+  const presenceError = { hidden: true };
+  const classes = new Set();
+  let refreshed = 0;
+  const participants = { replaceChildren: () => { refreshed++; },
+    classList: { add: value => classes.add(value), remove: value => classes.delete(value) } };
+  if (presence) {
+    nodes['discussion-participants'] = participants;
+    nodes['discussion-presence-error'] = presenceError;
+    nodes.discussion.dataset.participants = '/Rdiscussion/discussion1/participants';
+  }
   const requests = [];
+  let timer;
+  let cleared = false;
+  const windowEvents = {};
+
   let stamped = 0;
   let intersect;
   const context = {
+    window: { setInterval: (handler, delay) => {
+      assert.equal(delay, 30000); timer = handler; return 1;
+    }, clearInterval: () => { cleared = true; },
+    addEventListener: (name, handler) => { windowEvents[name] = handler; } },
     document: { addEventListener: (name, handler) => { listeners[name] = handler; },
       getElementById: id => nodes[id], importNode: node => node },
     DOMParser: class {
@@ -57,7 +75,10 @@ function browser({ more = true, fail = false } = {}) {
     sp: { ajaxRequest: url => {
       const request = { url };
       requests.push(request);
-      return { withParam: (name, value) => {
+      return { send: async () => {
+        if (fail) { throw new Error('network unavailable'); }
+        return { responseText: 'server-rendered participants' };
+      }, withParam: (name, value) => {
         request[name] = value;
         return { send: async () => {
           if (fail) { throw new Error('network unavailable'); }
@@ -69,7 +90,11 @@ function browser({ more = true, fail = false } = {}) {
   vm.runInNewContext(source, context);
   listeners.DOMContentLoaded();
   return { pages, requests, older, error, click: () => listeners.click(),
-    intersect: () => intersect([{ isIntersecting: true }]), stamps: () => stamped };
+    intersect: () => intersect([{ isIntersecting: true }]), stamps: () => stamped,
+    refreshPresence: () => timer(), refreshed: () => refreshed, presenceError, classes,
+    setHidden: value => { context.document.hidden = value; },
+    setFailure: value => { fail = value; },
+    leave: () => windowEvents.pagehide(), cleared: () => cleared };
 }
 
 test('entering the viewport loads one older page using the exclusive cursor and stamps its forms', async () => {
@@ -102,4 +127,42 @@ test('a failed request keeps the cursor and allows an explicit retry without an 
   await view.click();
   assert.equal(view.requests.length, 2);
   assert.equal(view.requests[1].before, '31');
+});
+
+
+test('presence refresh only replaces the author list and leaves history and editing intact', async () => {
+  const view = browser({ presence: true });
+  const first = view.refreshPresence();
+  await view.refreshPresence();
+  await first;
+  assert.equal(view.requests.length, 1);
+  assert.equal(view.requests[0].url, '/Rdiscussion/discussion1/participants');
+  assert.equal(view.refreshed(), 1);
+  assert.equal(view.pages.length, 1);
+  assert.equal(view.presenceError.hidden, true);
+});
+
+test('presence polling pauses for hidden pages and stops when leaving the page', async () => {
+  const view = browser({ presence: true });
+  view.setHidden(true);
+  await view.refreshPresence();
+  assert.equal(view.requests.length, 0);
+  view.setHidden(false);
+  await view.refreshPresence();
+  assert.equal(view.requests.length, 1);
+  view.leave();
+  assert.equal(view.cleared(), true);
+});
+
+test('a failed presence refresh hides stale indicators until a successful retry', async () => {
+  const view = browser({ presence: true, fail: true });
+  await view.refreshPresence();
+  assert.equal(view.presenceError.hidden, false);
+  assert.equal(view.classes.has('is-stale'), true);
+  assert.equal(view.refreshed(), 0);
+  view.setFailure(false);
+  await view.refreshPresence();
+  assert.equal(view.presenceError.hidden, true);
+  assert.equal(view.classes.has('is-stale'), false);
+  assert.equal(view.refreshed(), 1);
 });
