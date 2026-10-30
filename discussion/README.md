@@ -153,7 +153,7 @@ supprimés. La consultation ne modifie pas automatiquement ce repère : l'action
 
 Le fil écoute l'événement `DISCUSSION_CHANGED` du canal natif partagé `spServerEventSource`.
 Les publications, éditions, suppressions, réactions et lectures explicites produisent un événement
-après validation de leur transaction. Le signal contient uniquement l'identifiant de l'instance ;
+après validation de leur transaction. Le signal contient l'identifiant de l'instance et un indicateur de changement du contenu ;
 les droits des destinataires sont revérifiés à chaque envoi et à chaque rejeu. Les confirmations
 de lecture ne sont transmises qu'aux sessions de l'utilisateur concerné.
 
@@ -216,3 +216,21 @@ Le schéma reste en **001** : la création de cette table est incluse dans `001/
 pour chaque base. Sur une installation de développement existante, exécuter une fois le script
 `001/add_seen.sql` correspondant à PostgreSQL, H2, SQL Server ou Oracle avant de déployer le nouveau
 code. Il n'y a pas de migration 002 ni de réinitialisation des messages existants.
+
+### Colonne Participants et Publications citées
+
+La colonne latérale utilise deux accordéons natifs, Participants et Publications. Les mises à jour
+remplacent uniquement le contenu des listes et conservent la rubrique ouverte. La liste des
+publications est dérivée de tous les messages non supprimés de l'instance, y compris l'historique
+qui n'est pas chargé à l'écran. Les références répétées sont dédupliquées. Une édition ou une
+suppression de message est répercutée à réception de l'événement natif. Les accusés de lecture
+privés n'entraînent pas de nouveau calcul des références.
+
+Sont reconnus les permaliens `/Publication/<id>`, les liens natifs `ViewPublication?PubId=<id>`
+et `searchResult?Type=Publication&Id=<id>` des applications Kmelia, Toolbox et Kmax. Les URL doivent
+appartenir à l'origine et au contexte Silverpeas courants. Aucun lien externe n'est suivi.
+Les titres localisés et les droits sont résolus par les services natifs de publication : seules
+les publications accessibles à l'utilisateur courant sont affichées, par titre. Les liens
+s'ouvrent dans un nouvel onglet pour conserver la discussion et le brouillon.
+
+Aucune table et aucun script SQL supplémentaires ne sont nécessaires pour cette évolution.

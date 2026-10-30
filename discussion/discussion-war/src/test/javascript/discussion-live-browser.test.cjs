@@ -236,3 +236,25 @@ test('initial catch-up preserves a notification target instead of jumping to the
     assert.equal(await page.evaluate(()=>{const s=document.getElementById('discussion-scroll');return s.scrollHeight-s.scrollTop-s.clientHeight<2;}),true);
   } finally {await browser.close();}
 });
+
+
+test('private read events update the stream without refreshing citation content',async()=>{
+  const browser=await launch();
+  try {
+    const page=await open(browser);
+    await page.evaluate(()=>{
+      window.contentSignals=0;
+      document.addEventListener('discussion:changed',()=>window.contentSignals++);
+      window.listeners.DISCUSSION_CHANGED({data:'{"instanceId":"discussion1","contentChanged":false}'});
+    });
+    await page.waitForFunction(()=>window.calls.length===1);
+    assert.equal(await page.evaluate(()=>window.contentSignals),0);
+    await page.evaluate(html=>window.complete(html),fragment(row(31)));
+    await page.waitForSelector('#message-31');
+    await page.evaluate(()=>window.listeners.DISCUSSION_CHANGED({data:'{"instanceId":"discussion1","contentChanged":true}'}));
+    await page.waitForFunction(()=>window.calls.length===2);
+    assert.equal(await page.evaluate(()=>window.contentSignals),1);
+    await page.evaluate(html=>window.complete(html),fragment(row(32)));
+    await page.waitForSelector('#message-32');
+  } finally {await browser.close();}
+});

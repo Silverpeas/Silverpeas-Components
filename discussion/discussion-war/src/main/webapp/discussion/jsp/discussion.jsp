@@ -26,6 +26,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="jakarta.tags.core" prefix="c" %>
 <%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<%@ taglib uri="jakarta.tags.functions" prefix="fn" %>
 <%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view" %>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <c:url var="base" value="${requestScope.componentUriBase}"/>
@@ -41,11 +42,12 @@
   <script src="<c:url value='/discussion/jsp/javaScript/discussion.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-live.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-read.js'/>" defer></script>
+  <script src="<c:url value='/discussion/jsp/javaScript/discussion-sidebar.js'/>" defer></script>
 </head>
 <body>
 <view:window>
   <view:frame>
-    <main id="discussion" data-history="${base}history" data-participants="${base}participants" data-updates="${base}updates"
+    <main id="discussion" data-history="${base}history" data-participants="${base}participants" data-publications="${base}publications" data-updates="${base}updates"
         data-instance-id="${discussionInstanceId}" data-read="${base}messages/read"
         data-message-id="<c:out value='${focusedMessageId}'/>"
         data-length-error="<fmt:message key='discussion.hint'/>"
@@ -101,9 +103,21 @@
             </form>
           </c:if>
         </div>
-        <aside class="discussion-sidebar" aria-labelledby="discussion-people-heading">
-          <div id="discussion-participants"><jsp:include page="participants.jsp"/></div>
-          <p id="discussion-presence-error" class="discussion-presence-error" role="status" hidden><fmt:message key="discussion.presenceUnavailable"/></p>
+        <aside class="discussion-sidebar" aria-label="<fmt:message key='discussion.sidebar'/>">
+          <details class="discussion-sidebar-section" name="discussion-sidebar" open>
+            <summary><h2 id="discussion-people-heading"><fmt:message key="discussion.participants"/> <span id="discussion-participant-count" class="discussion-people-count"><c:out value="${fn:length(participants)}"/></span></h2></summary>
+            <div class="discussion-sidebar-content">
+              <div id="discussion-participants"><jsp:include page="participants.jsp"/></div>
+              <p id="discussion-presence-error" class="discussion-presence-error" role="status" hidden><fmt:message key="discussion.presenceUnavailable"/></p>
+            </div>
+          </details>
+          <details class="discussion-sidebar-section" id="discussion-publications-section" name="discussion-sidebar">
+            <summary><h2><fmt:message key="discussion.publications"/> <span id="discussion-publication-count" class="discussion-people-count"><c:out value="${fn:length(citedPublications)}"/></span></h2></summary>
+            <div class="discussion-sidebar-content">
+              <div id="discussion-publications"><jsp:include page="publications.jsp"/></div>
+              <p id="discussion-publications-error" class="discussion-presence-error" role="status" hidden><fmt:message key="discussion.publicationsError"/></p>
+            </div>
+          </details>
         </aside>
       </div>
     </main>

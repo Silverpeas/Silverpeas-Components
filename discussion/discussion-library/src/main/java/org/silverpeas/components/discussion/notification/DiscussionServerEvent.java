@@ -30,7 +30,7 @@ import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.ComponentAccessController;
 import org.silverpeas.core.util.JSONCodec;
 
-/** Payload contains only an instance ID; access is checked again for each connected receiver. */
+/** Invalidation contains no message content; access is checked again for each connected receiver. */
 public class DiscussionServerEvent extends CommonServerEvent {
   private final DiscussionChange change;
   private final ComponentAccessController access;
@@ -38,7 +38,7 @@ public class DiscussionServerEvent extends CommonServerEvent {
   public DiscussionServerEvent(DiscussionChange change, ComponentAccessController access) {
     this.change = change;
     this.access = access;
-    withData(JSONCodec.encodeObject(json -> json.put("instanceId", change.instanceId())));
+    withData(JSONCodec.encodeObject(json -> json.put("instanceId", change.instanceId()).put("contentChanged", change.userId() == null)));
   }
 
   @Override

@@ -64,6 +64,15 @@ public class DiscussionMessageRepository extends SilverpeasJpaEntityRepository<D
         .setParameter("ids", ids).getResultList();
   }
 
+  public java.util.stream.Stream<String> publicationLinkBodies(String conversationId) {
+    return getEntityManager().createQuery("""
+        select m.body from DiscussionMessage m where m.conversationId = :conversation
+        and m.deleted = false and (lower(m.body) like '%/publication/%'
+        or lower(m.body) like '%/rkmelia/%' or lower(m.body) like '%/rtoolbox/%'
+        or lower(m.body) like '%/rkmax/%')
+        """, String.class).setParameter("conversation", conversationId).getResultStream();
+  }
+
   public long unread(String conversationId, String userId, long lastRead) {
     return getEntityManager().createQuery("""
         select count(m) from DiscussionMessage m where m.conversationId = :conversation
