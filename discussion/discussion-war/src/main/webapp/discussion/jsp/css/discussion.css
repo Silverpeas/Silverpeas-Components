@@ -178,3 +178,18 @@
   #discussion .discussion-composer textarea { min-height: 3rem; height: 3rem; padding: 0.4rem; }
   #discussion .discussion-composer-footer { margin-top: 0.35rem; }
 }
+
+/* The iframe scrollbar moves the history; the surrounding controls stay in view. */
+html.discussion-document { overflow-anchor: none; scroll-behavior: auto; }
+#discussion.discussion-document-scroll { height: auto; min-height: var(--discussion-available-height); overflow: visible; }
+#discussion.discussion-document-scroll .discussion-header { position: sticky; top: 0; z-index: 20; background: var(--bgColor-card, #fff); }
+#discussion.discussion-document-scroll .discussion-workspace { min-height: 0; grid-template-rows: auto; }
+#discussion.discussion-document-scroll .discussion-stream { display: block; overflow: visible; padding-bottom: var(--discussion-composer-height, 0px); }
+#discussion.discussion-document-scroll .discussion-scroll { display: flex; overflow: visible; height: auto; min-height: max(0px, calc(var(--discussion-available-height) - var(--discussion-header-height) - var(--discussion-composer-height) - var(--discussion-authors-height, 0px))); }
+#discussion.discussion-document-scroll .discussion-composer { position: fixed; z-index: 21; bottom: 0; left: var(--discussion-left); width: var(--discussion-width); max-height: 45dvh; border-top: 1px solid var(--color-trait-separateur, #ddd); background: var(--bgColor-card, #fff); }
+#discussion.discussion-document-scroll .discussion-sidebar { position: fixed; top: var(--discussion-sidebar-top); right: var(--discussion-right); bottom: 0; width: var(--discussion-sidebar-width); }
+@media (max-width: 760px) {
+  #discussion.discussion-document-scroll .discussion-workspace { grid-template-rows: auto; }
+  #discussion.discussion-document-scroll .discussion-stream { grid-row: 1; padding-top: var(--discussion-authors-height, 0px); }
+  #discussion.discussion-document-scroll .discussion-sidebar { left: var(--discussion-left); right: auto; bottom: auto; width: var(--discussion-width); max-height: 8rem; z-index: 19; }
+}
