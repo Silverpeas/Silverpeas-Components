@@ -32,18 +32,31 @@ const fragment = rows => `<div class="discussion-page" data-unread-count="1">${r
 const launch = () => chromium.launch({executablePath: process.env.CHROME_PATH || undefined, args: ['--no-sandbox']});
 async function open(browser, count = 30) {
   const page = await browser.newPage();
-  await page.setContent(`<main id="discussion" data-updates="/updates"><span class="discussion-unread-count">0</span><form class="discussion-read-form" hidden><input name="sequence" value="${count}"></form><div id="discussion-scroll" class="discussion-scroll"><section id="discussion-history"><div class="discussion-page" data-before="1" data-more="false">${Array.from({length: count}, (_, i) => row(i+1)).join('')}</div></section></div><p id="discussion-live-error" hidden>Error</p><textarea id="draft">Draft</textarea></main>`);
+  await page.setContent(`<main id="discussion" data-updates="/updates" data-instance-id="discussion1"><span class="discussion-unread-count">0</span><form class="discussion-read-form" hidden><input name="sequence" value="${count}"></form><div id="discussion-scroll" class="discussion-scroll"><section id="discussion-history"><div class="discussion-page" data-before="1" data-more="false">${Array.from({length: count}, (_, i) => row(i+1)).join('')}</div></section></div><p id="discussion-live-error">Error</p><textarea id="draft">Draft</textarea></main>`);
   await page.addStyleTag({path: css});
   await page.addStyleTag({content: '#discussion #discussion-scroll{height:250px;min-height:0}.discussion-message{min-height:100px}'});
   await page.evaluate(() => {
     window.calls = [];
-    window.setInterval = (fn, delay) => { window.tick = fn; window.delay = delay; return 1; };
-    window.clearInterval = () => { window.cleared = true; };
+    window.intervals = 0;
+    window.setInterval = () => { window.intervals++; };
+    window.listeners = {};
+    window.spServerEventSource = {
+      isEnabled: () => true,
+      addEventListener: (name, fn) => { window.listeners[name] = fn; },
+      removeEventListener: name => { delete window.listeners[name]; }
+    };
+    window.tick = () => window.listeners.OPEN_EVENT_SOURCE();
+    window.initializing = true;
     window.DiscussionEditor = {enhance: () => {}};
     window.sp = {ajaxRequest: () => {
       const params = {};
       const request = {withParam: (name, value) => { params[name] = value; return request; }, send: () => {
         window.calls.push(params);
+        if (window.initializing) {
+          const snapshot = document.querySelector('.discussion-page').cloneNode(true);
+          snapshot.dataset.unreadCount = '0';
+          return Promise.resolve({responseText: snapshot.outerHTML});
+        }
         return new Promise((resolve, reject) => { window.complete = text => resolve({responseText: text}); window.fail = reject; });
       }};
       return request;
@@ -52,6 +65,8 @@ async function open(browser, count = 30) {
   });
   await page.addScriptTag({path: script});
   await page.evaluate(() => document.dispatchEvent(new Event('DOMContentLoaded')));
+  await page.waitForFunction(() => document.getElementById('discussion-live-error').hidden);
+  await page.evaluate(() => { window.initializing = false; window.calls = []; });
   return page;
 }
 async function refresh(page, html) {
@@ -64,7 +79,7 @@ test('live updates append, edit, delete and change reactions without reload or d
   const browser = await launch();
   try {
     const page = await open(browser);
-    assert.equal(await page.evaluate(() => window.delay), 3000);
+    assert.equal(await page.evaluate(() => window.intervals), 0);
     await refresh(page, fragment(row(1, 'Updated') + row(2, 'Deleted') + row(3, 'Liked once') + row(31, 'New message', true)));
     assert.equal(await page.locator('#message-1 .discussion-body').textContent(), 'Updated');
     assert.equal(await page.locator('#message-2 .discussion-body').textContent(), 'Deleted');
@@ -131,7 +146,7 @@ test('refresh requests are bounded, resume after errors and pause while hidden o
     await page.evaluate(html => window.complete(html), fragment(row(206)));
     await page.evaluate(() => window.pending);
     assert.equal(await page.locator('#message-206').count(), 0);
-    assert.equal(await page.evaluate(() => window.cleared), true);
+    assert.deepEqual(await page.evaluate(() => Object.keys(window.listeners)), []);
     const calls = await page.evaluate(() => window.calls.length);
     await page.evaluate(() => window.dispatchEvent(new Event('pageshow')));
     assert.equal(await page.evaluate(() => window.calls.length), calls+1);
@@ -153,5 +168,57 @@ test('an initially empty conversation receives messages automatically', async ()
     assert.equal(await page.locator('#message-1').count(), 1);
     assert.equal(await page.locator('.discussion-empty').count(), 0);
     assert.deepEqual(await page.evaluate(() => window.calls), [{after:0,ids:''}]);
+  } finally { await browser.close(); }
+});
+
+
+test('only matching instance events request synchronization and bursts queue one follow-up', async () => {
+  const browser = await launch();
+  try {
+    const page = await open(browser);
+    await page.evaluate(() => {
+      window.listeners.DISCUSSION_CHANGED({data: '{"instanceId":"other"}'});
+      window.listeners.DISCUSSION_CHANGED({data: 'invalid'});
+    });
+    assert.equal(await page.evaluate(() => window.calls.length), 0);
+    await page.evaluate(() => {
+      window.pending=window.tick();
+      window.listeners.DISCUSSION_CHANGED({data: '{"instanceId":"discussion1"}'});
+      window.listeners.DISCUSSION_CHANGED({data: '{"instanceId":"discussion1"}'});
+    });
+    await page.evaluate(html => window.complete(html), fragment(row(31)));
+    await page.waitForFunction(() => window.calls.length === 2);
+    await page.evaluate(html => window.complete(html), fragment(row(32)));
+    await page.evaluate(() => window.pending);
+    assert.equal(await page.locator('#message-32').count(), 1);
+    assert.equal(await page.evaluate(() => window.calls.length), 2);
+  } finally { await browser.close(); }
+});
+
+test('catch-up drains multiple batches without waiting for another event', async () => {
+  const browser = await launch();
+  try {
+    const page = await open(browser,0);
+    await page.evaluate(() => { window.pending=window.tick(); });
+    await page.evaluate(html => window.complete(html), fragment(Array.from({length:100},(_,i)=>row(i+1)).join('')).replace('data-unread-count="1"','data-unread-count="1" data-last-sequence="101"'));
+    await page.waitForFunction(() => window.calls.length === 2);
+    assert.equal(await page.evaluate(() => window.calls[1].after), 100);
+    await page.evaluate(html => window.complete(html), fragment(row(101)).replace('data-unread-count="1"','data-unread-count="1" data-last-sequence="101"'));
+    await page.evaluate(() => window.pending);
+    assert.equal(await page.locator('.discussion-message').count(),101);
+  } finally { await browser.close(); }
+});
+
+test('a deferred edit is reconciled on closing its editor without another server event', async () => {
+  const browser = await launch();
+  try {
+    const page = await open(browser);
+    await page.locator('#message-8 details').evaluate(node => {node.open=true;});
+    await refresh(page, fragment(row(8,'Changed remotely')));
+    assert.equal(await page.locator('#message-8 .discussion-body').textContent(),'Message 8');
+    await page.locator('#message-8 details').evaluate(node => {node.open=false;});
+    await page.waitForFunction(() => window.calls.length === 2);
+    await page.evaluate(html => window.complete(html), fragment(row(8,'Changed remotely')));
+    await page.waitForFunction(() => document.querySelector('#message-8 .discussion-body').textContent==='Changed remotely');
   } finally { await browser.close(); }
 });

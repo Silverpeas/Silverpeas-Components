@@ -58,6 +58,7 @@
       const presenceTimer = window.setInterval(refreshPresence, 30000);
       window.addEventListener('pagehide', () => window.clearInterval(presenceTimer), { once: true });
       document.addEventListener('visibilitychange', refreshPresence);
+      document.addEventListener('discussion:changed', refreshPresence);
     }
     const scroller = document.getElementById('discussion-scroll');
     let loading = false;

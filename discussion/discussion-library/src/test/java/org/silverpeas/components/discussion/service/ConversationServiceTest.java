@@ -58,6 +58,8 @@ class ConversationServiceTest {
   private DiscussionLikeRepository likes;
   @TestManagedMock
   private DiscussionMentionService mentions;
+  @TestManagedMock
+  private org.silverpeas.components.discussion.notification.DiscussionChangeDispatcher changes;
   @TestedBean
   private DefaultConversationService service;
   private Conversation conversation;
@@ -151,6 +153,7 @@ class ConversationServiceTest {
       when(message.getCreatorId()).thenReturn("another-user");
       when(access.require("discussion1", SilverpeasRole.WRITER)).thenReturn(SilverpeasRole.ADMIN);
       service.delete("discussion1", "message", 0);
+      verify(changes, times(2)).changed("discussion1");
       verify(message).delete();
     }
   }
@@ -162,6 +165,7 @@ class ConversationServiceTest {
     try (MockedStatic<User> current = mockStatic(User.class)) {
       current.when(User::getCurrentRequester).thenReturn(user);
       service.markRead("discussion1", 3);
+      verify(changes).read("discussion1", "user");
       verify(state).advanceTo(3, 4);
       verify(state, never()).createdBy(any(User.class));
       verify(readStates).save(state);
@@ -181,6 +185,7 @@ class ConversationServiceTest {
     try (MockedStatic<User> current = mockStatic(User.class)) {
       current.when(User::getCurrentRequester).thenReturn(user);
       service.publish("discussion1", "new message");
+      verify(changes).changed("discussion1");
       var captured = org.mockito.ArgumentCaptor.forClass(DiscussionMessage.class);
       verify(conversations).main("discussion1", true);
       verify(messages).save(captured.capture());
@@ -229,6 +234,7 @@ class ConversationServiceTest {
       service.setLike("discussion1", "message", true);
       verify(likes, times(1)).save(any(DiscussionLike.class));
       service.setLike("discussion1", "message", false);
+      verify(changes, times(2)).changed("discussion1");
       verify(likes).delete(reaction);
       verify(access, times(3)).require("discussion1", SilverpeasRole.WRITER);
     }

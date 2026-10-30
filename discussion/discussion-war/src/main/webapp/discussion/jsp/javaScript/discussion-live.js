@@ -37,6 +37,12 @@
     const fingerprints = new Map();
     let loading = false;
     let stopped = false;
+    let dirty = false;
+    let retryTimer;
+    let retryDelay = 1000;
+    let source;
+    const deferred = new Set();
+    let selectionPending = false;
 
     const merge = page => {
       // Anchor the current row rather than the total height: edits can resize older messages.
@@ -46,13 +52,18 @@
       page.querySelectorAll('.discussion-message').forEach(row => {
         const existing = document.getElementById(row.id);
         const fingerprint = row.outerHTML;
-        // Keep an open editor and in-flight reactions intact; the next poll will reconcile them.
-        if (existing?.querySelector('details[open], .discussion-like-button:disabled') ||
-            existing?.contains(document.activeElement) ||
-            existing?.contains(window.getSelection()?.anchorNode) ||
-            (existing && fingerprints.get(row.id) === fingerprint)) {
+        if (existing && fingerprints.get(row.id) === fingerprint) {
           return;
         }
+        const selected = existing?.contains(window.getSelection()?.anchorNode);
+        // Reconcile deferred rows when the interaction ends, without periodic polling.
+        if (existing?.querySelector('details[open], .discussion-like-button:disabled') ||
+            existing?.contains(document.activeElement) || selected) {
+          deferred.add(row.id);
+          selectionPending ||= selected;
+          return;
+        }
+        deferred.delete(row.id);
         fingerprints.set(row.id, fingerprint);
         const fresh = document.importNode(row, true);
         if (existing && history.contains(existing)) {
@@ -87,46 +98,119 @@
       }
     };
 
+    const synchronize = async () => {
+      const ids = articles().map(row => row.id.slice('message-'.length));
+      for (let offset = 0; offset < Math.max(1, ids.length); offset += 100) {
+        const response = await sp.ajaxRequest(discussion.dataset.updates)
+            .withParam('after', latest()).withParam('ids', ids.slice(offset, offset + 100).join(',')).send();
+        if (stopped) {
+          return;
+        }
+        const fragment = new DOMParser().parseFromString(response.responseText, 'text/html');
+        const page = fragment.querySelector('.discussion-page');
+        if (!page || !page.hasAttribute('data-unread-count')) {
+          throw new Error('Invalid discussion update');
+        }
+        merge(page);
+        // A reconnect can require several bounded batches to catch up completely.
+        dirty ||= Number(page.dataset.lastSequence) > latest();
+      }
+    };
     const refresh = async () => {
+      dirty = true;
       if (document.hidden || loading || stopped) {
         return;
       }
+      window.clearTimeout(retryTimer);
       loading = true;
       try {
-        const ids = articles().map(row => row.id.slice('message-'.length));
-        // Refresh all loaded pages without ever sending an unbounded request.
-        for (let offset = 0; offset < Math.max(1, ids.length); offset += 100) {
-          const response = await sp.ajaxRequest(discussion.dataset.updates)
-              .withParam('after', latest()).withParam('ids', ids.slice(offset, offset + 100).join(',')).send();
-          if (stopped) {
-            return;
-          }
-          const fragment = new DOMParser().parseFromString(response.responseText, 'text/html');
-          const page = fragment.querySelector('.discussion-page');
-          if (!page || !page.hasAttribute('data-unread-count')) {
-            throw new Error('Invalid discussion update');
-          }
-          merge(page);
-        }
-        failure.hidden = true;
+        do {
+          dirty = false;
+          await synchronize();
+        } while (dirty && !document.hidden && !stopped);
+        failure.hidden = Boolean(source?.isEnabled());
+        retryDelay = 1000;
       } catch (error) {
+        dirty = true;
         failure.hidden = false;
+        // Retry a failed synchronization only, never poll an unchanged conversation.
+        retryTimer = window.setTimeout(refresh, retryDelay);
+        retryDelay = Math.min(retryDelay * 2, 30000);
       } finally {
         loading = false;
       }
     };
-    let timer = window.setInterval(refresh, 3000);
-    document.addEventListener('visibilitychange', refresh);
+    const changed = event => {
+      try {
+        if (JSON.parse(event.data).instanceId === discussion.dataset.instanceId) {
+          document.dispatchEvent(new Event('discussion:changed'));
+          refresh();
+        }
+      } catch (error) {
+        // An unrelated or malformed event must not interrupt the shared event source.
+      }
+    };
+    const disconnected = () => { failure.hidden = false; };
+    const connect = () => {
+      if (stopped || source) {
+        return;
+      }
+      source = window.top.spServerEventSource || window.spServerEventSource;
+      if (!source?.isEnabled()) {
+        failure.hidden = false;
+        return;
+      }
+      source.addEventListener('DISCUSSION_CHANGED', changed);
+      source.addEventListener('OPEN_EVENT_SOURCE', refresh);
+      source.addEventListener('error', disconnected);
+      // Close the gap between rendering the JSP and subscribing to the event source.
+      refresh();
+    };
+    if (typeof whenSilverpeasReady === 'function') {
+      whenSilverpeasReady(connect);
+    } else {
+      connect();
+    }
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) {
+        refresh();
+      }
+    });
     window.addEventListener('focus', refresh);
+    history.addEventListener('toggle', event => {
+      if (!event.target.open && deferred.size) {
+        refresh();
+      }
+    }, true);
+    history.addEventListener('focusout', () => {
+      if (deferred.size) {
+        queueMicrotask(refresh);
+      }
+    });
+    document.addEventListener('selectionchange', () => {
+      if (selectionPending && window.getSelection()?.isCollapsed) {
+        selectionPending = false;
+        refresh();
+      }
+    });
+    discussion.addEventListener('discussion-reaction-settled', event => {
+      fingerprints.delete(event.target.closest('.discussion-message')?.id);
+      refresh();
+    });
     window.addEventListener('pagehide', () => {
       stopped = true;
-      window.clearInterval(timer);
+      window.clearTimeout(retryTimer);
+      if (source?.isEnabled()) {
+        source.removeEventListener('DISCUSSION_CHANGED', changed);
+        source.removeEventListener('OPEN_EVENT_SOURCE', refresh);
+        source.removeEventListener('error', disconnected);
+      }
+      source = undefined;
     });
     window.addEventListener('pageshow', () => {
       if (stopped) {
         stopped = false;
-        timer = window.setInterval(refresh, 3000);
-        refresh();
+        connect();
       }
     });
   });
