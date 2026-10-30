@@ -33,6 +33,7 @@ import org.silverpeas.components.discussion.service.ConversationService;
 import org.silverpeas.components.discussion.service.DiscussionMentionService;
 import org.silverpeas.components.discussion.web.DiscussionInstanceInfoService;
 import org.silverpeas.components.discussion.web.DiscussionParticipantService;
+import org.silverpeas.components.discussion.web.DiscussionPublicationService;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
@@ -52,6 +53,7 @@ public class DiscussionWebController extends
   private transient DiscussionInstanceInfoService instanceInfo;
   private transient DiscussionMentionService mentions;
   private transient DiscussionParticipantService participantService;
+  private transient DiscussionPublicationService publicationService;
 
   public DiscussionWebController(MainSessionController main, ComponentContext component) {
     super(main, component, BASE + "multilang.DiscussionBundle",
@@ -105,6 +107,7 @@ public class DiscussionWebController extends
     context.getRequest().setAttribute("mentionCandidates", canMention
         ? webResult(() -> mentions.candidates(context.getComponentInstanceId())) : java.util.List.of());
     participants(context);
+    publications(context);
   }
 
   @POST
@@ -153,6 +156,18 @@ public class DiscussionWebController extends
         : java.util.Arrays.asList(ids.split(","));
     prepareHistory(context, webResult(() -> conversations().updates(context.getComponentInstanceId(),
         number(context, "after", 0), selected)));
+  }
+
+  @GET
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("publications")
+  @RedirectToInternalJsp("publications.jsp")
+  public void publications(DiscussionWebRequestContext context) {
+    if (publicationService == null) {
+      publicationService = ServiceProvider.getService(DiscussionPublicationService.class);
+    }
+    context.getRequest().setAttribute("citedPublications",
+        webResult(() -> publicationService.list(context.getComponentInstanceId(), getLanguage())));
   }
 
   private void loadHistory(DiscussionWebRequestContext context, long before) {

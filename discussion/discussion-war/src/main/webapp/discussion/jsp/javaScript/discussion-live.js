@@ -150,8 +150,11 @@
     };
     const changed = event => {
       try {
-        if (JSON.parse(event.data).instanceId === discussion.dataset.instanceId) {
-          document.dispatchEvent(new Event('discussion:changed'));
+        const change = JSON.parse(event.data);
+        if (change.instanceId === discussion.dataset.instanceId) {
+          if (change.contentChanged !== false) {
+            document.dispatchEvent(new Event('discussion:changed'));
+          }
           refresh();
         }
       } catch (error) {

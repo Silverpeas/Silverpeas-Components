@@ -29,8 +29,7 @@
 <%@ taglib uri="jakarta.tags.functions" prefix="fn" %>
 <%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view" %>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
-<div class="discussion-participants-list">
-  <h2 id="discussion-people-heading"><fmt:message key="discussion.participants"/> <span class="discussion-people-count"><c:out value="${fn:length(participants)}"/></span></h2>
+<div class="discussion-participants-list" data-count="${fn:length(participants)}">
   <c:if test="${empty participants}"><p><fmt:message key="discussion.noParticipants"/></p></c:if>
   <ul>
     <c:forEach items="${participants}" var="participant">

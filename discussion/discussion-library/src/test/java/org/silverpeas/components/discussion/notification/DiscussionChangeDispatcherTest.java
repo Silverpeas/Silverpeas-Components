@@ -70,7 +70,8 @@ class DiscussionChangeDispatcherTest {
     verify(notifier).notify(capture.capture());
     assertEquals("DISCUSSION_CHANGED", capture.getValue().getName().asString());
     assertEquals(java.util.List.of("/sse/common"), capture.getValue().getEventSourceURIs());
-    assertEquals("{\"instanceId\":\"discussion1\"}", capture.getValue().getData("session", null));
+    assertTrue(capture.getValue().getData("session", null).contains("\"instanceId\":\"discussion1\""));
+    assertTrue(capture.getValue().getData("session", null).contains("\"contentChanged\":true"));
   }
 
   @Test
@@ -98,6 +99,7 @@ class DiscussionChangeDispatcherTest {
     when(receiver.getId()).thenReturn("other");
     var event = new DiscussionServerEvent(new DiscussionChange("discussion1", "writer"), access);
     assertFalse(event.isConcerned("session", receiver));
+    assertTrue(event.getData("session", receiver).contains("\"contentChanged\":false"));
     verifyNoInteractions(access);
   }
 }

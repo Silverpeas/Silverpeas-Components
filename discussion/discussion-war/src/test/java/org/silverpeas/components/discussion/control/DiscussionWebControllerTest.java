@@ -52,6 +52,8 @@ class DiscussionWebControllerTest {
   private org.silverpeas.components.discussion.web.DiscussionInstanceInfoService info;
   @TestManagedMock
   private org.silverpeas.components.discussion.service.DiscussionMentionService mentions;
+  @TestManagedMock
+  private org.silverpeas.components.discussion.web.DiscussionPublicationService publications;
   private DiscussionWebController controller;
   private DiscussionWebRequestContext context;
   private HttpRequest request;
@@ -194,6 +196,15 @@ class DiscussionWebControllerTest {
     when(request.getParameter("ids")).thenReturn(null);
     assertEquals(400, assertThrows(WebApplicationException.class,
         () -> controller.visible(context)).getResponse().getStatus());
+  }
+
+  @Test
+  void citationRefreshUsesTheSessionInstanceAndPreservesAccessErrors() {
+    controller.publications(context);
+    verify(publications).list("discussion1", "fr");
+    when(publications.list("discussion1", "fr")).thenThrow(SecurityException.class);
+    assertEquals(403, assertThrows(WebApplicationException.class,
+        () -> controller.publications(context)).getResponse().getStatus());
   }
 
   @Test

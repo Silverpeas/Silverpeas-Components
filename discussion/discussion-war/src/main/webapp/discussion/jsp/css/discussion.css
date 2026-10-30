@@ -209,3 +209,25 @@ html.discussion-document { overflow-anchor: none; scroll-behavior: auto; }
 /* Personalized portraits cover the initial; a missing image leaves the initial visible. */
 #discussion .discussion-avatar { position: relative; overflow: hidden; }
 #discussion .discussion-avatar img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+
+/* Native accordions keep their open state while the lists refresh independently. */
+#discussion .discussion-sidebar { display: block; padding: 0; overflow-y: auto; }
+#discussion .discussion-sidebar-section { border-bottom: 1px solid var(--color-trait-separateur, #ddd); }
+#discussion .discussion-sidebar-section > summary { display: flex; align-items: center; gap: 0.5rem; padding: 0.8rem 1rem; cursor: pointer; list-style: none; }
+#discussion .discussion-sidebar-section > summary::-webkit-details-marker { display: none; }
+#discussion .discussion-sidebar-section > summary::before { content: '›'; flex: none; font-size: 1.2em; transition: transform 120ms; }
+#discussion .discussion-sidebar-section[open] > summary::before { transform: rotate(90deg); }
+#discussion .discussion-sidebar-section h2 { flex: 1; }
+#discussion .discussion-sidebar-section > summary:focus-visible { outline: 2px solid var(--color-lien-action, #3975b5); outline-offset: -2px; }
+#discussion .discussion-sidebar-content { max-height: max(5rem, calc(100dvh - var(--discussion-sidebar-top, 8rem) - 9rem)); padding: 0 1rem 0.75rem; overflow-y: auto; }
+#discussion #discussion-participants, #discussion .discussion-participants-list { display: block; }
+#discussion .discussion-sidebar ul { display: block; overflow: visible; max-height: none; }
+#discussion .discussion-publications-list li { padding: 0.6rem 0; overflow-wrap: anywhere; }
+#discussion .discussion-publications-list a { color: var(--color-lien-action, #3975b5); text-decoration: none; }
+#discussion .discussion-publications-list a:hover { text-decoration: underline; }
+@media (max-width: 760px) {
+  #discussion.discussion-document-scroll .discussion-sidebar { max-height: 16rem; }
+  #discussion .discussion-sidebar-content { max-height: 8rem; }
+  #discussion .discussion-sidebar-section > summary { padding: 0.4rem 0.75rem; }
+  #discussion .discussion-sidebar .discussion-person { flex-basis: auto; }
+}

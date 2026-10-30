@@ -45,6 +45,10 @@
           throw new Error('Invalid participant response');
         }
         participants.replaceChildren(document.importNode(list, true));
+        const count = document.getElementById('discussion-participant-count');
+        if (count) {
+          count.textContent = list.dataset.count ?? list.querySelectorAll('.discussion-person').length;
+        }
         participants.classList.remove('is-stale');
         presenceError.hidden = true;
       } catch (failure) {

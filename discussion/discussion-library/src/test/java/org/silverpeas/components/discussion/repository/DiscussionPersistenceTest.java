@@ -112,6 +112,18 @@ class DiscussionPersistenceTest {
   }
 
   @Test
+  void publicationReferencesIncludeOlderMessagesButExcludeDeletedAndOtherInstances() {
+    session.createNativeMutationQuery("update sc_discussion_message set body='/silverpeas/Publication/12' where id in ('m1','m3','m5')").executeUpdate();
+    try (var bodies = messages.publicationLinkBodies("c1")) {
+      assertEquals(List.of("/silverpeas/Publication/12"), bodies.toList());
+    }
+    session.createNativeMutationQuery("update sc_discussion_message set body='Citation removed' where id='m1'").executeUpdate();
+    try (var bodies = messages.publicationLinkBodies("c1")) {
+      assertTrue(bodies.toList().isEmpty());
+    }
+  }
+
+  @Test
   void aVisibleRecentMessageDoesNotAcknowledgeOlderUnseenMessages() {
     assertEquals(2, messages.unread("c1", "user", 0));
     session.createNativeMutationQuery("""

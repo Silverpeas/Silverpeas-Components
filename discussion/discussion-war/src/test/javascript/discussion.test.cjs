@@ -53,6 +53,7 @@ function browser({ more = true, fail = false, presence = false, unread = false }
   const participants = { replaceChildren: () => { refreshed++; },
     classList: { add: value => classes.add(value), remove: value => classes.delete(value) } };
   if (presence) {
+    nodes['discussion-participant-count'] = {textContent: ''};
     nodes['discussion-participants'] = participants;
     nodes['discussion-presence-error'] = presenceError;
     nodes.discussion.dataset.participants = '/Rdiscussion/discussion1/participants';
@@ -73,7 +74,7 @@ function browser({ more = true, fail = false, presence = false, unread = false }
       getElementById: id => nodes[id], importNode: node => node },
     DOMParser: class {
       parseFromString() {
-        return { querySelector: () => ({ dataset: { before: '1', more: 'false' } }) };
+        return { querySelector: () => ({ dataset: { before: '1', more: 'false', count: '2' } }) };
       }
     },
     IntersectionObserver: class {
@@ -101,6 +102,7 @@ function browser({ more = true, fail = false, presence = false, unread = false }
   listeners.DOMContentLoaded();
   return { pages, requests, older, error, click: () => listeners.click(),
     intersect: () => intersect([{ isIntersecting: true }]), stamps: () => stamped,
+    participantCount: () => nodes['discussion-participant-count']?.textContent,
     refreshPresence: () => timer(), refreshed: () => refreshed, presenceError, classes,
     setHidden: value => { context.document.hidden = value; },
     setFailure: value => { fail = value; },
@@ -149,6 +151,7 @@ test('presence refresh only replaces the author list and leaves history and edit
   assert.equal(view.requests.length, 1);
   assert.equal(view.requests[0].url, '/Rdiscussion/discussion1/participants');
   assert.equal(view.refreshed(), 1);
+  assert.equal(view.participantCount(), '2');
   assert.equal(view.pages.length, 1);
   assert.equal(view.presenceError.hidden, true);
 });
