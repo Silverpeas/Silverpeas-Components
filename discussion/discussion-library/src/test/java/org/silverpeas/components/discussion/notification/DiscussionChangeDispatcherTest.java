@@ -27,6 +27,7 @@ import java.util.Set;
 import jakarta.enterprise.event.Event;
 import jakarta.enterprise.event.Observes;
 import jakarta.enterprise.event.TransactionPhase;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
@@ -99,6 +100,9 @@ class DiscussionChangeDispatcherTest {
   void newMessageDesktopSignalsAreAfterCommitLiveOnlyAndExcludeTheAuthor() throws Exception {
     var method = DiscussionChangeDispatcher.class.getMethod("newMessageAfterCommit", DiscussionNewMessage.class);
     assertEquals(TransactionPhase.AFTER_SUCCESS, method.getParameters()[0].getAnnotation(Observes.class).during());
+    assertEquals(Transactional.TxType.REQUIRES_NEW,
+        method.getAnnotation(Transactional.class).value(),
+        "Component lookup must run in a fresh transaction after publication commits");
     var component = mock(org.silverpeas.core.admin.component.model.ComponentInstLight.class);
     when(component.getLabel("fr")).thenReturn("Projet IA");
     when(organization.getComponentInstLight("discussion1")).thenReturn(component);
