@@ -59,14 +59,14 @@ public class DefaultConversationService implements ConversationService {
 
   @Override
   public List<String> participantIds(String instanceId) {
-    access.require(instanceId, SilverpeasRole.READER);
+    access.require(instanceId, SilverpeasRole.WRITER);
     Conversation conversation = conversations.main(instanceId, false);
     return messages.authorIds(conversation.getId());
   }
 
   @Override
   public MessagePage history(String instanceId, long before, int limit) {
-    access.require(instanceId, SilverpeasRole.READER);
+    access.require(instanceId, SilverpeasRole.WRITER);
     if (before <= 0 || limit < 1 || limit > 100) {
       throw new IllegalArgumentException("Invalid history page");
     }
@@ -78,6 +78,8 @@ public class DefaultConversationService implements ConversationService {
     String userId = User.getCurrentRequester().getId();
     long lastRead = readStates.find(conversation.getId(), userId)
         .map(DiscussionReadState::getLastReadSequence).orElse(0L);
+    page.forEach(message -> message.setUnread(!message.isDeleted()
+        && message.getSequenceNumber() > lastRead && !userId.equals(message.getCreatorId())));
     return new MessagePage(page, next, more, conversation.getLastSequence(),
         messages.unread(conversation.getId(), userId, lastRead));
   }
@@ -113,7 +115,7 @@ public class DefaultConversationService implements ConversationService {
 
   @Override
   public Map<String, LikeState> likeStates(String instanceId, List<String> messageIds) {
-    access.require(instanceId, SilverpeasRole.READER);
+    access.require(instanceId, SilverpeasRole.WRITER);
     if (messageIds.size() > 100) {
       throw new IllegalArgumentException("Too many message identifiers");
     }
@@ -123,7 +125,7 @@ public class DefaultConversationService implements ConversationService {
 
   @Override
   public LikeState setLike(String instanceId, String messageId, boolean liked) {
-    access.require(instanceId, SilverpeasRole.READER);
+    access.require(instanceId, SilverpeasRole.WRITER);
     User user = User.getCurrentRequester();
     if (user.isAnonymous() || user.isAccessGuest()) {
       throw new SecurityException("A user account is required to react");
@@ -148,7 +150,7 @@ public class DefaultConversationService implements ConversationService {
 
   @Override
   public MessagePage historyAround(String instanceId, String messageId) {
-    access.require(instanceId, SilverpeasRole.READER);
+    access.require(instanceId, SilverpeasRole.WRITER);
     Conversation conversation = conversations.main(instanceId, false);
     DiscussionMessage message = messageIn(conversation, messageId);
     return history(instanceId, message.getSequenceNumber() + 1, 30);
@@ -178,7 +180,7 @@ public class DefaultConversationService implements ConversationService {
 
   @Override
   public void markRead(String instanceId, long sequence) {
-    access.require(instanceId, SilverpeasRole.READER);
+    access.require(instanceId, SilverpeasRole.WRITER);
     User user = User.getCurrentRequester();
     if (user.isAccessGuest() || user.isAnonymous()) {
       return;

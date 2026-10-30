@@ -158,5 +158,17 @@ class DiscussionWebControllerTest {
     verifyNoInteractions(mentions);
     verify(request).setAttribute("mentionCandidates", List.of());
   }
+  @Test
+  void everyNavigationAndMutationRouteRequiresAWriter() {
+    for (var method : DiscussionWebController.class.getDeclaredMethods()) {
+      if (method.isAnnotationPresent(jakarta.ws.rs.GET.class)
+          || method.isAnnotationPresent(jakarta.ws.rs.POST.class)) {
+        var restriction = method.getAnnotation(
+            org.silverpeas.core.web.mvc.webcomponent.annotation.LowestRoleAccess.class);
+        assertNotNull(restriction, method.getName());
+        assertEquals(SilverpeasRole.WRITER, restriction.value(), method.getName());
+      }
+    }
+  }
 
 }

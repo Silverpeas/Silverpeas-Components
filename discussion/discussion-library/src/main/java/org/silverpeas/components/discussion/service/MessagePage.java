@@ -33,6 +33,7 @@ public record MessagePage(List<DiscussionMessage> messages, long nextBefore, boo
     messages = List.copyOf(messages);
   }
   public List<DiscussionMessage> getMessages() { return messages; }
+  public List<DiscussionMessage> getChronologicalMessages() { return messages.reversed(); }
   public long getNextBefore() { return nextBefore; }
   public boolean isHasMore() { return hasMore; }
   public long getLastSequence() { return lastSequence; }

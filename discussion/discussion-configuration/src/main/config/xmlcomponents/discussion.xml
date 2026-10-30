@@ -74,20 +74,5 @@
         <profile>writer</profile>
       </spaceMapping>
     </profile>
-    <profile name="user">
-      <label>
-        <message lang="fr">Lecteurs</message>
-        <message lang="en">Readers</message>
-        <message lang="de">Leser</message>
-      </label>
-      <help>
-        <message lang="fr">Consulter la discussion.</message>
-        <message lang="en">Read the discussion.</message>
-        <message lang="de">Diskussion lesen.</message>
-      </help>
-      <spaceMapping>
-        <profile>reader</profile>
-      </spaceMapping>
-    </profile>
   </profiles>
 </WAComponent>
