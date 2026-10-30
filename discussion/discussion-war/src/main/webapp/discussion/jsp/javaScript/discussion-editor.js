@@ -291,6 +291,7 @@
         error.hidden = false;
       } finally {
         button.disabled = false;
+        form.dispatchEvent(new CustomEvent('discussion-reaction-settled', {bubbles: true}));
       }
     });
   });

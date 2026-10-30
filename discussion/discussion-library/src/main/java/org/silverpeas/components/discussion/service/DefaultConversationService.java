@@ -57,6 +57,9 @@ public class DefaultConversationService implements ConversationService {
   @Inject
   private DiscussionMentionService mentions;
 
+  @Inject
+  private org.silverpeas.components.discussion.notification.DiscussionChangeDispatcher changes;
+
   @Override
   public List<String> participantIds(String instanceId) {
     access.require(instanceId, SilverpeasRole.WRITER);
@@ -114,6 +117,7 @@ public class DefaultConversationService implements ConversationService {
     message.createdBy(User.getCurrentRequester());
     messages.save(message);
     mentions.notifyNewMentions(instanceId, message, "");
+    changes.changed(instanceId);
   }
 
   @Override
@@ -124,6 +128,7 @@ public class DefaultConversationService implements ConversationService {
     message.updatedBy(User.getCurrentRequester());
     messages.save(message);
     mentions.notifyNewMentions(instanceId, message, previousBody);
+    changes.changed(instanceId);
   }
 
   @Override
@@ -133,6 +138,7 @@ public class DefaultConversationService implements ConversationService {
     message.delete();
     message.updatedBy(User.getCurrentRequester());
     messages.save(message);
+    changes.changed(instanceId);
   }
 
   @Override
@@ -166,6 +172,9 @@ public class DefaultConversationService implements ConversationService {
       likes.delete(previous.orElseThrow());
     }
     likes.flush();
+    if (liked != previous.isPresent()) {
+      changes.changed(instanceId);
+    }
     return likes.states(conversation.getId(), List.of(messageId), user.getId())
         .getOrDefault(messageId, new LikeState(0, false));
   }
@@ -217,5 +226,6 @@ public class DefaultConversationService implements ConversationService {
     state.advanceTo(sequence, conversation.getLastSequence());
     state.updatedBy(user);
     readStates.save(state);
+    changes.read(instanceId, user.getId());
   }
 }

@@ -79,6 +79,7 @@ class DiscussionWebControllerTest {
     when(service.history("discussion1", Long.MAX_VALUE, 30)).thenReturn(page);
     controller.home(context);
     verify(request).setAttribute("messagePage", page);
+    verify(request).setAttribute("discussionInstanceId", "discussion1");
     verify(participants).list("discussion1");
     verify(request).setAttribute("canWrite", true);
     verify(service, never()).markRead(anyString(), anyLong());

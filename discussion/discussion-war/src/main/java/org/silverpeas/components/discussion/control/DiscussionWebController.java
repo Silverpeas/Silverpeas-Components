@@ -91,6 +91,7 @@ public class DiscussionWebController extends
   }
 
   private void preparePage(DiscussionWebRequestContext context) {
+    context.getRequest().setAttribute("discussionInstanceId", context.getComponentInstanceId());
     if (instanceInfo == null) {
       instanceInfo = ServiceProvider.getService(DiscussionInstanceInfoService.class);
       mentions = ServiceProvider.getService(DiscussionMentionService.class);

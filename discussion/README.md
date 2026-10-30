@@ -151,13 +151,28 @@ supprimés. La consultation ne modifie pas automatiquement ce repère : l'action
 
 ### Actualisation du fil et notifications
 
-Le fil se synchronise toutes les trois secondes tant que l'onglet est visible, et dès son retour
-au premier plan. Les requêtes sont bornées à 100 messages nouveaux et 100 messages déjà chargés,
+Le fil écoute l'événement `DISCUSSION_CHANGED` du canal natif partagé `spServerEventSource`.
+Les publications, éditions, suppressions, réactions et lectures explicites produisent un événement
+après validation de leur transaction. Le signal contient uniquement l'identifiant de l'instance ;
+les droits des destinataires sont revérifiés à chaque envoi et à chaque rejeu. Les confirmations
+de lecture ne sont transmises qu'aux sessions de l'utilisateur concerné.
+
+Il n'y a plus de vérification périodique du fil. À réception d'un événement, au retour au premier
+plan et à la reconnexion (`OPEN_EVENT_SOURCE`), la page récupère les données à jour. Les rafales
+sont regroupées, les changements reçus pendant une requête sont repris ensuite et le rattrapage
+est drainé par lots. Les requêtes sont bornées à 100 messages nouveaux et 100 messages déjà chargés,
 avec contrôle des droits de l'instance. Les éditions, suppressions, réactions et compteurs non lus
 sont réconciliés sans rechargement de page. Un éditeur ouvert, une réaction en cours et la sélection
 de texte sont préservés. La lecture remonte sans déplacement forcé ; au bas du fil, les nouveaux
 messages restent visibles. Une interruption réseau est indiquée et la synchronisation reprend
-automatiquement. La présence des auteurs conserve son propre rafraîchissement toutes les 30 secondes.
+automatiquement après un échec ou à la reconnexion. Les éditeurs différés sont réconciliés à leur
+fermeture. La présence des auteurs conserve son propre rafraîchissement toutes les 30 secondes et
+est aussi actualisée lorsqu'un changement du fil est signalé.
+
+Le transport est celui de Silverpeas, sans nouvelle connexion par iframe : SSE par défaut, ou
+WebSocket si `notification.sse.usingWebSocket = true` dans
+`org/silverpeas/notificationManager/settings/notificationManagerSettings.properties`.
+`notification.sse.enabled` doit rester activé. Aucun réglage global n'est modifié par Discussion.
 
 Seules les nouvelles @mentions déclenchent des notifications Silverpeas, après validation de la
 transaction du message. Leur envoi utilise une nouvelle transaction ; le canal et le différé
