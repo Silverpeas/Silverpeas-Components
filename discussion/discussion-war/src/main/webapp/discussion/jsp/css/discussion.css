@@ -60,7 +60,7 @@
 #discussion button:disabled { opacity: 0.6; cursor: wait; }
 #discussion :is(button, textarea, summary):focus-visible { outline: 2px solid var(--color-lien-action, #3975b5); outline-offset: 2px; }
 #discussion .discussion-history-title { margin: 0 1.25rem 0.75rem; padding: 0; color: var(--color-titre, #333); font-size: 1em; font-weight: 700; }
-#discussion .discussion-message { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.875rem 1.25rem; border-top: 1px solid var(--color-trait-separateur, #ddd); }
+#discussion .discussion-message { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.75rem 1.25rem; margin-block: 0.25rem; border-top: 0; }
 #discussion .discussion-message:hover { background: var(--roll-hover-background, #fafafa); }
 #discussion .discussion-avatar { display: flex; flex-shrink: 0; align-items: center; justify-content: center; width: 2rem; height: 2rem; border: 1px solid var(--border-color-avatar-comment, #cecece); border-radius: var(--radius-avatar-comment, 0); background: var(--bg-color-avatar-comment, #fff); color: var(--color-text-second-niveau, #626262); font-weight: 700; }
 #discussion .discussion-message-content { flex: 1; min-width: 0; }
@@ -192,4 +192,16 @@ html.discussion-document { overflow-anchor: none; scroll-behavior: auto; }
   #discussion.discussion-document-scroll .discussion-workspace { grid-template-rows: auto; }
   #discussion.discussion-document-scroll .discussion-stream { grid-row: 1; padding-top: var(--discussion-authors-height, 0px); }
   #discussion.discussion-document-scroll .discussion-sidebar { left: var(--discussion-left); right: auto; bottom: auto; width: var(--discussion-width); max-height: 8rem; z-index: 19; }
+}
+
+#discussion .discussion-reading .discussion-button--quiet { margin: 0; }
+
+/* Compact identity line; message boundaries rely on spacing and author landmarks. */
+#discussion .discussion-header { padding-block: 0.5rem; gap: 0.75rem; }
+#discussion .discussion-heading { display: flex; flex: 1; align-items: baseline; flex-wrap: wrap; gap: 0.15rem 1rem; min-width: 0; }
+#discussion .discussion-heading h1 { font-size: 1.1em; }
+#discussion .discussion-heading .discussion-subtitle { flex: 1 1 12rem; min-width: 0; max-height: none; margin: 0; font-size: 0.9em; white-space: normal; overflow: visible; }
+@media (max-width: 760px) {
+  #discussion .discussion-heading { width: 100%; gap: 0.1rem 0.65rem; }
+  #discussion .discussion-heading .discussion-subtitle { flex-basis: 10rem; }
 }
