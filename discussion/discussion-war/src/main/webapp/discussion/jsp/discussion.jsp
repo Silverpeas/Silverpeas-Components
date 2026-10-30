@@ -46,6 +46,7 @@
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-read.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-sidebar.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-pins.js'/>" defer></script>
+  <script src="<c:url value='/discussion/jsp/javaScript/discussion-images.js'/>" defer></script>
 </head>
 <body>
 <view:window>
@@ -57,7 +58,7 @@
         data-length-error="<fmt:message key='discussion.hint'/>"
         data-profile-base="<c:url value='/Rprofil/jsp/Main'/>"
         data-icons="<c:url value='/discussion/jsp/icons/discussion-icons.svg'/>"
-        data-emoji-label="<fmt:message key='discussion.emoji'/>"
+        data-close-image="<fmt:message key='discussion.closeImage'/>" data-emoji-label="<fmt:message key='discussion.emoji'/>"
         data-mention-label="<fmt:message key='discussion.mention'/>">
       <header class="discussion-header">
         <div class="discussion-heading">
@@ -97,11 +98,19 @@
           </div>
           <p id="discussion-live-error" class="discussion-hint" role="status" hidden><fmt:message key="discussion.liveError"/></p>
           <c:if test="${canWrite}">
-            <form class="discussion-composer" method="post" action="${base}messages/add">
+            <form class="discussion-composer" method="post" enctype="multipart/form-data" action="${base}messages/add">
               <p id="discussion-typing" class="discussion-hint" role="status" aria-live="polite" hidden></p>
               <label for="discussion-body"><fmt:message key="discussion.compose"/></label>
               <textarea id="discussion-body" name="body" maxlength="2000" required aria-describedby="discussion-compose-hint"
                   placeholder="<fmt:message key='discussion.placeholder'/>"></textarea>
+              <div class="discussion-image-picker">
+                <label for="discussion-images" class="discussion-image-label"><svg class="discussion-icon" aria-hidden="true"><use href="<c:url value='/discussion/jsp/icons/discussion-icons.svg'/>#image"/></svg> <fmt:message key="discussion.addImages"/></label>
+                <input id="discussion-images" type="file" name="images" accept="image/jpeg,image/png,image/gif" multiple
+                    data-error="<fmt:message key='discussion.imagesError'/>" data-remove="<fmt:message key='discussion.removeImage'/>"/>
+                <span class="discussion-hint"><fmt:message key="discussion.imagesHint"/></span>
+                <div id="discussion-image-preview" class="discussion-image-preview"></div>
+                <p id="discussion-image-error" class="discussion-presence-error" role="status" hidden></p>
+              </div>
               <div class="discussion-composer-footer">
                 <span id="discussion-compose-hint" class="discussion-hint"><fmt:message key="discussion.hint"/></span>
                 <button class="sp_button discussion-button--primary" type="submit"><fmt:message key="discussion.post"/></button>

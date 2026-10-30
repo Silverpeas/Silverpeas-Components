@@ -33,7 +33,7 @@ public record PinnedMessage(String id, String author, String excerpt) {
   public String getExcerpt() { return excerpt; }
 
   public static PinnedMessage from(DiscussionMessage message) {
-    String text = DiscussionMentionService.displayText(message.getBody());
+    String text = message.getBody().isBlank() ? "📷" : DiscussionMentionService.displayText(message.getBody());
     int length = text.codePointCount(0, text.length());
     String excerpt = length > 180 ? text.substring(0, text.offsetByCodePoints(0, 180)) + "…" : text;
     var creator = message.getCreator();

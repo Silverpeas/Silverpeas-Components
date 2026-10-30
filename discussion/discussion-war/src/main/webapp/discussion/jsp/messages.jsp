@@ -63,7 +63,16 @@
         <c:choose>
           <c:when test="${message.deleted}"><p class="discussion-deleted"><fmt:message key="discussion.deleted"/></p></c:when>
           <c:otherwise>
-            <p class="discussion-body"><c:out value="${message.body}"/></p>
+            <c:if test="${not empty fn:trim(message.body)}"><p class="discussion-body"><c:out value="${message.body}"/></p></c:if>
+            <c:if test="${not empty messageImages[message.id]}">
+              <div class="discussion-message-images">
+                <c:forEach items="${messageImages[message.id]}" var="image">
+                  <a href="<c:out value='${image.url}'/>" target="_blank" rel="noopener noreferrer" aria-label="<fmt:message key='discussion.openImage'/>">
+                    <img src="<c:out value='${image.url}'/>" alt="<fmt:message key='discussion.attachedImage'/>" loading="lazy"/>
+                  </a>
+                </c:forEach>
+              </div>
+            </c:if>
             <div class="discussion-message-footer">
             <c:if test="${canWrite and (currentUser.id eq message.creatorId or highestUserRole.name() eq 'ADMIN')}">
               <div class="discussion-actions">
@@ -71,7 +80,7 @@
                   <summary class="discussion-icon-button" title="${fn:escapeXml(editLabel)}" aria-label="${fn:escapeXml(editLabel)}"><svg class="discussion-icon" aria-hidden="true"><use href="${discussionIcons}#edit"/></svg></summary>
                   <form method="post" action="${base}messages/${message.id}/edit">
                     <input type="hidden" name="version" value="${message.version}"/>
-                    <textarea name="body" maxlength="2000" required aria-label="<fmt:message key='discussion.message'/>"><c:out value="${message.body}"/></textarea>
+                    <textarea name="body" maxlength="2000" data-allow-empty="${not empty messageImages[message.id]}" required aria-label="<fmt:message key='discussion.message'/>"><c:out value="${message.body}"/></textarea>
                     <button class="sp_button discussion-button--primary" type="submit"><fmt:message key="discussion.save"/></button>
                   </form>
                 </details>

@@ -210,6 +210,28 @@ class DiscussionWebControllerTest {
   }
 
   @Test
+  void multipartPublicationValidatesImagesBeforeCallingTheConversationService() throws Exception {
+    when(request.getMethod()).thenReturn("POST");
+    when(request.getContentType()).thenReturn("multipart/form-data; boundary=example");
+    when(request.getParameter("body")).thenReturn("");
+    var file = mock(org.silverpeas.core.util.file.FileItem.class);
+    when(file.getFieldName()).thenReturn("images");
+    when(file.getFileName()).thenReturn("photo.png");
+    var output = new java.io.ByteArrayOutputStream();
+    javax.imageio.ImageIO.write(new java.awt.image.BufferedImage(2, 2, java.awt.image.BufferedImage.TYPE_INT_RGB), "png", output);
+    byte[] png = output.toByteArray();
+    when(file.getSize()).thenReturn((long) png.length);
+    when(file.getInputStream()).thenAnswer(call -> new java.io.ByteArrayInputStream(png));
+    when(request.getFileItems()).thenReturn(List.of(file));
+    controller.publish(context);
+    verify(service).publish(eq("discussion1"), eq(""), argThat(images -> images.size() == 1 && "image/png".equals(images.getFirst().contentType())));
+    clearInvocations(service);
+    when(request.getFileItems()).thenReturn(java.util.Collections.nCopies(5, file));
+    assertEquals(400, assertThrows(WebApplicationException.class, () -> controller.publish(context)).getResponse().getStatus());
+    verifyNoInteractions(service);
+  }
+
+  @Test
   void pinRoutesUseTheAuthorizedInstanceAndRejectInvalidFlags() {
     when(request.getParameter("pinned")).thenReturn("true");
     controller.pin(context);

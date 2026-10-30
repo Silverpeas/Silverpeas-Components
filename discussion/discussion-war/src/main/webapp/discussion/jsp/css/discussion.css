@@ -239,3 +239,19 @@ html.discussion-document { overflow-anchor: none; scroll-behavior: auto; }
 #discussion .discussion-pins-list li { margin-bottom: 1rem; overflow-wrap: anywhere; }
 #discussion .discussion-pins-list a { display: block; }
 #discussion .discussion-pin-excerpt { display: block; margin-top: 0.25rem; color: var(--color-text, #333); white-space: pre-wrap; }
+
+#discussion .discussion-image-picker { margin-top: 0.5rem; }
+#discussion .discussion-image-picker .discussion-image-label { display: inline-flex; align-items: center; gap: 0.4rem; margin-right: 0.5rem; cursor: pointer; }
+#discussion .discussion-image-picker input[type="file"] { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+#discussion .discussion-image-label:has(+ input:focus-visible) { outline: 2px solid var(--color-lien-action, #3975b5); outline-offset: 2px; }
+#discussion .discussion-image-preview, #discussion .discussion-message-images { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
+#discussion .discussion-image-preview figure { position: relative; margin: 0; }
+#discussion .discussion-image-preview img { display: block; width: 6rem; height: 4rem; object-fit: cover; }
+#discussion .discussion-image-preview button { position: absolute; top: 0; right: 0; background: var(--bgColor-card, #fff); cursor: pointer; }
+#discussion .discussion-message-images a { display: block; max-width: 100%; }
+#discussion .discussion-message-images img { display: block; max-width: 100%; width: 18rem; height: 12rem; object-fit: contain; }
+
+.discussion-image-dialog { box-sizing: border-box; max-width: 94vw; max-height: 94dvh; padding: 2.5rem 1rem 1rem; border: 1px solid var(--color-trait-separateur, #ddd); background: var(--bgColor-card, #fff); }
+.discussion-image-dialog::backdrop { background: rgb(0 0 0 / 65%); }
+.discussion-image-dialog > img { display: block; max-width: 100%; max-height: 80dvh; object-fit: contain; }
+.discussion-image-dialog > button { position: absolute; top: 0.4rem; right: 0.5rem; cursor: pointer; }

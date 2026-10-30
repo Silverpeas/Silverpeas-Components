@@ -70,9 +70,13 @@ public class DiscussionMessage extends SilverpeasJpaEntity<DiscussionMessage, Uu
   }
 
   public DiscussionMessage(String conversationId, long sequenceNumber, String body) {
+    this(conversationId, sequenceNumber, body, false);
+  }
+
+  public DiscussionMessage(String conversationId, long sequenceNumber, String body, boolean hasImages) {
     this.conversationId = conversationId;
     this.sequenceNumber = sequenceNumber;
-    edit(body);
+    edit(body, hasImages);
   }
 
   public String getConversationId() { return conversationId; }
@@ -81,10 +85,15 @@ public class DiscussionMessage extends SilverpeasJpaEntity<DiscussionMessage, Uu
   public boolean isDeleted() { return deleted; }
 
   public void edit(String text) {
-    if (deleted || text == null || text.isBlank() || text.length() > MAX_BODY_LENGTH) {
+    edit(text, false);
+  }
+
+  public void edit(String text, boolean hasImages) {
+    if (deleted || text == null || (text.isBlank() && !hasImages) || text.length() > MAX_BODY_LENGTH) {
       throw new IllegalArgumentException("Invalid discussion message");
     }
-    body = text.strip();
+    // Oracle stores an empty VARCHAR as NULL, including for image-only messages.
+    body = text.isBlank() ? " " : text.strip();
   }
 
   public void delete() {
