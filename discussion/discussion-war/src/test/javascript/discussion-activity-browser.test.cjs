@@ -37,7 +37,7 @@ async function setup(page,{activity=false,focused=false,permission='granted'}={}
     window.focused=focused;
     document.hasFocus=()=>window.focused;
     window.handlers={};window.notifications=[];window.loaded=[];window.requests=[];window.permissions=0;
-    window.spServerEventSource={isEnabled:()=>true,addEventListener:(name,fn)=>{(window.handlers[name]||=[]).push(fn);},removeEventListener:(name,fn)=>{window.handlers[name]=(window.handlers[name]||[]).filter(f=>f!==fn);}};
+    window.spServerEventSource={isEnabled:()=>true,addEventListener:(name,fn,id)=>{if(!id&&!window.handlers[name])throw new TypeError('Native SSE removal before first registration');(window.handlers[name]||=[]).push(fn);},removeEventListener:(name,fn)=>{window.handlers[name]=(window.handlers[name]||[]).filter(f=>f!==fn);}};
     window.emit=(name,data)=>(window.handlers[name]||[]).forEach(fn=>fn({data:JSON.stringify(data)}));
     window.whenSilverpeasReady=fn=>fn();
     function MockNotification(){}
