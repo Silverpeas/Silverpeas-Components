@@ -57,6 +57,8 @@ class DiscussionPersistenceTest {
   private DiscussionReadStateRepository reads;
   @TestedBean
   private DiscussionLikeRepository likes;
+  @TestedBean
+  private DiscussionSeenRepository seen;
   private SessionFactory factory;
   private Session session;
 
@@ -72,7 +74,7 @@ class DiscussionPersistenceTest {
       statement.executeBatch();
     }
     factory = new Configuration().addAnnotatedClass(Conversation.class)
-        .addAnnotatedClass(DiscussionLike.class).addAnnotatedClass(DiscussionMessage.class).addAnnotatedClass(DiscussionReadState.class)
+        .addAnnotatedClass(DiscussionSeen.class).addAnnotatedClass(DiscussionLike.class).addAnnotatedClass(DiscussionMessage.class).addAnnotatedClass(DiscussionReadState.class)
         .setProperty("hibernate.connection.url", URL)
         .setProperty("hibernate.connection.username", "sa")
         .setProperty("hibernate.connection.password", "")
@@ -107,6 +109,25 @@ class DiscussionPersistenceTest {
     if (factory != null) {
       factory.close();
     }
+  }
+
+  @Test
+  void aVisibleRecentMessageDoesNotAcknowledgeOlderUnseenMessages() {
+    assertEquals(2, messages.unread("c1", "user", 0));
+    session.createNativeMutationQuery("""
+        insert into sc_discussion_seen
+        (id, conversationId, messageId, userId, createDate, createdBy, lastUpdateDate, lastUpdatedBy, version)
+        values ('s1', 'c1', 'm4', 'user', CURRENT_TIMESTAMP, 'user', CURRENT_TIMESTAMP, 'user', 0)
+        """).executeUpdate();
+    assertEquals(1, messages.unread("c1", "user", 0));
+    assertEquals(0, messages.unread("c1", "user", 1));
+    assertEquals(1, messages.unread("c2", "user", 0));
+    assertEquals(List.of("m4"), seen.seen("c1", "user", List.of("m1", "m4")));
+    assertTrue(seen.seen("c1", "other", List.of("m4")).isEmpty());
+    assertTrue(seen.seen("c2", "user", List.of("m4")).isEmpty());
+    assertTrue(seen.seen("c1", "user", List.of()).isEmpty());
+    seen.deleteConversation("c1");
+    assertEquals(2, messages.unread("c1", "user", 0));
   }
 
   @Test
@@ -164,7 +185,7 @@ class DiscussionPersistenceTest {
   void allVendorScriptsAreCompatibleWithTheInstallerStatementSplitter() throws Exception {
     for (String database : List.of("h2", "postgresql", "mssql", "oracle")) {
       List<String> statements = installerStatements(database);
-      assertEquals(5, statements.size(), database);
+      assertEquals(6, statements.size(), database);
       for (String statement : statements) {
         String executable = statement.lines()
             .filter(line -> !line.stripLeading().startsWith("--"))

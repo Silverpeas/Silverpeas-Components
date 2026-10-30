@@ -201,6 +201,19 @@ public class DiscussionWebController extends
 
   @POST
   @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("messages/read")
+  @RedirectToInternalJsp("read.jsp")
+  public void visible(DiscussionWebRequestContext context) {
+    String ids = context.getRequest().getParameter("ids");
+    if (ids == null || ids.length() > 4100) {
+      throw new WebApplicationException(400);
+    }
+    context.getRequest().setAttribute("unreadCount", webResult(() -> conversations().markVisible(
+        context.getComponentInstanceId(), java.util.Arrays.asList(ids.split(",")))));
+  }
+
+  @POST
+  @LowestRoleAccess(SilverpeasRole.WRITER)
   @Path("read")
   @RedirectToInternal("Main")
   public void markRead(DiscussionWebRequestContext context) {

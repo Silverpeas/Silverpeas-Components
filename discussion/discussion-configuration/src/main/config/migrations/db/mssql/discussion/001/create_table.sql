@@ -75,3 +75,18 @@ CREATE TABLE sc_discussion_like (
   CONSTRAINT fk_discussion_like_conv FOREIGN KEY (conversationId) REFERENCES sc_discussion_conversation(id),
   CONSTRAINT uq_discussion_like UNIQUE (messageId, userId)
 );
+
+CREATE TABLE sc_discussion_seen (
+  id VARCHAR(40) PRIMARY KEY,
+  conversationId VARCHAR(40) NOT NULL,
+  messageId VARCHAR(40) NOT NULL,
+  userId VARCHAR(40) NOT NULL,
+  createDate DATETIME2 NOT NULL,
+  createdBy VARCHAR(40) NOT NULL,
+  lastUpdateDate DATETIME2 NOT NULL,
+  lastUpdatedBy VARCHAR(40) NOT NULL,
+  version BIGINT NOT NULL,
+  CONSTRAINT fk_discussion_seen_message FOREIGN KEY (messageId) REFERENCES sc_discussion_message(id),
+  CONSTRAINT fk_discussion_seen_conv FOREIGN KEY (conversationId) REFERENCES sc_discussion_conversation(id),
+  CONSTRAINT uq_discussion_seen UNIQUE (messageId, userId)
+);

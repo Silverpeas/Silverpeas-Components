@@ -53,6 +53,8 @@ public class DefaultConversationService implements ConversationService {
   private DiscussionAccess access;
 
   @Inject
+  private org.silverpeas.components.discussion.repository.DiscussionSeenRepository seen;
+  @Inject
   private DiscussionLikeRepository likes;
   @Inject
   private DiscussionMentionService mentions;
@@ -103,8 +105,10 @@ public class DefaultConversationService implements ConversationService {
     String userId = User.getCurrentRequester().getId();
     long lastRead = readStates.find(conversation.getId(), userId)
         .map(DiscussionReadState::getLastReadSequence).orElse(0L);
+    var viewed = seen.seen(conversation.getId(), userId, page.stream().map(DiscussionMessage::getId).toList());
     page.forEach(message -> message.setUnread(!message.isDeleted()
-        && message.getSequenceNumber() > lastRead && !userId.equals(message.getCreatorId())));
+        && message.getSequenceNumber() > lastRead && !userId.equals(message.getCreatorId())
+        && !viewed.contains(message.getId())));
     return new MessagePage(page, next, more, conversation.getLastSequence(),
         messages.unread(conversation.getId(), userId, lastRead));
   }
@@ -207,6 +211,38 @@ public class DefaultConversationService implements ConversationService {
       throw new OptimisticLockException("Discussion message has changed");
     }
     return message;
+  }
+
+  @Override
+  public long markVisible(String instanceId, List<String> messageIds) {
+    access.require(instanceId, SilverpeasRole.WRITER);
+    if (messageIds.isEmpty() || messageIds.size() > 100) {
+      throw new IllegalArgumentException("Invalid visible message batch");
+    }
+    String userId = User.getCurrentRequester().getId();
+    Conversation conversation = conversations.main(instanceId, true);
+    var ids = messageIds.stream().distinct().toList();
+    var selected = messages.selected(conversation.getId(), ids);
+    if (selected.size() != ids.size()) {
+      throw new IllegalArgumentException("Unknown discussion message");
+    }
+    long lastRead = readStates.find(conversation.getId(), userId)
+        .map(DiscussionReadState::getLastReadSequence).orElse(0L);
+    var alreadySeen = seen.seen(conversation.getId(), userId, ids);
+    var newlySeen = selected.stream().filter(message -> !message.isDeleted()
+        && !userId.equals(message.getCreatorId()) && message.getSequenceNumber() > lastRead
+        && !alreadySeen.contains(message.getId())).toList();
+    newlySeen.forEach(message -> {
+      var receipt = new org.silverpeas.components.discussion.model.DiscussionSeen(
+          conversation.getId(), message.getId(), userId);
+      receipt.createdBy(User.getCurrentRequester());
+      seen.save(receipt);
+    });
+    if (!newlySeen.isEmpty()) {
+      seen.flush();
+      changes.read(instanceId, userId);
+    }
+    return messages.unread(conversation.getId(), userId, lastRead);
   }
 
   @Override

@@ -68,6 +68,7 @@ public class DiscussionMessageRepository extends SilverpeasJpaEntityRepository<D
     return getEntityManager().createQuery("""
         select count(m) from DiscussionMessage m where m.conversationId = :conversation
         and m.sequenceNumber > :lastRead and m.creatorId <> :user and m.deleted = false
+        and not exists (select s from DiscussionSeen s where s.messageId = m.id.id and s.userId = :user)
         """, Long.class).setParameter("conversation", conversationId)
         .setParameter("lastRead", lastRead).setParameter("user", userId).getSingleResult();
   }

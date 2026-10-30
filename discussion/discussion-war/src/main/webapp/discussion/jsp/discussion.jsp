@@ -40,12 +40,13 @@
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-layout.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-live.js'/>" defer></script>
+  <script src="<c:url value='/discussion/jsp/javaScript/discussion-read.js'/>" defer></script>
 </head>
 <body>
 <view:window>
   <view:frame>
     <main id="discussion" data-history="${base}history" data-participants="${base}participants" data-updates="${base}updates"
-        data-instance-id="${discussionInstanceId}"
+        data-instance-id="${discussionInstanceId}" data-read="${base}messages/read"
         data-message-id="<c:out value='${focusedMessageId}'/>"
         data-length-error="<fmt:message key='discussion.hint'/>"
         data-profile-base="<c:url value='/Rprofil/jsp/Main'/>"
@@ -62,10 +63,7 @@
             <span class="discussion-unread-count"><c:out value="${messagePage.unreadCount}"/></span>
             <fmt:message key="discussion.unread"/>
           </span>
-          <form class="discussion-read-form" method="post" action="${base}read" ${messagePage.unreadCount eq 0 ? 'hidden' : ''}>
-            <input type="hidden" name="sequence" value="${messagePage.lastSequence}"/>
-            <button class="button discussion-button--quiet" type="submit"><fmt:message key="discussion.read"/></button>
-          </form>
+
         </div>
       </header>
       <template id="discussion-mention-directory">

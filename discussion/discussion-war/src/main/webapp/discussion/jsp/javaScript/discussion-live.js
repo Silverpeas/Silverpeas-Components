@@ -94,9 +94,6 @@
       }
       const count = discussion.querySelector('.discussion-unread-count');
       count.textContent = page.dataset.unreadCount;
-      const read = discussion.querySelector('.discussion-read-form');
-      read.hidden = Number(page.dataset.unreadCount) === 0;
-      read.querySelector('[name="sequence"]').value = latest();
       if (typeof applyTokenSecurity === 'function') {
         applyTokenSecurity(history);
       }
@@ -182,6 +179,7 @@
     } else {
       connect();
     }
+    document.addEventListener('discussion:read', refresh);
     document.addEventListener('visibilitychange', () => {
       if (!document.hidden) {
         refresh();
