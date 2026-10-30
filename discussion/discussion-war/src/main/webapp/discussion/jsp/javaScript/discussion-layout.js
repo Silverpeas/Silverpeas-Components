@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-/* Measure the available viewport in this document, without changing the parent navigation. */
+/* Use the iframe document as the single main scroll surface. */
 (() => {
   'use strict';
   document.addEventListener('DOMContentLoaded', () => {
@@ -29,43 +29,65 @@
     if (!discussion) {
       return;
     }
-    const scroller = document.getElementById('discussion-scroll');
+    const header = discussion.querySelector('.discussion-header');
+    const stream = discussion.querySelector('.discussion-stream');
+    const composer = discussion.querySelector('.discussion-composer');
+    const sidebar = discussion.querySelector('.discussion-sidebar');
     const ancestors = [];
     for (let node = discussion.parentElement; node; node = node.parentElement) {
       ancestors.push(node);
     }
+    discussion.classList.add('discussion-document-scroll');
+    document.documentElement.classList.add('discussion-document');
+    // History pagination and live updates share the same document scroll coordinates.
+    window.DiscussionScroll = {
+      get scrollTop() { return document.scrollingElement.scrollTop; },
+      set scrollTop(value) { document.scrollingElement.scrollTop = value; },
+      get scrollHeight() { return document.scrollingElement.scrollHeight; },
+      get clientHeight() { return window.innerHeight; },
+      getBoundingClientRect: () => ({top: header.getBoundingClientRect().bottom}),
+      addEventListener: (...args) => window.addEventListener(...args),
+      observerRoot: null
+    };
     let pending;
+    const property = (name, value) => {
+      if (discussion.style.getPropertyValue(name) !== value) {
+        discussion.style.setProperty(name, value);
+      }
+    };
     const fit = () => {
-      const atBottom = scroller.scrollHeight - scroller.scrollTop - scroller.clientHeight < 2;
       const viewport = window.visualViewport;
-      const bottom = viewport ? viewport.height + viewport.offsetTop : window.innerHeight;
-      const top = discussion.getBoundingClientRect().top + window.scrollY;
-      // Reserve the real frame padding, borders and margins below the component.
+      const height = viewport ? viewport.height : window.innerHeight;
+      const box = discussion.getBoundingClientRect();
+      const column = stream.getBoundingClientRect();
       const inset = ancestors.reduce((sum, node) => {
         const style = window.getComputedStyle(node);
         return sum + ['paddingBottom', 'borderBottomWidth', 'marginBottom']
-            .reduce((value, property) => value + (Number.parseFloat(style[property]) || 0), 0);
+            .reduce((value, key) => value + (Number.parseFloat(style[key]) || 0), 0);
       }, 0);
-      const height = Math.max(0, Math.floor(bottom - top - inset - 1)) + 'px';
-      if (discussion.style.getPropertyValue('--discussion-available-height') !== height) {
-        discussion.style.setProperty('--discussion-available-height', height);
-      }
-      if (atBottom) {
-        scroller.scrollTop = scroller.scrollHeight;
-      }
+      property('--discussion-available-height', Math.max(0, height - box.top - window.scrollY - inset - 1) + 'px');
+      property('--discussion-header-height', header.getBoundingClientRect().height + 'px');
+      property('--discussion-sidebar-top', header.getBoundingClientRect().bottom + 'px');
+      property('--discussion-left', column.left + 'px');
+      property('--discussion-width', column.width + 'px');
+      property('--discussion-right', Math.max(0, document.documentElement.clientWidth - box.right + 1) + 'px');
+      property('--discussion-sidebar-width', Math.max(0, box.right - column.right - 1) + 'px');
+      property('--discussion-composer-height', (composer?.getBoundingClientRect().height || 0) + 'px');
+      property('--discussion-authors-height', window.innerWidth <= 760 ? sidebar.getBoundingClientRect().height + 'px' : '0px');
     };
     const schedule = () => {
       window.cancelAnimationFrame(pending);
       pending = window.requestAnimationFrame(fit);
     };
     const observer = new ResizeObserver(schedule);
-    ancestors.forEach(node => observer.observe(node));
+    const observe = () => {
+      [...ancestors, header, stream, sidebar, composer].filter(Boolean).forEach(node => observer.observe(node));
+    };
+    observe();
     window.addEventListener('resize', schedule);
+    window.addEventListener('scroll', schedule, {passive: true});
     window.visualViewport?.addEventListener('resize', schedule);
-    window.addEventListener('pageshow', () => {
-      ancestors.forEach(node => observer.observe(node));
-      schedule();
-    });
+    window.addEventListener('pageshow', () => { observe(); schedule(); });
     window.addEventListener('pagehide', () => {
       observer.disconnect();
       window.cancelAnimationFrame(pending);

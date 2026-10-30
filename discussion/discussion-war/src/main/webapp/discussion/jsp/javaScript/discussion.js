@@ -60,7 +60,7 @@
       document.addEventListener('visibilitychange', refreshPresence);
       document.addEventListener('discussion:changed', refreshPresence);
     }
-    const scroller = document.getElementById('discussion-scroll');
+    const scroller = window.DiscussionScroll || document.getElementById('discussion-scroll');
     let loading = false;
     const firstPage = () => history.querySelector('.discussion-page:first-child');
     const updateButton = () => {
@@ -115,7 +115,7 @@
       if (entries.some(entry => entry.isIntersecting) && error.hidden) {
         loadOlder();
       }
-    }, {root: scroller});
+    }, {root: window.DiscussionScroll ? null : scroller});
     scroller.addEventListener('scroll', () => {
       if (scroller.scrollTop <= 64 && error.hidden) {
         loadOlder();

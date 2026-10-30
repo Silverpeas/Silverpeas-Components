@@ -180,10 +180,11 @@ restent ceux choisis par le destinataire dans Silverpeas (bureau, e-mail, etc.).
 doit autoriser les notifications pour afficher celles du bureau. Il n'y a aucun changement SQL
 et le schéma reste en version 001.
 
-### Hauteur dans la navigation Silverpeas
+### Défilement dans la navigation Silverpeas
 
-Discussion mesure la hauteur disponible dans son propre document (iframe), sous le fil d'Ariane
-et en réservant les marges et espacements réels du cadre natif. La mesure suit les redimensionnements
-de la fenêtre, du viewport et du cadre, sans modifier le document parent. L'en-tête et la saisie
-restent hors du défilement de l'historique ; les auteurs disposent d'une liste défilante indépendante.
-Sur écran étroit, les auteurs sont affichés dans un bandeau au-dessus du fil.
+Le défilement principal est celui du document de l'iframe. L'historique n'a plus de barre de
+défilement interne. Le titre reste en haut grâce à un en-tête sticky ; la saisie est fixée en bas
+et les auteurs restent à droite (en bandeau sur écran étroit). Les dimensions suivent le cadre
+natif et le viewport, sans modifier le document parent. Les listes longues d'auteurs restent
+consultables dans leur colonne. Le chargement des anciens messages et les mises à jour en direct
+utilisent les mêmes coordonnées de défilement du document afin de conserver la position de lecture.

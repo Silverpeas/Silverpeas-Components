@@ -30,7 +30,7 @@
       return;
     }
     const history = document.getElementById('discussion-history');
-    const scroller = document.getElementById('discussion-scroll');
+    const scroller = window.DiscussionScroll || document.getElementById('discussion-scroll');
     const failure = document.getElementById('discussion-live-error');
     const articles = () => Array.from(history.querySelectorAll('.discussion-message'));
     const latest = () => Math.max(0, ...articles().map(row => Number(row.dataset.sequence)));
