@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.Set;
 import org.owasp.encoder.Encode;
 import org.silverpeas.components.discussion.model.DiscussionMessage;
+import org.silverpeas.components.discussion.service.DiscussionMentionService;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
@@ -79,7 +80,7 @@ public class DiscussionMentionNotification extends
       SilverpeasTemplate template) {
     getNotificationMetaData().addLanguage(language, getTitle(language), "");
     template.setAttribute("author", Encode.forHtml(sender.getDisplayedName()));
-    template.setAttribute("body", Encode.forHtml(message.getBody()));
+    template.setAttribute("body", Encode.forHtml(DiscussionMentionService.displayText(message.getBody())));
   }
   @Override
   protected void performNotificationResource(String language, DiscussionMessage message,

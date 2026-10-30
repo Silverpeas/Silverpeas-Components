@@ -53,10 +53,12 @@ test('safe rendering, emoji, keyboard mentions, and reversible likes work in the
     const editor = page.locator('textarea');
     await editor.fill('Bonjour @Al');
     await editor.press('Enter');
-    assert.equal(await editor.inputValue(),'Bonjour @[Alice](2) ');
+    assert.equal(await editor.inputValue(),'Bonjour @Alice ');
     await page.getByRole('button',{name:'Emoji',exact:true}).click();
     await page.getByRole('button',{name:'😀',exact:true}).click();
     assert.ok((await editor.inputValue()).endsWith('😀'));
+    assert.ok((await page.locator('input[name="body"]').inputValue()).includes('@[Alice](2)'));
+    assert.equal(await page.evaluate(()=>new FormData(document.querySelector('textarea').form).get('body')),await page.locator('input[name="body"]').inputValue());
     const like = page.locator('.discussion-like-form button');
     await like.click();
     assert.equal(await like.getAttribute('aria-pressed'),'true');
@@ -64,9 +66,29 @@ test('safe rendering, emoji, keyboard mentions, and reversible likes work in the
     await like.click();
     assert.equal(await like.getAttribute('aria-pressed'),'false');
     assert.deepEqual(await page.evaluate(() => window.likeRequests),['true','false']);
-    assert.ok((await editor.inputValue()).includes('@[Alice](2)'), 'Reacting preserves the draft');
+    assert.ok((await editor.inputValue()).includes('@Alice'), 'Reacting preserves the draft');
     await browser.close();
   } finally {
     if(browser.isConnected()) await browser.close();
   }
+});
+
+
+test('editing saved mentions hides identifiers while preserving the submitted recipients and length limit', async () => {
+  const browser=await chromium.launch({executablePath:process.env.CHROME_PATH || undefined,args:['--no-sandbox']});
+  try {
+    const page=await browser.newPage();
+    await page.setContent('<main id="discussion" data-icons="/icons.svg" data-emoji-label="Emoji" data-mention-label="Mention"><form><textarea name="body" maxlength="2000">@[Bernard Lemoine](2) et @[Bernard Lemoine](3)</textarea></form></main>');
+    await page.addScriptTag({path:path.join(__dirname,'../../main/webapp/discussion/jsp/javaScript/discussion-editor.js')});
+    await page.evaluate(()=>document.dispatchEvent(new Event('DOMContentLoaded')));
+    const editor=page.locator('textarea');
+    const display='@Bernard Lemoine et @Bernard Lemoine';
+    assert.equal(await editor.inputValue(),display);
+    await editor.fill('Salut '+display);
+    assert.equal(await page.locator('input[name="body"]').inputValue(),'Salut @[Bernard Lemoine](2) et @[Bernard Lemoine](3)');
+    const visible='Salut '+display;
+    await editor.fill(visible+'x'.repeat(2000-visible.length));
+    assert.equal(await editor.evaluate(node=>node.checkValidity()),false);
+    assert.equal((await editor.inputValue()).includes('(2)'),false);
+  } finally {await browser.close();}
 });

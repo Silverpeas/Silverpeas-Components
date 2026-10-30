@@ -30,9 +30,9 @@ const css = path.join(__dirname, '../../main/webapp/discussion/jsp/css/discussio
 const row = (id, body = 'Message ' + id, unread = false) => `<article id="message-${id}" class="discussion-message ${unread ? 'discussion-message--unread' : ''}" data-sequence="${id}"><p class="discussion-body">${body}</p><details><summary>Edit</summary><textarea name="body">${body}</textarea></details><button class="discussion-like-button">0</button></article>`;
 const fragment = rows => `<div class="discussion-page" data-unread-count="1">${rows}<div class="discussion-unread-divider">Unread</div></div>`;
 const launch = () => chromium.launch({executablePath: process.env.CHROME_PATH || undefined, args: ['--no-sandbox']});
-async function open(browser, count = 30) {
+async function open(browser, count = 30, focus = '') {
   const page = await browser.newPage();
-  await page.setContent(`<main id="discussion" data-updates="/updates" data-instance-id="discussion1"><span class="discussion-unread-count">0</span><form class="discussion-read-form" hidden><input name="sequence" value="${count}"></form><div id="discussion-scroll" class="discussion-scroll"><section id="discussion-history"><div class="discussion-page" data-before="1" data-more="false">${Array.from({length: count}, (_, i) => row(i+1)).join('')}</div></section></div><p id="discussion-live-error">Error</p><textarea id="draft">Draft</textarea></main>`);
+  await page.setContent(`<main id="discussion" data-updates="/updates" data-instance-id="discussion1" data-message-id="${focus}"><span class="discussion-unread-count">0</span><form class="discussion-read-form" hidden><input name="sequence" value="${count}"></form><div id="discussion-scroll" class="discussion-scroll"><section id="discussion-history"><div class="discussion-page" data-before="1" data-more="false">${Array.from({length: count}, (_, i) => row(i+1)).join('')}</div></section></div><p id="discussion-live-error">Error</p><textarea id="draft">Draft</textarea></main>`);
   await page.addStyleTag({path: css});
   await page.addStyleTag({content: '#discussion #discussion-scroll{height:250px;min-height:0}.discussion-message{min-height:100px}'});
   await page.evaluate(() => {
@@ -221,4 +221,20 @@ test('a deferred edit is reconciled on closing its editor without another server
     await page.evaluate(html => window.complete(html), fragment(row(8,'Changed remotely')));
     await page.waitForFunction(() => document.querySelector('#message-8 .discussion-body').textContent==='Changed remotely');
   } finally { await browser.close(); }
+});
+
+
+test('initial catch-up preserves a notification target instead of jumping to the newest messages', async () => {
+  const browser = await launch();
+  try {
+    const page = await open(browser,30,'30');
+    const before = await page.locator('#message-30').boundingBox();
+    await refresh(page,fragment(row(31)));
+    const after = await page.locator('#message-30').boundingBox();
+    assert.ok(Math.abs(before.y-after.y)<2);
+    await page.locator('#discussion-scroll').dispatchEvent('wheel');
+    await page.locator('#discussion-scroll').evaluate(node=>{node.scrollTop=node.scrollHeight;});
+    await refresh(page,fragment(row(32)));
+    assert.equal(await page.evaluate(()=>{const s=document.getElementById('discussion-scroll');return s.scrollHeight-s.scrollTop-s.clientHeight<2;}),true);
+  } finally {await browser.close();}
 });

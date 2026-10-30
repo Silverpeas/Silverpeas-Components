@@ -176,6 +176,15 @@ class DiscussionWebControllerTest {
     verify(request).setAttribute("mentionCandidates", List.of());
   }
   @Test
+  void notificationRoutesProvideTheFocusedMessageWithoutRelyingOnAUrlFragment() {
+    var page = new MessagePage(List.of(), 0, false, 0, 0);
+    when(service.historyAround("discussion1", "message")).thenReturn(page);
+    controller.message(context);
+    verify(request).setAttribute("focusedMessageId", "message");
+    verify(request).setAttribute("messagePage", page);
+  }
+
+  @Test
   void everyNavigationAndMutationRouteRequiresAWriter() {
     for (var method : DiscussionWebController.class.getDeclaredMethods()) {
       if (method.isAnnotationPresent(jakarta.ws.rs.GET.class)

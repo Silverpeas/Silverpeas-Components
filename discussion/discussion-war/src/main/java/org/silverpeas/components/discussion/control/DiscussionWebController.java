@@ -87,6 +87,7 @@ public class DiscussionWebController extends
     var page = webResult(() -> conversations().historyAround(context.getComponentInstanceId(),
         context.getPathVariables().get("id")));
     prepareHistory(context, page);
+    context.getRequest().setAttribute("focusedMessageId", context.getPathVariables().get("id"));
     preparePage(context);
   }
 

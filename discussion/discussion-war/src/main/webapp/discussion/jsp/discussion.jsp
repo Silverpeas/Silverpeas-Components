@@ -46,6 +46,8 @@
   <view:frame>
     <main id="discussion" data-history="${base}history" data-participants="${base}participants" data-updates="${base}updates"
         data-instance-id="${discussionInstanceId}"
+        data-message-id="<c:out value='${focusedMessageId}'/>"
+        data-length-error="<fmt:message key='discussion.hint'/>"
         data-profile-base="<c:url value='/Rprofil/jsp/Main'/>"
         data-icons="<c:url value='/discussion/jsp/icons/discussion-icons.svg'/>"
         data-emoji-label="<fmt:message key='discussion.emoji'/>"

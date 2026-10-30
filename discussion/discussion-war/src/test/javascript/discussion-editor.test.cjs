@@ -23,7 +23,7 @@
  */
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { tokenize, mentionQuery, filterPeople } = require('../../main/webapp/discussion/jsp/javaScript/discussion-editor.js');
+const { tokenize, mentionQuery, filterPeople, decodeMentions, moveMentions, encodeMentions } = require('../../main/webapp/discussion/jsp/javaScript/discussion-editor.js');
 
 test('links and canonical mentions are identified without interpreting HTML or losing emoji', () => {
   const tokens = tokenize('Bonjour @[Alice](2) 😀 https://example.org/a?b=1&c=2. <img src=x onerror=alert(1)>');
@@ -49,4 +49,20 @@ test('mention completion respects the caret and matches accents', () => {
 test('balanced parentheses in URLs are preserved while surrounding punctuation is excluded', () => {
   const tokens = tokenize('(https://example.org/wiki/A_(B)).');
   assert.equal(tokens.find(t => t.type === 'link').href, 'https://example.org/wiki/A_(B)');
+});
+
+
+test('mention editors display names and retain distinct stable recipient identifiers', () => {
+  const original='Bonjour @[Bernard Lemoine](2), @[Bernard Lemoine](33) 😀';
+  const decoded=decodeMentions(original);
+  assert.equal(decoded.text,'Bonjour @Bernard Lemoine, @Bernard Lemoine 😀');
+  assert.equal(encodeMentions(decoded.text,decoded.mentions),original);
+  const prefixed='Salut ! '+decoded.text;
+  const moved=moveMentions(decoded.text,prefixed,decoded.mentions);
+  assert.equal(encodeMentions(prefixed,moved),'Salut ! '+original);
+  const modified=prefixed.replace('@Bernard Lemoine','@Bernard');
+  const remaining=moveMentions(prefixed,modified,moved);
+  assert.equal(remaining.length,1);
+  assert.equal(remaining[0].id,'33');
+  assert.equal(encodeMentions(modified,remaining),'Salut ! Bonjour @Bernard, @[Bernard Lemoine](33) 😀');
 });

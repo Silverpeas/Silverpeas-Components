@@ -188,3 +188,12 @@ et les auteurs restent à droite (en bandeau sur écran étroit). Les dimensions
 natif et le viewport, sans modifier le document parent. Les listes longues d'auteurs restent
 consultables dans leur colonne. Le chargement des anciens messages et les mises à jour en direct
 utilisent les mêmes coordonnées de défilement du document afin de conserver la position de lecture.
+
+### Mentions et ouverture d'une notification
+
+L'éditeur affiche les mentions sous la forme `@Nom`. Les identifiants sont conservés séparément
+et la syntaxe canonique n'est reconstruite que pour l'envoi au moteur. Modifier ou supprimer le
+nom d'une mention retire son association pour éviter de notifier une autre personne par erreur.
+Les notifications affichent également les noms sans identifiants. La route d'ouverture d'un
+message transmet son identifiant à la page indépendamment du fragment d'URL. Le rattrapage
+événementiel conserve ce point de lecture au lieu de suivre immédiatement les messages récents.

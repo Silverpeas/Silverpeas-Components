@@ -95,6 +95,11 @@ public class DiscussionMentionService {
     }
   }
 
+  public static String displayText(String body) {
+    return MENTION.matcher(body == null ? "" : body)
+        .replaceAll(match -> Matcher.quoteReplacement("@" + match.group(1)));
+  }
+
   private Set<String> ids(String body) {
     return MENTION.matcher(body == null ? "" : body).results()
         .map(match -> match.group(2)).collect(Collectors.toSet());
