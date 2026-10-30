@@ -185,6 +185,17 @@ class DiscussionWebControllerTest {
   }
 
   @Test
+  void visibleAcknowledgmentsAreScopedAndReturnTheUnreadCount() {
+    when(request.getParameter("ids")).thenReturn("m1,m2");
+    when(service.markVisible("discussion1", List.of("m1", "m2"))).thenReturn(3L);
+    controller.visible(context);
+    verify(request).setAttribute("unreadCount", 3L);
+    when(request.getParameter("ids")).thenReturn(null);
+    assertEquals(400, assertThrows(WebApplicationException.class,
+        () -> controller.visible(context)).getResponse().getStatus());
+  }
+
+  @Test
   void everyNavigationAndMutationRouteRequiresAWriter() {
     for (var method : DiscussionWebController.class.getDeclaredMethods()) {
       if (method.isAnnotationPresent(jakarta.ws.rs.GET.class)

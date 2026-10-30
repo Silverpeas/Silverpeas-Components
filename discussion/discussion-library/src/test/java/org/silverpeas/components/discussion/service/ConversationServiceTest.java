@@ -60,6 +60,8 @@ class ConversationServiceTest {
   private DiscussionMentionService mentions;
   @TestManagedMock
   private org.silverpeas.components.discussion.notification.DiscussionChangeDispatcher changes;
+  @TestManagedMock
+  private org.silverpeas.components.discussion.repository.DiscussionSeenRepository seen;
   @TestedBean
   private DefaultConversationService service;
   private Conversation conversation;
@@ -339,6 +341,38 @@ class ConversationServiceTest {
     when(access.require("discussion1", SilverpeasRole.WRITER)).thenThrow(SecurityException.class);
     assertThrows(SecurityException.class, () -> service.updates("discussion1", 0, List.of()));
     verifyNoInteractions(messages, conversations);
+  }
+
+  @Test
+  void visibleMessagesAreAcknowledgedIndividuallyAndOnlyOnce() {
+    var message = mock(DiscussionMessage.class);
+    when(message.getId()).thenReturn("visible");
+    when(message.getCreatorId()).thenReturn("other");
+    when(message.getSequenceNumber()).thenReturn(4L);
+    when(messages.selected("conversation", List.of("visible"))).thenReturn(List.of(message));
+    when(seen.seen("conversation", "user", List.of("visible")))
+        .thenReturn(List.of(), List.of("visible"));
+    when(messages.unread("conversation", "user", 0)).thenReturn(2L);
+    try (var current = mockStatic(User.class)) {
+      current.when(User::getCurrentRequester).thenReturn(user);
+      assertEquals(2, service.markVisible("discussion1", List.of("visible")));
+      service.markVisible("discussion1", List.of("visible"));
+      verify(seen, times(1)).save(any(org.silverpeas.components.discussion.model.DiscussionSeen.class));
+      verify(changes, times(1)).read("discussion1", "user");
+      verify(readStates, never()).save(any(DiscussionReadState.class));
+    }
+  }
+
+  @Test
+  void acknowledgmentsRejectForeignMessagesAndOversizedRequests() {
+    assertThrows(IllegalArgumentException.class, () -> service.markVisible("discussion1", List.of()));
+    assertThrows(IllegalArgumentException.class, () -> service.markVisible("discussion1",
+        java.util.Collections.nCopies(101, "x")));
+    try (var current = mockStatic(User.class)) {
+      current.when(User::getCurrentRequester).thenReturn(user);
+      assertThrows(IllegalArgumentException.class, () -> service.markVisible("discussion1", List.of("foreign")));
+    }
+    verify(seen, never()).save(any(org.silverpeas.components.discussion.model.DiscussionSeen.class));
   }
 
   private DiscussionMessage existingMessage(String author) {

@@ -50,6 +50,9 @@ class DiscussionLifecycleTest {
   private org.silverpeas.core.persistence.datasource.model.jpa.JpaPersistOperation persistOperation;
   @TestManagedMock
   private org.silverpeas.components.discussion.repository.DiscussionLikeRepository likes;
+  @TestManagedMock
+  private org.silverpeas.components.discussion.repository.DiscussionSeenRepository seen;
+
   @TestedBean
   private DiscussionInstancePostConstruction creation;
   @TestedBean
@@ -75,7 +78,8 @@ class DiscussionLifecycleTest {
     when(conversation.getId()).thenReturn("conversation");
     when(conversations.main("discussion1", true)).thenReturn(conversation);
     destruction.preDestroy("discussion1");
-    var order = inOrder(likes, messages, readStates, conversations);
+    var order = inOrder(seen, likes, messages, readStates, conversations);
+    order.verify(seen).deleteConversation("conversation");
     order.verify(likes).deleteConversation("conversation");
     order.verify(messages).deleteConversation("conversation");
     order.verify(readStates).deleteConversation("conversation");

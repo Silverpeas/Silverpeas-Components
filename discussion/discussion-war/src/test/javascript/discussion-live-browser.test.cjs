@@ -85,8 +85,6 @@ test('live updates append, edit, delete and change reactions without reload or d
     assert.equal(await page.locator('#message-2 .discussion-body').textContent(), 'Deleted');
     assert.equal(await page.locator('#message-3 .discussion-body').textContent(), 'Liked once');
     assert.equal(await page.locator('.discussion-unread-count').textContent(), '1');
-    assert.equal(await page.locator('.discussion-read-form input').inputValue(), '31');
-    assert.equal(await page.locator('.discussion-read-form').isVisible(), true);
     assert.equal(await page.evaluate(() => {const s=document.getElementById('discussion-scroll'); return s.scrollHeight-s.scrollTop-s.clientHeight<2;}), true);
     await refresh(page, fragment(row(31, 'New message', true)));
     assert.equal(await page.locator('#message-31').count(), 1);

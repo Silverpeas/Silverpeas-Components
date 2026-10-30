@@ -49,10 +49,14 @@ public class DiscussionInstancePreDestruction implements ComponentInstancePreDes
   @Inject
   private DiscussionLikeRepository likes;
 
+  @Inject
+  private org.silverpeas.components.discussion.repository.DiscussionSeenRepository seen;
+
   @Override
   @Transactional
   public void preDestroy(String instanceId) {
     Conversation conversation = conversations.main(instanceId, true);
+    seen.deleteConversation(conversation.getId());
     likes.deleteConversation(conversation.getId());
     messages.deleteConversation(conversation.getId());
     readStates.deleteConversation(conversation.getId());

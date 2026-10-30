@@ -197,3 +197,22 @@ nom d'une mention retire son association pour éviter de notifier une autre pers
 Les notifications affichent également les noms sans identifiants. La route d'ouverture d'un
 message transmet son identifiant à la page indépendamment du fragment d'URL. Le rattrapage
 événementiel conserve ce point de lecture au lieu de suivre immédiatement les messages récents.
+
+### Lecture automatique des messages affichés
+
+Le bouton de lecture manuelle est retiré de la page. Un message devient lu après une seconde
+d'affichage effectif dans la fenêtre active. La zone visible exclut l'en-tête, le bandeau des
+participants sur mobile et la saisie fixe. Le suivi reprend les messages ajoutés par les événements
+ou le défilement infini. Un onglet masqué ou une fenêtre inactive ne confirme aucune lecture.
+
+Les confirmations portent sur des identifiants précis, par lots bornés à 100, vérifiés dans
+l'instance autorisée et enregistrés sous verrou de conversation. Les réceptions répétées sont
+idempotentes. `sc_discussion_seen` permet de lire un message récent sans déclarer lus les messages
+plus anciens jamais affichés. L'ancienne position de lecture est conservée pour les lectures
+déjà enregistrées ; elle n'est plus avancée par la page. Le compteur et les autres sessions du même
+utilisateur sont actualisés après commit par le canal natif.
+
+Le schéma reste en **001** : la création de cette table est incluse dans `001/create_table.sql`
+pour chaque base. Sur une installation de développement existante, exécuter une fois le script
+`001/add_seen.sql` correspondant à PostgreSQL, H2, SQL Server ou Oracle avant de déployer le nouveau
+code. Il n'y a pas de migration 002 ni de réinitialisation des messages existants.
