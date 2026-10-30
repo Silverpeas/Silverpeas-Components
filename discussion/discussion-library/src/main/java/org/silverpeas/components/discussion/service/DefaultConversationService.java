@@ -122,6 +122,8 @@ public class DefaultConversationService implements ConversationService {
     messages.save(message);
     mentions.notifyNewMentions(instanceId, message, "");
     changes.changed(instanceId);
+    changes.published(instanceId, message.getId(), User.getCurrentRequester().getId(),
+        User.getCurrentRequester().getDisplayedName());
   }
 
   @Override

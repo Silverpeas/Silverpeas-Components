@@ -23,21 +23,17 @@
  */
 package org.silverpeas.components.discussion.notification;
 
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.notification.sse.CommonServerEvent;
-import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.ComponentAccessController;
 import org.silverpeas.core.util.JSONCodec;
 
 /** Invalidation contains no message content; access is checked again for each connected receiver. */
-public class DiscussionServerEvent extends CommonServerEvent {
+public class DiscussionServerEvent extends AuthorizedDiscussionEvent {
   private final DiscussionChange change;
-  private final ComponentAccessController access;
 
   public DiscussionServerEvent(DiscussionChange change, ComponentAccessController access) {
+    super(change.instanceId(), access);
     this.change = change;
-    this.access = access;
     withData(JSONCodec.encodeObject(json -> json.put("instanceId", change.instanceId()).put("contentChanged", change.userId() == null)));
   }
 
@@ -48,14 +44,7 @@ public class DiscussionServerEvent extends CommonServerEvent {
 
   @Override
   public boolean isConcerned(String sessionId, User receiver) {
-    if (receiver == null || receiver.isAnonymous() || receiver.isAccessGuest()
-        || receiver.isDeletedState() || receiver.isRemovedState()
-        || (change.userId() != null && !change.userId().equals(receiver.getId()))
-        || !access.isUserAuthorized(receiver.getId(), change.instanceId())) {
-      return false;
-    }
-    var role = SilverpeasRole.getHighestFrom(access.getUserRoles(receiver.getId(),
-        change.instanceId(), AccessControlContext.init()));
-    return role != null && role.isGreaterThanOrEquals(SilverpeasRole.WRITER);
+    return receiver != null && (change.userId() == null || change.userId().equals(receiver.getId()))
+        && super.isConcerned(sessionId, receiver);
   }
 }
