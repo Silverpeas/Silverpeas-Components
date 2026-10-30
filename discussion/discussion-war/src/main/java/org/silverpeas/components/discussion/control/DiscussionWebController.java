@@ -138,6 +138,21 @@ public class DiscussionWebController extends
         webResult(() -> participantService.list(context.getComponentInstanceId())));
   }
 
+  @GET
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("updates")
+  @RedirectToInternalJsp("messages.jsp")
+  public void updates(DiscussionWebRequestContext context) {
+    String ids = context.getRequest().getParameter("ids");
+    if (ids != null && ids.length() > 4100) {
+      throw new WebApplicationException(400);
+    }
+    var selected = ids == null || ids.isBlank() ? java.util.List.<String>of()
+        : java.util.Arrays.asList(ids.split(","));
+    prepareHistory(context, webResult(() -> conversations().updates(context.getComponentInstanceId(),
+        number(context, "after", 0), selected)));
+  }
+
   private void loadHistory(DiscussionWebRequestContext context, long before) {
     prepareHistory(context,
         webResult(() -> conversations().history(context.getComponentInstanceId(), before, 30)));

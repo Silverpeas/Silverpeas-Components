@@ -1,0 +1,157 @@
+/*
+ * Copyright (C) 2000 - 2026 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const path = require('node:path');
+const {chromium} = require('playwright');
+const script = path.join(__dirname, '../../main/webapp/discussion/jsp/javaScript/discussion-live.js');
+const css = path.join(__dirname, '../../main/webapp/discussion/jsp/css/discussion.css');
+const row = (id, body = 'Message ' + id, unread = false) => `<article id="message-${id}" class="discussion-message ${unread ? 'discussion-message--unread' : ''}" data-sequence="${id}"><p class="discussion-body">${body}</p><details><summary>Edit</summary><textarea name="body">${body}</textarea></details><button class="discussion-like-button">0</button></article>`;
+const fragment = rows => `<div class="discussion-page" data-unread-count="1">${rows}<div class="discussion-unread-divider">Unread</div></div>`;
+const launch = () => chromium.launch({executablePath: process.env.CHROME_PATH || undefined, args: ['--no-sandbox']});
+async function open(browser, count = 30) {
+  const page = await browser.newPage();
+  await page.setContent(`<main id="discussion" data-updates="/updates"><span class="discussion-unread-count">0</span><form class="discussion-read-form" hidden><input name="sequence" value="${count}"></form><div id="discussion-scroll" class="discussion-scroll"><section id="discussion-history"><div class="discussion-page" data-before="1" data-more="false">${Array.from({length: count}, (_, i) => row(i+1)).join('')}</div></section></div><p id="discussion-live-error" hidden>Error</p><textarea id="draft">Draft</textarea></main>`);
+  await page.addStyleTag({path: css});
+  await page.addStyleTag({content: '#discussion #discussion-scroll{height:250px;min-height:0}.discussion-message{min-height:100px}'});
+  await page.evaluate(() => {
+    window.calls = [];
+    window.setInterval = (fn, delay) => { window.tick = fn; window.delay = delay; return 1; };
+    window.clearInterval = () => { window.cleared = true; };
+    window.DiscussionEditor = {enhance: () => {}};
+    window.sp = {ajaxRequest: () => {
+      const params = {};
+      const request = {withParam: (name, value) => { params[name] = value; return request; }, send: () => {
+        window.calls.push(params);
+        return new Promise((resolve, reject) => { window.complete = text => resolve({responseText: text}); window.fail = reject; });
+      }};
+      return request;
+    }};
+    document.getElementById('discussion-scroll').scrollTop = 100000;
+  });
+  await page.addScriptTag({path: script});
+  await page.evaluate(() => document.dispatchEvent(new Event('DOMContentLoaded')));
+  return page;
+}
+async function refresh(page, html) {
+  await page.evaluate(() => { window.pending = window.tick(); });
+  await page.evaluate(html => window.complete(html), html);
+  await page.evaluate(() => window.pending);
+}
+
+test('live updates append, edit, delete and change reactions without reload or duplicate rows', async () => {
+  const browser = await launch();
+  try {
+    const page = await open(browser);
+    assert.equal(await page.evaluate(() => window.delay), 3000);
+    await refresh(page, fragment(row(1, 'Updated') + row(2, 'Deleted') + row(3, 'Liked once') + row(31, 'New message', true)));
+    assert.equal(await page.locator('#message-1 .discussion-body').textContent(), 'Updated');
+    assert.equal(await page.locator('#message-2 .discussion-body').textContent(), 'Deleted');
+    assert.equal(await page.locator('#message-3 .discussion-body').textContent(), 'Liked once');
+    assert.equal(await page.locator('.discussion-unread-count').textContent(), '1');
+    assert.equal(await page.locator('.discussion-read-form input').inputValue(), '31');
+    assert.equal(await page.locator('.discussion-read-form').isVisible(), true);
+    assert.equal(await page.evaluate(() => {const s=document.getElementById('discussion-scroll'); return s.scrollHeight-s.scrollTop-s.clientHeight<2;}), true);
+    await refresh(page, fragment(row(31, 'New message', true)));
+    assert.equal(await page.locator('#message-31').count(), 1);
+    assert.equal(await page.locator('.discussion-unread-divider').count(), 1);
+    await page.evaluate(() => { window.sameRow = document.getElementById('message-31'); });
+    await refresh(page, fragment(row(31, 'New message', true)));
+    assert.equal(await page.evaluate(() => window.sameRow === document.getElementById('message-31')), true);
+    assert.equal(await page.locator('#draft').inputValue(), 'Draft');
+    assert.equal(await page.evaluate(() => window.calls[1].after), 31);
+    await page.addStyleTag({content: ':root{--bgColor-color-im-info:rgb(255,255,0)}'});
+    const color = await page.locator('#message-31').evaluate(node => getComputedStyle(node).backgroundColor);
+    assert.notEqual(color, 'rgb(255, 255, 0)');
+  } finally { await browser.close(); }
+});
+
+test('updates preserve the reading anchor, open edit drafts and pending reactions', async () => {
+  const browser = await launch();
+  try {
+    const page = await open(browser);
+    await page.evaluate(() => {
+      document.getElementById('discussion-scroll').scrollTop=900;
+      document.querySelector('#message-8 details').open=true;
+      document.querySelector('#message-8 textarea').value='Unfinished edit';
+      document.querySelector('#message-9 button').disabled=true;
+    });
+    const anchor = await page.locator('#message-10').boundingBox();
+    await refresh(page, fragment(row(1, 'Long update<br>'.repeat(30)) + row(8, 'Remote edit') + row(9, 'Reaction in flight') + row(31, 'New')));
+    assert.equal(await page.locator('#message-8 textarea').inputValue(), 'Unfinished edit');
+    assert.equal(await page.locator('#message-9 .discussion-body').textContent(), 'Message 9');
+    const current = await page.locator('#message-10').boundingBox();
+    assert.ok(Math.abs(anchor.y-current.y)<2);
+  } finally { await browser.close(); }
+});
+
+test('refresh requests are bounded, resume after errors and pause while hidden or leaving', async () => {
+  const browser = await launch();
+  try {
+    const page = await open(browser, 205);
+    await page.evaluate(() => { window.pending=window.tick(); });
+    await page.evaluate(() => window.tick());
+    assert.equal(await page.evaluate(() => window.calls.length), 1);
+    await page.evaluate(() => window.fail(new Error('Offline')));
+    await page.evaluate(() => window.pending);
+    assert.equal(await page.locator('#discussion-live-error').isVisible(), true);
+    await page.evaluate(() => { Object.defineProperty(document, 'hidden', {configurable:true,value:true}); });
+    await page.evaluate(() => window.tick());
+    assert.equal(await page.evaluate(() => window.calls.length), 1);
+    await page.evaluate(() => { Object.defineProperty(document, 'hidden', {configurable:true,value:false}); window.pending=window.tick(); });
+    for(let i=0;i<3;i++) {
+      await page.waitForFunction(n => window.calls.length >= n, i+2);
+      await page.evaluate(html => window.complete(html), fragment(''));
+    }
+    await page.evaluate(() => window.pending);
+    assert.deepEqual(await page.evaluate(() => window.calls.slice(1).map(call => call.ids.split(',').length)), [100,100,5]);
+    assert.equal(await page.locator('#discussion-live-error').isVisible(), false);
+    await page.evaluate(() => { window.pending=window.tick(); window.dispatchEvent(new Event('pagehide')); });
+    await page.evaluate(html => window.complete(html), fragment(row(206)));
+    await page.evaluate(() => window.pending);
+    assert.equal(await page.locator('#message-206').count(), 0);
+    assert.equal(await page.evaluate(() => window.cleared), true);
+    const calls = await page.evaluate(() => window.calls.length);
+    await page.evaluate(() => window.dispatchEvent(new Event('pageshow')));
+    assert.equal(await page.evaluate(() => window.calls.length), calls+1);
+  } finally { await browser.close(); }
+});
+
+
+test('an initially empty conversation receives messages automatically', async () => {
+  const browser = await launch();
+  try {
+    const page = await open(browser, 0);
+    await page.locator('#discussion-history').evaluate(node => {
+      const empty = document.createElement('div');
+      empty.className='discussion-empty';
+      empty.textContent='No messages';
+      node.prepend(empty);
+    });
+    await refresh(page, fragment(row(1, 'First message', true)));
+    assert.equal(await page.locator('#message-1').count(), 1);
+    assert.equal(await page.locator('.discussion-empty').count(), 0);
+    assert.deepEqual(await page.evaluate(() => window.calls), [{after:0,ids:''}]);
+  } finally { await browser.close(); }
+});

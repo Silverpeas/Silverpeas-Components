@@ -148,3 +148,19 @@ un lien de notification vers un message précis reste prioritaire. Le calcul des
 réutilise le repère de lecture existant et exclut les messages de l'utilisateur et les messages
 supprimés. La consultation ne modifie pas automatiquement ce repère : l'action explicite
 « Marquer comme lu » reste disponible. Aucun changement SQL n'est nécessaire pour cette évolution.
+
+### Actualisation du fil et notifications
+
+Le fil se synchronise toutes les trois secondes tant que l'onglet est visible, et dès son retour
+au premier plan. Les requêtes sont bornées à 100 messages nouveaux et 100 messages déjà chargés,
+avec contrôle des droits de l'instance. Les éditions, suppressions, réactions et compteurs non lus
+sont réconciliés sans rechargement de page. Un éditeur ouvert, une réaction en cours et la sélection
+de texte sont préservés. La lecture remonte sans déplacement forcé ; au bas du fil, les nouveaux
+messages restent visibles. Une interruption réseau est indiquée et la synchronisation reprend
+automatiquement. La présence des auteurs conserve son propre rafraîchissement toutes les 30 secondes.
+
+Seules les nouvelles @mentions déclenchent des notifications Silverpeas, après validation de la
+transaction du message. Leur envoi utilise une nouvelle transaction ; le canal et le différé
+restent ceux choisis par le destinataire dans Silverpeas (bureau, e-mail, etc.). Le navigateur
+doit autoriser les notifications pour afficher celles du bureau. Il n'y a aucun changement SQL
+et le schéma reste en version 001.

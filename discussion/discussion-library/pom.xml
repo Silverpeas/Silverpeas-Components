@@ -48,6 +48,9 @@
   <build>
     <testResources>
       <testResource>
+        <directory>../discussion-configuration/src/main/config/properties</directory>
+      </testResource>
+      <testResource>
         <directory>src/test/resources</directory>
       </testResource>
       <testResource>

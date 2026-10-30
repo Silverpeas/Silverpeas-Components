@@ -45,6 +45,25 @@ public class DiscussionMessageRepository extends SilverpeasJpaEntityRepository<D
         .setParameter("before", before).setMaxResults(limit).getResultList();
   }
 
+  public List<DiscussionMessage> newer(String conversationId, long after) {
+    return getEntityManager().createQuery("""
+        select m from DiscussionMessage m where m.conversationId = :conversation
+        and m.sequenceNumber > :after order by m.sequenceNumber asc
+        """, DiscussionMessage.class).setParameter("conversation", conversationId)
+        .setParameter("after", after).setMaxResults(100).getResultList();
+  }
+
+  public List<DiscussionMessage> selected(String conversationId, List<String> ids) {
+    if (ids.isEmpty()) {
+      return List.of();
+    }
+    return getEntityManager().createQuery("""
+        select m from DiscussionMessage m where m.conversationId = :conversation
+        and m.id.id in :ids
+        """, DiscussionMessage.class).setParameter("conversation", conversationId)
+        .setParameter("ids", ids).getResultList();
+  }
+
   public long unread(String conversationId, String userId, long lastRead) {
     return getEntityManager().createQuery("""
         select count(m) from DiscussionMessage m where m.conversationId = :conversation

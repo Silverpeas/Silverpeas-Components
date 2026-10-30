@@ -110,6 +110,21 @@ class DiscussionPersistenceTest {
   }
 
   @Test
+  void liveQueriesIncludeDeletedRowsAndNeverLeakAnotherConversation() {
+    assertEquals(List.of("m2", "m3", "m4"), messages.newer("c1", 1).stream()
+        .map(DiscussionMessage::getId).toList());
+    assertEquals(List.of("m3"), messages.selected("c1", List.of("m3", "m5")).stream()
+        .map(DiscussionMessage::getId).toList());
+    assertTrue(messages.selected("c1", List.of()).isEmpty());
+    java.util.stream.IntStream.rangeClosed(5, 110)
+        .forEach(sequence -> insertMessage("new" + sequence, "c1", sequence, "other", false));
+    var batch = messages.newer("c1", 4);
+    assertEquals(100, batch.size());
+    assertEquals(5, batch.getFirst().getSequenceNumber());
+    assertEquals(104, batch.getLast().getSequenceNumber());
+  }
+
+  @Test
   void historyIsBoundedAndIsolatedAndSurvivesAppends() {
     assertEquals("c1", conversations.main("discussion1", true).getId());
     assertEquals(List.of(4L, 3L), messages.history("c1", Long.MAX_VALUE, 2).stream()
