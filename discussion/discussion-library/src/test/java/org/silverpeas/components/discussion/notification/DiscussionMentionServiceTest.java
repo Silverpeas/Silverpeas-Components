@@ -147,7 +147,7 @@ class DiscussionMentionServiceTest {
       assertEquals("discussion1", metadata.getComponentId());
       assertTrue(metadata.getLink("fr").getLinkUrl().endsWith("/Rdiscussion/discussion1/messages/message1#message-message1"));
       assertTrue(metadata.getLanguages().containsAll(List.of("fr", "en", "de")));
-      verify(template, atLeastOnce()).setAttribute("body", "@[Alice](2) &lt;hello&gt;");
+      verify(template, atLeastOnce()).setAttribute("body", "@Alice &lt;hello&gt;");
     }
   }
 

@@ -62,6 +62,47 @@
     return tokens;
   }
 
+  function decodeMentions(value) {
+    const mentions = [];
+    let removed = 0;
+    const text = value.replace(/@\[([^\]\r\n]{1,300})\]\(([0-9]{1,40})\)/g, (match, name, id, offset) => {
+      const start = offset - removed;
+      const label = '@' + name;
+      removed += match.length - label.length;
+      mentions.push({start, end: start + label.length, name, id});
+      return label;
+    });
+    return {text, mentions};
+  }
+  function moveMentions(previous, value, mentions) {
+    let start = 0;
+    while (start < previous.length && start < value.length && previous[start] === value[start]) {
+      start++;
+    }
+    let end = previous.length;
+    let nextEnd = value.length;
+    while (end > start && nextEnd > start && previous[end - 1] === value[nextEnd - 1]) { end--; nextEnd--; }
+    const delta = nextEnd - end;
+    return mentions.flatMap(mention => {
+      if (mention.end <= start) {
+        return [mention];
+      }
+      if (mention.start >= end) {
+        return [{...mention, start: mention.start + delta, end: mention.end + delta}];
+      }
+      return [];
+    });
+  }
+  function encodeMentions(value, mentions) {
+    let result = value;
+    [...mentions].sort((a, b) => b.start - a.start).forEach(mention => {
+      if (value.slice(mention.start, mention.end) === '@' + mention.name) {
+        result = result.slice(0, mention.start) + '@[' + mention.name + '](' + mention.id + ')' + result.slice(mention.end);
+      }
+    });
+    return result;
+  }
+
   function mentionQuery(value, caret) {
     const match = value.slice(0, caret).match(/(?:^|\s)@([^\s@\[\]]*)$/u);
     return match ? {query: match[1], start: caret - match[1].length - 1, end: caret} : null;
@@ -73,7 +114,7 @@
   }
 
   if (typeof module !== 'undefined' && module.exports) {
-    module.exports = {tokenize, mentionQuery, filterPeople};
+    module.exports = {tokenize, mentionQuery, filterPeople, decodeMentions, moveMentions, encodeMentions};
   }
   if (typeof document === 'undefined') {
     return;
@@ -131,17 +172,37 @@
   }
   function insert(textarea, text, start = textarea.selectionStart, end = textarea.selectionEnd) {
     if (textarea.value.length - (end - start) + text.length > textarea.maxLength) {
-      return;
+      return false;
     }
     textarea.setRangeText(text, start, end, 'end');
     textarea.focus();
     textarea.dispatchEvent(new Event('input', {bubbles: true}));
+    return true;
   }
   function enhanceEditor(textarea) {
     if (textarea.dataset.enhanced) {
       return;
     }
     textarea.dataset.enhanced = 'true';
+    const decoded = decodeMentions(textarea.value);
+    let mentions = decoded.mentions;
+    let previous = decoded.text;
+    textarea.value = previous;
+    const bodyInput = document.createElement('input');
+    bodyInput.type = 'hidden';
+    bodyInput.name = 'body';
+    textarea.name = 'bodyDisplay';
+    textarea.after(bodyInput);
+    const synchronize = () => {
+      mentions = moveMentions(previous, textarea.value, mentions);
+      previous = textarea.value;
+      bodyInput.value = encodeMentions(previous, mentions);
+      textarea.setCustomValidity(bodyInput.value.length > textarea.maxLength
+          ? discussion.dataset.lengthError || 'Message too long' : '');
+    };
+    textarea.addEventListener('input', synchronize);
+    textarea.form?.addEventListener('submit', synchronize);
+    synchronize();
     const tools = element('div', 'discussion-editor-tools');
     const emojiButton = tool(discussion.dataset.emojiLabel, 'emoji');
     const mentionButton = tool(discussion.dataset.mentionLabel, 'mention');
@@ -215,7 +276,12 @@
         button.textContent = '@' + person.name;
         button.addEventListener('mousedown', event => event.preventDefault());
         button.addEventListener('click', () => {
-          insert(textarea, '@[' + person.name.replace(/[\[\]\r\n]/g, ' ') + '](' + person.id + ') ', query.start, query.end);
+          const name = person.name.replace(/[\[\]\r\n]/g, ' ');
+          const start = query.start;
+          if (insert(textarea, '@' + name + ' ', start, query.end)) {
+            mentions.push({start, end: start + name.length + 1, name, id: person.id});
+            synchronize();
+          }
           close();
         });
         list.appendChild(button);

@@ -10,10 +10,10 @@ const rows = (start, end, unreadAt = 0) => Array.from({length: end-start+1}, (_,
     `<article id="message-${sequence}" class="discussion-message" data-sequence="${sequence}">Message ${sequence}</article>`;
 }).join('');
 
-async function open(browser, unreadAt = 0, hash = '') {
+async function open(browser, unreadAt = 0, hash = '', focus = '') {
   const page = await browser.newPage();
   await page.setContent(`<!DOCTYPE html><style>.discussion-message{height:72px}.discussion-unread-divider{height:24px}#discussion #discussion-scroll{height:250px;min-height:0;overflow:auto;overflow-anchor:none}</style>
-    <main id="discussion" data-history="/history"><div id="discussion-scroll">
+    <main id="discussion" data-history="/history" data-message-id="${focus}"><div id="discussion-scroll">
       <button id="discussion-older">Older</button><p id="discussion-error" hidden>Error</p>
       <section id="discussion-history"><div class="discussion-page" data-before="31" data-more="true">${rows(31,60,unreadAt)}</div></section>
     </div><textarea id="draft">Draft being written</textarea></main>`);
@@ -67,4 +67,16 @@ test('opening prioritizes the unread boundary, while a message deep link takes p
     const visible = await linked.locator('#discussion-scroll').boundingBox();
     assert.ok(target.y>=visible.y && target.y+target.height<=visible.y+visible.height+1);
   } finally { await browser.close(); }
+});
+
+
+test('notification routes focus the requested message even when the iframe URL loses its fragment', async () => {
+  const browser = await chromium.launch({executablePath:process.env.CHROME_PATH || undefined,headless:true,args:['--no-sandbox']});
+  try {
+    const page = await open(browser,45,'','60');
+    const target = await page.locator('#message-60').boundingBox();
+    const viewport = await page.locator('#discussion-scroll').boundingBox();
+    assert.ok(target.y>=viewport.y && target.y+target.height<=viewport.y+viewport.height+1);
+    assert.equal(await page.evaluate(()=>location.hash),'');
+  } finally {await browser.close();}
 });

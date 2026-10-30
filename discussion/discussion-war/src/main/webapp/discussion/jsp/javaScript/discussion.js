@@ -123,7 +123,8 @@
     });
     window.requestAnimationFrame(() => {
       const hash = window.location.hash.slice(1);
-      const target = hash.startsWith('message-') ? document.getElementById(hash) : null;
+      const focused = discussion.dataset.messageId ? 'message-' + discussion.dataset.messageId : hash;
+      const target = focused.startsWith('message-') ? document.getElementById(focused) : null;
       const unread = history.querySelector('.discussion-unread-divider');
       const initialTarget = target && history.contains(target) ? target : unread;
       if (initialTarget) {

@@ -34,6 +34,17 @@
     const failure = document.getElementById('discussion-live-error');
     const articles = () => Array.from(history.querySelectorAll('.discussion-message'));
     const latest = () => Math.max(0, ...articles().map(row => Number(row.dataset.sequence)));
+    // Opening an older message must not follow new messages during the initial catch-up.
+    let followLatest = !discussion.dataset.messageId && !window.location.hash.startsWith('#message-');
+    const enableFollowing = () => { followLatest = true; };
+    scroller.addEventListener('wheel', enableFollowing, {passive: true});
+    scroller.addEventListener('touchmove', enableFollowing, {passive: true});
+    document.addEventListener('keydown', event => {
+      if (['PageDown', 'PageUp', 'Home', 'End', 'ArrowUp', 'ArrowDown'].includes(event.key)
+          && !event.target.closest('textarea, input, [contenteditable]')) {
+        enableFollowing();
+      }
+    });
     const fingerprints = new Map();
     let loading = false;
     let stopped = false;
@@ -46,7 +57,7 @@
 
     const merge = page => {
       // Anchor the current row rather than the total height: edits can resize older messages.
-      const bottom = scroller.scrollHeight - scroller.scrollTop - scroller.clientHeight < 48;
+      const bottom = followLatest && scroller.scrollHeight - scroller.scrollTop - scroller.clientHeight < 48;
       const anchor = articles().find(row => row.getBoundingClientRect().bottom > scroller.getBoundingClientRect().top);
       const anchorTop = anchor?.getBoundingClientRect().top;
       page.querySelectorAll('.discussion-message').forEach(row => {
