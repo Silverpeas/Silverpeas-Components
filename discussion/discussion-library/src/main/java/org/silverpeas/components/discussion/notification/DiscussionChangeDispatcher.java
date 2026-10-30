@@ -62,8 +62,8 @@ public class DiscussionChangeDispatcher {
     events.fire(new DiscussionChange(instanceId, userId));
   }
 
-  public void published(String instanceId, String messageId, String authorId, String authorName) {
-    newMessages.fire(new DiscussionNewMessage(instanceId, messageId, authorId, authorName));
+  public void published(String instanceId, String messageId, String authorId, String authorName, String body) {
+    newMessages.fire(new DiscussionNewMessage(instanceId, messageId, authorId, authorName, body));
   }
 
   // AFTER_SUCCESS runs after the publishing transaction has completed. Component lookup

@@ -23,6 +23,6 @@
  */
 package org.silverpeas.components.discussion.notification;
 
-/** Committed message identity, without its body. */
-public record DiscussionNewMessage(String instanceId, String messageId, String authorId, String authorName) {
+/** Committed message snapshot for live desktop delivery. */
+public record DiscussionNewMessage(String instanceId, String messageId, String authorId, String authorName, String body) {
 }

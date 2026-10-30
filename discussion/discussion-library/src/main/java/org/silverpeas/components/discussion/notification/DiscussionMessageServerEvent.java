@@ -23,14 +23,13 @@
  */
 package org.silverpeas.components.discussion.notification;
 
-import java.text.MessageFormat;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.notification.sse.behavior.IgnoreStoring;
 import org.silverpeas.core.security.authorization.ComponentAccessController;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.components.discussion.service.DiscussionMentionService;
 
 /** Live desktop signal only: never stored or replayed to disconnected users. */
 public class DiscussionMessageServerEvent extends AuthorizedDiscussionEvent implements IgnoreStoring {
@@ -56,11 +55,10 @@ public class DiscussionMessageServerEvent extends AuthorizedDiscussionEvent impl
   @Override
   public String getData(String sessionId, User receiver) {
     String language = receiver.getUserPreferences().getLanguage();
-    var bundle = ResourceLocator.getLocalizationBundle("org.silverpeas.components.discussion.multilang.DiscussionBundle", language);
     return JSONCodec.encodeObject(json -> json.put("instanceId", message.instanceId())
         .put("messageId", message.messageId()).put("userId", receiver.getId())
         .put("title", component.getLabel(language))
-        .put("text", MessageFormat.format(bundle.getString("discussion.newMessageBody"), message.authorName()))
+        .put("text", message.authorName() + ": " + DiscussionMentionService.displayText(message.body()))
         .put("url", URLUtil.getApplicationURL() + "/Rdiscussion/" + message.instanceId() + "/messages/" + message.messageId()));
   }
 }

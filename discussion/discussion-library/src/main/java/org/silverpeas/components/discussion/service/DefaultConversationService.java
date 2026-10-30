@@ -123,7 +123,7 @@ public class DefaultConversationService implements ConversationService {
     mentions.notifyNewMentions(instanceId, message, "");
     changes.changed(instanceId);
     changes.published(instanceId, message.getId(), User.getCurrentRequester().getId(),
-        User.getCurrentRequester().getDisplayedName());
+        User.getCurrentRequester().getDisplayedName(), message.getBody());
   }
 
   @Override
