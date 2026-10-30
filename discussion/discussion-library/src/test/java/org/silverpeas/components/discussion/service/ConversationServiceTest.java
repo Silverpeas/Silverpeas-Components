@@ -62,6 +62,8 @@ class ConversationServiceTest {
   private org.silverpeas.components.discussion.notification.DiscussionChangeDispatcher changes;
   @TestManagedMock
   private org.silverpeas.components.discussion.repository.DiscussionSeenRepository seen;
+  @TestManagedMock
+  private DiscussionImageService imageService;
   @TestedBean
   private DefaultConversationService service;
   private Conversation conversation;
@@ -151,7 +153,7 @@ class ConversationServiceTest {
     try (MockedStatic<User> current = mockStatic(User.class)) {
       current.when(User::getCurrentRequester).thenReturn(user);
       service.edit("discussion1", "message", 0, "updated");
-      verify(message).edit("updated");
+      verify(message).edit("updated", false);
       when(message.getCreatorId()).thenReturn("another-user");
       when(access.require("discussion1", SilverpeasRole.WRITER)).thenReturn(SilverpeasRole.ADMIN);
       service.delete("discussion1", "message", 0);
@@ -424,6 +426,47 @@ class ConversationServiceTest {
     actual.delete();
     assertFalse(actual.isPinned());
     assertThrows(IllegalArgumentException.class, () -> actual.setPinned(true));
+  }
+
+  @Test
+  void imagesAreLimitedToVisibleMessagesInTheAuthorizedConversation() {
+    var message = existingMessage("other");
+    when(message.getId()).thenReturn("message");
+    var deleted = mock(DiscussionMessage.class);
+    when(deleted.isDeleted()).thenReturn(true);
+    when(messages.selected("conversation", List.of("message", "deleted", "foreign"))).thenReturn(List.of(message, deleted));
+    var image = new DiscussionImage("photo", "/protected-image", "image.png");
+    when(imageService.list("discussion1", "message")).thenReturn(List.of(image));
+    assertEquals(java.util.Map.of("message", List.of(image)), service.images("discussion1", List.of("message", "deleted", "foreign")));
+    verify(imageService, never()).list("discussion1", "foreign");
+    when(access.require("discussion1", SilverpeasRole.WRITER)).thenThrow(SecurityException.class);
+    clearInvocations(messages, imageService);
+    assertThrows(SecurityException.class, () -> service.images("discussion1", List.of("message")));
+    verifyNoInteractions(messages, imageService);
+  }
+
+  @Test
+  void imageOnlyMessagesKeepValidationAndStoreImagesBeforeAnnouncingPublication() throws Exception {
+    var image = DiscussionImageUpload.read(DiscussionImageUploadTest.image("png"));
+    try (var current = mockStatic(User.class)) {
+      current.when(User::getCurrentRequester).thenReturn(user);
+      service.publish("discussion1", "", List.of(image));
+      var captured = org.mockito.ArgumentCaptor.forClass(DiscussionMessage.class);
+      verify(messages).save(captured.capture());
+      assertTrue(captured.getValue().getBody().isBlank());
+      assertFalse(captured.getValue().getBody().isEmpty());
+      var ordered = inOrder(messages, imageService, changes);
+      ordered.verify(messages).flush();
+      ordered.verify(imageService).store(eq("discussion1"), any(), eq(List.of(image)));
+      ordered.verify(changes).changed("discussion1");
+      assertThrows(IllegalArgumentException.class, () -> service.publish("discussion1", "", List.of()));
+      assertThrows(IllegalArgumentException.class, () -> service.publish("discussion1", "too many", java.util.Collections.nCopies(5, image)));
+    }
+    var message = new DiscussionMessage("conversation", 1, "", true);
+    message.edit(" ", true);
+    assertThrows(IllegalArgumentException.class, () -> message.edit(" ", false));
+    message.delete();
+    assertThrows(IllegalArgumentException.class, () -> message.edit("text", true));
   }
 
   private DiscussionMessage existingMessage(String author) {

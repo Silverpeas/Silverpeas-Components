@@ -57,6 +57,8 @@ public class DefaultConversationService implements ConversationService {
   @Inject
   private DiscussionLikeRepository likes;
   @Inject
+  private DiscussionImageService imageService;
+  @Inject
   private DiscussionMentionService mentions;
 
   @Inject
@@ -115,11 +117,22 @@ public class DefaultConversationService implements ConversationService {
 
   @Override
   public void publish(String instanceId, String body) {
+    publish(instanceId, body, List.of());
+  }
+
+  @Override
+  public void publish(String instanceId, String body, List<DiscussionImageUpload> images) {
     access.require(instanceId, SilverpeasRole.WRITER);
+    if (images == null || images.size() > DiscussionImageUpload.MAX_IMAGES || images.stream().anyMatch(java.util.Objects::isNull)) {
+      throw new IllegalArgumentException("Too many images");
+    }
     Conversation conversation = conversations.main(instanceId, true);
-    var message = new DiscussionMessage(conversation.getId(), conversation.nextSequence(), mentions.normalize(instanceId, body));
+    var message = new DiscussionMessage(conversation.getId(), conversation.nextSequence(),
+        mentions.normalize(instanceId, body == null ? "" : body), !images.isEmpty());
     message.createdBy(User.getCurrentRequester());
     messages.save(message);
+    messages.flush();
+    imageService.store(instanceId, message.getId(), images);
     mentions.notifyNewMentions(instanceId, message, "");
     changes.changed(instanceId);
     changes.published(instanceId, message.getId(), User.getCurrentRequester().getId(),
@@ -127,10 +140,23 @@ public class DefaultConversationService implements ConversationService {
   }
 
   @Override
+  public Map<String, List<DiscussionImage>> images(String instanceId, List<String> messageIds) {
+    access.require(instanceId, SilverpeasRole.WRITER);
+    if (messageIds.size() > 200) {
+      throw new IllegalArgumentException("Too many message identifiers");
+    }
+    var conversation = conversations.main(instanceId, false);
+    var result = new java.util.HashMap<String, List<DiscussionImage>>();
+    messages.selected(conversation.getId(), messageIds).stream().filter(message -> !message.isDeleted())
+        .forEach(message -> result.put(message.getId(), imageService.list(instanceId, message.getId())));
+    return result;
+  }
+
+  @Override
   public void edit(String instanceId, String messageId, long version, String body) {
     DiscussionMessage message = editable(instanceId, messageId, version);
     String previousBody = message.getBody();
-    message.edit(mentions.normalize(instanceId, body));
+    message.edit(mentions.normalize(instanceId, body), !imageService.list(instanceId, messageId).isEmpty());
     message.updatedBy(User.getCurrentRequester());
     messages.save(message);
     mentions.notifyNewMentions(instanceId, message, previousBody);
@@ -141,6 +167,7 @@ public class DefaultConversationService implements ConversationService {
   public void delete(String instanceId, String messageId, long version) {
     DiscussionMessage message = editable(instanceId, messageId, version);
     likes.deleteMessage(messageId);
+    imageService.removeAfterCommit(instanceId, messageId);
     message.delete();
     message.updatedBy(User.getCurrentRequester());
     messages.save(message);

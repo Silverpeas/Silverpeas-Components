@@ -38,6 +38,8 @@ public interface ConversationService {
   MessagePage history(String instanceId, long before, int limit);
   MessagePage updates(String instanceId, long after, List<String> messageIds);
   void publish(String instanceId, String body);
+  void publish(String instanceId, String body, List<DiscussionImageUpload> images);
+  Map<String, List<DiscussionImage>> images(String instanceId, List<String> messageIds);
   void edit(String instanceId, String messageId, long version, String body);
   void delete(String instanceId, String messageId, long version);
   long markVisible(String instanceId, List<String> messageIds);

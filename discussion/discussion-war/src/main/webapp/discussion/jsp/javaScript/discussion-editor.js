@@ -192,6 +192,9 @@
     bodyInput.type = 'hidden';
     bodyInput.name = 'body';
     textarea.name = 'bodyDisplay';
+    if (textarea.dataset.allowEmpty === 'true') {
+      textarea.required = false;
+    }
     textarea.after(bodyInput);
     const synchronize = () => {
       mentions = moveMentions(previous, textarea.value, mentions);
