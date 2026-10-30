@@ -43,7 +43,14 @@
       <c:set var="unreadBoundaryShown" value="${true}"/>
     </c:if>
     <article id="message-${message.id}" class="discussion-message ${message.unread ? 'discussion-message--unread' : ''} ${currentUser.id eq message.creatorId ? 'discussion-message--own' : ''}" data-sequence="${message.sequenceNumber}">
-      <div class="discussion-avatar" aria-hidden="true"><c:out value="${fn:toUpperCase(fn:substring(message.creator.displayedName, 0, 1))}"/></div>
+      <div class="discussion-avatar" aria-hidden="true">
+        <span><c:out value="${fn:toUpperCase(fn:substring(message.creator.displayedName, 0, 1))}"/></span>
+        <c:set var="messageAvatar" value="${message.creator.smallAvatar}"/>
+        <c:if test="${not empty messageAvatar and messageAvatar ne defaultAvatarPath}">
+          <c:url var="messageAvatarUrl" value="${messageAvatar}"/>
+          <img src="<c:out value='${messageAvatarUrl}'/>" alt="" width="30" height="30" loading="lazy"/>
+        </c:if>
+      </div>
       <div class="discussion-message-content">
         <header class="discussion-message-header">
           <span class="discussion-author"><c:out value="${message.creator.displayedName}"/></span>
