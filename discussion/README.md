@@ -179,3 +179,11 @@ transaction du message. Leur envoi utilise une nouvelle transaction ; le canal e
 restent ceux choisis par le destinataire dans Silverpeas (bureau, e-mail, etc.). Le navigateur
 doit autoriser les notifications pour afficher celles du bureau. Il n'y a aucun changement SQL
 et le schéma reste en version 001.
+
+### Hauteur dans la navigation Silverpeas
+
+Discussion mesure la hauteur disponible dans son propre document (iframe), sous le fil d'Ariane
+et en réservant les marges et espacements réels du cadre natif. La mesure suit les redimensionnements
+de la fenêtre, du viewport et du cadre, sans modifier le document parent. L'en-tête et la saisie
+restent hors du défilement de l'historique ; les auteurs disposent d'une liste défilante indépendante.
+Sur écran étroit, les auteurs sont affichés dans un bandeau au-dessus du fil.

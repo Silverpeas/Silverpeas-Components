@@ -37,6 +37,7 @@
   <view:looknfeel/>
   <link rel="stylesheet" href="<c:url value='/discussion/jsp/css/discussion.css'/>"/>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-editor.js'/>" defer></script>
+  <script src="<c:url value='/discussion/jsp/javaScript/discussion-layout.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-live.js'/>" defer></script>
 </head>
