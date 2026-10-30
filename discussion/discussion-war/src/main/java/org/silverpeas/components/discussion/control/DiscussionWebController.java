@@ -30,6 +30,8 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.WebApplicationException;
 import org.silverpeas.components.discussion.service.ConversationService;
+import org.silverpeas.components.discussion.service.DiscussionMentionService;
+import org.silverpeas.components.discussion.web.DiscussionInstanceInfoService;
 import org.silverpeas.components.discussion.web.DiscussionParticipantService;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.util.ServiceProvider;
@@ -47,6 +49,8 @@ public class DiscussionWebController extends
     org.silverpeas.core.web.mvc.webcomponent.WebComponentController<DiscussionWebRequestContext> {
   private static final String BASE = "org.silverpeas.components.discussion.";
   private transient ConversationService conversations;
+  private transient DiscussionInstanceInfoService instanceInfo;
+  private transient DiscussionMentionService mentions;
   private transient DiscussionParticipantService participantService;
 
   public DiscussionWebController(MainSessionController main, ComponentContext component) {
@@ -71,7 +75,44 @@ public class DiscussionWebController extends
   @RedirectToInternalJsp("discussion.jsp")
   public void home(DiscussionWebRequestContext context) {
     loadHistory(context, Long.MAX_VALUE);
+    preparePage(context);
+  }
+
+  @GET
+  @Path("messages/{id}")
+  @RedirectToInternalJsp("discussion.jsp")
+  public void message(DiscussionWebRequestContext context) {
+    var page = webResult(() -> conversations().historyAround(context.getComponentInstanceId(),
+        context.getPathVariables().get("id")));
+    prepareHistory(context, page);
+    preparePage(context);
+  }
+
+  private void preparePage(DiscussionWebRequestContext context) {
+    if (instanceInfo == null) {
+      instanceInfo = ServiceProvider.getService(DiscussionInstanceInfoService.class);
+      mentions = ServiceProvider.getService(DiscussionMentionService.class);
+    }
+    context.getRequest().setAttribute("instanceInfo",
+        webResult(() -> instanceInfo.info(context.getComponentInstanceId(), getLanguage())));
+    boolean canMention = context.getHighestUserRole() != null &&
+        context.getHighestUserRole().isGreaterThanOrEquals(SilverpeasRole.WRITER) &&
+        !context.getUser().isAnonymous() && !context.getUser().isAccessGuest();
+    context.getRequest().setAttribute("mentionCandidates", canMention
+        ? webResult(() -> mentions.candidates(context.getComponentInstanceId())) : java.util.List.of());
     participants(context);
+  }
+
+  @POST
+  @Path("messages/{id}/like")
+  @RedirectToInternalJsp("like.jsp")
+  public void like(DiscussionWebRequestContext context) {
+    String value = context.getRequest().getParameter("liked");
+    if (!"true".equals(value) && !"false".equals(value)) {
+      throw new WebApplicationException(400);
+    }
+    context.getRequest().setAttribute("likeState", webResult(() -> conversations().setLike(
+        context.getComponentInstanceId(), context.getPathVariables().get("id"), Boolean.parseBoolean(value))));
   }
 
   @GET
@@ -93,8 +134,16 @@ public class DiscussionWebController extends
   }
 
   private void loadHistory(DiscussionWebRequestContext context, long before) {
-    context.getRequest().setAttribute("messagePage",
+    prepareHistory(context,
         webResult(() -> conversations().history(context.getComponentInstanceId(), before, 30)));
+  }
+
+  private void prepareHistory(DiscussionWebRequestContext context,
+      org.silverpeas.components.discussion.service.MessagePage page) {
+    context.getRequest().setAttribute("messagePage", page);
+    context.getRequest().setAttribute("messageLikes", webResult(() -> conversations().likeStates(
+        context.getComponentInstanceId(), page.messages().stream().map(message -> message.getId()).toList())));
+    context.getRequest().setAttribute("canReact", !context.getUser().isAnonymous() && !context.getUser().isAccessGuest());
     context.getRequest().setAttribute("canWrite", context.getHighestUserRole() != null &&
         context.getHighestUserRole().isGreaterThanOrEquals(SilverpeasRole.WRITER) &&
         !context.getUser().isAccessGuest() && !context.getUser().isAnonymous());

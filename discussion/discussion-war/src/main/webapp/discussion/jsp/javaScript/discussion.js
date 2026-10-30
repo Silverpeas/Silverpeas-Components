@@ -83,6 +83,9 @@
         if (typeof applyTokenSecurity === 'function') {
           applyTokenSecurity(history);
         }
+        if (window.DiscussionEditor) {
+          window.DiscussionEditor.enhance(history);
+        }
         updateButton();
       } catch (failure) {
         error.hidden = false;

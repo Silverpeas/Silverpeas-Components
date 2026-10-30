@@ -54,6 +54,10 @@ class ConversationServiceTest {
   @org.silverpeas.core.persistence.datasource.PersistOperation
   @TestManagedMock
   private org.silverpeas.core.persistence.datasource.model.jpa.JpaPersistOperation persistOperation;
+  @TestManagedMock
+  private DiscussionLikeRepository likes;
+  @TestManagedMock
+  private DiscussionMentionService mentions;
   @TestedBean
   private DefaultConversationService service;
   private Conversation conversation;
@@ -61,6 +65,7 @@ class ConversationServiceTest {
 
   @BeforeEach
   void prepare() {
+    when(mentions.normalize(anyString(), any())).thenAnswer(call -> call.getArgument(1));
     conversation = mock(Conversation.class);
     when(conversation.getId()).thenReturn("conversation");
     when(conversation.getLastSequence()).thenReturn(4L);
@@ -208,6 +213,57 @@ class ConversationServiceTest {
     clearInvocations(conversations, messages);
     assertThrows(SecurityException.class, () -> service.participantIds("discussion1"));
     verifyNoInteractions(conversations, messages);
+  }
+
+  @Test
+  void likesAreIdempotentAndCanBeRemovedByTheCurrentUser() {
+    existingMessage("other");
+    var reaction = mock(DiscussionLike.class);
+    when(likes.find("message", "user")).thenReturn(Optional.empty(), Optional.of(reaction), Optional.of(reaction));
+    when(likes.states("conversation", List.of("message"), "user"))
+        .thenReturn(java.util.Map.of("message", new LikeState(1, true)));
+    try (MockedStatic<User> current = mockStatic(User.class)) {
+      current.when(User::getCurrentRequester).thenReturn(user);
+      assertTrue(service.setLike("discussion1", "message", true).liked());
+      service.setLike("discussion1", "message", true);
+      verify(likes, times(1)).save(any(DiscussionLike.class));
+      service.setLike("discussion1", "message", false);
+      verify(likes).delete(reaction);
+      verify(access, times(3)).require("discussion1", SilverpeasRole.READER);
+    }
+  }
+
+  @Test
+  void reactionsRejectOtherInstancesDeletedMessagesAndGuests() {
+    var message = existingMessage("other");
+    try (MockedStatic<User> current = mockStatic(User.class)) {
+      current.when(User::getCurrentRequester).thenReturn(user);
+      when(message.getConversationId()).thenReturn("other-conversation");
+      assertThrows(IllegalArgumentException.class, () -> service.setLike("discussion1", "message", true));
+      when(message.getConversationId()).thenReturn("conversation");
+      when(message.isDeleted()).thenReturn(true);
+      assertThrows(IllegalArgumentException.class, () -> service.setLike("discussion1", "message", true));
+      when(user.isAccessGuest()).thenReturn(true);
+      assertThrows(SecurityException.class, () -> service.setLike("discussion1", "message", true));
+      verifyNoInteractions(likes);
+    }
+  }
+
+  @Test
+  void reactionCountsAndNotificationDeepLinksStayWithinTheConversation() {
+    var message = existingMessage("other");
+    when(message.getSequenceNumber()).thenReturn(2L);
+    when(messages.history("conversation", 3, 31)).thenReturn(List.of(message));
+    when(likes.states("conversation", List.of("message"), "user"))
+        .thenReturn(java.util.Map.of("message", new LikeState(3, false)));
+    when(readStates.find("conversation", "user")).thenReturn(Optional.empty());
+    try (MockedStatic<User> current = mockStatic(User.class)) {
+      current.when(User::getCurrentRequester).thenReturn(user);
+      assertEquals(3, service.likeStates("discussion1", List.of("message")).get("message").count());
+      assertEquals(List.of(message), service.historyAround("discussion1", "message").messages());
+      when(message.getConversationId()).thenReturn("another");
+      assertThrows(IllegalArgumentException.class, () -> service.historyAround("discussion1", "message"));
+    }
   }
 
   private DiscussionMessage existingMessage(String author) {

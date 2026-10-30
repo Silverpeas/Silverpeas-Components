@@ -33,19 +33,24 @@
 <html>
 <head>
   <meta charset="UTF-8"/>
-  <title><c:out value="${browseContext[1]}"/></title>
+  <title><c:out value="${instanceInfo.title}"/></title>
   <view:looknfeel/>
   <link rel="stylesheet" href="<c:url value='/discussion/jsp/css/discussion.css'/>"/>
+  <script src="<c:url value='/discussion/jsp/javaScript/discussion-editor.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion.js'/>" defer></script>
 </head>
 <body>
 <view:window>
   <view:frame>
-    <main id="discussion" data-history="${base}history" data-participants="${base}participants">
+    <main id="discussion" data-history="${base}history" data-participants="${base}participants"
+        data-profile-base="<c:url value='/Rprofil/jsp/Main'/>"
+        data-icons="<c:url value='/discussion/jsp/icons/discussion-icons.svg'/>"
+        data-emoji-label="<fmt:message key='discussion.emoji'/>"
+        data-mention-label="<fmt:message key='discussion.mention'/>">
       <header class="discussion-header">
         <div>
-          <h1><fmt:message key="discussion.title"/></h1>
-          <p class="discussion-subtitle"><fmt:message key="discussion.subtitle"/></p>
+          <h1><c:out value="${instanceInfo.title}"/></h1>
+          <c:if test="${not empty instanceInfo.description}"><p class="discussion-subtitle"><c:out value="${instanceInfo.description}"/></p></c:if>
         </div>
         <div class="discussion-reading">
           <span class="discussion-unread">
@@ -60,6 +65,11 @@
           </c:if>
         </div>
       </header>
+      <template id="discussion-mention-directory">
+        <c:forEach items="${mentionCandidates}" var="candidate">
+          <span data-user-id="<c:out value='${candidate.id}'/>" data-name="<c:out value='${candidate.name}'/>"></span>
+        </c:forEach>
+      </template>
       <div class="discussion-workspace">
         <div class="discussion-stream">
       <c:if test="${canWrite}">

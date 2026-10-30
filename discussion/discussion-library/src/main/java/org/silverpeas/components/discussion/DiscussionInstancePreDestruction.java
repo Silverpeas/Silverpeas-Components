@@ -28,6 +28,7 @@ import jakarta.inject.Named;
 import jakarta.transaction.Transactional;
 import org.silverpeas.components.discussion.model.Conversation;
 import org.silverpeas.components.discussion.repository.ConversationRepository;
+import org.silverpeas.components.discussion.repository.DiscussionLikeRepository;
 import org.silverpeas.components.discussion.repository.DiscussionMessageRepository;
 import org.silverpeas.components.discussion.repository.DiscussionReadStateRepository;
 import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
@@ -45,10 +46,14 @@ public class DiscussionInstancePreDestruction implements ComponentInstancePreDes
   @Inject
   private DiscussionReadStateRepository readStates;
 
+  @Inject
+  private DiscussionLikeRepository likes;
+
   @Override
   @Transactional
   public void preDestroy(String instanceId) {
     Conversation conversation = conversations.main(instanceId, true);
+    likes.deleteConversation(conversation.getId());
     messages.deleteConversation(conversation.getId());
     readStates.deleteConversation(conversation.getId());
     conversations.delete(conversation);

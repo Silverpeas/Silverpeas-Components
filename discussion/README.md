@@ -107,3 +107,28 @@ séparément de Maven.
 
 Aucun test Arquillian/WildFly ni test complet du navigateur dans Silverpeas n'a été exécuté.
 La génération du WAR ne précompile pas les JSP et ne remplace donc pas cette validation.
+
+
+## Liens, mentions et réactions en développement
+
+Le nom et la description affichés proviennent des libellés localisés de l'instance.
+Les messages restent stockés en texte : les URL HTTP(S) sont rendues comme liens,
+les mentions sont enregistrées sous la forme `@[Nom](identifiant)` et les emoji en Unicode.
+Le sélecteur de mentions est réservé aux rédacteurs et ne propose que des comptes autorisés
+sur l'instance. Les notifications des nouvelles mentions, hors auteur et doublons, sont
+émises par le mécanisme Silverpeas après validation de la transaction.
+
+Un utilisateur authentifié disposant de la lecture peut ajouter ou retirer son like.
+Une contrainte `(messageId, userId)` et le verrou de conversation évitent les doublons.
+La suppression d'un message retire ses likes ; la suppression de l'instance les nettoie aussi.
+
+Le schéma reste volontairement en **version 001** pendant le développement.
+`001/create_table.sql` décrit l'installation complète actuelle. Pour une base de développement
+ayant déjà installé 001, appliquer explicitement une fois `001/add_likes.sql` du SGBD concerné
+avant de déployer cette évolution. Le script n'efface aucune donnée et ne modifie pas la version
+du module. Les variantes PostgreSQL et H2 acceptent aussi une nouvelle exécution si la table existe.
+Il ne faut pas relancer l'intégralité de `create_table.sql` sur la base existante.
+
+Les tests de navigateur dans `discussion-war/src/test/javascript/discussion-editor-browser.test.cjs`
+nécessitent Playwright et son navigateur Chromium ; `CHROME_PATH` permet de choisir un navigateur
+Chromium déjà installé. Les autres tests JavaScript utilisent uniquement Node.js.
