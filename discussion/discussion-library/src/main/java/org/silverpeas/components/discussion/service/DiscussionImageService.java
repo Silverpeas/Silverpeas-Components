@@ -60,7 +60,7 @@ public class DiscussionImageService {
   public List<DiscussionImage> list(String instanceId, String messageId) {
     return attachments.listDocumentsByForeignKey(new ResourceReference(messageId, instanceId), null).stream()
         .filter(document -> java.util.Set.of("image/jpeg", "image/png", "image/gif").contains(document.getContentType()))
-        .map(document -> new DiscussionImage(document.getId(), document.getAttachmentURL(), document.getFilename())).toList();
+        .map(document -> new DiscussionImage(document.getId(), org.silverpeas.core.util.URLUtil.getApplicationURL() + document.getAttachmentURL(), document.getFilename())).toList();
   }
 
   public void store(String instanceId, String messageId, List<DiscussionImageUpload> images) {

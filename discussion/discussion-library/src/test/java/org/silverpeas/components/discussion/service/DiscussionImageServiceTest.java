@@ -50,6 +50,22 @@ class DiscussionImageServiceTest {
   private DiscussionImageService service;
 
   @Test
+  void imageUrlsIncludeTheSilverpeasContextPath() {
+    var document = mock(SimpleDocument.class);
+    when(document.getId()).thenReturn("photo");
+    when(document.getFilename()).thenReturn("photo.png");
+    when(document.getContentType()).thenReturn("image/png");
+    when(document.getAttachmentURL()).thenReturn("/attached_file/componentId/discussion1/attachmentId/photo/lang/fr/name/photo.png?t_=1");
+    when(attachments.listDocumentsByForeignKey(any(), isNull())).thenReturn(
+        new org.silverpeas.core.contribution.attachment.util.SimpleDocumentList<>(List.of(document)));
+    try (var urls = mockStatic(org.silverpeas.core.util.URLUtil.class)) {
+      urls.when(org.silverpeas.core.util.URLUtil::getApplicationURL).thenReturn("/silverpeas");
+      var image = service.list("discussion1", "message1").getFirst();
+      assertEquals("/silverpeas/attached_file/componentId/discussion1/attachmentId/photo/lang/fr/name/photo.png?t_=1", image.url());
+    }
+  }
+
+  @Test
   void imagesUsePrivateNativeAttachmentsAndScheduleRollbackCleanup() throws Exception {
     var user = mock(User.class);
     when(user.getId()).thenReturn("writer");
