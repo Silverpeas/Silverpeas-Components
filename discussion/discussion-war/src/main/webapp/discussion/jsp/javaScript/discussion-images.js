@@ -32,6 +32,11 @@
     if (!input || !preview || !error || !textarea) {
       return;
     }
+    const add = document.querySelector('.discussion-add-image');
+    if (add) {
+      add.addEventListener('click', () => input.click());
+      document.querySelector('.discussion-composer .discussion-editor-tools')?.append(add);
+    }
     const dialog = document.createElement('dialog');
     dialog.className = 'discussion-image-dialog';
     const enlarged = document.createElement('img');

@@ -104,10 +104,10 @@
               <textarea id="discussion-body" name="body" maxlength="2000" required aria-describedby="discussion-compose-hint"
                   placeholder="<fmt:message key='discussion.placeholder'/>"></textarea>
               <div class="discussion-image-picker">
-                <label for="discussion-images" class="discussion-image-label"><svg class="discussion-icon" aria-hidden="true"><use href="<c:url value='/discussion/jsp/icons/discussion-icons.svg'/>#image"/></svg> <fmt:message key="discussion.addImages"/></label>
-                <input id="discussion-images" type="file" name="images" accept="image/jpeg,image/png,image/gif" multiple
+                <button class="discussion-icon-button discussion-add-image" type="button" aria-label="<fmt:message key='discussion.addImages'/>"
+                    title="<fmt:message key='discussion.addImages'/> — <fmt:message key='discussion.imagesHint'/>"><svg class="discussion-icon" aria-hidden="true"><use href="<c:url value='/discussion/jsp/icons/discussion-icons.svg'/>#image"/></svg></button>
+                <input id="discussion-images" type="file" tabindex="-1" aria-label="<fmt:message key='discussion.addImages'/>" name="images" accept="image/jpeg,image/png,image/gif" multiple
                     data-error="<fmt:message key='discussion.imagesError'/>" data-remove="<fmt:message key='discussion.removeImage'/>"/>
-                <span class="discussion-hint"><fmt:message key="discussion.imagesHint"/></span>
                 <div id="discussion-image-preview" class="discussion-image-preview"></div>
                 <p id="discussion-image-error" class="discussion-presence-error" role="status" hidden></p>
               </div>

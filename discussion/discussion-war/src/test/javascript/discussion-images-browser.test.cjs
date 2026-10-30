@@ -34,8 +34,9 @@ async function setup(page) {
     return route.fulfill({contentType:'text/html; charset=utf-8',body:`
       <main id="discussion" data-close-image="Fermer l’image">
         <div class="discussion-message-images" style="min-height:80px"><a href="/image.png" aria-label="Ouvrir l’image en grand"><img alt="Image jointe" src="/image.png" width="80" height="60"></a></div>
-        <form action="/publish" method="post" enctype="multipart/form-data">
+        <form class="discussion-composer" action="/publish" method="post" enctype="multipart/form-data">
           <textarea name="body" id="discussion-body" required></textarea>
+          <div class="discussion-editor-tools"></div><button type="button" class="discussion-add-image" aria-label="Ajouter des photos" title="4 images maximum · 5 Mo chacune"><svg></svg></button>
           <input type="file" name="images" id="discussion-images" multiple data-remove="Retirer" data-error="Images invalides">
           <div id="discussion-image-preview"></div><p id="discussion-image-error" hidden></p><button>Publier</button>
         </form>
@@ -51,7 +52,11 @@ test('photos are previewed, accumulated and removable; image-only messages use m
   const browser=await chromium.launch({executablePath:process.env.CHROME_PATH,args:['--no-sandbox']});
   try {
     const page=await browser.newPage();await setup(page);
-    await page.locator('#discussion-images').setInputFiles(photo('first.png'));
+    const chooser = page.waitForEvent('filechooser');
+    await page.getByRole('button',{name:'Ajouter des photos',exact:true}).click();
+    await (await chooser).setFiles(photo('first.png'));
+    assert.equal(await page.locator('.discussion-editor-tools .discussion-add-image').count(),1);
+    assert.equal(await page.locator('.discussion-add-image').textContent(),'');
     assert.equal(await page.locator('#discussion-body').evaluate(el=>el.required),false);
     await page.locator('#discussion-images').setInputFiles(photo('second.png'));
     assert.equal(await page.locator('#discussion-image-preview img').count(),2);
