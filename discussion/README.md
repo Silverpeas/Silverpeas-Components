@@ -40,11 +40,11 @@ locale ou Jenkins de cette nouvelle implémentation n'a été exécutée.
 
 - Une conversation `main` créée par instance. La contrainte d'unicité porte sur `(instanceId, scopeKey)`.
 - Messages de texte brut, limités à 2 000 caractères : publication, consultation, édition, suppression.
-- Accès en lecture contrôlé par Silverpeas ; publication réservée au rôle rédacteur ou supérieur.
+- Accès à la discussion réservé aux rédacteurs et gestionnaires Silverpeas.
 - Édition et suppression réservées à l'auteur ou au gestionnaire de l'instance, avec refus des invités et anonymes pour les écritures.
 - Vérification de l'appartenance du message à la conversation de l'instance avant toute modification.
 - Contrôle de version lors d'une édition ou suppression ; les conflits sont traduits en HTTP 409.
-- Historique récent en premier, pages de 30 messages, curseur exclusif stable, limite métier de 100.
+- Historique chronologique (récents en bas), pages de 30 messages, curseur exclusif stable, limite métier de 100.
 - Défilement infini avec `IntersectionObserver`, bouton de chargement et reprise après erreur.
 - Compteur des messages non lus, excluant les messages de l'utilisateur et les messages supprimés.
 - Action explicite « Marquer comme lu », utilisant la séquence de la page affichée. Une simple consultation ne marque pas automatiquement l'historique comme lu.
@@ -132,3 +132,19 @@ Il ne faut pas relancer l'intégralité de `create_table.sql` sur la base exista
 Les tests de navigateur dans `discussion-war/src/test/javascript/discussion-editor-browser.test.cjs`
 nécessitent Playwright et son navigateur Chromium ; `CHROME_PATH` permet de choisir un navigateur
 Chromium déjà installé. Les autres tests JavaScript utilisent uniquement Node.js.
+
+
+## Fil chronologique et suppression du rôle lecteur
+
+Le descripteur ne définit plus que les profils gestionnaire (`admin`) et rédacteur (`writer`).
+Toutes les routes et les opérations métier exigent au moins le rôle rédacteur. Les anciens
+comptes disposant uniquement du profil lecteur doivent être réaffectés explicitement dans
+les droits de l'instance ; les droits existants ne sont pas automatiquement élargis.
+
+Le fil affiche les messages récents en bas et la saisie reste sous la zone de défilement.
+Les pages plus anciennes sont insérées au-dessus en conservant la position visible.
+L'ouverture vise le premier repère non lu visible, ou les derniers messages s'il n'y en a pas ;
+un lien de notification vers un message précis reste prioritaire. Le calcul des non-lus
+réutilise le repère de lecture existant et exclut les messages de l'utilisateur et les messages
+supprimés. La consultation ne modifie pas automatiquement ce repère : l'action explicite
+« Marquer comme lu » reste disponible. Aucun changement SQL n'est nécessaire pour cette évolution.

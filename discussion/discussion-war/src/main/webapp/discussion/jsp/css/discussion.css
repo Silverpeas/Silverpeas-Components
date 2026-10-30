@@ -131,3 +131,21 @@
 #discussion .discussion-message-footer { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
 #discussion .discussion-message-footer .discussion-actions { flex: 1; min-width: 0; margin: 0; }
 #discussion .discussion-message-footer .discussion-like-form { order: -1; margin: 0; }
+
+/* Chronological conversation: older pages above, composer remains below the scroll region. */
+#discussion .discussion-stream { display: flex; flex-direction: column; min-height: 0; padding: 0; }
+#discussion .discussion-scroll { position: relative; height: clamp(16rem, calc(100vh - 22rem), 44rem); min-height: 16rem; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; overflow-anchor: none; display: flex; flex-direction: column; }
+#discussion .discussion-scroll:focus-visible { outline: 2px solid var(--color-lien-action, #3975b5); outline-offset: -2px; }
+#discussion .discussion-pagination { margin: 0; padding: 0.5rem; }
+#discussion .discussion-composer { flex-shrink: 0; margin: 0; border-right: 0; border-left: 0; border-bottom: 0; }
+#discussion .discussion-message--unread, #discussion .discussion-message--unread:hover { background: var(--bgColor-color-im-info, #fbf7aa); border-inline-start: 3px solid var(--color-lien-action, #3975b5); }
+#discussion .discussion-unread-divider { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1.25rem; color: var(--color-lien-action, #3975b5); font-weight: 700; }
+#discussion .discussion-unread-divider::before, #discussion .discussion-unread-divider::after { content: ''; flex: 1; border-top: 1px solid currentColor; }
+#discussion .discussion-unread-badge { color: var(--color-lien-action, #3975b5); font-size: 0.9em; font-weight: 700; }
+@media (max-width: 760px) {
+  #discussion .discussion-scroll { height: 55vh; }
+  #discussion .discussion-composer { margin: 0; }
+}
+
+#discussion #discussion-history { margin-top: auto; flex-shrink: 0; }
+#discussion .discussion-scroll > .discussion-pagination { flex-shrink: 0; }

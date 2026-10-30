@@ -59,10 +59,18 @@
       window.addEventListener('pagehide', () => window.clearInterval(presenceTimer), { once: true });
       document.addEventListener('visibilitychange', refreshPresence);
     }
+    const scroller = document.getElementById('discussion-scroll');
     let loading = false;
-    const lastPage = () => history.querySelector('.discussion-page:last-child');
+    const firstPage = () => history.querySelector('.discussion-page:first-child');
     const updateButton = () => {
-      older.hidden = lastPage().dataset.more !== 'true';
+      older.hidden = firstPage().dataset.more !== 'true';
+    };
+    const normalizeUnreadDivider = () => {
+      history.querySelectorAll('.discussion-unread-divider').forEach((divider, index) => {
+        if (index > 0) {
+          divider.remove();
+        }
+      });
     };
     const loadOlder = async () => {
       if (loading || older.hidden) {
@@ -73,13 +81,17 @@
       error.hidden = true;
       try {
         const response = await sp.ajaxRequest(discussion.dataset.history)
-            .withParam('before', lastPage().dataset.before).send();
+            .withParam('before', firstPage().dataset.before).send();
         const fragment = new DOMParser().parseFromString(response.responseText, 'text/html');
         const page = fragment.querySelector('.discussion-page');
         if (!page) {
           throw new Error('Invalid history response');
         }
-        history.appendChild(document.importNode(page, true));
+        // Measure immediately before insertion, even if the user moved while the request ran.
+        const height = scroller.scrollHeight;
+        const top = scroller.scrollTop;
+        history.prepend(document.importNode(page, true));
+        normalizeUnreadDivider();
         if (typeof applyTokenSecurity === 'function') {
           applyTokenSecurity(history);
         }
@@ -87,6 +99,7 @@
           window.DiscussionEditor.enhance(history);
         }
         updateButton();
+        scroller.scrollTop = top + scroller.scrollHeight - height;
       } catch (failure) {
         error.hidden = false;
       } finally {
@@ -95,12 +108,30 @@
       }
     };
     older.addEventListener('click', loadOlder);
+    normalizeUnreadDivider();
     updateButton();
     const observer = new IntersectionObserver(entries => {
       if (entries.some(entry => entry.isIntersecting) && error.hidden) {
         loadOlder();
       }
+    }, {root: scroller});
+    scroller.addEventListener('scroll', () => {
+      if (scroller.scrollTop <= 64 && error.hidden) {
+        loadOlder();
+      }
     });
-    observer.observe(older);
+    window.requestAnimationFrame(() => {
+      const hash = window.location.hash.slice(1);
+      const target = hash.startsWith('message-') ? document.getElementById(hash) : null;
+      const unread = history.querySelector('.discussion-unread-divider');
+      const initialTarget = target && history.contains(target) ? target : unread;
+      if (initialTarget) {
+        scroller.scrollTop += initialTarget.getBoundingClientRect().top - scroller.getBoundingClientRect().top - 8;
+      } else {
+        scroller.scrollTop = scroller.scrollHeight;
+      }
+      observer.observe(older);
+    });
+    window.addEventListener('pagehide', () => observer.disconnect(), {once: true});
   });
 })();

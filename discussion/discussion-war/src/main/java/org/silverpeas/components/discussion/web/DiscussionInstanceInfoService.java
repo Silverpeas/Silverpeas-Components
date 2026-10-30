@@ -38,7 +38,7 @@ public class DiscussionInstanceInfoService {
   private DiscussionAccess access;
 
   public Map<String, String> info(String instanceId, String language) {
-    access.require(instanceId, SilverpeasRole.READER);
+    access.require(instanceId, SilverpeasRole.WRITER);
     var component = organization.getComponentInstLight(instanceId);
     return Map.of("title", component.getLabel(language), "description",
         component.getDescription(language) == null ? "" : component.getDescription(language));

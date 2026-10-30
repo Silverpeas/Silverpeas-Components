@@ -29,15 +29,24 @@ const path = require('node:path');
 const source = fs.readFileSync(path.join(__dirname,
     '../../main/webapp/discussion/jsp/javaScript/discussion.js'), 'utf8');
 
-function browser({ more = true, fail = false, presence = false } = {}) {
+function browser({ more = true, fail = false, presence = false, unread = false } = {}) {
   const pages = [{ dataset: { before: '31', more: String(more) } }];
   const listeners = {};
   const older = { hidden: false, disabled: false,
     addEventListener: (name, handler) => { listeners[name] = handler; } };
   const error = { hidden: true };
-  const history = { querySelector: () => pages.at(-1), appendChild: page => pages.push(page) };
+  const scroll = { scrollTop: 0, scrollHeight: 1000,
+    addEventListener: (name, handler) => { listeners[name] = handler; },
+    getBoundingClientRect: () => ({top: 0}) };
+  const unreadDivider = {getBoundingClientRect: () => ({top: 170})};
+  const history = {
+    querySelector: selector => selector === '.discussion-page:first-child' ? pages[0]
+        : (unread && selector === '.discussion-unread-divider' ? unreadDivider : null),
+    querySelectorAll: () => [], contains: () => false,
+    prepend: page => { pages.unshift(page); scroll.scrollHeight += 200; }
+  };
   const nodes = { discussion: { dataset: { history: '/Rdiscussion/discussion1/history' } },
-    'discussion-history': history, 'discussion-older': older, 'discussion-error': error };
+    'discussion-history': history, 'discussion-scroll': scroll, 'discussion-older': older, 'discussion-error': error };
   const presenceError = { hidden: true };
   const classes = new Set();
   let refreshed = 0;
@@ -56,10 +65,10 @@ function browser({ more = true, fail = false, presence = false } = {}) {
   let stamped = 0;
   let intersect;
   const context = {
-    window: { setInterval: (handler, delay) => {
+    window: {location: {hash: ''}, requestAnimationFrame: handler => handler(), setInterval: (handler, delay) => {
       assert.equal(delay, 30000); timer = handler; return 1;
     }, clearInterval: () => { cleared = true; },
-    addEventListener: (name, handler) => { windowEvents[name] = handler; } },
+    addEventListener: (name, handler) => { (windowEvents[name] ||= []).push(handler); } },
     document: { addEventListener: (name, handler) => { listeners[name] = handler; },
       getElementById: id => nodes[id], importNode: node => node },
     DOMParser: class {
@@ -70,6 +79,7 @@ function browser({ more = true, fail = false, presence = false } = {}) {
     IntersectionObserver: class {
       constructor(callback) { intersect = callback; }
       observe() { /* The test controls viewport changes explicitly. */ }
+      disconnect() { /* The test has no real observer to disconnect. */ }
     },
     applyTokenSecurity: () => { stamped++; },
     sp: { ajaxRequest: url => {
@@ -94,7 +104,8 @@ function browser({ more = true, fail = false, presence = false } = {}) {
     refreshPresence: () => timer(), refreshed: () => refreshed, presenceError, classes,
     setHidden: value => { context.document.hidden = value; },
     setFailure: value => { fail = value; },
-    leave: () => windowEvents.pagehide(), cleared: () => cleared };
+    leave: () => windowEvents.pagehide.forEach(handler => handler()), cleared: () => cleared,
+    scroll, scrollUp: () => { scroll.scrollTop = 0; listeners.scroll(); } };
 }
 
 test('entering the viewport loads one older page using the exclusive cursor and stamps its forms', async () => {
@@ -165,4 +176,23 @@ test('a failed presence refresh hides stale indicators until a successful retry'
   assert.equal(view.presenceError.hidden, true);
   assert.equal(view.classes.has('is-stale'), false);
   assert.equal(view.refreshed(), 1);
+});
+
+
+test('new conversations open at the bottom and unread messages take priority when visible', () => {
+  const recent = browser();
+  assert.equal(recent.scroll.scrollTop, recent.scroll.scrollHeight);
+  const unseen = browser({unread: true});
+  assert.equal(unseen.scroll.scrollTop, 162);
+});
+
+test('scrolling up prepends older history and compensates its height without jumping', async () => {
+  const view = browser();
+  view.scrollUp();
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(view.requests.length, 1);
+  assert.equal(view.requests[0].before, '31');
+  assert.equal(view.pages[0].dataset.before, '1');
+  assert.equal(view.scroll.scrollTop, 200);
+  assert.equal(view.older.hidden, true);
 });

@@ -36,13 +36,19 @@
 <fmt:message key="discussion.like" var="likeLabel"/>
 <fmt:message key="discussion.unlike" var="unlikeLabel"/>
 <div class="discussion-page" data-before="${messagePage.nextBefore}" data-more="${messagePage.hasMore}">
-  <c:forEach items="${messagePage.messages}" var="message">
-    <article id="message-${message.id}" class="discussion-message ${currentUser.id eq message.creatorId ? 'discussion-message--own' : ''}" data-sequence="${message.sequenceNumber}">
+  <c:set var="unreadBoundaryShown" value="${false}"/>
+  <c:forEach items="${messagePage.chronologicalMessages}" var="message">
+    <c:if test="${message.unread and not unreadBoundaryShown}">
+      <div class="discussion-unread-divider" role="separator" aria-label="<fmt:message key='discussion.unread'/>"><span><fmt:message key="discussion.unread"/></span></div>
+      <c:set var="unreadBoundaryShown" value="${true}"/>
+    </c:if>
+    <article id="message-${message.id}" class="discussion-message ${message.unread ? 'discussion-message--unread' : ''} ${currentUser.id eq message.creatorId ? 'discussion-message--own' : ''}" data-sequence="${message.sequenceNumber}">
       <div class="discussion-avatar" aria-hidden="true"><c:out value="${fn:toUpperCase(fn:substring(message.creator.displayedName, 0, 1))}"/></div>
       <div class="discussion-message-content">
         <header class="discussion-message-header">
           <span class="discussion-author"><c:out value="${message.creator.displayedName}"/></span>
           <time><fmt:formatDate value="${message.creationDate}" type="both" dateStyle="short" timeStyle="short"/></time>
+          <c:if test="${message.unread}"><span class="discussion-unread-badge"><fmt:message key="discussion.unreadMessage"/></span></c:if>
         </header>
         <c:choose>
           <c:when test="${message.deleted}"><p class="discussion-deleted"><fmt:message key="discussion.deleted"/></p></c:when>

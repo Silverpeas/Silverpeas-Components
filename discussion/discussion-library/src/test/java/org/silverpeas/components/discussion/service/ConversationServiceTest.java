@@ -87,6 +87,7 @@ class ConversationServiceTest {
       current.when(User::getCurrentRequester).thenReturn(user);
       var page = service.history("discussion1", 5, 2);
       assertEquals(List.of(one, two), page.messages());
+      assertEquals(List.of(two, one), page.getChronologicalMessages());
       assertEquals(3, page.nextBefore());
       assertTrue(page.hasMore());
       assertEquals(3, page.unreadCount());
@@ -104,7 +105,7 @@ class ConversationServiceTest {
 
   @Test
   void inaccessibleHistoryDoesNotReadTheDatabase() {
-    when(access.require("discussion1", SilverpeasRole.READER)).thenThrow(SecurityException.class);
+    when(access.require("discussion1", SilverpeasRole.WRITER)).thenThrow(SecurityException.class);
     assertThrows(SecurityException.class, () -> service.history("discussion1", 10, 30));
     verifyNoInteractions(conversations, messages);
   }
@@ -209,7 +210,7 @@ class ConversationServiceTest {
   void participantListingIsScopedToTheAuthorizedConversation() {
     when(messages.authorIds("conversation")).thenReturn(List.of("a", "b"));
     assertEquals(List.of("a", "b"), service.participantIds("discussion1"));
-    when(access.require("discussion1", SilverpeasRole.READER)).thenThrow(SecurityException.class);
+    when(access.require("discussion1", SilverpeasRole.WRITER)).thenThrow(SecurityException.class);
     clearInvocations(conversations, messages);
     assertThrows(SecurityException.class, () -> service.participantIds("discussion1"));
     verifyNoInteractions(conversations, messages);
@@ -229,7 +230,7 @@ class ConversationServiceTest {
       verify(likes, times(1)).save(any(DiscussionLike.class));
       service.setLike("discussion1", "message", false);
       verify(likes).delete(reaction);
-      verify(access, times(3)).require("discussion1", SilverpeasRole.READER);
+      verify(access, times(3)).require("discussion1", SilverpeasRole.WRITER);
     }
   }
 
@@ -264,6 +265,39 @@ class ConversationServiceTest {
       when(message.getConversationId()).thenReturn("another");
       assertThrows(IllegalArgumentException.class, () -> service.historyAround("discussion1", "message"));
     }
+  }
+
+  @Test
+  void unreadFlagsUseTheReadingPositionAndExcludeOwnAndDeletedMessages() {
+    var read = mock(DiscussionReadState.class);
+    when(read.getLastReadSequence()).thenReturn(3L);
+    when(readStates.find("conversation", "user")).thenReturn(Optional.of(read));
+    var unseen = historyMessage(6, "other", false);
+    var own = historyMessage(5, "user", false);
+    var deleted = historyMessage(4, "other", true);
+    var seen = historyMessage(3, "other", false);
+    when(messages.history("conversation", Long.MAX_VALUE, 31))
+        .thenReturn(List.of(unseen, own, deleted, seen));
+    when(messages.unread("conversation", "user", 3)).thenReturn(1L);
+    try (MockedStatic<User> current = mockStatic(User.class)) {
+      current.when(User::getCurrentRequester).thenReturn(user);
+      var page = service.history("discussion1", Long.MAX_VALUE, 30);
+      assertEquals(List.of(seen, deleted, own, unseen), page.getChronologicalMessages());
+      assertEquals(3, page.nextBefore());
+      assertEquals(1, page.unreadCount());
+      verify(unseen).setUnread(true);
+      verify(own).setUnread(false);
+      verify(deleted).setUnread(false);
+      verify(seen).setUnread(false);
+    }
+  }
+
+  private DiscussionMessage historyMessage(long sequence, String author, boolean deleted) {
+    var message = mock(DiscussionMessage.class);
+    when(message.getSequenceNumber()).thenReturn(sequence);
+    when(message.getCreatorId()).thenReturn(author);
+    when(message.isDeleted()).thenReturn(deleted);
+    return message;
   }
 
   private DiscussionMessage existingMessage(String author) {

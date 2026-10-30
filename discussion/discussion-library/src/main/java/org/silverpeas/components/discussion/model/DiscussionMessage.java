@@ -26,6 +26,7 @@ package org.silverpeas.components.discussion.model;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import jakarta.persistence.UniqueConstraint;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
@@ -45,6 +46,12 @@ public class DiscussionMessage extends SilverpeasJpaEntity<DiscussionMessage, Uu
   private String body;
   @Column(nullable = false)
   private boolean deleted;
+
+  @Transient
+  private boolean unread;
+
+  public boolean isUnread() { return unread; }
+  public void setUnread(boolean unread) { this.unread = unread; }
 
   protected DiscussionMessage() {
     // JPA constructor.

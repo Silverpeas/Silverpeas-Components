@@ -37,14 +37,15 @@ public class DiscussionAccess {
   private ComponentAccessController accessController;
 
   public SilverpeasRole require(String instanceId, SilverpeasRole minimum) {
+    SilverpeasRole requiredRole = minimum == SilverpeasRole.READER ? SilverpeasRole.WRITER : minimum;
     User user = User.getCurrentRequester();
     if (user == null || !accessController.isUserAuthorized(user.getId(), instanceId)) {
       throw new SecurityException("Discussion access denied");
     }
     SilverpeasRole role = SilverpeasRole.getHighestFrom(accessController.getUserRoles(
         user.getId(), instanceId, AccessControlContext.init()));
-    if (role == null || !role.isGreaterThanOrEquals(minimum)
-        || (minimum != SilverpeasRole.READER && (user.isAccessGuest() || user.isAnonymous()))) {
+    if (role == null || !role.isGreaterThanOrEquals(requiredRole)
+        || user.isAccessGuest() || user.isAnonymous()) {
       throw new SecurityException("Discussion operation denied");
     }
     return role;

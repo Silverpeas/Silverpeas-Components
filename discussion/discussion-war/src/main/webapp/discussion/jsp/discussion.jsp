@@ -72,31 +72,32 @@
       </template>
       <div class="discussion-workspace">
         <div class="discussion-stream">
-      <c:if test="${canWrite}">
-        <form class="discussion-composer" method="post" action="${base}messages/add">
-          <label for="discussion-body"><fmt:message key="discussion.compose"/></label>
-          <textarea id="discussion-body" name="body" maxlength="2000" required aria-describedby="discussion-compose-hint"
-              placeholder="<fmt:message key='discussion.placeholder'/>"></textarea>
-          <div class="discussion-composer-footer">
-            <span id="discussion-compose-hint" class="discussion-hint"><fmt:message key="discussion.hint"/></span>
-            <button class="sp_button discussion-button--primary" type="submit"><fmt:message key="discussion.post"/></button>
+          <div id="discussion-scroll" class="discussion-scroll" tabindex="0" role="region" aria-label="<fmt:message key='discussion.history'/>">
+            <div class="discussion-pagination">
+              <button id="discussion-older" class="button discussion-button--quiet" type="button"><fmt:message key="discussion.older"/></button>
+            </div>
+            <p id="discussion-error" role="status" hidden><fmt:message key="discussion.error"/></p>
+            <section id="discussion-history" aria-label="<fmt:message key='discussion.history'/>">
+              <c:if test="${empty messagePage.messages}">
+                <div class="discussion-empty">
+                  <h3><fmt:message key="discussion.empty"/></h3>
+                  <p><fmt:message key="discussion.emptyHint"/></p>
+                </div>
+              </c:if>
+              <jsp:include page="messages.jsp"/>
+            </section>
           </div>
-        </form>
-      </c:if>
-      <section id="discussion-history" aria-label="<fmt:message key='discussion.history'/>">
-        <h2 class="discussion-history-title"><fmt:message key="discussion.history"/></h2>
-        <c:if test="${empty messagePage.messages}">
-          <div class="discussion-empty">
-            <h3><fmt:message key="discussion.empty"/></h3>
-            <p><fmt:message key="discussion.emptyHint"/></p>
-          </div>
-        </c:if>
-        <jsp:include page="messages.jsp"/>
-      </section>
-      <p id="discussion-error" role="status" hidden><fmt:message key="discussion.error"/></p>
-      <div class="discussion-pagination">
-        <button id="discussion-older" class="button discussion-button--quiet" type="button"><fmt:message key="discussion.older"/></button>
-      </div>
+          <c:if test="${canWrite}">
+            <form class="discussion-composer" method="post" action="${base}messages/add">
+              <label for="discussion-body"><fmt:message key="discussion.compose"/></label>
+              <textarea id="discussion-body" name="body" maxlength="2000" required aria-describedby="discussion-compose-hint"
+                  placeholder="<fmt:message key='discussion.placeholder'/>"></textarea>
+              <div class="discussion-composer-footer">
+                <span id="discussion-compose-hint" class="discussion-hint"><fmt:message key="discussion.hint"/></span>
+                <button class="sp_button discussion-button--primary" type="submit"><fmt:message key="discussion.post"/></button>
+              </div>
+            </form>
+          </c:if>
         </div>
         <aside class="discussion-sidebar" aria-labelledby="discussion-people-heading">
           <div id="discussion-participants"><jsp:include page="participants.jsp"/></div>

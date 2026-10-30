@@ -63,7 +63,7 @@ class DiscussionAccessTest {
         .thenReturn(Set.of(SilverpeasRole.READER));
     try (MockedStatic<User> current = mockStatic(User.class)) {
       current.when(User::getCurrentRequester).thenReturn(user);
-      assertEquals(SilverpeasRole.READER, access.require("discussion1", SilverpeasRole.READER));
+      assertThrows(SecurityException.class, () -> access.require("discussion1", SilverpeasRole.READER));
       assertThrows(SecurityException.class, () -> access.require("discussion1", SilverpeasRole.WRITER));
       when(controller.getUserRoles(eq("user"), eq("discussion1"), any()))
           .thenReturn(Set.of(SilverpeasRole.WRITER));

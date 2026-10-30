@@ -70,6 +70,7 @@ public class DiscussionWebController extends
   }
 
   @GET
+  @LowestRoleAccess(SilverpeasRole.WRITER)
   @Path("Main")
   @Homepage
   @RedirectToInternalJsp("discussion.jsp")
@@ -79,6 +80,7 @@ public class DiscussionWebController extends
   }
 
   @GET
+  @LowestRoleAccess(SilverpeasRole.WRITER)
   @Path("messages/{id}")
   @RedirectToInternalJsp("discussion.jsp")
   public void message(DiscussionWebRequestContext context) {
@@ -104,6 +106,7 @@ public class DiscussionWebController extends
   }
 
   @POST
+  @LowestRoleAccess(SilverpeasRole.WRITER)
   @Path("messages/{id}/like")
   @RedirectToInternalJsp("like.jsp")
   public void like(DiscussionWebRequestContext context) {
@@ -116,6 +119,7 @@ public class DiscussionWebController extends
   }
 
   @GET
+  @LowestRoleAccess(SilverpeasRole.WRITER)
   @Path("history")
   @RedirectToInternalJsp("messages.jsp")
   public void history(DiscussionWebRequestContext context) {
@@ -123,6 +127,7 @@ public class DiscussionWebController extends
   }
 
   @GET
+  @LowestRoleAccess(SilverpeasRole.WRITER)
   @Path("participants")
   @RedirectToInternalJsp("participants.jsp")
   public void participants(DiscussionWebRequestContext context) {
@@ -178,6 +183,7 @@ public class DiscussionWebController extends
   }
 
   @POST
+  @LowestRoleAccess(SilverpeasRole.WRITER)
   @Path("read")
   @RedirectToInternal("Main")
   public void markRead(DiscussionWebRequestContext context) {
