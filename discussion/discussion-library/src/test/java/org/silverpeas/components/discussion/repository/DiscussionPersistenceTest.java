@@ -55,6 +55,8 @@ class DiscussionPersistenceTest {
   private DiscussionMessageRepository messages;
   @TestedBean
   private DiscussionReadStateRepository reads;
+  @TestedBean
+  private DiscussionLikeRepository likes;
   private SessionFactory factory;
   private Session session;
 
@@ -70,7 +72,7 @@ class DiscussionPersistenceTest {
       statement.executeBatch();
     }
     factory = new Configuration().addAnnotatedClass(Conversation.class)
-        .addAnnotatedClass(DiscussionMessage.class).addAnnotatedClass(DiscussionReadState.class)
+        .addAnnotatedClass(DiscussionLike.class).addAnnotatedClass(DiscussionMessage.class).addAnnotatedClass(DiscussionReadState.class)
         .setProperty("hibernate.connection.url", URL)
         .setProperty("hibernate.connection.username", "sa")
         .setProperty("hibernate.connection.password", "")
@@ -147,13 +149,85 @@ class DiscussionPersistenceTest {
   void allVendorScriptsAreCompatibleWithTheInstallerStatementSplitter() throws Exception {
     for (String database : List.of("h2", "postgresql", "mssql", "oracle")) {
       List<String> statements = installerStatements(database);
-      assertEquals(4, statements.size(), database);
+      assertEquals(5, statements.size(), database);
       for (String statement : statements) {
         String executable = statement.lines()
             .filter(line -> !line.stripLeading().startsWith("--"))
             .collect(Collectors.joining("\n")).strip();
         assertTrue(executable.startsWith("CREATE TABLE ") || executable.startsWith("CREATE INDEX "),
             database + ": " + executable);
+      }
+    }
+  }
+
+  @Test
+  void likesAreUniqueAndCountsAreScopedAndCanBeCleanedUp() {
+    session.createNativeMutationQuery("""
+        insert into sc_discussion_like
+        (id, conversationId, messageId, userId, createDate, createdBy, lastUpdateDate, lastUpdatedBy, version)
+        values ('like1', 'c1', 'm1', 'user', CURRENT_TIMESTAMP, 'user', CURRENT_TIMESTAMP, 'user', 0),
+               ('like2', 'c1', 'm1', 'other', CURRENT_TIMESTAMP, 'other', CURRENT_TIMESTAMP, 'other', 0),
+               ('like3', 'c2', 'm5', 'user', CURRENT_TIMESTAMP, 'user', CURRENT_TIMESTAMP, 'user', 0)
+        """).executeUpdate();
+    var states = likes.states("c1", List.of("m1", "m5"), "user");
+    assertEquals(2, states.get("m1").count());
+    assertTrue(states.get("m1").liked());
+    assertFalse(states.containsKey("m5"));
+    assertTrue(likes.find("m1", "user").isPresent());
+    likes.deleteMessage("m1");
+    assertTrue(likes.states("c1", List.of("m1"), "user").isEmpty());
+    assertFalse(likes.states("c2", List.of("m5"), "user").isEmpty());
+    likes.deleteConversation("c2");
+    assertTrue(likes.find("m5", "user").isEmpty());
+  }
+
+  @Test
+  void theDatabaseRejectsDuplicateLikesForTheSameMessageAndUser() {
+    String insert = """
+        insert into sc_discussion_like
+        (id, conversationId, messageId, userId, createDate, createdBy, lastUpdateDate, lastUpdatedBy, version)
+        values (:id, 'c1', 'm1', 'user', CURRENT_TIMESTAMP, 'user', CURRENT_TIMESTAMP, 'user', 0)
+        """;
+    session.createNativeMutationQuery(insert).setParameter("id", "unique-like").executeUpdate();
+    assertThrows(jakarta.persistence.PersistenceException.class,
+        () -> session.createNativeMutationQuery(insert).setParameter("id", "duplicate-like").executeUpdate());
+  }
+
+  @Test
+  void developmentUpdateAddsLikesToTheOriginal001SchemaWithoutLosingMessages() throws Exception {
+    try (var connection = DriverManager.getConnection("jdbc:h2:mem:developmentUpdate", "sa", "");
+         var statement = connection.createStatement()) {
+      // Rebuild the original 001 from its first four statements, then apply only the additive script.
+      for (String sql : installerStatements("h2").subList(0, 4)) {
+        statement.execute(sql);
+      }
+      statement.execute("""
+          insert into sc_discussion_conversation
+          (id, instanceId, scopeKey, lastSequence, createDate, createdBy, lastUpdateDate, lastUpdatedBy, version)
+          values ('existing', 'discussion99', 'main', 0, CURRENT_TIMESTAMP, 'user', CURRENT_TIMESTAMP, 'user', 0)
+          """);
+      statement.execute("""
+          insert into sc_discussion_message
+          (id, conversationId, sequenceNumber, body, deleted, createDate, createdBy, lastUpdateDate, lastUpdatedBy, version)
+          values ('kept', 'existing', 1, 'Preserved message', false, CURRENT_TIMESTAMP, 'user', CURRENT_TIMESTAMP, 'user', 0)
+          """);
+      try (var input = getClass().getResourceAsStream("/migrations/db/h2/discussion/001/add_likes.sql")) {
+        assertNotNull(input);
+        for (String sql : new String(input.readAllBytes(), StandardCharsets.UTF_8).split(";")) {
+          if (!sql.isBlank()) { statement.execute(sql); }
+        }
+      }
+      try (var rows = statement.executeQuery("select count(*) from sc_discussion_conversation")) {
+        assertTrue(rows.next());
+        assertEquals(1, rows.getInt(1));
+      }
+      try (var rows = statement.executeQuery("select body from sc_discussion_message where id = 'kept'")) {
+        assertTrue(rows.next());
+        assertEquals("Preserved message", rows.getString(1));
+      }
+      try (var rows = statement.executeQuery("select count(*) from sc_discussion_like")) {
+        assertTrue(rows.next());
+        assertEquals(0, rows.getInt(1));
       }
     }
   }

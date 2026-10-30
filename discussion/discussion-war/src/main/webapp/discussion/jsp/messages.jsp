@@ -30,9 +30,14 @@
 <%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view" %>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <c:url var="base" value="${requestScope.componentUriBase}"/>
+<c:url var="discussionIcons" value="/discussion/jsp/icons/discussion-icons.svg"/>
+<fmt:message key="discussion.edit" var="editLabel"/>
+<fmt:message key="discussion.delete" var="deleteLabel"/>
+<fmt:message key="discussion.like" var="likeLabel"/>
+<fmt:message key="discussion.unlike" var="unlikeLabel"/>
 <div class="discussion-page" data-before="${messagePage.nextBefore}" data-more="${messagePage.hasMore}">
   <c:forEach items="${messagePage.messages}" var="message">
-    <article class="discussion-message ${currentUser.id eq message.creatorId ? 'discussion-message--own' : ''}" data-sequence="${message.sequenceNumber}">
+    <article id="message-${message.id}" class="discussion-message ${currentUser.id eq message.creatorId ? 'discussion-message--own' : ''}" data-sequence="${message.sequenceNumber}">
       <div class="discussion-avatar" aria-hidden="true"><c:out value="${fn:toUpperCase(fn:substring(message.creator.displayedName, 0, 1))}"/></div>
       <div class="discussion-message-content">
         <header class="discussion-message-header">
@@ -43,10 +48,11 @@
           <c:when test="${message.deleted}"><p class="discussion-deleted"><fmt:message key="discussion.deleted"/></p></c:when>
           <c:otherwise>
             <p class="discussion-body"><c:out value="${message.body}"/></p>
+            <div class="discussion-message-footer">
             <c:if test="${canWrite and (currentUser.id eq message.creatorId or highestUserRole.name() eq 'ADMIN')}">
               <div class="discussion-actions">
                 <details class="discussion-edit">
-                  <summary><fmt:message key="discussion.edit"/></summary>
+                  <summary class="discussion-icon-button" title="${fn:escapeXml(editLabel)}" aria-label="${fn:escapeXml(editLabel)}"><svg class="discussion-icon" aria-hidden="true"><use href="${discussionIcons}#edit"/></svg></summary>
                   <form method="post" action="${base}messages/${message.id}/edit">
                     <input type="hidden" name="version" value="${message.version}"/>
                     <textarea name="body" maxlength="2000" required aria-label="<fmt:message key='discussion.message'/>"><c:out value="${message.body}"/></textarea>
@@ -55,10 +61,29 @@
                 </details>
                 <form class="discussion-delete" method="post" action="${base}messages/${message.id}/delete">
                   <input type="hidden" name="version" value="${message.version}"/>
-                  <button class="link discussion-button--danger" type="submit"><fmt:message key="discussion.delete"/></button>
+                  <button class="discussion-icon-button discussion-button--danger" type="submit" title="${fn:escapeXml(deleteLabel)}" aria-label="${fn:escapeXml(deleteLabel)}"><svg class="discussion-icon" aria-hidden="true"><use href="${discussionIcons}#delete"/></svg></button>
                 </form>
               </div>
             </c:if>
+            <c:set var="reaction" value="${messageLikes[message.id]}"/>
+            <c:choose>
+              <c:when test="${canReact}">
+                <form class="discussion-like-form" method="post" action="${base}messages/${message.id}/like"
+                    data-like-label="${fn:escapeXml(likeLabel)}" data-unlike-label="${fn:escapeXml(unlikeLabel)}">
+                  <input type="hidden" name="liked" value="${empty reaction or not reaction.liked}"/>
+                  <button class="discussion-icon-button discussion-like-button" type="submit"
+                      aria-pressed="${not empty reaction and reaction.liked}"
+                      aria-label="${fn:escapeXml(not empty reaction and reaction.liked ? unlikeLabel : likeLabel)}"
+                      title="${fn:escapeXml(not empty reaction and reaction.liked ? unlikeLabel : likeLabel)}">
+                    <svg class="discussion-icon" aria-hidden="true"><use href="${discussionIcons}#heart"/></svg>
+                    <span class="discussion-like-count"><c:out value="${empty reaction ? 0 : reaction.count}"/></span>
+                  </button>
+                  <span class="discussion-like-error" role="status" hidden><fmt:message key="discussion.likeError"/></span>
+                </form>
+              </c:when>
+              <c:otherwise><span class="discussion-readonly-likes"><svg class="discussion-icon" aria-hidden="true"><use href="${discussionIcons}#heart"/></svg> <c:out value="${empty reaction ? 0 : reaction.count}"/></span></c:otherwise>
+            </c:choose>
+            </div>
           </c:otherwise>
         </c:choose>
       </div>

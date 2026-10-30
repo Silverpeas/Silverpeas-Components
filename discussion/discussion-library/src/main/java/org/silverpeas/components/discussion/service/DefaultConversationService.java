@@ -24,6 +24,9 @@
 package org.silverpeas.components.discussion.service;
 
 import java.util.List;
+import java.util.Map;
+import org.silverpeas.components.discussion.model.DiscussionLike;
+import org.silverpeas.components.discussion.repository.DiscussionLikeRepository;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.persistence.OptimisticLockException;
@@ -48,6 +51,11 @@ public class DefaultConversationService implements ConversationService {
   private DiscussionReadStateRepository readStates;
   @Inject
   private DiscussionAccess access;
+
+  @Inject
+  private DiscussionLikeRepository likes;
+  @Inject
+  private DiscussionMentionService mentions;
 
   @Override
   public List<String> participantIds(String instanceId) {
@@ -78,34 +86,86 @@ public class DefaultConversationService implements ConversationService {
   public void publish(String instanceId, String body) {
     access.require(instanceId, SilverpeasRole.WRITER);
     Conversation conversation = conversations.main(instanceId, true);
-    var message = new DiscussionMessage(conversation.getId(), conversation.nextSequence(), body);
+    var message = new DiscussionMessage(conversation.getId(), conversation.nextSequence(), mentions.normalize(instanceId, body));
     message.createdBy(User.getCurrentRequester());
     messages.save(message);
+    mentions.notifyNewMentions(instanceId, message, "");
   }
 
   @Override
   public void edit(String instanceId, String messageId, long version, String body) {
     DiscussionMessage message = editable(instanceId, messageId, version);
-    message.edit(body);
+    String previousBody = message.getBody();
+    message.edit(mentions.normalize(instanceId, body));
     message.updatedBy(User.getCurrentRequester());
     messages.save(message);
+    mentions.notifyNewMentions(instanceId, message, previousBody);
   }
 
   @Override
   public void delete(String instanceId, String messageId, long version) {
     DiscussionMessage message = editable(instanceId, messageId, version);
+    likes.deleteMessage(messageId);
     message.delete();
     message.updatedBy(User.getCurrentRequester());
     messages.save(message);
   }
 
-  private DiscussionMessage editable(String instanceId, String messageId, long version) {
-    SilverpeasRole role = access.require(instanceId, SilverpeasRole.WRITER);
+  @Override
+  public Map<String, LikeState> likeStates(String instanceId, List<String> messageIds) {
+    access.require(instanceId, SilverpeasRole.READER);
+    if (messageIds.size() > 100) {
+      throw new IllegalArgumentException("Too many message identifiers");
+    }
+    Conversation conversation = conversations.main(instanceId, false);
+    return likes.states(conversation.getId(), messageIds, User.getCurrentRequester().getId());
+  }
+
+  @Override
+  public LikeState setLike(String instanceId, String messageId, boolean liked) {
+    access.require(instanceId, SilverpeasRole.READER);
+    User user = User.getCurrentRequester();
+    if (user.isAnonymous() || user.isAccessGuest()) {
+      throw new SecurityException("A user account is required to react");
+    }
     Conversation conversation = conversations.main(instanceId, true);
+    DiscussionMessage message = messageIn(conversation, messageId);
+    if (message.isDeleted()) {
+      throw new IllegalArgumentException("Deleted message");
+    }
+    var previous = likes.find(messageId, user.getId());
+    if (liked && previous.isEmpty()) {
+      var reaction = new DiscussionLike(conversation.getId(), messageId, user.getId());
+      reaction.createdBy(user);
+      likes.save(reaction);
+    } else if (!liked && previous.isPresent()) {
+      likes.delete(previous.orElseThrow());
+    }
+    likes.flush();
+    return likes.states(conversation.getId(), List.of(messageId), user.getId())
+        .getOrDefault(messageId, new LikeState(0, false));
+  }
+
+  @Override
+  public MessagePage historyAround(String instanceId, String messageId) {
+    access.require(instanceId, SilverpeasRole.READER);
+    Conversation conversation = conversations.main(instanceId, false);
+    DiscussionMessage message = messageIn(conversation, messageId);
+    return history(instanceId, message.getSequenceNumber() + 1, 30);
+  }
+
+  private DiscussionMessage messageIn(Conversation conversation, String messageId) {
     DiscussionMessage message = messages.getById(messageId);
     if (message == null || !conversation.getId().equals(message.getConversationId())) {
       throw new IllegalArgumentException("Unknown discussion message");
     }
+    return message;
+  }
+
+  private DiscussionMessage editable(String instanceId, String messageId, long version) {
+    SilverpeasRole role = access.require(instanceId, SilverpeasRole.WRITER);
+    Conversation conversation = conversations.main(instanceId, true);
+    DiscussionMessage message = messageIn(conversation, messageId);
     if (role != SilverpeasRole.ADMIN &&
         !User.getCurrentRequester().getId().equals(message.getCreatorId())) {
       throw new SecurityException("Only the author or a manager can change this message");

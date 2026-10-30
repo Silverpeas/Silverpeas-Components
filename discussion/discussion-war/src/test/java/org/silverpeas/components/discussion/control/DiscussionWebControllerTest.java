@@ -48,6 +48,10 @@ class DiscussionWebControllerTest {
   private ConversationService service;
   @TestManagedMock
   private org.silverpeas.components.discussion.web.DiscussionParticipantService participants;
+  @TestManagedMock
+  private org.silverpeas.components.discussion.web.DiscussionInstanceInfoService info;
+  @TestManagedMock
+  private org.silverpeas.components.discussion.service.DiscussionMentionService mentions;
   private DiscussionWebController controller;
   private DiscussionWebRequestContext context;
   private HttpRequest request;
@@ -58,6 +62,7 @@ class DiscussionWebControllerTest {
     when(main.getFavoriteLanguage()).thenReturn("fr");
     var component = mock(ComponentContext.class);
     when(component.getCurrentComponentName()).thenReturn("discussion");
+    when(service.history(anyString(), anyLong(), anyInt())).thenReturn(new MessagePage(List.of(), 1, false, 0, 0));
     controller = new DiscussionWebController(main, component);
     context = mock(DiscussionWebRequestContext.class);
     request = mock(HttpRequest.class);
@@ -136,6 +141,22 @@ class DiscussionWebControllerTest {
     when(context.getResponse()).thenReturn(response);
     controller.beforeRequestProcessing(context);
     verify(response).setHeader("Cache-Control", "no-store");
+  }
+  @Test
+  void likeRequiresAnExplicitBooleanAndUsesTheSessionInstance() {
+    when(request.getParameter("liked")).thenReturn("true");
+    controller.like(context);
+    verify(service).setLike("discussion1", "message", true);
+    when(request.getParameter("liked")).thenReturn("invalid");
+    assertEquals(400, assertThrows(WebApplicationException.class, () -> controller.like(context))
+        .getResponse().getStatus());
+  }
+  @Test
+  void readOnlyViewsDoNotExposeTheMentionDirectory() {
+    when(context.getHighestUserRole()).thenReturn(SilverpeasRole.READER);
+    controller.home(context);
+    verifyNoInteractions(mentions);
+    verify(request).setAttribute("mentionCandidates", List.of());
   }
 
 }

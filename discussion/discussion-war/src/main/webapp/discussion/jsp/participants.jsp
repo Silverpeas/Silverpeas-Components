@@ -31,7 +31,6 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <div class="discussion-participants-list">
   <h2 id="discussion-people-heading"><fmt:message key="discussion.participants"/> <span class="discussion-people-count"><c:out value="${fn:length(participants)}"/></span></h2>
-  <p class="discussion-presence-hint"><fmt:message key="discussion.presenceHint"/></p>
   <c:if test="${empty participants}"><p><fmt:message key="discussion.noParticipants"/></p></c:if>
   <ul>
     <c:forEach items="${participants}" var="participant">

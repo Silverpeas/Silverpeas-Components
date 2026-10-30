@@ -24,10 +24,14 @@
 package org.silverpeas.components.discussion.service;
 
 import java.util.List;
+import java.util.Map;
 
 /** Dedicated conversation engine, independent of comments and instant messaging. */
 public interface ConversationService {
   List<String> participantIds(String instanceId);
+  Map<String, LikeState> likeStates(String instanceId, List<String> messageIds);
+  LikeState setLike(String instanceId, String messageId, boolean liked);
+  MessagePage historyAround(String instanceId, String messageId);
   MessagePage history(String instanceId, long before, int limit);
   void publish(String instanceId, String body);
   void edit(String instanceId, String messageId, long version, String body);

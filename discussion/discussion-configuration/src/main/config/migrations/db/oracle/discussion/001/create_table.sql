@@ -60,3 +60,18 @@ CREATE TABLE sc_discussion_read (
   CONSTRAINT uq_discussion_reader UNIQUE (conversationId, userId)
 );
 CREATE INDEX idx_discussion_unread ON sc_discussion_message (conversationId, deleted, sequenceNumber);
+
+CREATE TABLE sc_discussion_like (
+  id VARCHAR(40) PRIMARY KEY,
+  conversationId VARCHAR(40) NOT NULL,
+  messageId VARCHAR(40) NOT NULL,
+  userId VARCHAR(40) NOT NULL,
+  createDate TIMESTAMP NOT NULL,
+  createdBy VARCHAR(40) NOT NULL,
+  lastUpdateDate TIMESTAMP NOT NULL,
+  lastUpdatedBy VARCHAR(40) NOT NULL,
+  version NUMBER(19, 0) NOT NULL,
+  CONSTRAINT fk_discussion_like_message FOREIGN KEY (messageId) REFERENCES sc_discussion_message(id),
+  CONSTRAINT fk_discussion_like_conv FOREIGN KEY (conversationId) REFERENCES sc_discussion_conversation(id),
+  CONSTRAINT uq_discussion_like UNIQUE (messageId, userId)
+);
