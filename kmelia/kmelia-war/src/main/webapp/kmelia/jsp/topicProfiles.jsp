@@ -54,6 +54,7 @@ if ("ThisTopic".equals(rightsDependsOn)) {
 }
 %>
 <c:set var="explainRightsDependsOn" value='<%=resources.getString("kmelia.RightsDependsOn"+rightsDependsOn)%>'/>
+<!DOCTYPE html>
 <html>
 <head>
 <view:looknfeel withFieldsetStyle="true"/>

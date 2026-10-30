@@ -204,8 +204,8 @@
 <c:set var="message" value="<%=message%>"/>
 <c:set var="messageRaterRatingEntity" value="<%=RaterRatingEntity.fromRateable(message)%>"/>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.forums" xml:lang="${requestScope.resources.language}">
+<!DOCTYPE html>
+<html id="ng-app" ng-app="silverpeas.forums" lang="${requestScope.resources.language}">
 <head>
     <title><c:out value="${pageScope.title}" /></title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -233,7 +233,7 @@
           jQuery.popup.confirm('<%=resource.getString("emptyMessageText")%>');
         } else {
           sp.editor.wysiwyg.lastBackupManager.clear();
-          $(document.forumsForm).submit();
+          $(document.forumsForm).trigger('submit');
         }
       }
 

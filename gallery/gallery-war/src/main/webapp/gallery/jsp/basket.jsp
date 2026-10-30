@@ -54,6 +54,7 @@
 <fmt:message key="gallery.export.basket" var="exportBasketLabel"/>
 <fmt:message key="gallery.exported.basket" var="exportedBasketLabel"/>
 
+<!DOCTYPE html>
 <html>
 <head>
 <view:looknfeel/>
@@ -165,7 +166,7 @@ function callExport() {
   $.progressMessage();
 }
 
-$(document).ready(function() {
+$(function() {
   <c:if test="${userSelectionAlert}">
   <fmt:message var="msgAlert" key="gallery.basket.media.type.alert"/>
   notyWarning('${msgAlert}');

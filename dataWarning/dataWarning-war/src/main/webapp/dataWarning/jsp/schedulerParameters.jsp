@@ -32,6 +32,7 @@
   DataWarningScheduler scheduler = (DataWarningScheduler) request.getAttribute("scheduler");
   int i;
 %>
+<!DOCTYPE html>
 <HTML>
 <HEAD>
 <view:looknfeel withCheckFormScript="true"/>

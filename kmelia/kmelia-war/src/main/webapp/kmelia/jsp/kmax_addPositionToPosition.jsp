@@ -45,6 +45,7 @@ Button cancelButton = gef.getFormButton(kmeliaScc.getString("GML.cancel"), "java
 Button validateButton = gef.getFormButton(kmeliaScc.getString("GML.validate"), "javascript:onClick=sendData()", false);
 
 %>
+<!DOCTYPE html>
 <HTML>
 <HEAD>
 <TITLE><%=kmeliaScc.getString("ComponentCreationTitle")%></TITLE>

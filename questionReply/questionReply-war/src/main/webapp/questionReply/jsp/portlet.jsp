@@ -23,7 +23,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 --%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
@@ -40,7 +40,7 @@
 	Collection	categories	= (Collection) request.getAttribute("Categories");
 %>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 <head>
   <title><fmt:message key="GML.popupTitle"/></title>
   <view:looknfeel />
@@ -131,7 +131,7 @@ function bindCategoryEvent() {
     });
 }
 
-$(document).ready(function() {
+$(function() {
   bindCategoryEvent();
   bindQuestionsEvent();
   $('.questions').hide();
@@ -139,12 +139,11 @@ $(document).ready(function() {
   $("ul li:first-child").addClass('select');
   $("ul li:first-child .categoryTitle").trigger($.Event("click"));
 
-  $('.category').hover(function() {
+  $('.category').on('mouseenter', function() {
       $(this).addClass('hover');
-    }, function() {
+    }).on('mouseleave', function() {
       $(this).removeClass('hover');
-    }
-  );
+    });
 
 });
   <fmt:message key="questionReply.link" bundle="${icons}" var="hyperlinkIcon"/>

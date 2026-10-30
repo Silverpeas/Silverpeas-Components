@@ -93,8 +93,8 @@
     id = "group_" + group.getId();
   }
 %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.yellowpages">
+<!DOCTYPE html>
+<html id="ng-app" ng-app="silverpeas.yellowpages">
 <head>
   <view:looknfeel/>
   <view:includePlugin name="toggle"/>
@@ -162,11 +162,11 @@
     }
 
     whenSilverpeasReady(function() {
-      $("#searchButton a").click(function() {
+      $("#searchButton a").on('click', function() {
         search();
       });
 
-      $("#searchInput").keypress(function(e) {
+      $("#searchInput").on('keypress', function(e) {
         if (e.which === 13) {
           e.preventDefault();
           search();

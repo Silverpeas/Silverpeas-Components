@@ -42,6 +42,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
     String mandatoryField = m_context + "/util/icons/mandatoryField.gif";
 %>
       <!-- uploadFile -->
+<!DOCTYPE html>
       <HTML>
       <HEAD>
       <TITLE><%=resources.getString("GML.popupTitle")%></TITLE>

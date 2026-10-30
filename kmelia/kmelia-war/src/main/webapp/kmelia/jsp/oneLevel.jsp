@@ -82,14 +82,16 @@
 
       <%--The below triggered function has to be defined as soon as possible in HTML code in order to
       increase chances to perform the treatment when "menuRender" event is fired --%>
-      $(document).ready(function() {
+      $(function() {
         menuRenderedPromise.then(function(){
 
           sp.i18n.load({
             bundle : 'org.silverpeas.kmelia.multilang.kmeliaBundle',
-            language : '<%=language%>'
+            language : '<%=language%>',
+            async : true
+          }).then(function() {
+            displayTopicContent('${currentFolderId}');
           });
-          displayTopicContent('${currentFolderId}');
         });
       });
 
@@ -140,7 +142,7 @@
 
       function focusOnSearch()
       {
-        $("#topicQuery").focus();
+        $("#topicQuery").trigger('focus');
       }
 
       function _isInBin(nodeId) {

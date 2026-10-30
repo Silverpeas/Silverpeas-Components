@@ -48,8 +48,8 @@
 	<c:set var="allNews" value="${requestScope['infos']}"/>
 	<c:set var="displayMode" value="list"/>
 	<c:set var="slideshow" value="${displayMode == 'slideshow'}"/>
-	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-	<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="${userLanguage}">
+	<!DOCTYPE html>
+	<html lang="${userLanguage}">
 	<head>
 	<title>QuickInfo - Home</title>
 	<view:looknfeel/>
@@ -67,11 +67,11 @@
 </c:choose>
 
 <c:if test="${slideshow}">
-<script src="<%=m_sContext %>/portlets/jsp/quickInfos/js/responsiveslides.min.js" type="text/javascript"></script>
+<view:script src="/portlets/jsp/quickInfos/js/responsiveslides.js"/>
 <link rel="stylesheet" href="<%=m_sContext %>/portlets/jsp/quickInfos/css/responsiveslides.css" />
 <link rel="stylesheet" href="<%=m_sContext %>/portlets/jsp/quickInfos/css/themes.css" />
 <script type="text/javascript" >
-$(document).ready(function() {
+$(function() {
   $(".slider-actuality-portlet").responsiveSlides({
 			auto: true,
 			pager: false,
@@ -94,7 +94,7 @@ $(document).ready(function() {
 
 <c:if test="${not slideshow}">
 <script type="text/javascript" >
-  $(document).ready(function() {
+  $(function() {
     const step = 5;
     const $lis = $(".listing-actuality-portlet li");
     const $pag = $(".listing-actuality-portlet .list-pane-nav");
@@ -106,7 +106,7 @@ $(document).ready(function() {
       $pag.hide();
       $lis.slice(0, step).show();
       let end = step;
-      $('#portlet-nextNews').click(function() {
+      $('#portlet-nextNews').on('click', function() {
         <c:choose>
         <c:when test="${fromApp}">
         $lis.show();

@@ -131,7 +131,7 @@
     }
 
     whenSilverpeasReady(function() {
-      $("#selectedForm").change(function() {
+      $("#selectedForm").on('change', function() {
         var formId = $(this).val();
         if (formId === "") {
           $("#link-export").hide();
@@ -141,7 +141,7 @@
         filterRequests();
       });
 
-      $("#selectedState").change(function() {
+      $("#selectedState").on('change', function() {
         filterRequests();
       });
 

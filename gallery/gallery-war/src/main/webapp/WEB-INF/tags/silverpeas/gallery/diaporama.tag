@@ -50,7 +50,7 @@
     $.popup.showWaiting();
     nbPauses = -1;
     var $slider = $('#gallerySlider');
-    if ($slider.size() == 0) {
+    if ($slider.length === 0) {
       $slider = $("<div>").attr("id", "gallerySlider");
       $(document.body).append($slider);
     }

@@ -38,6 +38,7 @@ String mandatoryField = m_context + "/util/icons/mandatoryField.gif";
 Button cancelButton 	= gef.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=window.close();", false);
 Button validateButton 	= gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendData()", false);
 %>
+<!DOCTYPE html>
 <HTML>
 <HEAD>
 <TITLE><%=resources.getString("GML.popupTitle")%></TITLE>

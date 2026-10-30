@@ -57,7 +57,7 @@
             return "";
           }
 
-          $(document).ready(function () {
+          $(function () {
             setCurrentNodeId(getToValidateFolderId());
             displayPublications(getToValidateFolderId());
           });

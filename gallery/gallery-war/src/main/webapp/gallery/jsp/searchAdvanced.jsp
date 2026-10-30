@@ -53,6 +53,7 @@
 <c:set var="instanceId" value="${browseContext[3]}"/>
 <c:set var="keyword" value="${requestScope.KeyWord}"/>
 
+<!DOCTYPE html>
 <html>
 <head>
   <view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
@@ -92,7 +93,7 @@
       return true;
     }
 
-    $(document).ready(function(){
+    $(function(){
       <c:if test="${isPdcActivated}">
         $('#used_pdc').pdc('used', {
           workspace: 'useless',
@@ -198,7 +199,7 @@
     </form>
 
     <script type="text/javascript">
-      $(document).ready(function() {
+      $(function() {
         $('#advancedSearchForm').on("submit", function() {
           sendData();
           return false;

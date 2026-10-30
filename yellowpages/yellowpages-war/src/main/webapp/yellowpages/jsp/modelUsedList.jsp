@@ -47,6 +47,7 @@ Button validateButton = gef.getFormButton(resources.getString("GML.validate"), "
 Button cancelButton = gef.getFormButton(resources.getString("GML.cancel"), "Main", false);
 
 %>
+<!DOCTYPE html>
 <HTML>
 <HEAD>
 <view:looknfeel/>

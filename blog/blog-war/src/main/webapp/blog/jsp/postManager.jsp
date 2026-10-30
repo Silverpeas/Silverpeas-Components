@@ -67,8 +67,8 @@
 	
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<%=language%>">
+<!DOCTYPE html>
+<html lang="<%=language%>">
 <head>
 	<title><fmt:message key="GML.popupTitle"/></title>
     <view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
@@ -141,14 +141,14 @@
 			document.postForm.submit();
 		}
 		
-		$(document).ready(function() {
+		$(function() {
 			<view:wysiwyg replace="editor" language="${language}" width="90%" height="300" toolbar="blog"
 				spaceLabel="<%=spaceLabel%>" componentId="<%=instanceId%>" componentLabel="<%=componentLabel%>"
 				browseInfo="<%=title%>" objectId="<%=post.getId()%>"
 				activateWysiwygBackupManager="true"/>
 		
 			<% if ("CreatePost".equals(action)) {	%>
-			$("#Title").click(function() {
+			$("#Title").on('click', function() {
 				if ($('#Title').attr('value') === "${blog_postUntitled}") {
 					$("#Title").attr('value','');
 				}

@@ -71,8 +71,8 @@ pageContext.setAttribute("componentURL", URLUtil.getFullApplicationURL(request)+
 %>
 <c:set var="componentURL" value="${pageScope.componentURL}"/>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html>
 <head>
 <title>QuickInfo - View</title>
 <view:looknfeel/>
@@ -85,17 +85,17 @@ function notify() {
 
 function publish() {
   $("#newsForm").attr("action", "Publish");
-  $("#newsForm").submit();
+  $("#newsForm").trigger('submit');
 }
 
 function update() {
   $("#newsForm").attr("action", "Edit");
-  $("#newsForm").submit();
+  $("#newsForm").trigger('submit');
 }
 
 function submitOnHomepage() {
   $("#newsForm").attr("action", "SubmitOnHomepage");
-  $("#newsForm").submit();
+  $("#newsForm").trigger('submit');
 }
 
 function onDelete(id) {
@@ -108,7 +108,7 @@ function clipboardCopy() {
 
 function displayReadingTracking() {
   $("#newsForm").attr("action", "ReadingControl");
-  $("#newsForm").submit();
+  $("#newsForm").trigger('submit');
 }
 
 function putNewsInBasket() {

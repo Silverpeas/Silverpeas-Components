@@ -138,8 +138,8 @@ void displayChannel(SPChannel spChannel, SimpleDateFormat dateFormatter, String 
 
 	SimpleDateFormat dateFormatter = new SimpleDateFormat(resource.getString("rss.dateFormat"));
 %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.rssAggregator">
+<!DOCTYPE html>
+<html id="ng-app" ng-app="silverpeas.rssAggregator">
 <head>
 <view:looknfeel withCheckFormScript="true"/>
 <view:includePlugin name="toggle"/>
@@ -162,23 +162,23 @@ function loadChannelsItem() {
   });
 }
 
-$(document).ready(function(){
+$(function(){
 
 	$('.description-item-rssNews a').attr( "target" , "_blank"  ) ;
 
-	$('.deploy-item').click(function() {
+	$('.deploy-item').on('click', function() {
 		$(this).parent().children('.itemDeploy').toggle();
 	});
-	$('.deploy-all-item').click(function() {
+	$('.deploy-all-item').on('click', function() {
 		$('.itemDeploy').show();
 		$('.btn-deploy-all-item').toggle();
 	});
-	$('.bend-all-item').click(function() {
+	$('.bend-all-item').on('click', function() {
 		$('.itemDeploy').hide();
 		$('.btn-deploy-all-item').toggle();
 	});
 
-  /*	$('.filter-channel').click(function() {
+  /*	$('.filter-channel').on('click', function() {
 		$('.item-channel').hide();
 		$('.'+this.id).show();
 	});*/

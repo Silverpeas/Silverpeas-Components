@@ -38,6 +38,7 @@
 <c:set var="content" value="${requestScope['Content']}" />
 <c:set var="role" value="${requestScope['Role']}"/>
 
+<!DOCTYPE html>
 <html>
 <head>
 <view:looknfeel />

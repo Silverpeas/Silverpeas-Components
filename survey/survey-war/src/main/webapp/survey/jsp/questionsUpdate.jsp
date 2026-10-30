@@ -76,7 +76,7 @@ SettingBundle settings = ResourceLocator.getSettingBundle("org.silverpeas.survey
       });
     }
     // Jquery dialog message
-    $(document).ready(function() {
+    $(function() {
       $("#dialog:ui-dialog").dialog("destroy");
     });
 

@@ -138,8 +138,8 @@ public void listFolders(JspWriter out, int rootId, int forumId, int parentId, St
         keywords = fsc.getForumKeywords(forumId);
     }
 %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">  
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>  
+<html>
   <head>
 <view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
 <script type="text/javascript" src="<%=context%>/forums/jsp/javaScript/forums.js"></script>
@@ -220,15 +220,15 @@ function removeAllUsers() {
   $('option:not(:disabled)', $source).detach().appendTo($target);
 }
 
-$(document).ready(function() {
-  $("select[name='forumFolder']").change(function() {
+$(function() {
+  $("select[name='forumFolder']").on('change', function() {
     var $categoryContainer = $("#categoryContainer");
     var $categories = $("select[name='CategoryId']");
     if (('' + $(this).val()) !== '0') {
-      $categories.attr('disabled', '');
+      $categories.prop('disabled', true);
       $categoryContainer.hide();
     } else {
-      $categories.removeAttr('disabled', '');
+      $categories.prop('disabled', false);
       $categoryContainer.show();
     }
   });

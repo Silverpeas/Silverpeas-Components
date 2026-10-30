@@ -53,11 +53,11 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
         out.println(
               "<!-- verifAjoutPage -->"+
 
+                  "<!DOCTYPE html>"+
                   "<HTML>"+
-                  "<TITLE>"+resources.getString("GML.popupTitle")+"</TITLE>"+
-           gef.getLookStyleSheet(HttpRequest.decorate(request))+
-
                     "<HEAD>"+
+                    "<TITLE>"+resources.getString("GML.popupTitle")+"</TITLE>"+
+           gef.getLookStyleSheet(HttpRequest.decorate(request))+
                     "<Script language=\"JavaScript\">");
                       out.println("function submit_form(test) {");
                       out.println("if (test == \"ok\")");

@@ -32,6 +32,7 @@
 
 <c:set var="help"><%=resources.getString("yellowpages.importCSVHelp1")%><br/><%=resources.getString("yellowpages.importCSVHelp2")%></c:set>
 
+<!DOCTYPE html>
 <html>
 <head>
 <%

@@ -56,11 +56,11 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
                  "<!-- verif -->"+
 
+                  "<!DOCTYPE html>"+
                   "<HTML>"+
-                  "<TITLE>"+resources.getString("GML.popupTitle")+"</TITLE>"+
-           gef.getLookStyleSheet(HttpRequest.decorate(request))+
-
                     "<HEAD>"+
+                    "<TITLE>"+resources.getString("GML.popupTitle")+"</TITLE>"+
+           gef.getLookStyleSheet(HttpRequest.decorate(request))+
 
                     "<Script language=\"JavaScript\">");
 

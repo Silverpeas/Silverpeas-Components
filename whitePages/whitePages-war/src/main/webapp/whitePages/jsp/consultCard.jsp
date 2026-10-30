@@ -102,8 +102,8 @@
 
 <c:set var="browseContext" value="${requestScope.browseContext}" />
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html>
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
@@ -154,12 +154,12 @@ function B_UPDATE_ONCLICK(idCard) {
 		$("#expert-classification").show();
 	}
 
-    $(document).ready(function(){
+    $(function(){
 
 			$(".divSee").hide();
 			$(".active").show();
 
-			$(".linkSee").click(function() {
+			$(".linkSee").on('click', function() {
 				var divAAfficher = this.id.substring(5);
 				$(".linkSee").removeClass('active');
 				$('#'+this.id).addClass('active');
@@ -167,7 +167,7 @@ function B_UPDATE_ONCLICK(idCard) {
 				$('#'+divAAfficher).show();
 			});
 
-			if ($.trim($("#sheetIdentity").text()).length == 0) {
+			if ($("#sheetIdentity").text().trim().length === 0) {
 				$(".linkSee").removeClass('active');
 				$('#link_sheetExpert').addClass('active');
 				$('#sheetExpert').show();

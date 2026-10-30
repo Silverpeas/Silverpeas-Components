@@ -45,8 +45,8 @@
 <c:set var="nbPublication" value="${requestScope['NbPublication']}"/>
 <c:set var="nbFiles" value="${requestScope['NbFiles']}"/>
 <c:set var="message" value="${requestScope['Message']}"/>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title><c:out value="${classification}"/></title>
@@ -98,7 +98,7 @@
       function setModified() {
         if (!modified) {
           modified = true;
-          $('.field input:radio').not(':checked').attr('disabled', true);
+          $('.field input:radio').not(':checked').prop('disabled', true);
         }
       }
       
@@ -336,7 +336,7 @@
          * As the publications have been automatically classified through the import process,
          * their classification on the PdC is first loaded.
          */
-        $(document).ready(function() {
+        $(function() {
           var okForAll = 0, modifyForAll = 1, modifyForEach = 2, publicationsURI = [];
           var selection = okForAll; // the default selected choice.
         
@@ -365,9 +365,8 @@
             }).addClass('field').append($('<input>', {
               type: 'radio', 
               name: 'validation', 
-              value: okForAll, 
-              checked: selection == okForAll
-            })).
+              value: okForAll
+            }).prop('checked', selection == okForAll)).
               append($('<span>', {id: 'okForAll'}).html(validationText));
             
         <c:if test="${fn:length(importedPublications) > 1}">
@@ -376,9 +375,8 @@
               append($('<input>', {
               type: 'radio', 
               name: 'validation', 
-              value: modifyForAll,
-              checked: selection == modifyForAll
-            })).
+              value: modifyForAll
+            }).prop('checked', selection == modifyForAll)).
               append($('<span>', {id: 'modifyForAll'}).html(globalModifText));
         </c:if>
             
@@ -387,13 +385,12 @@
               append($('<input>', {
               type: 'radio', 
               name: 'validation', 
-              value: modifyForEach,
-              checked: selection == modifyForEach
-            })).
+              value: modifyForEach
+            }).prop('checked', selection == modifyForEach)).
               append($('<span>', {id: 'modifyForEach'}).html(modificationText)).
               appendTo($('#default-classification'));
         
-            $('#validation.field input:radio').change(function() {
+            $('#validation.field input:radio').on('change', function() {
               var userChoice = $('.field input:radio:checked').val();
               if (userChoice == okForAll) validateDefaultClassificationForAllPublications();
               else if (userChoice == modifyForAll) modifyClassificationForAllPublications();

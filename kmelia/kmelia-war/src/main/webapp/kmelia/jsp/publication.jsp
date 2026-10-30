@@ -232,7 +232,7 @@
       screenMessage += link;
       screenMessage += "</form></div>";
       screenMessage +=
-          "<a href=\"#\" onclick=\"javascript:$('#form-pub-validator').submit();\" class=\"button\"><span>" +
+          "<a href=\"#\" onclick=\"javascript:$('#form-pub-validator').trigger('submit');\" class=\"button\"><span>" +
               resources.getString("GML.validate") + "</span></a>";
       screenMessage +=
           "<a href=\"#\" onclick=\"javascript:$('#validationArea').hide('slow');\" class=\"button\"><span>" +
@@ -255,8 +255,8 @@
 <jsp:useBean id="publication" type="org.silverpeas.core.contribution.publication.model.PublicationDetail"/>
 <c:set var="publicationRaterRatingEntity" value="<%=RaterRatingEntity.fromRateable(pubDetail)%>"/>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.kmelia" xml:lang="${userLanguage}">
+<!DOCTYPE html>
+<html id="ng-app" ng-app="silverpeas.kmelia" lang="${userLanguage}">
 <head>
   <view:looknfeel/>
   <title></title>
@@ -278,7 +278,7 @@
         minWidth: 350,
         buttons: {
           '<%= resources.getString("kmelia.export") %>': function() {
-            $("#exportForm").submit();
+            $("#exportForm").trigger('submit');
             $( this ).dialog( "close" );
           },
           '<%= resources.getString("GML.cancel") %>': function() {
@@ -308,7 +308,7 @@
         resizable : false,
         buttons: {
           'OK': function() {
-            if (!$.trim($("#refusal-motive").val())) {
+            if (!($("#refusal-motive").val() || "").trim()) {
               jQuery.popup.error("'<%=kmeliaScc.getString("RefusalMotive")%>' <%=resources.getString("GML.MustBeFilled")%>");
               return true;
             } else {

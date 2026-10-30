@@ -298,7 +298,7 @@ function renderReservation(reservation, labels, filters) {
   // Initialization
   var $reservation = $('<li>').addClass('reservation');
   if (!reservation.calendarViewMode) {
-    $reservation.click(function(event) {
+    $reservation.on('click', function(event) {
       goToReservation(reservation.id, filters.objectView, filters.isPortlet);
       return false;
     });
@@ -345,7 +345,7 @@ function renderReservation(reservation, labels, filters) {
           {href : '#', title : labels.resourceLink}).append(resource.name));
       $resources.append($resource);
       if (!reservation.calendarViewMode) {
-        $('a', $resource).click(function() {
+        $('a', $resource).on('click', function() {
           goToResource(resource.id, filters.objectView, filters.isPortlet);
           return false;
         });

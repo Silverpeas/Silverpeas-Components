@@ -38,6 +38,7 @@
 	String 		photoId 		= "";
 %>
 
+<!DOCTYPE html>
 <html>
 <head>
 <view:looknfeel/>

@@ -46,6 +46,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 Button cancelButton = gef.getFormButton(resources.getString("GML.close"), "javascript:onClick=window.close();", false);
 Button validateButton = gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=validateForm();", false);
 %>
+<!DOCTYPE html>
 <html>
 <head>
 <title><%=resources.getString("GML.popupTitle")%></title>

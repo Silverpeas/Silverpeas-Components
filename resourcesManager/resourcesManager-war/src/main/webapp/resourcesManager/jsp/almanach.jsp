@@ -54,8 +54,8 @@
 <c:set var="allCategories" value="${requestScope.listOfCategories}"/>
 <c:set var="allResources" value="${requestScope.listResourcesofCategory}"/>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.resourcesManager">
+<!DOCTYPE html>
+<html id="ng-app" ng-app="silverpeas.resourcesManager">
 <head>
   <view:looknfeel/>
   <view:includePlugin name="qtip"/>
@@ -178,7 +178,7 @@
       planningOfUser : ${not empty viewContext.selectedUserId}
     };
 
-    $(document).ready(function() {
+    $(function() {
 
       // Calendar
       $.ajax({
@@ -186,7 +186,7 @@
         cache : false,
         type : 'GET',
         dataType : 'json'
-      }).success(function(data) {
+      }).done(function(data) {
             <c:choose>
             <c:when test="${viewContext.dataViewType.reservationListingDataView}">
             $("#reservationContent").append(renderReservationListing(data, labels, filters));
@@ -208,12 +208,12 @@
             });
             </c:otherwise>
             </c:choose>
-          }).error(function(jqXHR, textStatus, errorThrown) {
+          }).fail(function(jqXHR, textStatus, errorThrown) {
             notyError(errorThrown);
           });
     });
 
-    $(window).keydown(function(e){
+    $(window).on('keydown', function(e){
       var keyCode = eval(e.keyCode);
       if (37 == keyCode || keyCode == 39) {
         e.preventDefault();

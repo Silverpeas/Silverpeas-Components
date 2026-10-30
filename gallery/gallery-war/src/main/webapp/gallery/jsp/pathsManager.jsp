@@ -38,6 +38,7 @@
 	Button cancelButton   = gef.getFormButton(resource.getString("GML.cancel"), "GoToCurrentAlbum?AlbumId="+albumId, false);
 %>
 
+<!DOCTYPE html>
 <html>
 <head>
 <view:looknfeel/>

@@ -24,8 +24,8 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false" %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html>
 
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
@@ -77,7 +77,7 @@ function cancel() {
   sp.formConfig('ConsultQuestionQuery').submit();
 }
 
-$(document).ready(function() {
+$(function() {
 	<view:wysiwyg replace="content" language="<%=language%>" width="600" height="300" componentId="<%=componentId%>"
 	              toolbar="questionReply" displayFileBrowser="${true}" activateWysiwygBackupManager="true"/>
 });

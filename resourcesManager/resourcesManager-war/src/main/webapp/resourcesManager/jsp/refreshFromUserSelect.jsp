@@ -31,6 +31,7 @@
   Collection<UserDetail> managers = (Collection<UserDetail>) request.getAttribute("Managers");
 %>
 
+<!DOCTYPE html>
 <HTML>
   <HEAD>
     <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>

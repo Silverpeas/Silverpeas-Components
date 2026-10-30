@@ -61,6 +61,7 @@ if (folderDetail != null) {
 
 <!-- updateTopic -->
 
+<!DOCTYPE html>
 <HTML>
 <HEAD>
 <TITLE><%=resources.getString("GML.popupTitle")%></TITLE>
