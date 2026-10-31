@@ -113,13 +113,13 @@
                       aria-pressed="${not empty reaction and reaction.liked}"
                       aria-label="${fn:escapeXml(not empty reaction and reaction.liked ? unlikeLabel : likeLabel)}"
                       title="${fn:escapeXml(not empty reaction and reaction.liked ? unlikeLabel : likeLabel)}">
-                    <svg class="discussion-icon" aria-hidden="true"><use href="${discussionIcons}#heart"/></svg>
+                    <svg class="discussion-icon" aria-hidden="true"><use href="${discussionIcons}#thumb-up"/></svg>
                     <span class="discussion-like-count"><c:out value="${empty reaction ? 0 : reaction.count}"/></span>
                   </button>
                   <span class="discussion-like-error" role="status" hidden><fmt:message key="discussion.likeError"/></span>
                 </form>
               </c:when>
-              <c:otherwise><span class="discussion-readonly-likes"><svg class="discussion-icon" aria-hidden="true"><use href="${discussionIcons}#heart"/></svg> <c:out value="${empty reaction ? 0 : reaction.count}"/></span></c:otherwise>
+              <c:otherwise><span class="discussion-readonly-likes"><svg class="discussion-icon" aria-hidden="true"><use href="${discussionIcons}#thumb-up"/></svg> <c:out value="${empty reaction ? 0 : reaction.count}"/></span></c:otherwise>
             </c:choose>
             </div>
       </div>
