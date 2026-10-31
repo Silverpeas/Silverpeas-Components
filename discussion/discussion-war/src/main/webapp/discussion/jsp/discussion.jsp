@@ -47,6 +47,7 @@
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-sidebar.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-pins.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-images.js'/>" defer></script>
+  <script src="<c:url value='/discussion/jsp/javaScript/discussion-composer.js'/>" defer></script>
 </head>
 <body>
 <view:window>
@@ -100,8 +101,9 @@
           <c:if test="${canWrite}">
             <form class="discussion-composer" method="post" enctype="multipart/form-data" action="${base}messages/add">
               <p id="discussion-typing" class="discussion-hint" role="status" aria-live="polite" hidden></p>
-              <label for="discussion-body"><fmt:message key="discussion.compose"/></label>
-              <textarea id="discussion-body" name="body" maxlength="2000" required aria-describedby="discussion-compose-hint"
+              <label for="discussion-body" class="discussion-compose-label"><fmt:message key="discussion.compose"/></label>
+              <div class="discussion-compose-box">
+              <textarea rows="1" id="discussion-body" name="body" maxlength="2000" required aria-describedby="discussion-compose-hint"
                   placeholder="<fmt:message key='discussion.placeholder'/>"></textarea>
               <div class="discussion-image-picker">
                 <button class="discussion-icon-button discussion-add-image" type="button" aria-label="<fmt:message key='discussion.addImages'/>"
@@ -112,8 +114,9 @@
                 <p id="discussion-image-error" class="discussion-presence-error" role="status" hidden></p>
               </div>
               <div class="discussion-composer-footer">
-                <span id="discussion-compose-hint" class="discussion-hint"><fmt:message key="discussion.hint"/></span>
-                <button class="sp_button discussion-button--primary" type="submit"><fmt:message key="discussion.post"/></button>
+                <span id="discussion-compose-hint" class="discussion-hint discussion-compose-label"><fmt:message key="discussion.hint"/></span>
+                <button class="discussion-send" type="submit" title="<fmt:message key='discussion.post'/>" aria-label="<fmt:message key='discussion.post'/>"><svg class="discussion-icon" aria-hidden="true"><use href="<c:url value='/discussion/jsp/icons/discussion-icons.svg'/>#send"/></svg></button>
+              </div>
               </div>
             </form>
           </c:if>
