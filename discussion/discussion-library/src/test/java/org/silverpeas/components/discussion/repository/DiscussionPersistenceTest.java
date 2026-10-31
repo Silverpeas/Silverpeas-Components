@@ -112,6 +112,28 @@ class DiscussionPersistenceTest {
   }
 
   @Test
+  void fileIndexIncludesOldMessagesButExcludesDeletedAndOtherConversations() {
+    session.createNativeMutationQuery("update sc_discussion_message set filesAttached=true where id in ('m1','m3','m5')").executeUpdate();
+    assertEquals(List.of("m1"), messages.fileMessageIds("c1"));
+  }
+
+  @Test
+  void developmentFileUpgradeBackfillsExistingMessagesWithoutAttachments() throws Exception {
+    session.createNativeMutationQuery("alter table sc_discussion_message drop column filesAttached").executeUpdate();
+    try (var input = getClass().getResourceAsStream("/migrations/db/h2/discussion/001/add_files.sql")) {
+      assertNotNull(input);
+      for (String sql : new String(input.readAllBytes(), StandardCharsets.UTF_8).split(";")) {
+        if (!sql.isBlank()) {
+          session.createNativeMutationQuery(sql).executeUpdate();
+        }
+      }
+    }
+    session.clear();
+    assertTrue(messages.fileMessageIds("c1").isEmpty());
+    assertEquals(4, messages.history("c1", Long.MAX_VALUE, 10).size());
+  }
+
+  @Test
   void developmentPinUpgradePreservesExistingMessagesAndDefaultsToUnpinned() throws Exception {
     session.createNativeMutationQuery("alter table sc_discussion_message drop column pinned").executeUpdate();
     try (var input = getClass().getResourceAsStream("/migrations/db/h2/discussion/001/add_pins.sql")) {

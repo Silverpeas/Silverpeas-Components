@@ -37,6 +37,13 @@ public class DiscussionMessageRepository extends SilverpeasJpaEntityRepository<D
         """, DiscussionMessage.class).setParameter("conversation", conversationId).getResultList();
   }
 
+  public List<String> fileMessageIds(String conversationId) {
+    return getEntityManager().createQuery("""
+        select m.id.id from DiscussionMessage m where m.conversationId = :conversation
+        and m.filesAttached = true and m.deleted = false order by m.sequenceNumber desc
+        """, String.class).setParameter("conversation", conversationId).getResultList();
+  }
+
   public List<String> authorIds(String conversationId) {
     return getEntityManager().createQuery("""
         select distinct m.creatorId from DiscussionMessage m

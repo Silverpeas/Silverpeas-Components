@@ -41,13 +41,31 @@ import static org.mockito.Mockito.*;
 import static org.mockito.ArgumentMatchers.*;
 
 @EnableSilverTestEnv(context = JEETestContext.class)
-class DiscussionImageServiceTest {
+class DiscussionAttachmentServiceTest {
   @TestManagedMock
   private AttachmentService attachments;
   @TestManagedMock
-  private Event<DiscussionImageService.Cleanup> cleanup;
+  private Event<DiscussionAttachmentService.Cleanup> cleanup;
   @TestedBean
-  private DiscussionImageService service;
+  private DiscussionAttachmentService service;
+
+  @Test
+  void ordinaryFilesArePrivateDownloadsAndKeepTheirOriginalSafeName() throws Exception {
+    var user = mock(User.class);
+    when(user.getId()).thenReturn("writer");
+    try (var current = mockStatic(User.class)) {
+      current.when(User::getCurrentRequester).thenReturn(user);
+      var file = DiscussionFileUpload.read(DiscussionFileUploadTest.file("budget.pdf", new byte[]{1,2,3}));
+      new DiscussionAttachmentService(attachments, cleanup).storeFiles("discussion1", "message1", List.of(file));
+      var document = ArgumentCaptor.forClass(SimpleDocument.class);
+      verify(attachments).createAttachment(document.capture(), any(java.io.InputStream.class), eq(false), eq(false));
+      assertEquals("budget.pdf", document.getValue().getFilename());
+      assertEquals("application/octet-stream", document.getValue().getContentType());
+      assertEquals("message1", document.getValue().getForeignId());
+      assertFalse(document.getValue().isPublic());
+      verify(cleanup).fire(new DiscussionAttachmentService.Cleanup("discussion1", "message1", true));
+    }
+  }
 
   @Test
   void imageUrlsIncludeTheSilverpeasContextPath() {
@@ -72,30 +90,30 @@ class DiscussionImageServiceTest {
     try (var current = mockStatic(User.class)) {
       current.when(User::getCurrentRequester).thenReturn(user);
       var image = DiscussionImageUpload.read(DiscussionImageUploadTest.image("png"));
-      new DiscussionImageService(attachments, cleanup).store("discussion1", "message1", List.of(image));
+      new DiscussionAttachmentService(attachments, cleanup).store("discussion1", "message1", List.of(image));
       var document = ArgumentCaptor.forClass(SimpleDocument.class);
       verify(attachments).createAttachment(document.capture(), any(java.io.InputStream.class), eq(false), eq(false));
       assertEquals("discussion1", document.getValue().getInstanceId());
       assertEquals("message1", document.getValue().getForeignId());
       assertFalse(document.getValue().isPublic());
       assertEquals("image/png", document.getValue().getContentType());
-      verify(cleanup).fire(new DiscussionImageService.Cleanup("discussion1", "message1", true));
+      verify(cleanup).fire(new DiscussionAttachmentService.Cleanup("discussion1", "message1", true));
     }
   }
 
   @Test
   void failedPublicationAndCommittedDeletionCleanOnlyTheirOwnAttachments() throws Exception {
-    var created = new DiscussionImageService.Cleanup("discussion1", "message1", true);
-    var deleted = new DiscussionImageService.Cleanup("discussion1", "message1", false);
+    var created = new DiscussionAttachmentService.Cleanup("discussion1", "message1", true);
+    var deleted = new DiscussionAttachmentService.Cleanup("discussion1", "message1", false);
     service.committed(created);
     service.rollback(deleted);
     verifyNoInteractions(attachments);
     service.rollback(created);
     service.committed(deleted);
     verify(attachments, times(2)).deleteAllAttachments("message1", "discussion1");
-    assertEquals(TransactionPhase.AFTER_FAILURE, DiscussionImageService.class.getMethod("rollback", DiscussionImageService.Cleanup.class)
+    assertEquals(TransactionPhase.AFTER_FAILURE, DiscussionAttachmentService.class.getMethod("rollback", DiscussionAttachmentService.Cleanup.class)
         .getParameters()[0].getAnnotation(Observes.class).during());
-    assertEquals(TransactionPhase.AFTER_SUCCESS, DiscussionImageService.class.getMethod("committed", DiscussionImageService.Cleanup.class)
+    assertEquals(TransactionPhase.AFTER_SUCCESS, DiscussionAttachmentService.class.getMethod("committed", DiscussionAttachmentService.Cleanup.class)
         .getParameters()[0].getAnnotation(Observes.class).during());
   }
 }

@@ -75,6 +75,13 @@
                 </c:forEach>
               </div>
             </c:if>
+            <c:if test="${not empty messageFiles[message.id]}">
+              <ul class="discussion-message-files">
+                <c:forEach items="${messageFiles[message.id]}" var="file">
+                  <li><a href="<c:out value='${file.url}'/>" download="<c:out value='${file.name}'/>"><svg class="discussion-icon" aria-hidden="true"><use href="${discussionIcons}#paperclip"/></svg> <c:out value="${file.name}"/></a></li>
+                </c:forEach>
+              </ul>
+            </c:if>
             <div class="discussion-message-footer">
             <c:if test="${canWrite and (currentUser.id eq message.creatorId or highestUserRole.name() eq 'ADMIN')}">
               <div class="discussion-actions">
@@ -82,7 +89,7 @@
                   <summary class="discussion-icon-button" title="${fn:escapeXml(editLabel)}" aria-label="${fn:escapeXml(editLabel)}"><svg class="discussion-icon" aria-hidden="true"><use href="${discussionIcons}#edit"/></svg></summary>
                   <form method="post" action="${base}messages/${message.id}/edit">
                     <input type="hidden" name="version" value="${message.version}"/>
-                    <textarea name="body" maxlength="2000" data-allow-empty="${not empty messageImages[message.id]}" required aria-label="<fmt:message key='discussion.message'/>"><c:out value="${message.body}"/></textarea>
+                    <textarea name="body" maxlength="2000" data-allow-empty="${not empty messageImages[message.id] or not empty messageFiles[message.id]}" required aria-label="<fmt:message key='discussion.message'/>"><c:out value="${message.body}"/></textarea>
                     <button class="sp_button discussion-button--primary" type="submit"><fmt:message key="discussion.save"/></button>
                   </form>
                 </details>

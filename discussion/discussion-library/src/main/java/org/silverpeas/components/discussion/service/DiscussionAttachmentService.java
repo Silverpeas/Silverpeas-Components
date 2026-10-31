@@ -41,18 +41,18 @@ import org.silverpeas.core.i18n.I18NHelper;
 
 /** Native, private attachments owned by the message's UUID and component instance. */
 @Service
-public class DiscussionImageService {
+public class DiscussionAttachmentService {
   public record Cleanup(String instanceId, String messageId, boolean rollback) { }
   @Inject
   private AttachmentService attachments;
   @Inject
   private Event<Cleanup> cleanup;
 
-  public DiscussionImageService() {
+  public DiscussionAttachmentService() {
     // CDI constructor.
   }
 
-  DiscussionImageService(AttachmentService attachments, Event<Cleanup> cleanup) {
+  DiscussionAttachmentService(AttachmentService attachments, Event<Cleanup> cleanup) {
     this.attachments = attachments;
     this.cleanup = cleanup;
   }
@@ -77,6 +77,29 @@ public class DiscussionImageService {
       var document = new SimpleDocument(new SimpleDocumentPK(null, instanceId), messageId, order++, false, file);
       document.setPublicDocument(false);
       attachments.createAttachment(document, image.openStream(), false, false);
+    }
+  }
+
+  public List<DiscussionFile> files(String instanceId, String messageId) {
+    return attachments.listDocumentsByForeignKey(new ResourceReference(messageId, instanceId), null).stream()
+        .filter(document -> "application/octet-stream".equals(document.getContentType()))
+        .map(document -> new DiscussionFile(document.getId(), document.getFilename(),
+            org.silverpeas.core.util.URLUtil.getApplicationURL() + document.getAttachmentURL(), document.getSize(), messageId)).toList();
+  }
+
+  public void storeFiles(String instanceId, String messageId, List<DiscussionFileUpload> files) {
+    if (files.isEmpty()) {
+      return;
+    }
+    cleanup.fire(new Cleanup(instanceId, messageId, true));
+    int order = DiscussionImageUpload.MAX_IMAGES;
+    for (var upload : files) {
+      var file = SimpleAttachment.builder(I18NHelper.getDefaultLanguage()).setFilename(upload.filename()).setTitle(upload.filename())
+          .setSize(upload.size()).setContentType("application/octet-stream")
+          .setCreationData(User.getCurrentRequester().getId(), new Date()).build();
+      var document = new SimpleDocument(new SimpleDocumentPK(null, instanceId), messageId, order++, false, file);
+      document.setPublicDocument(false);
+      attachments.createAttachment(document, upload.openStream(), false, false);
     }
   }
 

@@ -58,7 +58,7 @@ public class DiscussionMessageServerEvent extends AuthorizedDiscussionEvent impl
     return JSONCodec.encodeObject(json -> json.put("instanceId", message.instanceId())
         .put("messageId", message.messageId()).put("userId", receiver.getId())
         .put("title", component.getLabel(language))
-        .put("text", message.authorName() + ": " + (message.body().isBlank() ? "📷" : DiscussionMentionService.displayText(message.body())))
+        .put("text", message.authorName() + ": " + (message.body().isBlank() ? "📎" : DiscussionMentionService.displayText(message.body())))
         .put("url", URLUtil.getApplicationURL() + "/Rdiscussion/" + message.instanceId() + "/messages/" + message.messageId()));
   }
 }

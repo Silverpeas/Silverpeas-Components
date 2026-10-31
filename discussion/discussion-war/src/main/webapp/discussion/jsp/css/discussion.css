@@ -274,3 +274,16 @@ html.discussion-document { overflow-anchor: none; scroll-behavior: auto; }
 @media (max-width: 760px) {
   #discussion .discussion-composer { padding: 0.5rem 0.75rem; }
 }
+
+#discussion .discussion-compose-box > .discussion-file-picker { grid-column: 1 / -1; grid-row: 3; }
+#discussion .discussion-compose-box > .discussion-editor-tools, #discussion .discussion-compose-box > .discussion-composer-footer { grid-row: 4; }
+#discussion .discussion-file-picker input[type="file"] { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+#discussion .discussion-file-preview { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+#discussion .discussion-selected-file { display: inline-flex; align-items: center; gap: 0.5rem; max-width: 100%; padding: 0.3rem 0.5rem; border: 1px solid var(--border-color-bloc-fond-clair, #d6d6d6); }
+#discussion .discussion-selected-file > span { overflow-wrap: anywhere; min-width: 0; }
+#discussion .discussion-selected-file button { flex-shrink: 0; border: 0; background: transparent; cursor: pointer; }
+#discussion .discussion-message-files, #discussion .discussion-files-list ul { list-style: none; margin: 0.5rem 0 0; padding: 0; }
+#discussion .discussion-message-files a { display: inline-flex; align-items: center; gap: 0.4rem; max-width: 100%; overflow-wrap: anywhere; }
+#discussion .discussion-files-list li { margin-bottom: 1rem; overflow-wrap: anywhere; }
+#discussion .discussion-file-download, #discussion .discussion-file-origin { display: block; }
+#discussion .discussion-file-origin { margin-top: 0.25rem; font-size: 0.85em; }
