@@ -36,6 +36,7 @@
   <meta charset="UTF-8"/>
   <title><c:out value="${instanceInfo.title}"/></title>
   <view:looknfeel/>
+  <view:includePlugin name="preview"/>
   <link rel="stylesheet" href="<c:url value='/discussion/jsp/css/discussion.css'/>"/>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-desktop.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-activity.js'/>" defer></script>
@@ -50,6 +51,7 @@
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-composer.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-files.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-file-picker.js'/>" defer></script>
+  <script src="<c:url value='/discussion/jsp/javaScript/discussion-document-viewer.js'/>" defer></script>
 </head>
 <body>
 <view:window>
@@ -99,6 +101,7 @@
               <jsp:include page="messages.jsp"/>
             </section>
           </div>
+          <p id="discussion-viewer-error" class="discussion-presence-error" role="status" hidden><fmt:message key="discussion.viewerError"/></p>
           <p id="discussion-live-error" class="discussion-hint" role="status" hidden><fmt:message key="discussion.liveError"/></p>
           <c:if test="${canWrite}">
             <form class="discussion-composer" method="post" enctype="multipart/form-data" action="${base}messages/add">

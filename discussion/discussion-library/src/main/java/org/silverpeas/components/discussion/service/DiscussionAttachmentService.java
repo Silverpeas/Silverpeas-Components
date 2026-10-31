@@ -84,7 +84,8 @@ public class DiscussionAttachmentService {
     return attachments.listDocumentsByForeignKey(new ResourceReference(messageId, instanceId), null).stream()
         .filter(document -> "application/octet-stream".equals(document.getContentType()))
         .map(document -> new DiscussionFile(document.getId(), document.getFilename(),
-            org.silverpeas.core.util.URLUtil.getApplicationURL() + document.getAttachmentURL(), document.getSize(), messageId)).toList();
+            org.silverpeas.core.util.URLUtil.getApplicationURL() + document.getAttachmentURL(), document.getSize(), messageId, document.getLanguage(),
+            document.getAttachmentPath() != null && org.silverpeas.core.viewer.service.ViewerProvider.isViewable(document.getAttachmentPath()))).toList();
   }
 
   public void storeFiles(String instanceId, String messageId, List<DiscussionFileUpload> files) {

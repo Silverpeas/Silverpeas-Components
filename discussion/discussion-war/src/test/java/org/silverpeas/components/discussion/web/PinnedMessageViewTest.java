@@ -49,5 +49,8 @@ class PinnedMessageViewTest {
     assertEquals(42L, resolver.getValue(context, file, "size"));
     assertEquals("42 bytes", resolver.getValue(context, file, "displaySize"));
     assertEquals("message1", resolver.getValue(context, file, "messageId"));
+    var viewable = new org.silverpeas.components.discussion.service.DiscussionFile("file", "budget.pdf", "/silverpeas/attached_file/file", 42, "message1", "fr", true);
+    assertEquals(true, resolver.getValue(context, viewable, "viewable"));
+    assertEquals("fr", resolver.getValue(context, viewable, "language"));
   }
 }
