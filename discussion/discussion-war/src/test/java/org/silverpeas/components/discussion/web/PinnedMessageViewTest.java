@@ -43,5 +43,11 @@ class PinnedMessageViewTest {
     assertEquals("photo", resolver.getValue(context, image, "id"));
     assertEquals("/protected-image", resolver.getValue(context, image, "url"));
     assertEquals("image.png", resolver.getValue(context, image, "name"));
+    var file = new org.silverpeas.components.discussion.service.DiscussionFile("file", "budget.pdf", "/silverpeas/attached_file/file", 42, "message1");
+    assertEquals("budget.pdf", resolver.getValue(context, file, "name"));
+    assertEquals("/silverpeas/attached_file/file", resolver.getValue(context, file, "url"));
+    assertEquals(42L, resolver.getValue(context, file, "size"));
+    assertEquals("42 bytes", resolver.getValue(context, file, "displaySize"));
+    assertEquals("message1", resolver.getValue(context, file, "messageId"));
   }
 }

@@ -57,7 +57,7 @@ public class DefaultConversationService implements ConversationService {
   @Inject
   private DiscussionLikeRepository likes;
   @Inject
-  private DiscussionImageService imageService;
+  private DiscussionAttachmentService imageService;
   @Inject
   private DiscussionMentionService mentions;
 
@@ -122,17 +122,27 @@ public class DefaultConversationService implements ConversationService {
 
   @Override
   public void publish(String instanceId, String body, List<DiscussionImageUpload> images) {
+    publish(instanceId, body, images, List.of());
+  }
+
+  @Override
+  public void publish(String instanceId, String body, List<DiscussionImageUpload> images, List<DiscussionFileUpload> files) {
     access.require(instanceId, SilverpeasRole.WRITER);
     if (images == null || images.size() > DiscussionImageUpload.MAX_IMAGES || images.stream().anyMatch(java.util.Objects::isNull)) {
       throw new IllegalArgumentException("Too many images");
     }
+    if (files == null || files.size() > DiscussionFileUpload.MAX_FILES || files.stream().anyMatch(java.util.Objects::isNull)) {
+      throw new IllegalArgumentException("Too many attachments");
+    }
     Conversation conversation = conversations.main(instanceId, true);
     var message = new DiscussionMessage(conversation.getId(), conversation.nextSequence(),
-        mentions.normalize(instanceId, body == null ? "" : body), !images.isEmpty());
+        mentions.normalize(instanceId, body == null ? "" : body), !images.isEmpty() || !files.isEmpty());
+    message.setFilesAttached(!files.isEmpty());
     message.createdBy(User.getCurrentRequester());
     messages.save(message);
     messages.flush();
     imageService.store(instanceId, message.getId(), images);
+    imageService.storeFiles(instanceId, message.getId(), files);
     mentions.notifyNewMentions(instanceId, message, "");
     changes.changed(instanceId);
     changes.published(instanceId, message.getId(), User.getCurrentRequester().getId(),
@@ -153,10 +163,32 @@ public class DefaultConversationService implements ConversationService {
   }
 
   @Override
+  public Map<String, List<DiscussionFile>> files(String instanceId, List<String> messageIds) {
+    access.require(instanceId, SilverpeasRole.WRITER);
+    if (messageIds.size() > 200) {
+      throw new IllegalArgumentException("Too many message identifiers");
+    }
+    var conversation = conversations.main(instanceId, false);
+    var result = new java.util.HashMap<String, List<DiscussionFile>>();
+    messages.selected(conversation.getId(), messageIds).stream()
+        .filter(message -> !message.isDeleted() && message.isFilesAttached())
+        .forEach(message -> result.put(message.getId(), imageService.files(instanceId, message.getId())));
+    return result;
+  }
+
+  @Override
+  public List<DiscussionFile> sharedFiles(String instanceId) {
+    access.require(instanceId, SilverpeasRole.WRITER);
+    var conversation = conversations.main(instanceId, false);
+    return messages.fileMessageIds(conversation.getId()).stream()
+        .flatMap(id -> imageService.files(instanceId, id).stream()).toList();
+  }
+
+  @Override
   public void edit(String instanceId, String messageId, long version, String body) {
     DiscussionMessage message = editable(instanceId, messageId, version);
     String previousBody = message.getBody();
-    message.edit(mentions.normalize(instanceId, body), !imageService.list(instanceId, messageId).isEmpty());
+    message.edit(mentions.normalize(instanceId, body), message.isFilesAttached() || !imageService.list(instanceId, messageId).isEmpty());
     message.updatedBy(User.getCurrentRequester());
     messages.save(message);
     mentions.notifyNewMentions(instanceId, message, previousBody);

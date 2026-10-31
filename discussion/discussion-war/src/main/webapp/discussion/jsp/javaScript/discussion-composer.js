@@ -29,16 +29,19 @@
     const input = document.getElementById('discussion-body');
     const send = form?.querySelector('.discussion-send');
     const images = document.getElementById('discussion-images');
+    const files = document.getElementById('discussion-files');
     if (!form || !input || !send) {
       return;
     }
     const update = () => {
       input.style.removeProperty('--discussion-input-height');
       input.style.setProperty('--discussion-input-height', input.scrollHeight + 'px');
-      send.disabled = !input.value.trim() && !images?.files.length;
+      send.disabled = !input.value.trim() && !images?.files.length && !files?.files.length;
     };
     input.addEventListener('input', update);
     images?.addEventListener('change', update);
+    files?.addEventListener('change', update);
+    document.addEventListener('discussion:attachments', update);
     const preview = document.getElementById('discussion-image-preview');
     const observer = new MutationObserver(update);
     if (preview) {

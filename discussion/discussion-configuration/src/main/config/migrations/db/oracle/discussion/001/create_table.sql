@@ -37,6 +37,7 @@ CREATE TABLE sc_discussion_message (
   conversationId VARCHAR(40) NOT NULL,
   sequenceNumber NUMBER(19, 0) NOT NULL,
   body VARCHAR2(2000 CHAR) NOT NULL,
+  filesAttached NUMBER(1, 0) DEFAULT 0 NOT NULL,
   pinned NUMBER(1, 0) DEFAULT 0 NOT NULL,
   deleted NUMBER(1, 0) NOT NULL,
   createDate TIMESTAMP NOT NULL,

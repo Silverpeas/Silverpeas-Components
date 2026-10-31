@@ -59,6 +59,12 @@ public class DiscussionMessage extends SilverpeasJpaEntity<DiscussionMessage, Uu
     this.pinned = pinned;
   }
 
+  @Column(nullable = false)
+  private boolean filesAttached;
+
+  public boolean isFilesAttached() { return filesAttached; }
+  public void setFilesAttached(boolean value) { filesAttached = value; }
+
   @Transient
   private boolean unread;
 
@@ -73,10 +79,10 @@ public class DiscussionMessage extends SilverpeasJpaEntity<DiscussionMessage, Uu
     this(conversationId, sequenceNumber, body, false);
   }
 
-  public DiscussionMessage(String conversationId, long sequenceNumber, String body, boolean hasImages) {
+  public DiscussionMessage(String conversationId, long sequenceNumber, String body, boolean hasAttachments) {
     this.conversationId = conversationId;
     this.sequenceNumber = sequenceNumber;
-    edit(body, hasImages);
+    edit(body, hasAttachments);
   }
 
   public String getConversationId() { return conversationId; }
@@ -88,11 +94,11 @@ public class DiscussionMessage extends SilverpeasJpaEntity<DiscussionMessage, Uu
     edit(text, false);
   }
 
-  public void edit(String text, boolean hasImages) {
-    if (deleted || text == null || (text.isBlank() && !hasImages) || text.length() > MAX_BODY_LENGTH) {
+  public void edit(String text, boolean hasAttachments) {
+    if (deleted || text == null || (text.isBlank() && !hasAttachments) || text.length() > MAX_BODY_LENGTH) {
       throw new IllegalArgumentException("Invalid discussion message");
     }
-    // Oracle stores an empty VARCHAR as NULL, including for image-only messages.
+    // Oracle stores an empty VARCHAR as NULL, including for attachment-only messages.
     body = text.isBlank() ? " " : text.strip();
   }
 
@@ -100,5 +106,6 @@ public class DiscussionMessage extends SilverpeasJpaEntity<DiscussionMessage, Uu
     body = " ";
     deleted = true;
     pinned = false;
+    filesAttached = false;
   }
 }

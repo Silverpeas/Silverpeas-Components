@@ -48,12 +48,14 @@
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-pins.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-images.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-composer.js'/>" defer></script>
+  <script src="<c:url value='/discussion/jsp/javaScript/discussion-files.js'/>" defer></script>
+  <script src="<c:url value='/discussion/jsp/javaScript/discussion-file-picker.js'/>" defer></script>
 </head>
 <body>
 <view:window>
   <view:frame>
     <main id="discussion" data-history="${base}history" data-participants="${base}participants" data-publications="${base}publications" data-updates="${base}updates"
-        data-pins="${base}pins" data-instance-id="${discussionInstanceId}" data-read="${base}messages/read" data-typing="${base}typing" data-user-id="${currentUser.id}"
+        data-files="${base}files" data-pins="${base}pins" data-instance-id="${discussionInstanceId}" data-read="${base}messages/read" data-typing="${base}typing" data-user-id="${currentUser.id}"
         data-typing-one="<fmt:message key='discussion.typingOne'/>" data-typing-many="<fmt:message key='discussion.typingMany'/>"
         data-message-id="<c:out value='${focusedMessageId}'/>"
         data-length-error="<fmt:message key='discussion.hint'/>"
@@ -113,6 +115,14 @@
                 <div id="discussion-image-preview" class="discussion-image-preview"></div>
                 <p id="discussion-image-error" class="discussion-presence-error" role="status" hidden></p>
               </div>
+              <div class="discussion-file-picker">
+                <button class="discussion-icon-button discussion-add-file" type="button" aria-label="<fmt:message key='discussion.addFiles'/>"
+                    title="<fmt:message key='discussion.addFiles'/> — <fmt:message key='discussion.filesHint'/>"><svg class="discussion-icon" aria-hidden="true"><use href="<c:url value='/discussion/jsp/icons/discussion-icons.svg'/>#paperclip"/></svg></button>
+                <input id="discussion-files" type="file" name="files" multiple tabindex="-1" aria-label="<fmt:message key='discussion.addFiles'/>"
+                    data-error="<fmt:message key='discussion.filesError'/>" data-remove="<fmt:message key='discussion.removeFile'/>"/>
+                <div id="discussion-file-preview" class="discussion-file-preview"></div>
+                <p id="discussion-file-error" class="discussion-presence-error" role="status" hidden></p>
+              </div>
               <div class="discussion-composer-footer">
                 <span id="discussion-compose-hint" class="discussion-hint discussion-compose-label"><fmt:message key="discussion.hint"/></span>
                 <button class="discussion-send" type="submit" title="<fmt:message key='discussion.post'/>" aria-label="<fmt:message key='discussion.post'/>"><svg class="discussion-icon" aria-hidden="true"><use href="<c:url value='/discussion/jsp/icons/discussion-icons.svg'/>#send"/></svg></button>
@@ -141,6 +151,13 @@
             <div class="discussion-sidebar-content">
               <div id="discussion-pins"><jsp:include page="pins.jsp"/></div>
               <p id="discussion-pins-error" class="discussion-presence-error" role="status" hidden><fmt:message key="discussion.pinError"/></p>
+            </div>
+          </details>
+          <details class="discussion-sidebar-section" id="discussion-files-section" name="discussion-sidebar">
+            <summary><h2><fmt:message key="discussion.sharedFiles"/> <span id="discussion-file-count" class="discussion-people-count"><c:out value="${fn:length(sharedFiles)}"/></span></h2></summary>
+            <div class="discussion-sidebar-content">
+              <div id="discussion-shared-files"><jsp:include page="files.jsp"/></div>
+              <p id="discussion-files-error" class="discussion-presence-error" role="status" hidden><fmt:message key="discussion.filesLoadError"/></p>
             </div>
           </details>
         </aside>

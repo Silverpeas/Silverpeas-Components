@@ -39,6 +39,9 @@ public interface ConversationService {
   MessagePage updates(String instanceId, long after, List<String> messageIds);
   void publish(String instanceId, String body);
   void publish(String instanceId, String body, List<DiscussionImageUpload> images);
+  void publish(String instanceId, String body, List<DiscussionImageUpload> images, List<DiscussionFileUpload> files);
+  Map<String, List<DiscussionFile>> files(String instanceId, List<String> messageIds);
+  List<DiscussionFile> sharedFiles(String instanceId);
   Map<String, List<DiscussionImage>> images(String instanceId, List<String> messageIds);
   void edit(String instanceId, String messageId, long version, String body);
   void delete(String instanceId, String messageId, long version);

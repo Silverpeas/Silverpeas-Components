@@ -110,6 +110,7 @@ public class DiscussionWebController extends
     participants(context);
     publications(context);
     pins(context);
+    sharedFiles(context);
   }
 
   @POST
@@ -194,6 +195,14 @@ public class DiscussionWebController extends
         context.getComponentInstanceId(), context.getPathVariables().get("id"), Boolean.parseBoolean(value))));
   }
 
+  @GET
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("files")
+  @RedirectToInternalJsp("files.jsp")
+  public void sharedFiles(DiscussionWebRequestContext context) {
+    context.getRequest().setAttribute("sharedFiles", webResult(() -> conversations().sharedFiles(context.getComponentInstanceId())));
+  }
+
   @POST
   @LowestRoleAccess(SilverpeasRole.WRITER)
   @Path("typing")
@@ -219,6 +228,8 @@ public class DiscussionWebController extends
   private void prepareHistory(DiscussionWebRequestContext context,
       org.silverpeas.components.discussion.service.MessagePage page) {
     context.getRequest().setAttribute("messagePage", page);
+    context.getRequest().setAttribute("messageFiles", webResult(() -> conversations().files(
+        context.getComponentInstanceId(), page.messages().stream().map(message -> message.getId()).toList())));
     context.getRequest().setAttribute("messageImages", webResult(() -> conversations().images(
         context.getComponentInstanceId(), page.messages().stream().map(message -> message.getId()).toList())));
     context.getRequest().setAttribute("defaultAvatarPath", org.silverpeas.core.admin.user.model.User.DEFAULT_AVATAR_PATH);
@@ -237,17 +248,25 @@ public class DiscussionWebController extends
   public void publish(DiscussionWebRequestContext context) {
     webAction(() -> {
       var request = context.getRequest();
-      var files = org.silverpeas.core.util.file.FileUploadUtil.isRequestMultipart(request)
-          ? request.getFileItems().stream().filter(file -> !file.isFormField() && "images".equals(file.getFieldName())
-              && (file.getSize() > 0 || file.getFileName() != null && !file.getFileName().isBlank())).toList() : java.util.List.<org.silverpeas.core.util.file.FileItem>of();
-      if (files.size() > org.silverpeas.components.discussion.service.DiscussionImageUpload.MAX_IMAGES) {
-        throw new IllegalArgumentException("Too many images");
+      var items = org.silverpeas.core.util.file.FileUploadUtil.isRequestMultipart(request)
+          ? request.getFileItems().stream().filter(file -> !file.isFormField()
+              && (file.getSize() > 0 || file.getFileName() != null && !file.getFileName().isBlank())).toList()
+          : java.util.List.<org.silverpeas.core.util.file.FileItem>of();
+      var images = items.stream().filter(file -> "images".equals(file.getFieldName())).toList();
+      var files = items.stream().filter(file -> "files".equals(file.getFieldName())).toList();
+      if (images.size() > org.silverpeas.components.discussion.service.DiscussionImageUpload.MAX_IMAGES
+          || files.size() > org.silverpeas.components.discussion.service.DiscussionFileUpload.MAX_FILES) {
+        throw new IllegalArgumentException("Too many attachments");
       }
-      if (files.isEmpty()) {
-        conversations().publish(context.getComponentInstanceId(), request.getParameter("body"));
+      if (!files.isEmpty()) {
+        conversations().publish(context.getComponentInstanceId(), request.getParameter("body"),
+            images.stream().map(org.silverpeas.components.discussion.service.DiscussionImageUpload::read).toList(),
+            files.stream().map(org.silverpeas.components.discussion.service.DiscussionFileUpload::read).toList());
+      } else if (!images.isEmpty()) {
+        conversations().publish(context.getComponentInstanceId(), request.getParameter("body"),
+            images.stream().map(org.silverpeas.components.discussion.service.DiscussionImageUpload::read).toList());
       } else {
-        var images = files.stream().map(org.silverpeas.components.discussion.service.DiscussionImageUpload::read).toList();
-        conversations().publish(context.getComponentInstanceId(), request.getParameter("body"), images);
+        conversations().publish(context.getComponentInstanceId(), request.getParameter("body"));
       }
     });
   }

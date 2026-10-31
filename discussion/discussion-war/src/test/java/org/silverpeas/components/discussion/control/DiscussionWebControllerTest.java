@@ -232,6 +232,27 @@ class DiscussionWebControllerTest {
   }
 
   @Test
+  void fileUploadsAndTheSidebarUseTheCurrentInstance() throws Exception {
+    when(request.getMethod()).thenReturn("POST");
+    when(request.getContentType()).thenReturn("multipart/form-data; boundary=example");
+    when(request.getParameter("body")).thenReturn("");
+    var file = mock(org.silverpeas.core.util.file.FileItem.class);
+    when(file.getFieldName()).thenReturn("files");
+    when(file.getFileName()).thenReturn("budget.pdf");
+    when(file.getSize()).thenReturn(3L);
+    when(file.getInputStream()).thenAnswer(call -> new java.io.ByteArrayInputStream(new byte[]{1,2,3}));
+    when(request.getFileItems()).thenReturn(List.of(file));
+    controller.publish(context);
+    verify(service).publish(eq("discussion1"), eq(""), eq(List.of()), argThat(files -> files.size() == 1 && "budget.pdf".equals(files.getFirst().filename())));
+    controller.sharedFiles(context);
+    verify(service).sharedFiles("discussion1");
+    clearInvocations(service);
+    when(request.getFileItems()).thenReturn(java.util.Collections.nCopies(5, file));
+    assertEquals(400, assertThrows(WebApplicationException.class, () -> controller.publish(context)).getResponse().getStatus());
+    verifyNoInteractions(service);
+  }
+
+  @Test
   void pinRoutesUseTheAuthorizedInstanceAndRejectInvalidFlags() {
     when(request.getParameter("pinned")).thenReturn("true");
     controller.pin(context);

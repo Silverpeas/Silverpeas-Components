@@ -63,7 +63,7 @@ class ConversationServiceTest {
   @TestManagedMock
   private org.silverpeas.components.discussion.repository.DiscussionSeenRepository seen;
   @TestManagedMock
-  private DiscussionImageService imageService;
+  private DiscussionAttachmentService imageService;
   @TestedBean
   private DefaultConversationService service;
   private Conversation conversation;
@@ -467,6 +467,30 @@ class ConversationServiceTest {
     assertThrows(IllegalArgumentException.class, () -> message.edit(" ", false));
     message.delete();
     assertThrows(IllegalArgumentException.class, () -> message.edit("text", true));
+  }
+
+  @Test
+  void fileOnlyPublicationAndTheSharedIndexStayWithinTheAuthorizedConversation() throws Exception {
+    var upload = DiscussionFileUpload.read(DiscussionFileUploadTest.file("budget.pdf", new byte[]{1}));
+    try (var current = mockStatic(User.class)) {
+      current.when(User::getCurrentRequester).thenReturn(user);
+      service.publish("discussion1", "", List.of(), List.of(upload));
+      var captured = org.mockito.ArgumentCaptor.forClass(DiscussionMessage.class);
+      verify(messages).save(captured.capture());
+      assertTrue(captured.getValue().isFilesAttached());
+      assertTrue(captured.getValue().getBody().isBlank());
+      verify(imageService).storeFiles(eq("discussion1"), any(), eq(List.of(upload)));
+      assertThrows(IllegalArgumentException.class, () -> service.publish("discussion1", "text", List.of(), java.util.Collections.nCopies(5, upload)));
+    }
+    var file = new DiscussionFile("file", "budget.pdf", "/silverpeas/attached_file/file", 1, "old-message");
+    when(messages.fileMessageIds("conversation")).thenReturn(List.of("old-message"));
+    when(imageService.files("discussion1", "old-message")).thenReturn(List.of(file));
+    assertEquals(List.of(file), service.sharedFiles("discussion1"));
+    when(access.require("discussion1", SilverpeasRole.WRITER)).thenThrow(SecurityException.class);
+    clearInvocations(messages, imageService);
+    assertThrows(SecurityException.class, () -> service.sharedFiles("discussion1"));
+    assertThrows(SecurityException.class, () -> service.files("discussion1", List.of("foreign")));
+    verifyNoInteractions(messages, imageService);
   }
 
   private DiscussionMessage existingMessage(String author) {

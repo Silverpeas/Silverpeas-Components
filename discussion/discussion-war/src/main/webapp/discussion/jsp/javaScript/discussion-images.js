@@ -90,7 +90,8 @@
         preview.append(figure);
       });
       input.files = transfer.files;
-      textarea.required = files.length === 0;
+      textarea.required = files.length === 0 && !document.getElementById('discussion-files')?.files.length;
+      document.dispatchEvent(new Event('discussion:attachments'));
     };
     input.addEventListener('change', () => {
       const next = [...files, ...input.files];
