@@ -261,3 +261,30 @@ test('private read events update the stream without refreshing citation content'
     await page.waitForSelector('#message-32');
   } finally {await browser.close();}
 });
+
+
+test('deleted messages vanish immediately, even during editing, while cursors and scroll anchors remain stable', async () => {
+  const browser = await launch();
+  try {
+    const page = await open(browser);
+    await page.evaluate(() => {
+      const scroller = document.getElementById('discussion-scroll');
+      document.querySelector('#message-10 details').open = true;
+      document.querySelector('#message-10 textarea').focus({preventScroll:true});
+      scroller.scrollTop += document.getElementById('message-10').getBoundingClientRect().top - scroller.getBoundingClientRect().top + 2;
+    });
+    const before = await page.locator('#message-12').boundingBox();
+    const deleted = id => `<article id="message-${id}" class="discussion-message" data-sequence="${id}" hidden></article>`;
+    await refresh(page, fragment(deleted(10) + deleted(31)));
+    assert.equal(await page.locator('#message-10').isVisible(), false);
+    assert.equal(await page.locator('#message-10').textContent(), '');
+    assert.equal(await page.locator('#message-10 textarea').count(), 0);
+    assert.equal(await page.locator('#message-31').isVisible(), false);
+    const after = await page.locator('#message-12').boundingBox();
+    assert.ok(Math.abs(before.y - after.y) < 2, 'Deleting a row must preserve the surviving scroll anchor: '+before.y+' -> '+after.y);
+    await refresh(page, fragment(''));
+    const request = await page.evaluate(() => window.calls.at(-1));
+    assert.equal(request.after, 31);
+    assert.ok(request.ids.split(',').includes('10'));
+  } finally { await browser.close(); }
+});

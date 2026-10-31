@@ -130,7 +130,7 @@
       const focused = discussion.dataset.messageId ? 'message-' + discussion.dataset.messageId : hash;
       const target = focused.startsWith('message-') ? document.getElementById(focused) : null;
       const unread = history.querySelector('.discussion-unread-divider');
-      const initialTarget = target && history.contains(target) ? target : unread;
+      const initialTarget = target && !target.hidden && history.contains(target) ? target : unread;
       if (initialTarget) {
         scroller.scrollTop += initialTarget.getBoundingClientRect().top - scroller.getBoundingClientRect().top - 8;
       } else {
