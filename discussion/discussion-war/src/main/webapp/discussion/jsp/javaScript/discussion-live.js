@@ -58,7 +58,9 @@
     const merge = page => {
       // Anchor the current row rather than the total height: edits can resize older messages.
       const bottom = followLatest && scroller.scrollHeight - scroller.scrollTop - scroller.clientHeight < 48;
-      const anchor = articles().find(row => row.getBoundingClientRect().bottom > scroller.getBoundingClientRect().top);
+      const removed = new Set(Array.from(page.querySelectorAll('.discussion-message[hidden]'), row => row.id));
+      const anchor = articles().find(row => !row.hidden && !removed.has(row.id)
+          && row.getBoundingClientRect().bottom > scroller.getBoundingClientRect().top);
       const anchorTop = anchor?.getBoundingClientRect().top;
       page.querySelectorAll('.discussion-message').forEach(row => {
         const existing = document.getElementById(row.id);
@@ -68,8 +70,8 @@
         }
         const selected = existing?.contains(window.getSelection()?.anchorNode);
         // Reconcile deferred rows when the interaction ends, without periodic polling.
-        if (existing?.querySelector('details[open], .discussion-like-button:disabled, .discussion-pin-form button:disabled') ||
-            existing?.contains(document.activeElement) || selected) {
+        if (!row.hidden && (existing?.querySelector('details[open], .discussion-like-button:disabled, .discussion-pin-form button:disabled') ||
+            existing?.contains(document.activeElement) || selected)) {
           deferred.add(row.id);
           selectionPending ||= selected;
           return;

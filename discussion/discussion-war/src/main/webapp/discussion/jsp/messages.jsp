@@ -40,6 +40,11 @@
 <div class="discussion-page" data-before="${messagePage.nextBefore}" data-more="${messagePage.hasMore}" data-last-sequence="${messagePage.lastSequence}" data-unread-count="${messagePage.unreadCount}">
   <c:set var="unreadBoundaryShown" value="${false}"/>
   <c:forEach items="${messagePage.chronologicalMessages}" var="message">
+    <c:choose>
+      <c:when test="${message.deleted}">
+        <article id="message-${message.id}" class="discussion-message" data-sequence="${message.sequenceNumber}" hidden></article>
+      </c:when>
+      <c:otherwise>
     <c:if test="${message.unread and not unreadBoundaryShown}">
       <div class="discussion-unread-divider" role="separator" aria-label="<fmt:message key='discussion.unread'/>"><span><fmt:message key="discussion.unread"/></span></div>
       <c:set var="unreadBoundaryShown" value="${true}"/>
@@ -60,9 +65,6 @@
           <time><fmt:formatDate value="${message.creationDate}" type="both" dateStyle="short" timeStyle="short"/></time>
           <c:if test="${message.unread}"><span class="discussion-unread-badge"><fmt:message key="discussion.unreadMessage"/></span></c:if>
         </header>
-        <c:choose>
-          <c:when test="${message.deleted}"><p class="discussion-deleted"><fmt:message key="discussion.deleted"/></p></c:when>
-          <c:otherwise>
             <c:if test="${not empty fn:trim(message.body)}"><p class="discussion-body"><c:out value="${message.body}"/></p></c:if>
             <c:if test="${not empty messageImages[message.id]}">
               <div class="discussion-message-images">
@@ -120,9 +122,9 @@
               <c:otherwise><span class="discussion-readonly-likes"><svg class="discussion-icon" aria-hidden="true"><use href="${discussionIcons}#heart"/></svg> <c:out value="${empty reaction ? 0 : reaction.count}"/></span></c:otherwise>
             </c:choose>
             </div>
-          </c:otherwise>
-        </c:choose>
       </div>
     </article>
+      </c:otherwise>
+    </c:choose>
   </c:forEach>
 </div>
