@@ -50,6 +50,31 @@ class DiscussionAttachmentServiceTest {
   private DiscussionAttachmentService service;
 
   @Test
+  void fileViewerAvailabilityAndLanguageComeFromTheNativeViewer() {
+    var document = mock(SimpleDocument.class);
+    when(document.getId()).thenReturn("file1");
+    when(document.getFilename()).thenReturn("budget.pdf");
+    when(document.getContentType()).thenReturn("application/octet-stream");
+    when(document.getAttachmentURL()).thenReturn("/attached_file/file1");
+    when(document.getAttachmentPath()).thenReturn("/native/attachment/budget.pdf");
+    when(document.getLanguage()).thenReturn("fr");
+    when(attachments.listDocumentsByForeignKey(any(), isNull())).thenReturn(
+        new org.silverpeas.core.contribution.attachment.util.SimpleDocumentList<>(List.of(document)));
+    try (var urls = mockStatic(org.silverpeas.core.util.URLUtil.class);
+         var viewer = mockStatic(org.silverpeas.core.viewer.service.ViewerProvider.class)) {
+      urls.when(org.silverpeas.core.util.URLUtil::getApplicationURL).thenReturn("/silverpeas");
+      viewer.when(() -> org.silverpeas.core.viewer.service.ViewerProvider.isViewable("/native/attachment/budget.pdf")).thenReturn(true);
+      var file = service.files("discussion1", "message1").getFirst();
+      assertTrue(file.isViewable());
+      assertEquals("fr", file.getLanguage());
+      assertEquals("/silverpeas/attached_file/file1", file.url());
+      assertEquals("message1", file.messageId());
+      viewer.when(() -> org.silverpeas.core.viewer.service.ViewerProvider.isViewable("/native/attachment/budget.pdf")).thenReturn(false);
+      assertFalse(service.files("discussion1", "message1").getFirst().isViewable());
+    }
+  }
+
+  @Test
   void ordinaryFilesArePrivateDownloadsAndKeepTheirOriginalSafeName() throws Exception {
     var user = mock(User.class);
     when(user.getId()).thenReturn("writer");

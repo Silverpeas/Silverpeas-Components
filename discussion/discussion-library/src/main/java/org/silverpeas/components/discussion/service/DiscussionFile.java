@@ -24,7 +24,14 @@
 package org.silverpeas.components.discussion.service;
 
 /** A native attachment and the message it belongs to, exposed as JSP bean properties. */
-public record DiscussionFile(String id, String name, String url, long size, String messageId) {
+public record DiscussionFile(String id, String name, String url, long size, String messageId, String language, boolean viewable) {
+  public DiscussionFile(String id, String name, String url, long size, String messageId) {
+    this(id, name, url, size, messageId, null, false);
+  }
+
+  public String getLanguage() { return language; }
+  public boolean isViewable() { return viewable; }
+
   public String getId() { return id; }
   public String getName() { return name; }
   public String getUrl() { return url; }
