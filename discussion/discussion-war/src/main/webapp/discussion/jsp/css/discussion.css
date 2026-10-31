@@ -287,3 +287,11 @@ html.discussion-document { overflow-anchor: none; scroll-behavior: auto; }
 #discussion .discussion-files-list li { margin-bottom: 1rem; overflow-wrap: anywhere; }
 #discussion .discussion-file-download, #discussion .discussion-file-origin { display: block; }
 #discussion .discussion-file-origin { margin-top: 0.25rem; font-size: 0.85em; }
+
+/* Keep the message controls quiet without moving the content or hiding keyboard focus. */
+@media (hover: hover) and (pointer: fine) {
+  #discussion .discussion-message .discussion-actions,
+  #discussion .discussion-message .discussion-pin-form { opacity: 0; pointer-events: none; }
+  #discussion .discussion-message:is(:hover, :focus-within, :has(.discussion-edit[open], .discussion-pin-error:not([hidden]), .discussion-pin-form button:disabled)) .discussion-actions,
+  #discussion .discussion-message:is(:hover, :focus-within, :has(.discussion-edit[open], .discussion-pin-error:not([hidden]), .discussion-pin-form button:disabled)) .discussion-pin-form { opacity: 1; pointer-events: auto; }
+}
