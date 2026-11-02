@@ -100,8 +100,8 @@ class DiscussionMessageIndexTest {
     var batch = java.util.stream.IntStream.range(0, 200).mapToObj(i -> message("m" + i, 300 - i)).toList();
     var deleted = message("old", 99);
     when(deleted.isDeleted()).thenReturn(true);
-    when(messages.history("c1", Long.MAX_VALUE, 200)).thenReturn(batch);
-    when(messages.history("c1", 101, 200)).thenReturn(List.of(deleted));
+    when(messages.allHistory("c1", Long.MAX_VALUE, 200)).thenReturn(batch);
+    when(messages.allHistory("c1", 101, 200)).thenReturn(List.of(deleted));
     service.reindex("discussion1");
     verify(index, times(200)).add(any());
     verify(index).delete(new IndexEntryKey("discussion1", "DiscussionMessage", "old"));

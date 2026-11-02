@@ -37,6 +37,7 @@
       <li>
         <a href="${base}messages/${message.id}#message-${message.id}">
           <strong><c:out value="${message.creator.displayedName}"/></strong>
+          <c:if test="${not empty message.threadRootId}"><small class="discussion-thread-search-label"><fmt:message key="discussion.inThread"/></small></c:if>
           <time><fmt:formatDate value="${message.creationDate}" type="both" dateStyle="short" timeStyle="short"/></time>
           <span><c:out value="${searchBodies[message.id]}"/></span>
         </a>

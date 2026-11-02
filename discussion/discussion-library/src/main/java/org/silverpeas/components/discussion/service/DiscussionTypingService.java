@@ -37,7 +37,7 @@ import org.silverpeas.core.security.authorization.ComponentAccessController;
 /** Bounded, expiring state scoped by authenticated user and browser tab. */
 @Service
 public class DiscussionTypingService {
-  private record Key(String instanceId, String userId, String session) { }
+  private record Key(String instanceId, String userId, String session, String threadRootId) { }
   private record State(long expiry, long sentAt) { }
   private final Map<Key, State> states = new HashMap<>();
   @Inject
@@ -51,12 +51,26 @@ public class DiscussionTypingService {
   @Inject
   private org.silverpeas.core.security.session.SessionManagement sessions;
 
-  public synchronized void typing(String instanceId, String session, boolean active) {
+  @Inject
+  private ConversationService conversations;
+
+  public void typing(String instanceId, String session, boolean active) {
+    typing(instanceId, session, active, "");
+  }
+
+  public synchronized void typing(String instanceId, String session, boolean active, String threadRootId) {
     access.require(instanceId, SilverpeasRole.WRITER);
+    if (threadRootId == null) {
+      throw new IllegalArgumentException("Invalid typing scope");
+    }
+    if (!threadRootId.isEmpty() &&
+        !threadRootId.equals(conversations.threadRoot(instanceId, threadRootId).getId())) {
+      throw new IllegalArgumentException("Invalid thread root");
+    }
     var user = users.getCurrentRequester();
     long now = System.currentTimeMillis();
     states.entrySet().removeIf(entry -> entry.getValue().expiry() < now);
-    var key = new Key(instanceId, user.getId(), session);
+    var key = new Key(instanceId, user.getId(), session, threadRootId);
     var previous = states.get(key);
     if (active) {
       long lastSent = previous == null ? 0 : previous.sentAt();
@@ -75,9 +89,10 @@ public class DiscussionTypingService {
       states.keySet().stream().findFirst().ifPresent(states::remove);
     }
     long expiry = states.entrySet().stream()
-        .filter(entry -> entry.getKey().instanceId().equals(instanceId) && entry.getKey().userId().equals(user.getId()))
+        .filter(entry -> entry.getKey().instanceId().equals(instanceId) && entry.getKey().userId().equals(user.getId())
+            && entry.getKey().threadRootId().equals(threadRootId))
         .mapToLong(entry -> entry.getValue().expiry()).max().orElse(0);
     notifier.notify(new DiscussionTypingServerEvent(new DiscussionTyping(instanceId, user.getId(),
-        user.getDisplayedName(), expiry), receivers, sessions));
+        user.getDisplayedName(), expiry, threadRootId), receivers, sessions));
   }
 }

@@ -144,3 +144,26 @@ test('permission is requested only by the explicit enable button',async()=>{
     assert.equal(await page.evaluate(()=>(window.handlers.DISCUSSION_NEW_MESSAGE||[]).length),1);
   } finally {await browser.close();}
 });
+
+
+test('thread typing signals stay within the open thread and never include the draft', async () => {
+  const browser = await launch();
+  try {
+    const page = await browser.newPage();
+    await setup(page,{activity:true,focused:true});
+    await page.evaluate(()=>document.getElementById('discussion').dataset.threadRootId='root1');
+    await page.locator('textarea').fill('Brouillon dans le fil');
+    await page.waitForFunction(()=>requests.length===1);
+    assert.equal(await page.evaluate(()=>requests[0].threadRootId),'root1');
+    assert.equal((await page.evaluate(()=>JSON.stringify(requests))).includes('Brouillon'),false);
+    await page.evaluate(()=>{
+      emit('DISCUSSION_TYPING',{instanceId:'discussion1',threadRootId:'root2',userId:'3',name:'Autre fil',revision:1,ttl:8000});
+      emit('DISCUSSION_TYPING',{instanceId:'discussion1',userId:'4',name:'Flux principal',revision:2,ttl:8000});
+    });
+    assert.equal(await page.locator('#discussion-typing').isVisible(),false);
+    await page.evaluate(()=>emit('DISCUSSION_TYPING',{instanceId:'discussion1',threadRootId:'root1',userId:'3',name:'Bernard',revision:3,ttl:8000}));
+    assert.equal(await page.locator('#discussion-typing').textContent(),'Bernard écrit…');
+    await page.evaluate(()=>emit('DISCUSSION_TYPING',{instanceId:'discussion1',threadRootId:'root1',userId:'3',name:'Bernard',revision:4,ttl:0}));
+    assert.equal(await page.locator('#discussion-typing').isVisible(),false);
+  } finally { await browser.close(); }
+});

@@ -79,6 +79,46 @@ class DiscussionWebControllerTest {
     when(context.getUser()).thenReturn(mock(UserDetail.class));
     when(context.getHighestUserRole()).thenReturn(SilverpeasRole.WRITER);
     when(context.getPathVariables()).thenReturn(Map.of("id", "message"));
+    var root = mock(org.silverpeas.components.discussion.model.DiscussionMessage.class);
+    when(root.getId()).thenReturn("message");
+    when(service.threadRoot("discussion1", "message")).thenReturn(root);
+  }
+
+  @Test
+  void threadViewsScopeHistoryUpdatesAndPublishingToTheValidatedRoot() {
+    when(context.getPathVariables()).thenReturn(Map.of("root", "message", "id", "reply"));
+    var page = new MessagePage(List.of(), 1, false, 20, 4);
+    when(service.threadHistory("discussion1", "message", Long.MAX_VALUE, 30)).thenReturn(page);
+    when(service.threadUpdates("discussion1", "message", 0, List.of())).thenReturn(page);
+    controller.thread(context);
+    controller.threadHistory(context);
+    controller.threadUpdates(context);
+    when(request.getParameter("body")).thenReturn("Une réponse");
+    controller.reply(context);
+    verify(service).reply("discussion1", "message", "Une réponse", List.of(), List.of());
+    verify(context).addRedirectVariable("root", "message");
+    verify(request, atLeastOnce()).setAttribute(eq("threadRoot"), any());
+    verify(request, times(3)).setAttribute("messagePage", page);
+  }
+
+  @Test
+  void directReplyLinksOpenTheThreadAndThreadActionsRejectForeignRoots() {
+    var root = mock(org.silverpeas.components.discussion.model.DiscussionMessage.class);
+    when(root.getId()).thenReturn("root");
+    when(service.threadRoot("discussion1", "message")).thenReturn(root);
+    when(service.historyAround("discussion1", "message")).thenReturn(new MessagePage(List.of(), 1, false, 20, 1));
+    controller.message(context);
+    verify(request).setAttribute("threadRoot", root);
+    when(context.getPathVariables()).thenReturn(Map.of("root", "foreign", "id", "message"));
+    assertEquals(400, assertThrows(WebApplicationException.class, () -> controller.threadEdit(context)).getResponse().getStatus());
+    verify(service, never()).edit(anyString(), anyString(), anyLong(), any());
+    when(context.getPathVariables()).thenReturn(Map.of("root", "root", "id", "message"));
+    when(request.getParameter("version")).thenReturn("0");
+    when(request.getParameter("body")).thenReturn("edited");
+    controller.threadEdit(context);
+    controller.threadDelete(context);
+    verify(service).edit("discussion1", "message", 0, "edited");
+    verify(service).delete("discussion1", "message", 0);
   }
 
   @Test

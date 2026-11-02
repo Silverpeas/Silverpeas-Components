@@ -54,7 +54,7 @@ public class DiscussionMessageRepository extends SilverpeasJpaEntityRepository<D
   public List<DiscussionMessage> history(String conversationId, long before, int limit) {
     return getEntityManager().createQuery("""
         select m from DiscussionMessage m where m.conversationId = :conversation
-        and m.sequenceNumber < :before order by m.sequenceNumber desc
+        and m.threadRootId is null and m.sequenceNumber < :before order by m.sequenceNumber desc
         """, DiscussionMessage.class).setParameter("conversation", conversationId)
         .setParameter("before", before).setMaxResults(limit).getResultList();
   }
@@ -62,9 +62,61 @@ public class DiscussionMessageRepository extends SilverpeasJpaEntityRepository<D
   public List<DiscussionMessage> newer(String conversationId, long after) {
     return getEntityManager().createQuery("""
         select m from DiscussionMessage m where m.conversationId = :conversation
-        and m.sequenceNumber > :after order by m.sequenceNumber asc
+        and m.threadRootId is null and m.sequenceNumber > :after order by m.sequenceNumber asc
         """, DiscussionMessage.class).setParameter("conversation", conversationId)
         .setParameter("after", after).setMaxResults(100).getResultList();
+  }
+
+  /** Unfiltered cursor used by native reindexing, including replies and tombstones. */
+  public List<DiscussionMessage> allHistory(String conversationId, long before, int limit) {
+    return getEntityManager().createQuery("""
+        select m from DiscussionMessage m where m.conversationId = :conversation
+        and m.sequenceNumber < :before order by m.sequenceNumber desc
+        """, DiscussionMessage.class).setParameter("conversation", conversationId)
+        .setParameter("before", before).setMaxResults(limit).getResultList();
+  }
+
+  public List<DiscussionMessage> threadHistory(String conversationId, String rootId, long before, int limit) {
+    return getEntityManager().createQuery("""
+        select m from DiscussionMessage m where m.conversationId = :conversation
+        and (m.id.id = :root or m.threadRootId = :root) and m.sequenceNumber < :before
+        order by m.sequenceNumber desc
+        """, DiscussionMessage.class).setParameter("conversation", conversationId)
+        .setParameter("root", rootId).setParameter("before", before).setMaxResults(limit).getResultList();
+  }
+
+  public List<DiscussionMessage> threadNewer(String conversationId, String rootId, long after) {
+    return getEntityManager().createQuery("""
+        select m from DiscussionMessage m where m.conversationId = :conversation
+        and (m.id.id = :root or m.threadRootId = :root) and m.sequenceNumber > :after
+        order by m.sequenceNumber asc
+        """, DiscussionMessage.class).setParameter("conversation", conversationId)
+        .setParameter("root", rootId).setParameter("after", after).setMaxResults(100).getResultList();
+  }
+
+  /** Two grouped queries for a whole page, never one query per root message. */
+  public java.util.Map<String, long[]> threadStatistics(String conversationId, List<String> rootIds,
+      String userId, long lastRead) {
+    var statistics = new java.util.HashMap<String, long[]>();
+    if (rootIds.isEmpty()) {
+      return statistics;
+    }
+    getEntityManager().createQuery("""
+        select m.threadRootId, count(m) from DiscussionMessage m
+        where m.conversationId = :conversation and m.threadRootId in :roots and m.deleted = false
+        group by m.threadRootId
+        """, Object[].class).setParameter("conversation", conversationId).setParameter("roots", rootIds)
+        .getResultList().forEach(row -> statistics.put((String) row[0], new long[]{(Long) row[1], 0}));
+    getEntityManager().createQuery("""
+        select m.threadRootId, count(m) from DiscussionMessage m
+        where m.conversationId = :conversation and m.threadRootId in :roots and m.deleted = false
+        and m.sequenceNumber > :lastRead and m.creatorId <> :user
+        and not exists (select s from DiscussionSeen s where s.messageId = m.id.id and s.userId = :user)
+        group by m.threadRootId
+        """, Object[].class).setParameter("conversation", conversationId).setParameter("roots", rootIds)
+        .setParameter("lastRead", lastRead).setParameter("user", userId).getResultList()
+        .forEach(row -> statistics.computeIfAbsent((String) row[0], id -> new long[2])[1] = (Long) row[1]);
+    return statistics;
   }
 
   public List<DiscussionMessage> selected(String conversationId, List<String> ids) {
@@ -97,6 +149,10 @@ public class DiscussionMessageRepository extends SilverpeasJpaEntityRepository<D
   }
 
   public void deleteConversation(String conversationId) {
+    // Remove the dependent replies first for databases checking the self-reference row by row.
+    getEntityManager().createQuery(
+        "delete from DiscussionMessage m where m.conversationId = :conversation and m.threadRootId is not null")
+        .setParameter("conversation", conversationId).executeUpdate();
     getEntityManager().createQuery(
         "delete from DiscussionMessage m where m.conversationId = :conversation")
         .setParameter("conversation", conversationId).executeUpdate();

@@ -315,3 +315,21 @@ html.discussion-document { overflow-anchor: none; scroll-behavior: auto; }
   #discussion .discussion-search { width: 100%; margin: 0; }
   #discussion .discussion-search input { flex: 1; width: auto; }
 }
+
+/* Thread entry points remain visible when replies exist; empty actions follow hover controls. */
+#discussion .discussion-thread-link { display: inline-flex; align-items: center; gap: 0.35rem; color: var(--color-lien-action, #3975b5); text-decoration: none; font-size: 0.9em; }
+#discussion .discussion-thread-link:hover { text-decoration: underline; }
+#discussion .discussion-thread-unread { font-weight: 600; }
+#discussion .discussion-thread-remnant { padding-block: 0.6rem; }
+#discussion .discussion-thread-context { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; font-size: 0.85em; margin: 0; }
+#discussion .discussion-thread-context a { color: var(--color-lien-action, #3975b5); }
+#discussion .discussion-thread-context span { color: var(--color-text-second-niveau, #626262); }
+#discussion .discussion-thread-search-label { display: block; color: var(--color-text-second-niveau, #626262); }
+@media (hover: hover) and (pointer: fine) {
+  #discussion .discussion-message .discussion-thread-link--empty { opacity: 0; pointer-events: none; }
+  #discussion .discussion-message:is(:hover, :focus-within) .discussion-thread-link--empty { opacity: 1; pointer-events: auto; }
+}
+
+#discussion .discussion-thread-origin-label { color: var(--color-text-second-niveau, #626262); font-size: 0.85em; }
+#discussion .discussion-message--thread-root { border-left: 2px solid var(--color-lien-action, #3975b5); }
+#discussion .discussion-thread-context { flex-basis: 100%; }

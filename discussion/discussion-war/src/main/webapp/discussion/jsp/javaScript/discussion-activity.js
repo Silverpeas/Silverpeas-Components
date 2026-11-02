@@ -55,7 +55,8 @@
     };
     const signal = value => {
       sending = sending.catch(() => {}).then(() => sp.ajaxRequest(discussion.dataset.typing).byPostMethod()
-          .withParam('active', String(value)).withParam('tab', tab).send()).catch(() => {});
+          .withParam('active', String(value)).withParam('tab', tab)
+          .withParam('threadRootId', discussion.dataset.threadRootId || '').send()).catch(() => {});
     };
     const stop = () => {
       window.clearTimeout(stopTimer);
@@ -102,6 +103,7 @@
       try {
         const data = JSON.parse(event.data);
         if (data.instanceId !== discussion.dataset.instanceId || data.userId === discussion.dataset.userId
+            || (data.threadRootId || '') !== (discussion.dataset.threadRootId || '')
             || !Number.isFinite(data.revision) || !Number.isFinite(data.ttl)) {
           return;
         }

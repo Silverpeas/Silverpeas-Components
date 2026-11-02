@@ -112,6 +112,55 @@ class DiscussionPersistenceTest {
   }
 
   @Test
+  void threadRepliesAreSeparateFromTimelineButIncludedInIndexHistoryAndUnreadCounts() {
+    session.createNativeMutationQuery("update sc_discussion_message set threadRootId='m1' where id in ('m2','m3','m4')").executeUpdate();
+    assertEquals(List.of("m1"), messages.history("c1", Long.MAX_VALUE, 30).stream().map(DiscussionMessage::getId).toList());
+    assertEquals(List.of("m4", "m3", "m2", "m1"), messages.allHistory("c1", Long.MAX_VALUE, 30).stream().map(DiscussionMessage::getId).toList());
+    assertTrue(messages.newer("c1", 1).isEmpty());
+    assertEquals(List.of("m4", "m3", "m2", "m1"), messages.threadHistory("c1", "m1", Long.MAX_VALUE, 30).stream().map(DiscussionMessage::getId).toList());
+    assertEquals(List.of("m2", "m3", "m4"), messages.threadNewer("c1", "m1", 1).stream().map(DiscussionMessage::getId).toList());
+    assertTrue(messages.threadHistory("c2", "m1", Long.MAX_VALUE, 30).isEmpty());
+    var counts = messages.threadStatistics("c1", List.of("m1"), "user", 1);
+    assertArrayEquals(new long[]{2, 1}, counts.get("m1"));
+    assertEquals(1, messages.unread("c1", "user", 1));
+    session.createNativeMutationQuery("""
+        insert into sc_discussion_seen (id, conversationId, messageId, userId, createDate, createdBy, lastUpdateDate, lastUpdatedBy, version)
+        values ('seen-reply', 'c1', 'm4', 'user', CURRENT_TIMESTAMP, 'user', CURRENT_TIMESTAMP, 'user', 0)
+        """).executeUpdate();
+    assertArrayEquals(new long[]{2, 0}, messages.threadStatistics("c1", List.of("m1"), "user", 1).get("m1"));
+    assertEquals(0, messages.unread("c1", "user", 1));
+    assertTrue(messages.threadStatistics("c1", List.of(), "user", 0).isEmpty());
+  }
+
+  @Test
+  void deletingARootRetainsRepliesAndTheirUnreadState() {
+    session.createNativeMutationQuery("update sc_discussion_message set threadRootId='m1' where id='m4'").executeUpdate();
+    session.createNativeMutationQuery("update sc_discussion_message set deleted=true, body=' ' where id='m1'").executeUpdate();
+    assertArrayEquals(new long[]{1, 1}, messages.threadStatistics("c1", List.of("m1"), "user", 1).get("m1"));
+    assertEquals(List.of("m4", "m1"), messages.threadHistory("c1", "m1", Long.MAX_VALUE, 30).stream().map(DiscussionMessage::getId).toList());
+    // Native instance destruction remains valid with the self-referencing constraint.
+    messages.deleteConversation("c1");
+    assertTrue(messages.allHistory("c1", Long.MAX_VALUE, 30).isEmpty());
+  }
+
+  @Test
+  void additiveThreadMigrationPreservesExistingMessages() throws Exception {
+    session.createNativeMutationQuery("ALTER TABLE sc_discussion_message DROP CONSTRAINT fk_discussion_thread").executeUpdate();
+    session.createNativeMutationQuery("DROP INDEX idx_discussion_thread").executeUpdate();
+    session.createNativeMutationQuery("ALTER TABLE sc_discussion_message DROP COLUMN threadRootId").executeUpdate();
+    try (var input = getClass().getResourceAsStream("/migrations/db/h2/discussion/001/add_threads.sql")) {
+      assertNotNull(input);
+      for (String sql : new String(input.readAllBytes(), StandardCharsets.UTF_8).split(";")) {
+        if (!sql.isBlank()) {
+          session.createNativeMutationQuery(sql).executeUpdate();
+        }
+      }
+    }
+    assertEquals(4, messages.history("c1", Long.MAX_VALUE, 30).size());
+    assertTrue(messages.history("c1", Long.MAX_VALUE, 30).stream().allMatch(message -> message.getThreadRootId() == null));
+  }
+
+  @Test
   void desktopSettingsDefaultToEnabledAndRemainScopedToUserAndInstance() {
     assertTrue(reads.desktopEnabled("discussion1", "user"));
     session.createNativeMutationQuery("update sc_discussion_read set desktopNotifications=false where id='r1'").executeUpdate();
@@ -268,7 +317,7 @@ class DiscussionPersistenceTest {
   void allVendorScriptsAreCompatibleWithTheInstallerStatementSplitter() throws Exception {
     for (String database : List.of("h2", "postgresql", "mssql", "oracle")) {
       List<String> statements = installerStatements(database);
-      assertEquals(6, statements.size(), database);
+      assertEquals(7, statements.size(), database);
       for (String statement : statements) {
         String executable = statement.lines()
             .filter(line -> !line.stripLeading().startsWith("--"))

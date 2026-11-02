@@ -275,3 +275,29 @@ peut apparaître dans les résultats après un bref délai. Les résultats du mo
 peuvent aussi ouvrir un message via la route native `searchResult`.
 
 Aucun changement SQL n’est nécessaire.
+
+### Réponses en fil
+
+Chaque message principal propose « Répondre » ou le nombre de réponses. Le lien ouvre une vue de
+fil avec un retour à la discussion, le message d’origine et son historique de réponses, paginé
+comme le flux principal. V1 : un niveau de fil, sans sous-fils. Les réponses partagent la même
+conversation et sa séquence ; elles sont liées au message racine par `threadRootId`, sans dépendre
+du moteur de commentaires. Un message d’une autre instance ou une réponse ne peut servir de
+racine à une nouvelle réponse.
+
+Les réponses conservent les mentions, pièces jointes, images, réactions, épingles, recherche et
+notifications natives d’abonnement. Les permaliens de recherche et de notification ouvrent la
+bonne vue et le message ciblé. La saisie en cours est limitée au flux ou au fil consulté. Les
+non-lus sont suivis par message, et le flux principal affiche les compteurs de réponses non lues.
+Un curseur de synchronisation distinct des accusés de lecture permet de traverser les séquences
+appartenant aux autres fils sans requêtes en boucle ni lecture implicite.
+
+La suppression du message d’origine ne supprime pas les réponses des autres participants : un
+lien compact vers le fil subsiste dans le flux tant que des réponses sont visibles. La destruction
+complète de l’instance retire d’abord les réponses pour respecter la contrainte autoréférente.
+
+Le schéma neuf reste en version **001**. Sur un environnement déjà installé, appliquer une fois
+`discussion-configuration/src/main/config/migrations/db/<base>/discussion/001/add_threads.sql`
+avant d’installer ce composant. Les messages existants restent des messages principaux. Aucun
+changement de version du composant ni réindexation des anciens messages ne sont requis pour
+cette évolution. Les indexations complètes parcourent aussi les réponses.

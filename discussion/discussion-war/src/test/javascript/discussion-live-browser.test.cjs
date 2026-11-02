@@ -288,3 +288,17 @@ test('deleted messages vanish immediately, even during editing, while cursors an
     assert.ok(request.ids.split(',').includes('10'));
   } finally { await browser.close(); }
 });
+
+
+test('scope synchronization advances across messages in other threads without looping', async () => {
+  const browser = await launch();
+  try {
+    const page = await open(browser);
+    const before = await page.evaluate(() => calls.length);
+    await refresh(page, '<div class="discussion-page" data-last-sequence="500" data-sync-sequence="500" data-unread-count="2"></div>');
+    assert.equal(await page.evaluate(() => calls.length), before + 1);
+    assert.equal(await page.locator('.discussion-message').count(),30);
+    await refresh(page, '<div class="discussion-page" data-last-sequence="501" data-sync-sequence="501" data-unread-count="3"></div>');
+    assert.equal(await page.evaluate(() => calls.at(-1).after),500);
+  } finally { await browser.close(); }
+});

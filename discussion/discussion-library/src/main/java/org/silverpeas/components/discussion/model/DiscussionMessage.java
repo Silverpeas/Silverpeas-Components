@@ -42,6 +42,31 @@ public class DiscussionMessage extends SilverpeasJpaEntity<DiscussionMessage, Uu
   private String conversationId;
   @Column(nullable = false, updatable = false)
   private long sequenceNumber;
+  @Column(length = 40, updatable = false)
+  private String threadRootId;
+  @Transient
+  private long replyCount;
+  @Transient
+  private long unreadReplyCount;
+
+  public String getThreadRootId() { return threadRootId; }
+  public long getReplyCount() { return replyCount; }
+  public long getUnreadReplyCount() { return unreadReplyCount; }
+
+  public void attachToThread(DiscussionMessage root) {
+    if (root == null || root.getThreadRootId() != null || root.getId() == null
+        || !conversationId.equals(root.getConversationId()) || root.getId().equals(getId())
+        || threadRootId != null) {
+      throw new IllegalArgumentException("Invalid discussion thread root");
+    }
+    threadRootId = root.getId();
+  }
+
+  public void setThreadStatistics(long replies, long unread) {
+    replyCount = replies;
+    unreadReplyCount = unread;
+  }
+
   @Column(nullable = false, length = MAX_BODY_LENGTH)
   private String body;
   @Column(nullable = false)

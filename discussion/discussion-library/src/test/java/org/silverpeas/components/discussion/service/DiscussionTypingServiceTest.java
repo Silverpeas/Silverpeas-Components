@@ -51,8 +51,32 @@ class DiscussionTypingServiceTest {
   private UserProvider users;
   @TestManagedMock
   private org.silverpeas.core.security.session.SessionManagement sessions;
+  @TestManagedMock
+  private ConversationService conversations;
   @TestedBean
   private DiscussionTypingService service;
+
+  @Test
+  void typingIsScopedToEachValidatedThreadIncludingStopSignals() {
+    var user = mock(User.class);
+    when(user.getId()).thenReturn("2");
+    when(user.getDisplayedName()).thenReturn("Bernard");
+    when(users.getCurrentRequester()).thenReturn(user);
+    var root = mock(org.silverpeas.components.discussion.model.DiscussionMessage.class);
+    when(root.getId()).thenReturn("root");
+    when(conversations.threadRoot("discussion1", "root")).thenReturn(root);
+    service.typing("discussion1", "tab-main", true);
+    service.typing("discussion1", "tab-thread", true, "root");
+    service.typing("discussion1", "tab-thread", false, "root");
+    var events = ArgumentCaptor.forClass(DiscussionTypingServerEvent.class);
+    verify(notifier, times(3)).notify(events.capture());
+    assertTrue(events.getAllValues().get(0).getData("s", user).contains("\"threadRootId\":\"\""));
+    String stopped = events.getValue().getData("s", user);
+    assertTrue(stopped.contains("\"threadRootId\":\"root\""));
+    assertTrue(stopped.contains("\"ttl\":0"));
+    when(root.getId()).thenReturn("different");
+    assertThrows(IllegalArgumentException.class, () -> service.typing("discussion1", "tab-thread", true, "root"));
+  }
 
   @Test
   void typingIsThrottledExpiresAndRemainsActiveUntilEveryTabStops() {
