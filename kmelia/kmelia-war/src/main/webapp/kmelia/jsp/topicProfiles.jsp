@@ -98,6 +98,8 @@ function backToFolder() {
     <fmt:message var="listLabel" key="GML.selection"/>
     <viewTags:displayListOfUsersAndGroups users="<%=users%>" groups="<%=groups%>" id="roleItems"
                                           label="${listLabel}" updateCallback="<%=updateCallback%>"
+                                          nonRemovableUserIds="${requestScope.NonRemovableUserIds}"
+                                          nonRemovableGroupIds="${requestScope.NonRemovableGroupIds}"
                                           formSaveSelector="form[name=roleList]"/>
   </form>
   <view:buttonPane>
