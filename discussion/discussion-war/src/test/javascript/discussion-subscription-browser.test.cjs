@@ -24,18 +24,25 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const path = require('node:path');
+const fs = require('node:fs');
 const {chromium} = require('playwright');
 
 test('QVF uses the native manager and blocks repeated requests until completion', async () => {
   const browser = await chromium.launch({executablePath:process.env.CHROME_PATH,args:['--no-sandbox']});
   try {
     const page = await browser.newPage();
-    await page.setContent(`<main id="discussion" data-instance-id="discussion42"></main><a href="#discussion-subscription"><span id="subscriptionMenuLabel">S’abonner</span></a><p id="discussion-error" hidden>Erreur</p>`);
+    const jsp = fs.readFileSync(path.join(__dirname,'../../main/webapp/discussion/jsp/discussion.jsp'),'utf8');
+    const operation = jsp.match(/<view:operation altText="([^"]*)"[^>]*action="#discussion-subscription"\/>/);
+    assert.ok(operation, 'QVF subscription operation exists');
+    await page.setContent(`<main id="discussion" data-instance-id="discussion42"></main><a href="#discussion-subscription">${operation[1]}</a><p id="discussion-error" hidden>Erreur</p>`);
+    assert.equal(await page.locator('#subscriptionMenuLabel').count(),1,
+      'The JSP operation must render an HTML label, rather than escaped markup');
     await page.evaluate(() => {
       window.SUBSCRIPTION_PROMISE = Promise.resolve();
       window.calls = [];
       window.SilverpeasSubscriptionManager = function(options) {
         window.options = options;
+        document.getElementById('subscriptionMenuLabel').textContent = 'S’abonner';
         this.switchUserSubscription = () => {
           window.calls.push('switch');
           return new Promise((resolve,reject) => {window.complete=resolve; window.fail=reject;});
