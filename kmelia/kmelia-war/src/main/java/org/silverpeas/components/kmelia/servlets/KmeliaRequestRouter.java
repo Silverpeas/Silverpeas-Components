@@ -60,6 +60,7 @@ import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
+import org.silverpeas.core.security.authorization.ForbiddenRuntimeException;
 import org.silverpeas.core.security.authorization.PublicationAccessControl;
 import org.silverpeas.core.subscription.SubscriptionResource;
 import org.silverpeas.core.util.DateUtil;
@@ -1238,6 +1239,12 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           request.setAttribute("RightsDependsOn", "AnotherTopic");
         } else if (topic.haveLocalRights()) {
           profile = kmelia.getTopicProfile(role, topic.getRightsDependsOn());
+          if (SilverpeasRole.ADMIN.getName().equals(role)) {
+            // the application managers cannot be removed from the managers of the topic
+            ProfileInst appManagers = kmelia.getProfile(role);
+            request.setAttribute("NonRemovableUserIds", appManagers.getAllUsers());
+            request.setAttribute("NonRemovableGroupIds", appManagers.getAllGroups());
+          }
 
           request.setAttribute("RightsDependsOn", "ThisTopic");
         } else {
@@ -1276,7 +1283,13 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
             StringUtil.split(request.getParameter("roleItems" + "UserPanelCurrentGroupIds"), ',');
 
         if (kmelia.isTopicAdmin(nodeId) || kmelia.isUserComponentAdmin()) {
-          kmelia.updateTopicRole(role, nodeId, groupIds, userIds);
+          try {
+            kmelia.updateTopicRole(role, nodeId, groupIds, userIds);
+          } catch (ForbiddenRuntimeException e) {
+            SilverLogger.getLogger(this)
+                .warn("Security alert from {0}: {1}", kmelia.getUserId(), e.getMessage());
+            return "/admin/jsp/accessForbidden.jsp";
+          }
         } else {
           SilverLogger.getLogger(this).warn("Security alert from {0}", kmelia.getUserId());
         }

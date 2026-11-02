@@ -120,6 +120,7 @@ import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.process.annotation.SimulationActionProcessProcessor;
 import org.silverpeas.core.security.authorization.AccessControlContext;
+import org.silverpeas.core.security.authorization.ForbiddenRuntimeException;
 import org.silverpeas.core.security.authorization.NodeAccessControl;
 import org.silverpeas.core.security.authorization.PublicationAccessControl;
 import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
@@ -2088,6 +2089,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       sel.setSelectedElements(userIds);
       sel.setSelectedSets(groupIds);
     }
+    FolderManagers.lockApplicationManagers(sel, role,
+        () -> getProfile(SilverpeasRole.ADMIN.getName()));
   }
 
   private void deleteTopicRoles(NodeDetail node) {
@@ -2108,8 +2111,21 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     getAdmin().deleteProfileInst(profileId);
   }
 
+  /**
+   * Updates the specified role of the given topic with the given users and groups. The topic
+   * then uses its own access rights. The managers of the application cannot be removed from the
+   * managers of the topic.
+   * @param role the name of the role to update.
+   * @param nodeId the unique identifier of the topic.
+   * @param groupIds the identifiers of the groups to set in the role.
+   * @param userIds the identifiers of the users to set in the role.
+   * @throws ForbiddenRuntimeException if a manager of the application is removed from the
+   * managers of the topic.
+   */
   public void updateTopicRole(String role, String nodeId, String[] groupIds, String[] userIds) {
     ProfileInst profile = getTopicProfile(role, nodeId);
+    FolderManagers.checkNoApplicationManagerRemoved(profile, userIds, groupIds,
+        () -> getProfile(SilverpeasRole.ADMIN.getName()));
 
     // Update the topic
     NodeDetail topic = getNodeHeader(nodeId);
