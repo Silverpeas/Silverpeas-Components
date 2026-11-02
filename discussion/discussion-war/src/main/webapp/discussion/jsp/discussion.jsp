@@ -58,7 +58,7 @@
 </head>
 <body>
 <view:operationPane>
-  <view:operation altText="&lt;span id='subscriptionMenuLabel'&gt;&lt;/span&gt;" icon="" action="#discussion-subscription"/>
+  <view:operation altText="<span id='subscriptionMenuLabel'></span>" icon="" action="#discussion-subscription"/>
 </view:operationPane>
 <view:window>
   <view:frame>
