@@ -101,7 +101,7 @@ public class KmeliaImportExport extends GEDImportExport {
     if (pubDetTemp.isStatusMustBeChecked()) {
       final String profile;
       if (StringUtil.getBooleanValue(orgnaisationController.getComponentParameterValue(topicPK
-          .getInstanceId(), InstanceParameters.rightsOnFolders))) {
+          .getInstanceId(), InstanceParameters.RIGHTS_ON_TOPICS))) {
         NodeDetail topic = getNodeService().getHeader(topicPK);
         if (topic.haveRights()) {
           profile = KmeliaHelper.getProfile(orgnaisationController.getUserProfiles(userDetail.getId(),

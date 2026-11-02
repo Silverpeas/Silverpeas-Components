@@ -1243,6 +1243,34 @@
           </help>
         </parameter>
         <parameter>
+          <name>appManagersForcedAsFolderManagers</name>
+          <label>
+            <message lang="fr">Gestionnaires de dossier forcés</message>
+            <message lang="en">Forced folder managers</message>
+            <message lang="de">Erzwungene Themenmanager</message>
+          </label>
+          <order>29</order>
+          <mandatory>true</mandatory>
+          <value>no</value>
+          <type>checkbox</type>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Les gestionnaires de l'application sont toujours gestionnaires des
+              dossiers avec des droits spécifiques, sans pouvoir être retirés de ce rôle. A
+              l'activation, ils sont ajoutés aux gestionnaires de tous les dossiers avec des droits
+              spécifiques.
+            </message>
+            <message lang="en">The application managers are always managers of the folders with
+              specific rights, without being able to be removed from this role. When enabled, they
+              are added to the managers of all the folders with specific rights.
+            </message>
+            <message lang="de">Die Anwendungsmanager sind immer Manager der Themen mit spezifischen
+              Rechten, ohne aus dieser Rolle entfernt werden zu können. Bei der Aktivierung werden
+              sie zu den Managern aller Themen mit spezifischen Rechten hinzugefügt.
+            </message>
+          </help>
+        </parameter>
+        <parameter>
           <name>wysiwygOnTopics</name>
           <label>
             <message lang="fr">Description riche</message>
