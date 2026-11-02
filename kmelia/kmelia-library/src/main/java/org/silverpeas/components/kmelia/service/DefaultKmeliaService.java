@@ -1834,7 +1834,7 @@ public class DefaultKmeliaService implements KmeliaService {
 
   private int getValidationType(String instanceId) {
     String sParam = getOrganisationController().getComponentParameterValue(instanceId,
-        InstanceParameters.validation);
+        InstanceParameters.VALIDATION);
     if (isDefined(sParam)) {
       return Integer.parseInt(sParam);
     }
@@ -3693,17 +3693,17 @@ public class DefaultKmeliaService implements KmeliaService {
 
   private boolean isRightsOnTopicsEnabled(String componentId) {
     return getBooleanValue(getOrganisationController().getComponentParameterValue(componentId,
-        InstanceParameters.rightsOnFolders));
+        InstanceParameters.RIGHTS_ON_TOPICS));
   }
 
   private boolean isNbItemsDisplayed(String componentId) {
     return getBooleanValue(getOrganisationController().getComponentParameterValue(componentId,
-        InstanceParameters.displayNbItemsOnFolders));
+        InstanceParameters.DISPLAY_NB));
   }
 
   private boolean isCoWritingEnable(String componentId) {
     return getBooleanValue(getOrganisationController().getComponentParameterValue(componentId,
-        InstanceParameters.coWriting));
+        InstanceParameters.CO_WRITING));
   }
 
   private boolean isDraftVisibleWithCoWriting() {

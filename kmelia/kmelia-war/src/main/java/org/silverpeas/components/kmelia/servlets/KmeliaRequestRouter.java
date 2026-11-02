@@ -1239,7 +1239,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           request.setAttribute("RightsDependsOn", "AnotherTopic");
         } else if (topic.haveLocalRights()) {
           profile = kmelia.getTopicProfile(role, topic.getRightsDependsOn());
-          if (SilverpeasRole.ADMIN.getName().equals(role)) {
+          if (SilverpeasRole.ADMIN.getName().equals(role) &&
+              kmelia.areAppManagersForcedAsFolderManagers()) {
             // the application managers cannot be removed from the managers of the topic
             ProfileInst appManagers = kmelia.getProfile(role);
             request.setAttribute("NonRemovableUserIds", appManagers.getAllUsers());

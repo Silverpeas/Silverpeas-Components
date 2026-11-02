@@ -23,13 +23,18 @@
  */
 package org.silverpeas.components.kmelia;
 
-public class InstanceParameters {
+public final class InstanceParameters {
 
-  public static final String rightsOnFolders = "rightsOnTopics";
-  public static final String displayNbItemsOnFolders = "displayNB";
-  public static final String coWriting = "coWriting";
-  public static final String suppressionOnlyForAdmin = "suppressionOnlyForAdmin";
-  public static final String nbPubliOnRoot = "nbPubliOnRoot";
-  public static final String treeEnabled = "istree";
-  public static final String validation = "targetValidation";
+  private InstanceParameters() {
+  }
+
+  public static final String RIGHTS_ON_TOPICS = "rightsOnTopics";
+  public static final String APP_MANAGERS_FORCED_AS_FOLDER_MANAGERS =
+      "appManagersForcedAsFolderManagers";
+  public static final String DISPLAY_NB = "displayNB";
+  public static final String CO_WRITING = "coWriting";
+  public static final String SUPPRESSION_ONLY_FOR_ADMIN = "suppressionOnlyForAdmin";
+  public static final String NB_PUBLI_ON_ROOT = "nbPubliOnRoot";
+  public static final String TREE_ENABLED = "istree";
+  public static final String VALIDATION = "targetValidation";
 }
