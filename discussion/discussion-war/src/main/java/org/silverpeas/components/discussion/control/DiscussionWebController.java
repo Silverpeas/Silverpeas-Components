@@ -94,6 +94,40 @@ public class DiscussionWebController extends
     preparePage(context);
   }
 
+  private transient org.silverpeas.components.discussion.search.DiscussionSearchService searchService;
+
+  @GET
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("search")
+  @RedirectToInternalJsp("search.jsp")
+  public void search(DiscussionWebRequestContext context) {
+    if (searchService == null) {
+      searchService = ServiceProvider.getService(org.silverpeas.components.discussion.search.DiscussionSearchService.class);
+    }
+    long offset = number(context, "offset", 0);
+    if (offset < 0 || offset > Integer.MAX_VALUE) {
+      throw new WebApplicationException(400);
+    }
+    var page = webResult(() -> searchService.search(context.getComponentInstanceId(),
+        context.getRequest().getParameter("q"), (int) offset));
+    context.getRequest().setAttribute("searchPage", page);
+    context.getRequest().setAttribute("searchBodies", page.messages().stream().collect(
+        java.util.stream.Collectors.toMap(org.silverpeas.components.discussion.model.DiscussionMessage::getId,
+            message -> DiscussionMentionService.displayText(message.getBody()))));
+  }
+
+  @GET
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("searchResult")
+  @RedirectToInternal("messages/{id}")
+  public void searchResult(DiscussionWebRequestContext context) {
+    String id = context.getRequest().getParameter("Id");
+    if (id == null || !id.matches("[a-zA-Z0-9-]{1,40}")) {
+      throw new WebApplicationException(400);
+    }
+    context.addRedirectVariable("id", id);
+  }
+
   private transient org.silverpeas.components.discussion.service.DiscussionNotificationSettings notificationSettings;
 
   private void preparePage(DiscussionWebRequestContext context) {

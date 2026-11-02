@@ -299,3 +299,19 @@ html.discussion-document { overflow-anchor: none; scroll-behavior: auto; }
 #discussion .discussion-notification-choice { display: flex; align-items: flex-start; gap: 0.5rem; cursor: pointer; font-weight: 600; }
 #discussion .discussion-notification-choice input { flex-shrink: 0; margin-top: 0.2rem; }
 #discussion #discussion-notification-settings p { margin: 0.6rem 0; }
+
+/* Compact native search and independently scrollable result accordion. */
+#discussion .discussion-search { display: flex; align-items: center; min-width: 0; gap: 0.25rem; margin: 0 0 0 auto; }
+#discussion .discussion-search input { min-width: 0; width: min(22vw, 17rem); padding: 0.4rem 0.6rem; border: 1px solid var(--color-trait-separateur, #ddd); border-radius: 2px; }
+#discussion .discussion-search button { flex-shrink: 0; }
+#discussion .discussion-search svg { width: 1.2rem; height: 1.2rem; fill: none; stroke: currentColor; stroke-width: 1.7; }
+#discussion .discussion-search-list { list-style: none; padding: 0; margin: 0; }
+#discussion .discussion-search-list li { margin-bottom: 1rem; }
+#discussion .discussion-search-list a { display: block; overflow-wrap: anywhere; text-decoration: none; color: inherit; }
+#discussion .discussion-search-list a:hover strong { color: var(--color-lien-action, #3975b5); text-decoration: underline; }
+#discussion .discussion-search-list time { display: block; color: var(--color-text-secondaire, #666); font-size: 0.85em; margin: 0.2rem 0; }
+#discussion .discussion-search-list a > span { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; white-space: pre-wrap; }
+@media (max-width: 760px) {
+  #discussion .discussion-search { width: 100%; margin: 0; }
+  #discussion .discussion-search input { flex: 1; width: auto; }
+}

@@ -45,6 +45,8 @@ import static org.mockito.Mockito.*;
 @EnableSilverTestEnv(context = JEETestContext.class)
 class DiscussionWebControllerTest {
   @TestManagedMock
+  private org.silverpeas.components.discussion.search.DiscussionSearchService search;
+  @TestManagedMock
   private ConversationService service;
   @TestManagedMock
   private org.silverpeas.components.discussion.web.DiscussionParticipantService participants;
@@ -77,6 +79,29 @@ class DiscussionWebControllerTest {
     when(context.getUser()).thenReturn(mock(UserDetail.class));
     when(context.getHighestUserRole()).thenReturn(SilverpeasRole.WRITER);
     when(context.getPathVariables()).thenReturn(Map.of("id", "message"));
+  }
+
+  @Test
+  void searchUsesOnlyCurrentInstanceAndRejectsInvalidPagination() {
+    var page = new org.silverpeas.components.discussion.search.DiscussionSearchPage(List.of(), 0, 0);
+    when(request.getParameter("q")).thenReturn("projet");
+    when(request.getParameter("offset")).thenReturn("20");
+    when(search.search("discussion1", "projet", 20)).thenReturn(page);
+    controller.search(context);
+    verify(request).setAttribute("searchPage", page);
+    when(request.getParameter("offset")).thenReturn("-1");
+    assertEquals(400, assertThrows(WebApplicationException.class, () -> controller.search(context)).getResponse().getStatus());
+    when(request.getParameter("offset")).thenReturn("2147483648");
+    assertEquals(400, assertThrows(WebApplicationException.class, () -> controller.search(context)).getResponse().getStatus());
+  }
+
+  @Test
+  void nativeGlobalSearchOpensMessageThroughExistingAuthorizedRoute() {
+    when(request.getParameter("Id")).thenReturn("message-uuid");
+    controller.searchResult(context);
+    verify(context).addRedirectVariable("id", "message-uuid");
+    when(request.getParameter("Id")).thenReturn("../elsewhere");
+    assertEquals(400, assertThrows(WebApplicationException.class, () -> controller.searchResult(context)).getResponse().getStatus());
   }
 
   @Test

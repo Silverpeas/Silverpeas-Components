@@ -37,6 +37,7 @@
   <title><c:out value="${instanceInfo.title}"/></title>
   <view:looknfeel/>
   <view:includePlugin name="preview"/>
+  <script src="<c:url value='/discussion/jsp/javaScript/discussion-search.js'/>" defer></script>
   <view:includePlugin name="subscription"/>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-subscription.js'/>" defer></script>
   <link rel="stylesheet" href="<c:url value='/discussion/jsp/css/discussion.css'/>"/>
@@ -76,6 +77,11 @@
           <h1><c:out value="${instanceInfo.title}"/></h1>
           <c:if test="${not empty instanceInfo.description}"><p class="discussion-subtitle"><c:out value="${instanceInfo.description}"/></p></c:if>
         </div>
+        <form id="discussion-search" class="discussion-search" action="${base}search" method="get" role="search">
+          <label class="discussion-compose-label" for="discussion-search-query"><fmt:message key="discussion.search"/></label>
+          <input type="search" id="discussion-search-query" name="q" maxlength="200" placeholder="<fmt:message key='discussion.search'/>" autocomplete="off"/>
+          <button type="submit" class="discussion-icon-button" aria-label="<fmt:message key='discussion.searchSubmit'/>"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="m15 15 6 6"/></svg></button>
+        </form>
         <div class="discussion-reading">
           <span class="discussion-unread">
             <span class="discussion-unread-count"><c:out value="${messagePage.unreadCount}"/></span>
@@ -140,6 +146,15 @@
           </c:if>
         </div>
         <aside class="discussion-sidebar" aria-label="<fmt:message key='discussion.sidebar'/>">
+          <details id="discussion-search-section" class="discussion-sidebar-section" name="discussion-sidebar" hidden>
+            <summary><h2><fmt:message key="discussion.searchResults"/> <span id="discussion-search-count" class="discussion-people-count"></span></h2></summary>
+            <div class="discussion-sidebar-content">
+              <p id="discussion-search-status" class="discussion-hint" role="status" aria-live="polite" data-loading="<fmt:message key='discussion.searchLoading'/>" data-error="<fmt:message key='discussion.searchError'/>"></p>
+              <div id="discussion-search-results"></div>
+              <button id="discussion-search-more" type="button" class="button discussion-button--quiet" hidden><fmt:message key="discussion.searchMore"/></button>
+              <button id="discussion-search-close" type="button" class="button discussion-button--quiet"><fmt:message key="discussion.searchClose"/></button>
+            </div>
+          </details>
           <details class="discussion-sidebar-section" name="discussion-sidebar" open>
             <summary><h2 id="discussion-people-heading"><fmt:message key="discussion.participants"/> <span id="discussion-participant-count" class="discussion-people-count"><c:out value="${fn:length(participants)}"/></span></h2></summary>
             <div class="discussion-sidebar-content">
