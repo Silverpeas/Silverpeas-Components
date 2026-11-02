@@ -64,6 +64,8 @@ class ConversationServiceTest {
   private org.silverpeas.components.discussion.repository.DiscussionSeenRepository seen;
   @TestManagedMock
   private DiscussionAttachmentService imageService;
+  @TestManagedMock
+  private org.silverpeas.components.discussion.notification.DiscussionSubscriptionDispatcher subscriptions;
   @TestedBean
   private DefaultConversationService service;
   private Conversation conversation;
@@ -154,11 +156,26 @@ class ConversationServiceTest {
       current.when(User::getCurrentRequester).thenReturn(user);
       service.edit("discussion1", "message", 0, "updated");
       verify(message).edit("updated", false);
+      verifyNoInteractions(subscriptions); // The mock did not change its body.
+
       when(message.getCreatorId()).thenReturn("another-user");
       when(access.require("discussion1", SilverpeasRole.WRITER)).thenReturn(SilverpeasRole.ADMIN);
       service.delete("discussion1", "message", 0);
       verify(changes, times(2)).changed("discussion1");
       verify(message).delete();
+    }
+  }
+
+  @Test
+  void changedMessageSchedulesUpdateButUnchangedMessageDoesNot() {
+    var message = existingMessage("user");
+    when(message.getBody()).thenReturn("old", "updated");
+    try (var current = mockStatic(User.class)) {
+      current.when(User::getCurrentRequester).thenReturn(user);
+      service.edit("discussion1", "message", 0, "updated");
+      verify(subscriptions).schedule(argThat(event -> event.action() ==
+          org.silverpeas.core.notification.user.client.constant.NotifAction.UPDATE
+          && event.message() == message && event.sender() == user));
     }
   }
 
@@ -190,6 +207,9 @@ class ConversationServiceTest {
       current.when(User::getCurrentRequester).thenReturn(user);
       service.publish("discussion1", "new message");
       verify(changes).published(eq("discussion1"), any(), eq("user"), any(), any());
+      verify(subscriptions).schedule(argThat(event -> event.action() ==
+          org.silverpeas.core.notification.user.client.constant.NotifAction.CREATE
+          && event.instanceId().equals("discussion1") && event.sender() == user));
       verify(changes).changed("discussion1");
       var captured = org.mockito.ArgumentCaptor.forClass(DiscussionMessage.class);
       verify(conversations).main("discussion1", true);
