@@ -30,7 +30,7 @@ import jakarta.persistence.UniqueConstraint;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
 
-/** Monotonic per-user reading position in a conversation. */
+/** Personal conversation state: a monotonic reading cursor and desktop notification preference. */
 @Entity
 @Table(name = "sc_discussion_read", uniqueConstraints =
     @UniqueConstraint(columnNames = {"conversationId", "userId"}))
@@ -42,6 +42,12 @@ public class DiscussionReadState extends SilverpeasJpaEntity<DiscussionReadState
   private String userId;
   @Column(nullable = false)
   private long lastReadSequence;
+
+  @Column(nullable = false)
+  private boolean desktopNotifications = true;
+
+  public boolean isDesktopNotifications() { return desktopNotifications; }
+  public void setDesktopNotifications(boolean enabled) { desktopNotifications = enabled; }
 
   protected DiscussionReadState() {
     // JPA constructor.

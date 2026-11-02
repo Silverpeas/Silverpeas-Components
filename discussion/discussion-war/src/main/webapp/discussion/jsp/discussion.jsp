@@ -52,6 +52,7 @@
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-files.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-file-picker.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-document-viewer.js'/>" defer></script>
+  <script src="<c:url value='/discussion/jsp/javaScript/discussion-notification-settings.js'/>" defer></script>
 </head>
 <body>
 <view:window>
@@ -71,7 +72,6 @@
           <c:if test="${not empty instanceInfo.description}"><p class="discussion-subtitle"><c:out value="${instanceInfo.description}"/></p></c:if>
         </div>
         <div class="discussion-reading">
-          <button id="discussion-desktop-enable" class="discussion-button--quiet" type="button" hidden><fmt:message key="discussion.enableDesktop"/></button>
           <span class="discussion-unread">
             <span class="discussion-unread-count"><c:out value="${messagePage.unreadCount}"/></span>
             <fmt:message key="discussion.unread"/>
@@ -161,6 +161,22 @@
             <div class="discussion-sidebar-content">
               <div id="discussion-shared-files"><jsp:include page="files.jsp"/></div>
               <p id="discussion-files-error" class="discussion-presence-error" role="status" hidden><fmt:message key="discussion.filesLoadError"/></p>
+            </div>
+          </details>
+          <details class="discussion-sidebar-section" id="discussion-notifications-section" name="discussion-sidebar">
+            <summary><h2><fmt:message key="discussion.notifications"/></h2></summary>
+            <div class="discussion-sidebar-content">
+              <form id="discussion-notification-settings" action="${base}notification-preferences" method="post"
+                  data-enabled="${desktopPreference.enabled}" data-revision="${desktopPreference.revision}"
+                  data-denied="<fmt:message key='discussion.notificationsDenied'/>" data-unsupported="<fmt:message key='discussion.notificationsUnsupported'/>">
+                <label class="discussion-notification-choice"><input id="discussion-notifications-enabled" type="checkbox" name="enabled" value="true"/>
+                  <span><fmt:message key="discussion.notificationsOutside"/></span></label>
+                <p class="discussion-hint"><fmt:message key="discussion.notificationsHelp"/></p>
+                <p class="discussion-hint"><fmt:message key="discussion.mentionPreferencesHelp"/></p>
+                <button id="discussion-desktop-enable" class="discussion-button--quiet" type="button" hidden><fmt:message key="discussion.enableDesktop"/></button>
+                <p id="discussion-notification-status" class="discussion-hint" role="status" hidden></p>
+                <p id="discussion-notification-error" class="discussion-presence-error" role="status" hidden><fmt:message key="discussion.notificationSettingsError"/></p>
+              </form>
             </div>
           </details>
         </aside>

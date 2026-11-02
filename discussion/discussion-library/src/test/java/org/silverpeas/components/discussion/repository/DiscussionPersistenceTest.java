@@ -112,6 +112,29 @@ class DiscussionPersistenceTest {
   }
 
   @Test
+  void desktopSettingsDefaultToEnabledAndRemainScopedToUserAndInstance() {
+    assertTrue(reads.desktopEnabled("discussion1", "user"));
+    session.createNativeMutationQuery("update sc_discussion_read set desktopNotifications=false where id='r1'").executeUpdate();
+    assertFalse(reads.desktopEnabled("discussion1", "user"));
+    assertTrue(reads.desktopEnabled("discussion1", "other"));
+    assertTrue(reads.desktopEnabled("discussion2", "user"));
+  }
+
+  @Test
+  void notificationUpgradePreservesReadingPositionsAndExistingNotificationBehavior() throws Exception {
+    session.createNativeMutationQuery("alter table sc_discussion_read drop column desktopNotifications").executeUpdate();
+    try (var input = getClass().getResourceAsStream("/migrations/db/h2/discussion/001/add_notification_preferences.sql")) {
+      assertNotNull(input);
+      for (String sql : new String(input.readAllBytes(), StandardCharsets.UTF_8).split(";")) {
+        if (!sql.isBlank()) { session.createNativeMutationQuery(sql).executeUpdate(); }
+      }
+    }
+    session.clear();
+    assertTrue(reads.desktopEnabled("discussion1", "user"));
+    assertEquals(1, reads.find("c1", "user").orElseThrow().getLastReadSequence());
+  }
+
+  @Test
   void fileIndexIncludesOldMessagesButExcludesDeletedAndOtherConversations() {
     session.createNativeMutationQuery("update sc_discussion_message set filesAttached=true where id in ('m1','m3','m5')").executeUpdate();
     assertEquals(List.of("m1"), messages.fileMessageIds("c1"));

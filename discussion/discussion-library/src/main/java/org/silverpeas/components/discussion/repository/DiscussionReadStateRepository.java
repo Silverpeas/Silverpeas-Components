@@ -37,6 +37,15 @@ public class DiscussionReadStateRepository extends SilverpeasJpaEntityRepository
         .setParameter("user", userId).getResultStream().findFirst();
   }
 
+  public boolean desktopEnabled(String instanceId, String userId) {
+    return getEntityManager().createQuery("""
+        select r.desktopNotifications from DiscussionReadState r, Conversation c
+        where r.conversationId = c.id.id and c.componentInstanceId = :instance
+        and c.scopeKey = 'main' and r.userId = :user
+        """, Boolean.class).setParameter("instance", instanceId).setParameter("user", userId)
+        .getResultStream().findFirst().orElse(true);
+  }
+
   public void deleteConversation(String conversationId) {
     getEntityManager().createQuery(
         "delete from DiscussionReadState r where r.conversationId = :conversation")

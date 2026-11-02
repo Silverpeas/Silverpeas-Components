@@ -295,3 +295,7 @@ html.discussion-document { overflow-anchor: none; scroll-behavior: auto; }
   #discussion .discussion-message:is(:hover, :focus-within, :has(.discussion-edit[open], .discussion-pin-error:not([hidden]), .discussion-pin-form button:disabled)) .discussion-actions,
   #discussion .discussion-message:is(:hover, :focus-within, :has(.discussion-edit[open], .discussion-pin-error:not([hidden]), .discussion-pin-form button:disabled)) .discussion-pin-form { opacity: 1; pointer-events: auto; }
 }
+
+#discussion .discussion-notification-choice { display: flex; align-items: flex-start; gap: 0.5rem; cursor: pointer; font-weight: 600; }
+#discussion .discussion-notification-choice input { flex-shrink: 0; margin-top: 0.2rem; }
+#discussion #discussion-notification-settings p { margin: 0.6rem 0; }

@@ -53,6 +53,7 @@ CREATE TABLE sc_discussion_read (
   conversationId VARCHAR(40) NOT NULL,
   userId VARCHAR(40) NOT NULL,
   lastReadSequence NUMBER(19, 0) NOT NULL,
+  desktopNotifications NUMBER(1, 0) DEFAULT 1 NOT NULL,
   createDate TIMESTAMP NOT NULL,
   createdBy VARCHAR(40) NOT NULL,
   lastUpdateDate TIMESTAMP NOT NULL,
