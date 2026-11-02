@@ -127,11 +127,12 @@
       unregister = root.DiscussionDesktop?.register(discussion.dataset.instanceId, discussion.dataset.userId, active);
       source = root.spServerEventSource || window.spServerEventSource;
       if (source?.isEnabled()) {
-        source.addEventListener('DISCUSSION_TYPING', receive, 'discussionTyping');
-        source.addEventListener('OPEN_EVENT_SOURCE', reset, 'discussionTypingOpen');
+        source.addEventListener('DISCUSSION_TYPING', receive, (window.DiscussionContext?.eventId('discussionTyping') || 'discussionTyping'));
+        source.addEventListener('OPEN_EVENT_SOURCE', reset, (window.DiscussionContext?.eventId('discussionTypingOpen') || 'discussionTypingOpen'));
       }
       permission.hidden = !root.Notification || root.Notification.permission !== 'default';
     };
+    document.addEventListener('discussion:thread-hidden', stop);
     textarea.addEventListener('input', input);
     textarea.form?.addEventListener('submit', stop);
     // Keep the short-lived signal when focus changes: the observer may be in another window.

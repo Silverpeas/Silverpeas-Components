@@ -39,7 +39,8 @@
     let sending = false;
     let stopped = false;
     const active = () => {
-      if (document.hidden || stopped) {
+      if (document.hidden || stopped || discussion.classList.contains('discussion-thread-overlay')
+          || (window.frameElement && !window.frameElement.getBoundingClientRect().width)) {
         return false;
       }
       try { return document.hasFocus() || window.top.document.hasFocus(); }

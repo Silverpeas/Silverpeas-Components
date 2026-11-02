@@ -115,7 +115,7 @@
       root.addEventListener('discussion:notification-setting', receive);
       source = root.spServerEventSource || window.spServerEventSource;
       if (source?.isEnabled()) {
-        source.addEventListener('OPEN_EVENT_SOURCE', refresh, 'discussionNotificationSettingsOpen');
+        source.addEventListener('OPEN_EVENT_SOURCE', refresh, (window.DiscussionContext?.eventId('discussionNotificationSettingsOpen') || 'discussionNotificationSettingsOpen'));
       }
       synchronize({enabled:form.dataset.enabled === 'true', revision:Number(form.dataset.revision)});
     };

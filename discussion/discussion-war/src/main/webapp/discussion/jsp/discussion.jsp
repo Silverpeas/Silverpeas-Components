@@ -47,6 +47,7 @@
   <title><c:out value="${instanceInfo.title}"/></title>
   <view:looknfeel/>
   <view:includePlugin name="preview"/>
+  <script src="<c:url value='/discussion/jsp/javaScript/discussion-threads.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-search.js'/>" defer></script>
   <view:includePlugin name="subscription"/>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-subscription.js'/>" defer></script>
@@ -162,6 +163,7 @@
           </c:if>
         </div>
         <aside class="discussion-sidebar" aria-label="<fmt:message key='discussion.sidebar'/>">
+          <div id="discussion-sidebar-accordions">
           <details id="discussion-search-section" class="discussion-sidebar-section" name="discussion-sidebar" hidden>
             <summary><h2><fmt:message key="discussion.searchResults"/> <span id="discussion-search-count" class="discussion-people-count"></span></h2></summary>
             <div class="discussion-sidebar-content">
@@ -215,6 +217,16 @@
               </form>
             </div>
           </details>
+          </div>
+          <section id="discussion-thread-panel" class="discussion-thread-panel" aria-label="<fmt:message key='discussion.thread'/>" hidden>
+            <header class="discussion-thread-panel-header">
+              <h2><fmt:message key="discussion.thread"/></h2>
+              <button id="discussion-thread-close" class="discussion-icon-button" type="button" aria-label="<fmt:message key='discussion.closeThread'/>" title="<fmt:message key='discussion.closeThread'/>"><svg class="discussion-icon" aria-hidden="true"><use href="<c:url value='/discussion/jsp/icons/discussion-icons.svg'/>#close"/></svg></button>
+            </header>
+            <p id="discussion-thread-status" class="discussion-hint" role="status" data-loading="<fmt:message key='discussion.threadLoading'/>" data-error="<fmt:message key='discussion.threadLoadError'/>" hidden></p>
+            <a id="discussion-thread-fallback" class="discussion-thread-fallback" hidden><fmt:message key="discussion.openThread"/></a>
+            <iframe id="discussion-thread-frame" class="discussion-thread-frame" title="<fmt:message key='discussion.thread'/>"></iframe>
+          </section>
         </aside>
       </div>
     </main>

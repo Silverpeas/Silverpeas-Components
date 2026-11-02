@@ -107,7 +107,7 @@
       }
       source = window.top.spServerEventSource || window.spServerEventSource;
       if (source?.isEnabled()) {
-        source.addEventListener('OPEN_EVENT_SOURCE', refresh, 'discussionPinsOpen');
+        source.addEventListener('OPEN_EVENT_SOURCE', refresh, (window.DiscussionContext?.eventId('discussionPinsOpen') || 'discussionPinsOpen'));
       }
       refresh();
     };

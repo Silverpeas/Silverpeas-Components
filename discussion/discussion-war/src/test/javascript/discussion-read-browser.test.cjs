@@ -96,3 +96,17 @@ test('messages inserted by live updates are observed without acknowledging conte
     assert.deepEqual(await page.evaluate(()=>window.calls),['live']);
   } finally {await browser.close();}
 });
+
+
+test('main messages covered by the mobile thread panel stay unread until it closes',async()=>{
+  const browser=await launch();
+  try{
+    const page=await open(browser,false);
+    await page.evaluate(()=>{document.getElementById('discussion').classList.add('discussion-thread-overlay');window.focused=true;document.dispatchEvent(new Event('visibilitychange'));});
+    await page.waitForTimeout(1250);
+    assert.deepEqual(await page.evaluate(()=>calls),[]);
+    await page.evaluate(()=>{document.getElementById('discussion').classList.remove('discussion-thread-overlay');document.dispatchEvent(new Event('visibilitychange'));});
+    await page.waitForFunction(()=>calls.length===1);
+    assert.deepEqual(await page.evaluate(()=>calls),['new']);
+  }finally{await browser.close();}
+});

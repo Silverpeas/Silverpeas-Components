@@ -301,3 +301,22 @@ Le schéma neuf reste en version **001**. Sur un environnement déjà installé,
 avant d’installer ce composant. Les messages existants restent des messages principaux. Aucun
 changement de version du composant ni réindexation des anciens messages ne sont requis pour
 cette évolution. Les indexations complètes parcourent aussi les réponses.
+
+### Fils dans la colonne latérale
+
+Depuis le flux principal, « Répondre » ouvre la vue native du fil dans un panneau élargi à droite.
+Les accordéons sont temporairement masqués, sans remplacer leur DOM : leur état ouvert/fermé,
+le brouillon principal, les fichiers sélectionnés et la position de lecture sont conservés.
+Fermer le panneau rétablit la colonne. Le fil courant reste chargé à la fermeture et retrouve
+son brouillon si on le rouvre ; ouvrir un autre fil remplace cette vue.
+
+La vue réutilise les routes existantes dans un document de même origine. Elle garde ainsi les
+formulaires natifs, les fichiers, le visionneur et le suivi des non-lus. Les identifiants des
+écouteurs SSE/WebSocket sont propres à chaque document pour que la conversation et le fil
+restent synchronisés simultanément. Le suivi des messages du fil se suspend lorsque le panneau
+est fermé, puis rattrape les changements à sa réouverture.
+
+Sur mobile, le panneau prend toute la surface de l’application. Le contenu principal devient
+inactif et les messages qu’il contient ne sont pas marqués comme lus derrière le panneau. Les
+liens directs et l’ouverture avec les touches de modification conservent la vue de fil dédiée.
+Aucune migration SQL supplémentaire n’est nécessaire.
