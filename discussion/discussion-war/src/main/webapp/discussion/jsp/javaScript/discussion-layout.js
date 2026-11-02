@@ -36,18 +36,22 @@
     const ancestors = [];
     for (let node = discussion.parentElement; node; node = node.parentElement) {
       ancestors.push(node);
+      node.classList.add('discussion-width-wrapper');
     }
     discussion.classList.add('discussion-document-scroll');
     document.documentElement.classList.add('discussion-document');
-    // History pagination and live updates share the same document scroll coordinates.
+    const embedded = window.DiscussionContext?.embedded === true;
+    const scrollSurface = embedded ? document.body : document.scrollingElement;
+    const scrollTarget = embedded ? document.body : window;
+    // Both views expose identical coordinates, with the thread scrollbar beside the separator.
     window.DiscussionScroll = {
-      get scrollTop() { return document.scrollingElement.scrollTop; },
-      set scrollTop(value) { document.scrollingElement.scrollTop = value; },
-      get scrollHeight() { return document.scrollingElement.scrollHeight; },
+      get scrollTop() { return scrollSurface.scrollTop; },
+      set scrollTop(value) { scrollSurface.scrollTop = value; },
+      get scrollHeight() { return scrollSurface.scrollHeight; },
       get clientHeight() { return window.innerHeight; },
       getBoundingClientRect: () => ({top: header.getBoundingClientRect().bottom}),
-      addEventListener: (...args) => window.addEventListener(...args),
-      observerRoot: null
+      addEventListener: (...args) => scrollTarget.addEventListener(...args),
+      observerRoot: embedded ? document.body : null
     };
     let pending;
     const property = (name, value) => {
@@ -65,7 +69,7 @@
         return sum + ['paddingBottom', 'borderBottomWidth', 'marginBottom']
             .reduce((value, key) => value + (Number.parseFloat(style[key]) || 0), 0);
       }, 0);
-      property('--discussion-available-height', Math.max(0, height - box.top - window.scrollY - inset - 1) + 'px');
+      property('--discussion-available-height', Math.max(0, height - box.top - scrollSurface.scrollTop - inset - 1) + 'px');
       property('--discussion-header-height', header.getBoundingClientRect().height + 'px');
       property('--discussion-sidebar-top', header.getBoundingClientRect().bottom + 'px');
       property('--discussion-left', column.left + 'px');
@@ -86,7 +90,7 @@
     };
     observe();
     window.addEventListener('resize', schedule);
-    window.addEventListener('scroll', schedule, {passive: true});
+    scrollTarget.addEventListener('scroll', schedule, {passive: true});
     window.visualViewport?.addEventListener('resize', schedule);
     window.addEventListener('pageshow', () => { observe(); schedule(); });
     window.addEventListener('pagehide', () => {

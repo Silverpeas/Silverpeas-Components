@@ -28,28 +28,28 @@ const path = require('node:path');
 const {chromium} = require('playwright');
 const assets = path.join(__dirname,'../../main/webapp/discussion/jsp');
 const row = (id, thread=false) => `<article id="message-${id}" class="discussion-message" data-sequence="${Number(id.replace('root',''))||1}"><div class="discussion-message-content"><strong>Auteur</strong><p>Un message de discussion suffisamment long pour vérifier que le changement de largeur conserve la position de lecture.</p>${thread?'':`<a class="discussion-thread-link" href="/Rdiscussion/discussion1/threads/${id}">Répondre</a>`}</div></article>`;
-function html(root='',live=false,initial='') {
- const rows=root?row(root,true):Array.from({length:35},(_,i)=>row('root'+(i+1))).join('');
+function html(root='',live=false,initial='',read=false) {
+ const rows=root?row(root,true)+(read?'<div style="height:1400px"></div><article id="message-reply-read" class="discussion-message discussion-message--unread">Réponse non lue</article>':''):Array.from({length:35},(_,i)=>row('root'+(i+1))).join('');
  return `<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="/assets/css/discussion.css"><style>body{margin:0;font:16px Arial}.breadcrumb{height:50px}textarea{box-sizing:border-box;max-width:100%}</style>
  <script>
  if(window===window.top){window.calls=[];window.handlers=new Map();window.spServerEventSource={isEnabled:()=>true,addEventListener:(type,fn,id)=>{if(!id)throw Error('Missing listener id');handlers.set(id,{type,fn});},removeEventListener:(type,fn)=>{for(const [id,v]of handlers){if(v.type===type&&v.fn===fn)handlers.delete(id);}}};window.emit=()=>{for(const v of handlers.values()){if(v.type==='DISCUSSION_CHANGED')v.fn({data:JSON.stringify({instanceId:'discussion1'})});}};}
- window.sp={ajaxRequest:url=>{const params={};const api={withParam:(k,v)=>{params[k]=v;return api;},send:async()=>{window.top.calls.push({scope:'${root||'main'}',params});return {responseText:'<div class="discussion-page" data-sync-sequence="35" data-last-sequence="35" data-unread-count="0"></div>'};}};return api;}};
+ window.receipts=[];window.sp={ajaxRequest:url=>{const params={};const api={byPostMethod:()=>api,withParam:(k,v)=>{params[k]=v;return api;},send:async()=>{if(url==='/read'){window.receipts.push(params.ids);return {responseText:'<span class="discussion-read-state" data-unread-count="0"></span>'};}window.top.calls.push({scope:'${root||'main'}',params});return {responseText:'<div class="discussion-page" data-sync-sequence="35" data-last-sequence="35" data-unread-count="0"></div>'};}};return api;}};
  </script>
- <script src="/assets/javaScript/discussion-threads.js" defer></script><script src="/assets/javaScript/discussion-layout.js" defer></script>${live?'<script src="/assets/javaScript/discussion-live.js" defer></script>':''}</head><body><div class="breadcrumb">Ressources &gt; Discussion</div><div class="native-frame"><main id="discussion" data-instance-id="discussion1" data-thread-root-id="${root}" data-updates="/updates" data-initial-thread-url="${!root?initial:''}">
+ <script src="/assets/javaScript/discussion-threads.js" defer></script><script src="/assets/javaScript/discussion-layout.js" defer></script>${live?'<script src="/assets/javaScript/discussion-live.js" defer></script>':''}${read&&root?'<script src="/assets/javaScript/discussion-read.js" defer></script>':''}</head><body><div class="breadcrumb">Ressources &gt; Discussion</div><div class="native-frame"><main id="discussion" data-instance-id="discussion1" data-thread-root-id="${root}" data-updates="/updates" data-read="${read?'/read':''}" data-initial-thread-url="${!root?initial:''}">
  <header class="discussion-header"><div class="discussion-heading"><h1>Discussion</h1></div><span class="discussion-unread-count">0</span></header>
  <div class="discussion-workspace"><div class="discussion-stream"><div class="discussion-scroll" id="discussion-scroll"><section id="discussion-history"><div class="discussion-page">${rows}</div></section></div><p id="discussion-live-error" hidden>Error</p><form class="discussion-composer"><input type="file" id="attachment"><textarea id="draft">${root?'Brouillon du fil':'Brouillon principal conservé'}</textarea><button type="button">Publier</button></form></div>
  <aside class="discussion-sidebar"><div id="discussion-sidebar-accordions"><details name="sidebar" id="people" open><summary>Participants</summary><p>Alice</p></details><details name="sidebar" id="publications"><summary>Publications</summary><p>Projet</p></details></div>
  <section id="discussion-thread-panel" class="discussion-thread-panel" aria-label="Fil de discussion" hidden><header class="discussion-thread-panel-header"><h2>Fil de discussion</h2><button id="discussion-thread-close" type="button">Fermer le fil</button></header><p id="discussion-thread-status" data-loading="Chargement" data-error="Erreur" hidden></p><a id="discussion-thread-fallback" hidden>Ouvrir le fil</a><iframe id="discussion-thread-frame" class="discussion-thread-frame" title="Fil"></iframe></section>
  </aside></div></main></div></body></html>`;
 }
-async function setup({width=1280,live=false,bad=false,initial=''}={}) {
+async function setup({width=1280,live=false,bad=false,initial='',read=false}={}) {
  const browser=await chromium.launch({executablePath:process.env.CHROME_PATH,args:['--no-sandbox']});
  const page=await browser.newPage({viewport:{width,height:900}});
  await page.route('http://discussion.test/**',route=>{
   const url=new URL(route.request().url());
   if(url.pathname.startsWith('/assets/'))return route.fulfill({contentType:url.pathname.endsWith('.js')?'application/javascript':'text/css',body:fs.readFileSync(path.join(assets,url.pathname.slice('/assets/'.length)))});
   const root=url.pathname.includes('/threads/')?url.pathname.split('/').pop():'';
-  return route.fulfill({contentType:'text/html',body:root&&bad?'<h1>Session expirée</h1>':html(root,live,initial)});
+  return route.fulfill({contentType:'text/html',body:root&&bad?'<h1>Session expirée</h1>':html(root,live,initial,read)});
  });
  await page.goto('http://discussion.test/main');
  return {browser,page};
@@ -151,5 +151,38 @@ test('a notification opens its reply in the side panel and reopening preserves t
   await page.locator('#discussion-thread-close').click();
   await openThread(page,'root12');
   assert.equal(await frame.locator('#draft').inputValue(),'Une réponse à poursuivre');
+ }finally{await browser.close();}
+});
+
+
+test('the thread reserves its scrollbar on the left and keeps message text left-to-right',async()=>{
+ const {browser,page}=await setup();
+ try{
+  const frame=await openThread(page,'root1');
+  await frame.addStyleTag({content:'body::-webkit-scrollbar{width:14px}#discussion-history{min-height:2200px}'});
+  const state=await frame.evaluate(()=>({left:document.body.clientLeft,content:getComputedStyle(document.getElementById('discussion')).direction,body:getComputedStyle(document.body).direction,overflow:document.documentElement.scrollWidth>innerWidth}));
+  assert.equal(state.body,'rtl');
+  assert.equal(state.content,'ltr');
+  assert.equal(state.left,14,'Scrollbar gutter is reserved on the left');
+  assert.equal(state.overflow,false);
+  await frame.evaluate(()=>{window.DiscussionScroll.scrollTop=300;});
+  assert.equal(await frame.evaluate(()=>document.body.scrollTop),300);
+  const alignment=await frame.evaluate(()=>({composer:document.querySelector('.discussion-composer').getBoundingClientRect().toJSON(),column:document.querySelector('.discussion-stream').getBoundingClientRect().toJSON(),viewport:innerWidth}));
+  assert.ok(Math.abs(alignment.composer.left-alignment.column.left)<2,JSON.stringify(alignment));
+  assert.ok(alignment.composer.right<=alignment.viewport+1,JSON.stringify(alignment));
+ }finally{await browser.close();}
+});
+
+
+test('read receipts follow the internal thread scrolling surface',async()=>{
+ const {browser,page}=await setup({read:true});
+ try{
+  const frame=await openThread(page,'root1');
+  assert.deepEqual(await frame.evaluate(()=>receipts),[]);
+  await frame.locator('#message-reply-read').scrollIntoViewIfNeeded();
+  await frame.waitForFunction(()=>receipts.length===1);
+  assert.deepEqual(await frame.evaluate(()=>receipts),['reply-read']);
+  assert.ok(await frame.evaluate(()=>document.body.scrollTop>0));
+  assert.equal(await frame.locator('#message-reply-read').evaluate(n=>n.classList.contains('discussion-message--unread')),false);
  }finally{await browser.close();}
 });

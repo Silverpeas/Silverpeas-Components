@@ -172,3 +172,18 @@ test('the original thread message has a side marker only while it is unread', as
     assert.equal(await row.evaluate(node=>getComputedStyle(node).borderLeftWidth),'0px');
   } finally { await browser.close(); }
 });
+
+
+test('discussion fills the iframe width despite native frame padding and body margins', async()=>{
+ const browser=await chromium.launch({executablePath:process.env.CHROME_PATH,args:['--no-sandbox']});
+ try{
+  const {page,frame}=await open(browser,1280,900);
+  for(const width of [1280,768,390]){
+   await page.setViewportSize({width,height:900});
+   const box=await frame.evaluate(()=>{const r=document.getElementById('discussion').getBoundingClientRect();return {left:r.left,right:r.right,width:document.documentElement.clientWidth,overflow:document.documentElement.scrollWidth>innerWidth};});
+   assert.ok(Math.abs(box.left)<1,JSON.stringify(box));
+   assert.ok(Math.abs(box.right-box.width)<1,JSON.stringify(box));
+   assert.equal(box.overflow,false);
+  }
+ }finally{await browser.close();}
+});
