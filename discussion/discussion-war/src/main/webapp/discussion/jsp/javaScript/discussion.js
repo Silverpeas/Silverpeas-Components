@@ -119,7 +119,7 @@
       if (entries.some(entry => entry.isIntersecting) && error.hidden) {
         loadOlder();
       }
-    }, {root: window.DiscussionScroll ? null : scroller});
+    }, {root: window.DiscussionScroll ? window.DiscussionScroll.observerRoot : scroller});
     scroller.addEventListener('scroll', () => {
       if (scroller.scrollTop <= 64 && error.hidden) {
         loadOlder();

@@ -326,3 +326,9 @@ Les permaliens de messages provenant des notifications, de la recherche, des ép
 fichiers affichent désormais le flux principal autour du message d’origine et ouvrent le panneau
 latéral sur la réponse ciblée. Le paramètre de ciblage du fil est vérifié côté serveur : une
 réponse appartenant à un autre fil ou une autre instance ne peut pas être chargée dans ce contexte.
+
+La largeur de l’application neutralise les marges et espacements horizontaux des cadres natifs
+dans ce document uniquement. Dans le panneau, le fil utilise une zone de défilement dont la barre
+se trouve à gauche, près du séparateur des colonnes. Seul le conteneur de défilement est en RTL ;
+les messages, champs et dialogues gardent leur direction LTR. Le proxy de défilement commun est
+utilisé pour la pagination, le positionnement des notifications et les accusés de lecture.

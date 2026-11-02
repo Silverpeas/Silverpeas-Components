@@ -171,7 +171,7 @@
       mutations.observe(history, {childList: true, subtree: true, attributes: true, attributeFilter: ['class']});
       observe();
     };
-    window.addEventListener('scroll', scan, {passive: true});
+    (window.DiscussionScroll || window).addEventListener('scroll', scan, {passive: true});
     window.addEventListener('resize', scan);
     discussion.addEventListener('toggle', scan, true);
     window.addEventListener('focus', scan);
