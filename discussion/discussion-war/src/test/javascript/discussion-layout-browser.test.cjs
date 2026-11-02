@@ -137,3 +137,23 @@ test('the identity line is compact and messages use spacing instead of horizonta
     assert.equal(await frame.locator('.discussion-subtitle').isVisible(),true);
   } finally {await browser.close();}
 });
+
+
+test('short thread messages start at the top while the main conversation keeps bottom alignment', async () => {
+  const browser = await chromium.launch({executablePath:process.env.CHROME_PATH,args:['--no-sandbox']});
+  try {
+    const {page,frame} = await open(browser,1280,1000);
+    await frame.evaluate(() => {
+      const list=document.querySelector('.discussion-page');
+      [...list.children].slice(2).forEach(row=>row.remove());
+    });
+    const bottomGap = await frame.evaluate(() => document.getElementById('message-101').getBoundingClientRect().top - document.getElementById('discussion-scroll').getBoundingClientRect().top);
+    assert.ok(bottomGap > 100,'The main conversation remains bottom aligned');
+    await frame.evaluate(() => { document.getElementById('discussion').dataset.threadRootId='root'; });
+    const threadGap = await frame.evaluate(() => document.getElementById('message-101').getBoundingClientRect().top - document.getElementById('discussion-scroll').getBoundingClientRect().top);
+    assert.ok(threadGap < 70,'The thread has no large blank space above its messages: '+threadGap);
+    await page.setViewportSize({width:390,height:900});
+    const mobileGap = await frame.evaluate(() => document.getElementById('message-101').getBoundingClientRect().top - document.getElementById('discussion-scroll').getBoundingClientRect().top);
+    assert.ok(mobileGap < 70,'Thread messages also start at the top on mobile');
+  } finally { await browser.close(); }
+});

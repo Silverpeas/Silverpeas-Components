@@ -333,3 +333,10 @@ html.discussion-document { overflow-anchor: none; scroll-behavior: auto; }
 #discussion .discussion-thread-origin-label { color: var(--color-text-second-niveau, #626262); font-size: 0.85em; }
 #discussion .discussion-message--thread-root { border-left: 2px solid var(--color-lien-action, #3975b5); }
 #discussion .discussion-thread-context { flex-basis: 100%; }
+
+/* Threads start below their header, while the main conversation keeps its chat alignment. */
+#discussion[data-thread-root-id]:not([data-thread-root-id=""]) #discussion-history { margin-top: 0; }
+#discussion .discussion-thread-context .discussion-thread-back { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.35rem 0.6rem; border: 1px solid var(--color-trait-separateur, #ddd); border-radius: 2px; background: var(--bgColor-bloc-fond-clair, #f5f5f5); font-weight: 600; text-decoration: none; }
+#discussion .discussion-thread-back:hover { background: var(--bgColor-card, #fff); text-decoration: underline; }
+#discussion .discussion-thread-back:focus-visible { outline: 2px solid var(--color-lien-action, #3975b5); outline-offset: 2px; }
+#discussion .discussion-thread-back .discussion-icon { flex-shrink: 0; }

@@ -86,7 +86,7 @@
         <div class="discussion-heading">
           <h1><c:out value="${instanceInfo.title}"/></h1>
           <c:if test="${not empty threadRoot}">
-            <p class="discussion-thread-context"><a href="${base}messages/${threadRoot.id}#message-${threadRoot.id}"><fmt:message key="discussion.backToDiscussion"/></a>
+            <p class="discussion-thread-context"><a class="discussion-thread-back" href="${base}messages/${threadRoot.id}#message-${threadRoot.id}"><svg class="discussion-icon" aria-hidden="true"><use href="<c:url value='/discussion/jsp/icons/discussion-icons.svg'/>#arrow-left"/></svg><fmt:message key="discussion.backToDiscussion"/></a>
               <strong><fmt:message key="discussion.thread"/></strong>
               <c:if test="${not threadRoot.deleted}"><span><fmt:message key="discussion.replyTo"/> <c:out value="${threadRoot.creator.displayedName}"/></span></c:if>
             </p>
