@@ -60,6 +60,8 @@ public class DefaultConversationService implements ConversationService {
   private DiscussionAttachmentService imageService;
   @Inject
   private DiscussionMentionService mentions;
+  @Inject
+  private org.silverpeas.components.discussion.notification.DiscussionSubscriptionDispatcher subscriptions;
 
   @Inject
   private org.silverpeas.components.discussion.notification.DiscussionChangeDispatcher changes;
@@ -144,6 +146,9 @@ public class DefaultConversationService implements ConversationService {
     imageService.store(instanceId, message.getId(), images);
     imageService.storeFiles(instanceId, message.getId(), files);
     mentions.notifyNewMentions(instanceId, message, "");
+    subscriptions.schedule(new org.silverpeas.components.discussion.notification.DiscussionSubscriptionEvent(
+        instanceId, message, User.getCurrentRequester(),
+        org.silverpeas.core.notification.user.client.constant.NotifAction.CREATE));
     changes.changed(instanceId);
     changes.published(instanceId, message.getId(), User.getCurrentRequester().getId(),
         User.getCurrentRequester().getDisplayedName(), message.getBody());
@@ -192,6 +197,11 @@ public class DefaultConversationService implements ConversationService {
     message.updatedBy(User.getCurrentRequester());
     messages.save(message);
     mentions.notifyNewMentions(instanceId, message, previousBody);
+    if (!java.util.Objects.equals(previousBody, message.getBody())) {
+      subscriptions.schedule(new org.silverpeas.components.discussion.notification.DiscussionSubscriptionEvent(
+          instanceId, message, User.getCurrentRequester(),
+          org.silverpeas.core.notification.user.client.constant.NotifAction.UPDATE));
+    }
     changes.changed(instanceId);
   }
 

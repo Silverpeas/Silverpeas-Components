@@ -37,6 +37,8 @@
   <title><c:out value="${instanceInfo.title}"/></title>
   <view:looknfeel/>
   <view:includePlugin name="preview"/>
+  <view:includePlugin name="subscription"/>
+  <script src="<c:url value='/discussion/jsp/javaScript/discussion-subscription.js'/>" defer></script>
   <link rel="stylesheet" href="<c:url value='/discussion/jsp/css/discussion.css'/>"/>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-desktop.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-activity.js'/>" defer></script>
@@ -55,6 +57,9 @@
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-notification-settings.js'/>" defer></script>
 </head>
 <body>
+<view:operationPane>
+  <view:operation altText="&lt;span id='subscriptionMenuLabel'&gt;&lt;/span&gt;" icon="" action="#discussion-subscription"/>
+</view:operationPane>
 <view:window>
   <view:frame>
     <main id="discussion" data-history="${base}history" data-participants="${base}participants" data-publications="${base}publications" data-updates="${base}updates"
