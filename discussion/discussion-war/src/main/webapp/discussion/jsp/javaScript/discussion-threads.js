@@ -68,7 +68,20 @@
     let current = '';
     let trigger;
     let ready = false;
+    const syncComposerSpacing = () => {
+      try {
+        const composer = discussion.querySelector('.discussion-composer');
+        const target = frame.contentDocument?.documentElement;
+        if (composer && target) {
+          const padding = getComputedStyle(composer).padding;
+          if (target.style.getPropertyValue('--discussion-shared-composer-padding') !== padding) {
+            target.style.setProperty('--discussion-shared-composer-padding', padding);
+          }
+        }
+      } catch (error) { /* A session redirect can temporarily replace the thread document. */ }
+    };
     const notifyFrame = hidden => {
+      syncComposerSpacing();
       try {
         if (hidden) { frame.contentDocument?.dispatchEvent(new Event('discussion:thread-hidden')); }
         frame.contentDocument?.dispatchEvent(new Event('visibilitychange'));
@@ -190,6 +203,7 @@
         close();
       }
     });
+    window.addEventListener('resize', syncComposerSpacing);
     media.addEventListener('change', responsive);
   });
 })();

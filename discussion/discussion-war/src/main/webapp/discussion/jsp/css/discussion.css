@@ -374,3 +374,6 @@ html.discussion-document.discussion-width-wrapper { width: 100% !important; max-
 html.discussion-embedded { overflow: hidden; }
 html.discussion-embedded body { height: 100dvh; overflow-x: hidden; overflow-y: auto; direction: rtl; scrollbar-gutter: stable; overscroll-behavior: contain; }
 html.discussion-embedded body > * { direction: ltr; }
+
+/* Use the outer application's density in both composers, despite their different viewport widths. */
+html.discussion-embedded #discussion .discussion-composer { padding: var(--discussion-shared-composer-padding, 0.75rem 1rem); }

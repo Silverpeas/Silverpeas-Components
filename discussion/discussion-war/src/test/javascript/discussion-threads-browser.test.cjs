@@ -37,7 +37,7 @@ function html(root='',live=false,initial='',read=false) {
  </script>
  <script src="/assets/javaScript/discussion-threads.js" defer></script><script src="/assets/javaScript/discussion-layout.js" defer></script>${live?'<script src="/assets/javaScript/discussion-live.js" defer></script>':''}${read&&root?'<script src="/assets/javaScript/discussion-read.js" defer></script>':''}</head><body><div class="breadcrumb">Ressources &gt; Discussion</div><div class="native-frame"><main id="discussion" data-instance-id="discussion1" data-thread-root-id="${root}" data-updates="/updates" data-read="${read?'/read':''}" data-initial-thread-url="${!root?initial:''}">
  <header class="discussion-header"><div class="discussion-heading"><h1>Discussion</h1></div><span class="discussion-unread-count">0</span></header>
- <div class="discussion-workspace"><div class="discussion-stream"><div class="discussion-scroll" id="discussion-scroll"><section id="discussion-history"><div class="discussion-page">${rows}</div></section></div><p id="discussion-live-error" hidden>Error</p><form class="discussion-composer"><input type="file" id="attachment"><textarea id="draft">${root?'Brouillon du fil':'Brouillon principal conservé'}</textarea><button type="button">Publier</button></form></div>
+ <div class="discussion-workspace"><div class="discussion-stream"><div class="discussion-scroll" id="discussion-scroll"><section id="discussion-history"><div class="discussion-page">${rows}</div></section></div><p id="discussion-live-error" hidden>Error</p><form class="discussion-composer"><input type="file" id="attachment" hidden><div class="discussion-compose-box"><textarea id="draft" rows="1">${root?'Brouillon du fil':'Brouillon principal conservé'}</textarea><div class="discussion-editor-tools"><button class="discussion-icon-button" type="button">☺</button></div><div class="discussion-composer-footer"><button class="discussion-send" type="button" aria-label="Publier">↑</button></div></div></form></div>
  <aside class="discussion-sidebar"><div id="discussion-sidebar-accordions"><details name="sidebar" id="people" open><summary>Participants</summary><p>Alice</p></details><details name="sidebar" id="publications"><summary>Publications</summary><p>Projet</p></details></div>
  <section id="discussion-thread-panel" class="discussion-thread-panel" aria-label="Fil de discussion" hidden><header class="discussion-thread-panel-header"><h2>Fil de discussion</h2><button id="discussion-thread-close" type="button">Fermer le fil</button></header><p id="discussion-thread-status" data-loading="Chargement" data-error="Erreur" hidden></p><a id="discussion-thread-fallback" hidden>Ouvrir le fil</a><iframe id="discussion-thread-frame" class="discussion-thread-frame" title="Fil"></iframe></section>
  </aside></div></main></div></body></html>`;
@@ -184,5 +184,24 @@ test('read receipts follow the internal thread scrolling surface',async()=>{
   assert.deepEqual(await frame.evaluate(()=>receipts),['reply-read']);
   assert.ok(await frame.evaluate(()=>document.body.scrollTop>0));
   assert.equal(await frame.locator('#message-reply-read').evaluate(n=>n.classList.contains('discussion-message--unread')),false);
+ }finally{await browser.close();}
+});
+
+
+test('main and thread composer frames stay vertically aligned across desktop and mobile densities',async()=>{
+ const {browser,page}=await setup();
+ try{
+  const frame=await openThread(page,'root1');
+  for(const width of [1280,900,768,390]){
+   await page.setViewportSize({width,height:900});
+   await frame.waitForFunction(()=>{
+    const main=window.parent.document.querySelector('.discussion-composer');
+    return getComputedStyle(document.querySelector('.discussion-composer')).padding===window.parent.getComputedStyle(main).padding;
+   });
+   const main=await page.locator('.discussion-compose-box').boundingBox();
+   const reply=await frame.locator('.discussion-compose-box').boundingBox();
+   assert.ok(Math.abs(main.y-reply.y)<1.5,'Top edges align at '+width+': '+main.y+' / '+reply.y);
+   assert.ok(Math.abs(main.y+main.height-reply.y-reply.height)<1.5,'Bottom edges align at '+width);
+  }
  }finally{await browser.close();}
 });
