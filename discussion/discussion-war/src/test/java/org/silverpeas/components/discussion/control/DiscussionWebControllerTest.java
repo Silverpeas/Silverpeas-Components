@@ -106,9 +106,13 @@ class DiscussionWebControllerTest {
     var root = mock(org.silverpeas.components.discussion.model.DiscussionMessage.class);
     when(root.getId()).thenReturn("root");
     when(service.threadRoot("discussion1", "message")).thenReturn(root);
-    when(service.historyAround("discussion1", "message")).thenReturn(new MessagePage(List.of(), 1, false, 20, 1));
+    when(service.historyAround("discussion1", "root")).thenReturn(new MessagePage(List.of(), 1, false, 20, 1));
     controller.message(context);
-    verify(request).setAttribute("threadRoot", root);
+    verify(request).setAttribute("initialThreadRootId", "root");
+    verify(request).setAttribute("initialThreadMessageId", "message");
+    verify(request).setAttribute("focusedMessageId", "root");
+    verify(request, never()).setAttribute(eq("threadRoot"), any());
+    verify(service).historyAround("discussion1", "root");
     when(context.getPathVariables()).thenReturn(Map.of("root", "foreign", "id", "message"));
     assertEquals(400, assertThrows(WebApplicationException.class, () -> controller.threadEdit(context)).getResponse().getStatus());
     verify(service, never()).edit(anyString(), anyString(), anyLong(), any());
@@ -133,6 +137,24 @@ class DiscussionWebControllerTest {
     assertEquals(400, assertThrows(WebApplicationException.class, () -> controller.search(context)).getResponse().getStatus());
     when(request.getParameter("offset")).thenReturn("2147483648");
     assertEquals(400, assertThrows(WebApplicationException.class, () -> controller.search(context)).getResponse().getStatus());
+  }
+
+  @Test
+  void panelNotificationTargetLoadsReplyContextAndRejectsMessagesFromAnotherThread() {
+    when(context.getPathVariables()).thenReturn(Map.of("root", "message"));
+    when(request.getParameter("message")).thenReturn("old-reply");
+    var root = service.threadRoot("discussion1", "message");
+    when(service.threadRoot("discussion1", "old-reply")).thenReturn(root);
+    var page = new MessagePage(List.of(), 3, false, 100, 2);
+    when(service.historyAround("discussion1", "old-reply")).thenReturn(page);
+    controller.thread(context);
+    verify(request).setAttribute("messagePage", page);
+    verify(request).setAttribute("focusedMessageId", "old-reply");
+    verify(service, never()).threadHistory(anyString(), anyString(), anyLong(), anyInt());
+    var foreign = mock(org.silverpeas.components.discussion.model.DiscussionMessage.class);
+    when(foreign.getId()).thenReturn("other-root");
+    when(service.threadRoot("discussion1", "old-reply")).thenReturn(foreign);
+    assertEquals(400, assertThrows(WebApplicationException.class, () -> controller.thread(context)).getResponse().getStatus());
   }
 
   @Test
