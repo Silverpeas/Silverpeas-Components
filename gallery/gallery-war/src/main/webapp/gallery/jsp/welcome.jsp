@@ -88,8 +88,8 @@
 <fmt:message key="gallery.lastResult" var="lastResultIcon" bundle="${icons}"/>
 <c:url value="${lastResultIcon}" var="lastResultIcon"/>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.gallery">
+<!DOCTYPE html>
+<html id="ng-app" ng-app="silverpeas.gallery">
 <head>
   <view:looknfeel withCheckFormScript="true"/>
   <view:includePlugin name="qtip"/>
@@ -99,7 +99,7 @@
   <script type="text/javascript" src="<c:url value="/util/javaScript/jquery/jquery.cookie.js"/>"></script>
   <script type="text/javascript">
 <c:if test="${highestUserRole.isGreaterThanOrEquals(adminRole)}">
-$(document).ready(function() {
+$(function() {
   showAlbumsHelp();
 });
 </c:if>
@@ -115,7 +115,7 @@ function showAlbumsHelp() {
       modal : true,
       resizable : false,
       width : 400,
-      dialogClass : 'help-modal-message',
+      classes : {'ui-dialog' : 'ui-corner-all help-modal-message'},
       buttons : {
         "<fmt:message key="gallery.help.albums.buttons.ok"/>" : function() {
           $.cookie(albumsCookieName, "IKnowIt", { expires : 3650, path : '/', secure: ${pageContext.request.secure} });
@@ -266,9 +266,9 @@ SUBSCRIPTION_PROMISE.then(function() {
             </table>
           </form>
           <script type="text/javascript">
-            $(document).ready(function() {
+            $(function() {
               $('#searchFormId').on("submit", function() {
-                if ($.trim($('#searchQuery').val())) {
+                if (($('#searchQuery').val() || '').trim()) {
                   sendData();
                 }
                 return false;

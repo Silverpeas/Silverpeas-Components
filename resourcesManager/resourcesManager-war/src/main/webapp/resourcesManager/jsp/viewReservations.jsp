@@ -33,6 +33,7 @@ List listOfReservation = (List)request.getAttribute("listOfReservation");
 
 ArrayLine arrayLine;
 %>
+<!DOCTYPE html>
 <html>
 <head>
 <view:looknfeel/>
@@ -45,7 +46,7 @@ ArrayLine arrayLine;
 		  if (confirm("Etes vous sûr de vouloir supprimer la réservation liée à l'évènement "+event+"?")) {
         var $form = $('#ReservationDeletion');
         $('#id', $form).val(reservationId);
-        $form.submit();
+        $form.trigger('submit');
 		  }
 	}
 

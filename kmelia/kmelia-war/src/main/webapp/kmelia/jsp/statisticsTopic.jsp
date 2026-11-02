@@ -49,7 +49,7 @@
 <fmt:formatDate var="startDateStr" value="${startDate}" pattern="${dateFormat}" />
 <fmt:formatDate var="endDateStr" value="${endDate}" pattern="${dateFormat}"/> 
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <view:sp-page>
 <view:sp-head-part withCheckFormScript="true">
 <view:includePlugin name="datepicker"/>
@@ -147,7 +147,7 @@ function updateTimeInterval() {
   }
 }
 
-$(document).ready(function() {
+$(function() {
   // do stuff when DOM is ready
   $("#filterIdGroup").val("${filterIdGroup}");
   $("#filterLibGroup").val("${filterLibGroup}");

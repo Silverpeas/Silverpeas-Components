@@ -45,6 +45,7 @@
     description = category.getDescription();
   }
 %>
+<!DOCTYPE html>
 <html>
 <head>
 <view:looknfeel/>

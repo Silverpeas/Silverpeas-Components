@@ -31,6 +31,7 @@
 	String[] columns = (String[])request.getAttribute("columns");
 	String[] constraints = (String[])request.getAttribute("constraints");
 %>
+<!DOCTYPE html>
 <HTML>
 <Head>
 <view:looknfeel/>

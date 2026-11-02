@@ -44,6 +44,7 @@ Button validateButton = (Button) gef.getFormButton(resources.getString("GML.vali
 
 if (action.equals("View")) {
 %>
+<!DOCTYPE html>
 <HTML>
 <HEAD>
 <TITLE><%=resources.getString("GML.popupTitle")%></TITLE>

@@ -51,6 +51,7 @@ if ("user".equals(profile) && !allowedNav)
 
 %>
 
+<!DOCTYPE html>
 <html>
 <head>
 <view:looknfeel withCheckFormScript="true"/>

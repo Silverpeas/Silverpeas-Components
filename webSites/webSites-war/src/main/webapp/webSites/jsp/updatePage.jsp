@@ -64,6 +64,7 @@
   }
   pageContext.setAttribute("nameToChange", nameToChange);
   %>
+<!DOCTYPE html>
 <HTML>
 <HEAD>
   <TITLE><fmt:message key="GML.popupTitle"/></TITLE>

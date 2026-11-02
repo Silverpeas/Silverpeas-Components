@@ -105,7 +105,7 @@
     }
   }
 
-  $(document).ready(function() {
+  $(function() {
     $(document.body).append("${silfn:escapeJs(albumListDisplaySelectorForms)}");
   });
 </script>

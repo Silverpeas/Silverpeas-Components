@@ -48,6 +48,7 @@
       gef.getFormButton(resource.getString("GML.cancel"), "javaScript:window.close()", false);
 %>
 
+<!DOCTYPE html>
 <html>
 <head>
   <view:looknfeel withCheckFormScript="true"/>

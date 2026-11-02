@@ -183,9 +183,9 @@ function notify(users, groups) {
   });
 }
 
-$(document).ready(function() {
+$(function() {
   showHidePreviewButton();
-  $("#templates").change(function() {
+  $("#templates").on('change', function() {
     showHidePreviewButton();
   });
   const directDeletionCheckBox = document.querySelector('#directDeletion');

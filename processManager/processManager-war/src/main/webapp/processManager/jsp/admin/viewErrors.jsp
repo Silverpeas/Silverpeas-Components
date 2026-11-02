@@ -41,6 +41,7 @@
 	tabbedPane.addTab(resource.getString("processManager.errors"), "", true, false);
 %>
 
+<!DOCTYPE html>
 <HTML>
 <HEAD>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>

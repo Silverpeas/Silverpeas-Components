@@ -31,6 +31,7 @@
 	String		query 	= (String) request.getAttribute("Query");
 %>
 
+<!DOCTYPE html>
 <html>
 <head>
 <view:looknfeel withCheckFormScript="true"/>

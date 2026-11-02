@@ -33,6 +33,7 @@
 	browseBar.setComponentName(componentLabel,"listProcess");
 %>
 
+<!DOCTYPE html>
 <HTML>
 <HEAD>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>

@@ -68,8 +68,8 @@
 <c:url var="suggestionBoxValidationDirectiveJS" value="/suggestionBox/jsp/javaScript/angularjs/directives/suggestionbox-validation.js"/>
 <c:url var="suggestionBoxDeletionDirectiveJS" value="/suggestionBox/jsp/javaScript/angularjs/directives/suggestionbox-deletion.js"/>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.suggestionBox">
+<!DOCTYPE html>
+<html id="ng-app" ng-app="silverpeas.suggestionBox">
 <head>
   <view:looknfeel/>
   <view:includePlugin name="popup"/>
@@ -80,18 +80,18 @@
     <c:if test="${isEditable}">
     function modify() {
       $('#actions').attr('method', 'GET').attr('action',
-          '${componentUriBase}suggestions/${target}/edit').submit();
+          '${componentUriBase}suggestions/${target}/edit').trigger('submit');
     }
     </c:if>
 
     <c:if test="${isPublishable}">
     function publish() {
-      $('#actions').attr('action', '${componentUriBase}suggestions/${target}/publish').submit();
+      $('#actions').attr('action', '${componentUriBase}suggestions/${target}/publish').trigger('submit');
     }
     </c:if>
 
     function cancel() {
-      $('#actions').attr('method', 'GET').attr('action', '${backUri}').submit();
+      $('#actions').attr('method', 'GET').attr('action', '${backUri}').trigger('submit');
     }
     function notify() {
       sp.messager.open('${componentId}', {<%=NotificationContext.CONTRIBUTION_ID%>: '${target}'});

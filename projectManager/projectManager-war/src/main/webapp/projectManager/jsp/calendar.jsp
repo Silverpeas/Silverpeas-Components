@@ -136,6 +136,7 @@ Date 				beginDate 	= (Date) request.getAttribute("BeginDate");
 Date 				endDate		= (Date) request.getAttribute("EndDate");
 List			 	holidays	= (List) request.getAttribute("HolidayDates");
 %>
+<!DOCTYPE html>
 <html>
 <head>
 <title></title>

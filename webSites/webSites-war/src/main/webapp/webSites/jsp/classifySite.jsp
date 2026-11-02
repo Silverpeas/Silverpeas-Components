@@ -128,6 +128,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <!-- classifySite -->
 
+<!DOCTYPE html>
 <HTML>
 <HEAD>
 <TITLE><%=resources.getString("GML.popupTitle")%></TITLE>

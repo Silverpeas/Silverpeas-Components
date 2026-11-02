@@ -142,8 +142,8 @@
 
     let listDelegatedNewsJSON = ${listNewsJSON};
     
-    $(document).ready(function() {
-        $('#newsList tbody').bind('sortupdate', function(event, ui) {
+    $(function() {
+        $('#newsList tbody').on('sortupdate', function(event, ui) {
             var updatedDelegatedNews = new Array(); //tableau de DelegatedNewsEntity réordonnés sérialisés en JSON
             var data = $('#newsList tbody').sortable('toArray'); //tableau de valeurs delegatedNews_{pubId} réordonnés
             for (let i=0; i<data.length; i++)

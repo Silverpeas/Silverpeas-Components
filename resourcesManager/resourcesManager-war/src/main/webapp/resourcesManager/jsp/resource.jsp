@@ -73,6 +73,7 @@
 	}
 	browseBar.setExtraInformation(resource.getString("resourcesManager.informationResource") + " " + name);
 	%>
+<!DOCTYPE html>
 <html>
 <head>
 <view:looknfeel/>

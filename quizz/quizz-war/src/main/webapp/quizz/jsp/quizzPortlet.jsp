@@ -48,6 +48,7 @@ String componentId = quizzScc.getComponentId();
 
 %>
 
+<!DOCTYPE html>
 <HTML>
 <HEAD>
 	<TITLE>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</TITLE>

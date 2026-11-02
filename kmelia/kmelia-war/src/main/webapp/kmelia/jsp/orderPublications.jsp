@@ -52,7 +52,7 @@ li {
 }
 </style>
 <script type="text/javascript">
-	$(document).ready(function() {
+	$(function() {
 		$("#publis").sortable({opacity: 0.4}); 
 	});
 

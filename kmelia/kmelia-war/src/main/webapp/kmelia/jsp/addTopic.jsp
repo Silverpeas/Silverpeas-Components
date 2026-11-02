@@ -46,6 +46,7 @@
 %>
 <fmt:message var="cancelButtonLabel" key="GML.cancel"/>
 <fmt:message var="validateButtonLabel" key="GML.validate"/>
+<!DOCTYPE html>
 <html>
   <head>
     <view:looknfeel withCheckFormScript="true"/>

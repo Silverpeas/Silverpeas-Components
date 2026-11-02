@@ -32,6 +32,7 @@
 	Integer condition = (Integer)request.getAttribute("condition");
 	if(condition == null) condition = new Integer(0);
 %>
+<!DOCTYPE html>
 <HTML>
 <HEAD>
 <TITLE><%=messages.getString("operationPaneSeuil")%></TITLE>

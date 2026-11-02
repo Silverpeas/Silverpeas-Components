@@ -42,6 +42,7 @@
 <c:set var="mediaList" value="${requestScope.MediaList}"/>
 <jsp:useBean id="mediaList" type="java.util.List<org.silverpeas.components.gallery.model.Media>"/>
 
+<!DOCTYPE html>
 <html>
 <head>
   <view:looknfeel/>

@@ -40,6 +40,7 @@
 <%
   ExportReport report = (ExportReport) request.getAttribute("ExportReport");
 %>
+<!DOCTYPE html>
 <html>
   <head>
     <title><c:out value="${page_title}" /></title>

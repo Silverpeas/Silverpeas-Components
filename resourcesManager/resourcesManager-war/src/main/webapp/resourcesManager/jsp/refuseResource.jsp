@@ -37,6 +37,7 @@
     //Icons
     String mandatoryField = m_context + "/util/icons/mandatoryField.gif";
 %>
+<!DOCTYPE html>
 <html>
 <head>
 <view:looknfeel/>

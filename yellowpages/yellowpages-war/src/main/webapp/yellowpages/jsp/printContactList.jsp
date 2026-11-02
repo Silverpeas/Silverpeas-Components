@@ -35,6 +35,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%@ include file="checkYellowpages.jsp" %>
 
+<!DOCTYPE html>
 <html>
 <head>
 <TITLE><%=resources.getString("GML.popupTitle")%></TITLE>

@@ -43,8 +43,8 @@
 <fmt:message var="resultTab" key="mydb.tableView"/>
 <fmt:message var="dataSourceTab" key="mydb.dataSourceSetting"/>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="${currentUserLanguage}">
+<!DOCTYPE html>
+<html lang="${currentUserLanguage}">
 <head>
   <title>${windowTitle}</title>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>

@@ -61,7 +61,7 @@
   <view:sp-head-part>
     <view:includePlugin name="spaceandcomponentbrowser"/>
     <script type="text/javascript">
-      $(document).ready(function() {
+      $(function() {
         displayLocations();
         <c:choose>
         <c:when test="${toolbox}">

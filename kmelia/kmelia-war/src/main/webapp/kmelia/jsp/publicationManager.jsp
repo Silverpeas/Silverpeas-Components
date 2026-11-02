@@ -453,7 +453,7 @@
           postNewLink(name, url, description);
         }
 
-        $(document).ready(function(){
+        $(function(){
           	document.pubForm.KmeliaPubName.focus();
 
 	        $("#publication-draftout").dialog({

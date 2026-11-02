@@ -31,6 +31,7 @@
 Collection resources = (Collection) request.getAttribute("Resources");
 %>
 
+<!DOCTYPE html>
 <html>
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>

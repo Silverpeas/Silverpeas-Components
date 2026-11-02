@@ -44,6 +44,7 @@
 <c:set var="displayLabels" value="${requestScope['DisplayLabels']}"/>
 <c:set var="breadcrumb" value="${requestScope['Breadcrumb']}"/>
 
+<!DOCTYPE html>
 <html>
   <head>
 	<view:link href="/organizationchart/css/organizationchart.css"/>
@@ -78,7 +79,7 @@
         
         whenSilverpeasReady().then(function() {
           chartinit();
-          $("a").click(function() {
+          $("a").on('click', function() {
             if ($(this).attr("target") != "_blank" && !$(this).attr("href").startsWith("javascript:")) {
               $.progressMessage();
             }

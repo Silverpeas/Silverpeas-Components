@@ -65,8 +65,8 @@ if (!isOwner) {
 }
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html>
 <head>
 <view:looknfeel />
 <script type="text/javascript">
@@ -74,7 +74,7 @@ function deleteReservation(){
 	if(confirm("<%=resource.getString("resourcesManager.suppressionConfirmation")%>")){
     var $form = $('#reservationForm');
     $('#id', $form).val('<%=reservationId%>');
-    $form.attr('action', 'DeleteReservation').submit();
+    $form.attr('action', 'DeleteReservation').trigger('submit');
 	}
 }
 
@@ -89,7 +89,7 @@ function valideResource(resourceId, objectView) {
        $('#ResourceId').val(resourceId);
        $('#reservationId').val('<%=reservationId%>');
        $('#objectView').val(objectView);
-       $('#reservationForm').attr('action', 'ValidateResource').submit();
+       $('#reservationForm').attr('action', 'ValidateResource').trigger('submit');
     }
 }
 
@@ -99,7 +99,7 @@ function refuseResource(resourceId, resourceName, objectView) {
     $('#reservationId').val('<%=reservationId%>');
     $('#reservationName').val(resourceName);
     $('#objectView').val(objectView);
-    $('#reservationForm').attr('action', 'ForRefuseResource').submit();
+    $('#reservationForm').attr('action', 'ForRefuseResource').trigger('submit');
 }
 
 </script>

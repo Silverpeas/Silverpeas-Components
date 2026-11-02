@@ -126,6 +126,7 @@ List 	tasks 	= (List) request.getAttribute("Tasks");
 String 	role 		= (String) request.getAttribute("Role");
 %>
 
+<!DOCTYPE html>
 <html>
 <head>
 <view:looknfeel withCheckFormScript="true"/>

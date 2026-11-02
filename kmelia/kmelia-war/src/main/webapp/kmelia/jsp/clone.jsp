@@ -148,8 +148,8 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
   String updaterId = pubDetail.getUpdaterId();
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html>
 <head>
 <title></title>
 <view:looknfeel/>
@@ -231,7 +231,7 @@ $(function() {
         resizable : false,
         buttons: {
           'OK': function() {
-        	  if (!$.trim($("#refusal-motive").val())) {
+        	  if (!($("#refusal-motive").val() || "").trim()) {
               jQuery.popup.error("'<%=kmeliaScc.getString("RefusalMotive")%>' <%=resources.getString("GML.MustBeFilled")%>");
         		  return true;
         	  } else {

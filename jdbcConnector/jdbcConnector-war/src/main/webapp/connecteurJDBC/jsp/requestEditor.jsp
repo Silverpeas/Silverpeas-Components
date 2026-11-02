@@ -146,7 +146,7 @@
   function cleanUpCriteria() {
     $('#criterion-column').children().remove();
     $('#criterion-comparator').find('option').first().prop('selected', true);
-    $('input#criterion-value:first').val('');
+    $('input#criterion-value').first().val('');
     $('#criteria-statement span').replaceWith($('<span>').html(''));
     criteria = [];
   }
@@ -195,7 +195,7 @@
     if (criterion !== null && criterion !== undefined) {
       var column = criterion.val();
       var comparator = $('#criterion-comparator').find('option:selected').first().val();
-      var value = $('input#criterion-value:first').val();
+      var value = $('input#criterion-value').first().val();
       if (comparator === 'include') {
         criteria.push(column + " like '%" + value + "%'")
       } else {
@@ -253,10 +253,10 @@
   }
 
   (function() {
-    var selectedTable = $('#table').find('option:first');
+    var selectedTable = $('#table').find('option').first();
     selectedTable.prop('selected', true);
     reloadColumns(selectedTable.val());
-    $('#criterion-comparator').find('option:first').prop('selected', true);
+    $('#criterion-comparator').find('option').first().prop('selected', true);
   })();
 
 </script>

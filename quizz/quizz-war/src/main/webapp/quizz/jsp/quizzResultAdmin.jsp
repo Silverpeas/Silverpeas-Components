@@ -58,6 +58,7 @@ String displayCredits(int nb_max_user_votes , int nb_user_votes) throws QuizzExc
   String component = quizzScc.getComponentLabel();
 
  %>
+<!DOCTYPE html>
 <html>
 <head>
 <title>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</title>

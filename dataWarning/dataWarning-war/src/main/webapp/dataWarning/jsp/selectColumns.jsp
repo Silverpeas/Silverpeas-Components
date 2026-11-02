@@ -32,6 +32,7 @@
 	DataWarning data = (DataWarning)request.getAttribute("data");
 	DataWarningQuery query = (DataWarningQuery)request.getAttribute("dataQuery");
 %>
+<!DOCTYPE html>
 <HTML>
 <Head>
 <view:looknfeel/>

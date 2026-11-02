@@ -974,7 +974,7 @@ function shareCurrentTopic() {
     componentId : getComponentId(),
     type : "Node",
     id : getCurrentNodeId(),
-    name : $("#" + getCurrentNodeId()).find('a:first').text()
+    name : $("#" + getCurrentNodeId()).find('a').first().text()
   };
   createSharingTicketPopup(sharingObject);
 }

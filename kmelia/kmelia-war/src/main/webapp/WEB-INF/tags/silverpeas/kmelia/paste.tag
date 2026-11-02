@@ -132,7 +132,7 @@
     }
     if (validatorsMustBeSet) {
       $("#paste-validators").show();
-      $("#paste-validators a").click(function() {
+      $("#paste-validators a").on('click', function() {
         SP_openWindow('SelectValidator?FolderId='+topicId,'selectUser',800,600,'');
       });
     } else {

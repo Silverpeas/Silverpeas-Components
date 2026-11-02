@@ -29,6 +29,7 @@
 <%
     DataWarningQueryResult resultQuery = (DataWarningQueryResult)request.getAttribute("resultQuery");
 %>
+<!DOCTYPE html>
 <HTML>
 <HEAD>
 <TITLE><%=resource.getString("operationPaneReqVisu")%></TITLE>

@@ -80,8 +80,8 @@
 <c:set var="currentForum" value="${requestScope.currentForum}" />
 <c:set var="currentForumRaterRatingEntity" value="${requestScope.currentForumRaterRatingEntity}" />
 <c:set var="isActive"  value="${requestScope.currentForum.active}" />
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.forums" xml:lang="${sessionScope[sessionController].language}">
+<!DOCTYPE html>
+<html id="ng-app" ng-app="silverpeas.forums" lang="${sessionScope[sessionController].language}">
 <head>
   <title><c:out value="${currentForum.name}" /></title>
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />

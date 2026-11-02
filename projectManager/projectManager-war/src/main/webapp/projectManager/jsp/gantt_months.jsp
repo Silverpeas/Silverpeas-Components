@@ -46,7 +46,7 @@
 
 <c:set var="viewMode" value="${requestScope['ViewMode']}"/>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html>
 <head>
 <view:looknfeel />
@@ -55,10 +55,10 @@
 <script type="text/javascript" src="<c:out value="${ctxPath}"/>/projectManager/jsp/js/ajax_project.js"></script>
 <script language="javascript" type="text/javascript">
 
-$(document).ready(function(){
+$(function(){
 
   var triAll = true;
-  $(".linkTri").click(function() {
+  $(".linkTri").on('click', function() {
     // Lien Toutes
     if (this.id=='link_all')
     {
@@ -94,7 +94,7 @@ $(document).ready(function(){
   // By suppling no content attribute, the library uses each elements title attribute by default
   highlightResponsible();
 
-  $('#legendLabelId').click(function() {
+  $('#legendLabelId').on('click', function() {
     if ($('#legende').is(':visible')) {
         $('#legende').hide();
     } else {

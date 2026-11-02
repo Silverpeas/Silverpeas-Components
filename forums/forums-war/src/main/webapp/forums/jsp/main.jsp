@@ -85,8 +85,8 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
 %>
 <fmt:message key="confirmDeleteForum" var="removeForum" />
 <fmt:message key="confirmDeleteCategory" var="removeCategory" />
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.forums">
+<!DOCTYPE html>
+<html id="ng-app" ng-app="silverpeas.forums">
   <head>
   	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <view:looknfeel />
@@ -97,26 +97,26 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
 
       function subscribe() {
         $('#action').val('20');
-        $('#forumForm').attr('action', 'main.jsp').submit();
+        $('#forumForm').attr('action', 'main.jsp').trigger('submit');
       }
 
       function unsubscribe() {
         $('#action').val('19');
-        $('#forumForm').attr('action', 'main.jsp').submit();
+        $('#forumForm').attr('action', 'main.jsp').trigger('submit');
       }
 
       function subscribeOneForum(forumId, parentForumId) {
         $('#action').val('18');
         $('#params').val(forumId);
         $('#forumId').val(parentForumId);
-        $('#forumForm').attr('action', 'main.jsp').submit();
+        $('#forumForm').attr('action', 'main.jsp').trigger('submit');
       }
 
       function unsubscribeOneForum(forumId, parentForumId) {
         $('#action').val('17');
         $('#params').val(forumId);
         $('#forumId').val(parentForumId);
-        $('#forumForm').attr('action', 'main.jsp').submit();
+        $('#forumForm').attr('action', 'main.jsp').trigger('submit');
       }
 
       function confirmDeleteForum(forumId)
@@ -124,7 +124,7 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
         jQuery.popup.confirm("<view:encodeJs string="${removeForum}"/>", function() {
           $('#action').val('4');
           $('#params').val(forumId);
-          $('#forumForm').attr('action', 'main.jsp').submit();
+          $('#forumForm').attr('action', 'main.jsp').trigger('submit');
         });
       }
 
@@ -132,7 +132,7 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
       {
         jQuery.popup.confirm("<view:encodeJs string="${removeCategory}"/>", function() {
           $('#CategoryId').val(categoryId);
-          $('#forumForm').attr('action', 'DeleteCategory').submit();
+          $('#forumForm').attr('action', 'DeleteCategory').trigger('submit');
         });
       }
 

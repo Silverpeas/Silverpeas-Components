@@ -39,7 +39,7 @@
     <jsp:useBean id="media" scope="request" type="org.silverpeas.components.gallery.model.Streaming"/>
     <mediaTags:streamingLibrary/>
     <script type="text/javascript">
-      $(document).ready(function() {
+      $(function() {
 
         var $characteristics = $('.fileCharacteristic');
         var $characteristicsContainer = $('p', $characteristics);

@@ -49,7 +49,7 @@
 
 <div id="videoContainer"></div>
 <script type="text/javascript">
-  $(document).ready(function() {
+  $(function() {
     $('#videoContainer').embedPlayer({
       url : '${silfn:escapeJs(sound.getApplicationEmbedUrl(_mediaResolution))}',
       width : ${_mediaResolution.width},

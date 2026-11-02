@@ -69,6 +69,7 @@
 
   %>
   <c:set var="userHasAdminAccess" value="<%=kmeliaScc.isTopicAdmin(node.getNodePK().getId())%>"/>
+<!DOCTYPE html>
   <html>
     <head>
       <view:looknfeel withCheckFormScript="true"/>

@@ -96,8 +96,8 @@ if (quickInfoDetail != null) {
 
 <c:set var="thumbnailBackURL" value="${pageScope.thumbnailBackURL}"/>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html>
 <head>
 <title>QuickInfo - Edition</title>
 <view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
@@ -159,7 +159,7 @@ function saveNews() {
 	if (isCorrectForm()) {
     sp.editor.wysiwyg.lastBackupManager.clear();
       <view:pdcPositions setIn="document.newsForm.Positions.value"/>;
-   		$("#newsForm").submit();
+   		$("#newsForm").trigger('submit');
 	}
 }
 
@@ -168,14 +168,14 @@ function publish() {
     sp.editor.wysiwyg.lastBackupManager.clear();
     <view:pdcPositions setIn="document.newsForm.Positions.value"/>;
 	  $("#newsForm").attr("action", "SaveAndPublish");
-	  $("#newsForm").submit();
+	  $("#newsForm").trigger('submit');
   }
 }
 
 function abortNews() {
   sp.editor.wysiwyg.lastBackupManager.clear();
   $("#newsForm").attr("action", "Remove");
-  $("#newsForm").submit();
+  $("#newsForm").trigger('submit');
 }
 
 function onDelete(id) {
@@ -188,7 +188,7 @@ function cancel(id) {
   location.href="Main";
 }
 
-$(document).ready(function() {
+$(function() {
 	<view:wysiwyg replace="editorContent" language="<%=language%>" width="98%" height="300"
 	toolbar="quickInfo" displayFileBrowser="${true}" componentId="${curQuickInfo.componentInstanceId}"
 	objectId="${curQuickInfo.publicationId}" activateWysiwygBackupManager="true"/>

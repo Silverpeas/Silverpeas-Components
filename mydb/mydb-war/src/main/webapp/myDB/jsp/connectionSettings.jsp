@@ -60,8 +60,8 @@
 <fmt:message bundle="${icons}" var="mandatoryIcon" key="mydb.icons.mandatory"/>
 <c:url var="mandatoryIcon" value="${mandatoryIcon}"/>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="${currentUserLanguage}">
+<!DOCTYPE html>
+<html lang="${currentUserLanguage}">
 <head>
   <title><fmt:message key="mydb.dataSourceSetting"/></title>
   <view:looknfeel withCheckFormScript="true" withFieldsetStyle="true"/>
@@ -116,7 +116,7 @@
         SilverpeasError.add('<b>${maxLineField}</b> ${msgNotNumberField}');
       }
       if (!SilverpeasError.show()) {
-        $('#processForm').submit();
+        $('#processForm').trigger('submit');
       }
     }
 

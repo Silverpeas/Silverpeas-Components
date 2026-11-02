@@ -202,7 +202,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
   }
 
   private void renderWebPage(HttpServletResponse res, RenderingContext ctx) {
-    res.setContentType("text/xml");
+    res.setContentType("text/html");
     res.setCharacterEncoding("UTF-8");
     try {
       var kmeliaSC = ctx.getSessionController();

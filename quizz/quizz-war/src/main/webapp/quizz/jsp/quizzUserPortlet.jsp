@@ -64,6 +64,7 @@ String spaceId = quizzScc.getSpaceId();
 String componentId = quizzScc.getComponentId();
 %>
 
+<!DOCTYPE html>
 <html>
 <head>
 <title>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</title>

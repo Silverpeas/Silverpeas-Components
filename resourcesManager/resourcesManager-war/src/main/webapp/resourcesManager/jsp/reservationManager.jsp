@@ -75,6 +75,7 @@
       gef.getFormButton(resource.getString("GML.validate"), "javaScript:verification()", false);
   Button cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "Calendar?objectView="+request.getAttribute("objectView"), false);
 %>
+<!DOCTYPE html>
 <html>
 <head>
   <view:looknfeel withCheckFormScript="true"/>

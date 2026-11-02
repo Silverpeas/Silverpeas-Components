@@ -51,11 +51,11 @@ Button validateButton = (Button) gef.getFormButton(resources.getString("GML.vali
 %>
 
 <!-- addRep -->
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <%
 if (action.equals("View")) {
 %>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 <head>
 <title><fmt:message key="GML.popupTitle" /></title>
 <view:looknfeel withCheckFormScript="true"/>
@@ -166,7 +166,7 @@ else if (action.equals("Add")) {
     String name = (String) request.getParameter("Name");
 %>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 <head>
 <script type="text/javascript">
 function verifServer(id, path, name) {

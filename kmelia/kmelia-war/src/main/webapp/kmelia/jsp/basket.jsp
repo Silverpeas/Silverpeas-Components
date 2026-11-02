@@ -82,7 +82,7 @@ function emptyTrash()
 	});
 }
 
-$(document).ready(function() {
+$(function() {
 	displayPublications("1");
 });
 </script>

@@ -30,6 +30,7 @@
 	String requete = (String)request.getAttribute("requete");
 	String valeurRetour = (String)request.getAttribute("valeurRetour");
 %>
+<!DOCTYPE html>
 <HTML>
 <HEAD>
 <TITLE><%=resource.getString("operationPaneReqExpert")%></TITLE>

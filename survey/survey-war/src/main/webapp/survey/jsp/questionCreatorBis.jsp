@@ -370,7 +370,7 @@ function showQuestionOptions(value)
   }
 }
 
-$(document).ready(function() {
+$(function() {
   $( "#dialog" ).dialog({
     autoOpen: false/*,
     show: "blind",

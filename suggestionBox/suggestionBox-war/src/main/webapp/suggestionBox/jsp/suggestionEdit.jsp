@@ -63,18 +63,18 @@
   </c:otherwise>
 </c:choose>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html>
 <head>
   <view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
   <view:includePlugin name="wysiwyg"/>
   <view:includePlugin name="popup"/>
   <script type="text/javascript">
-    $(document).ready(function() {
+    $(function() {
       <view:wysiwyg replace="editorContent" language="${null}" toolbar="suggestionBox" componentId="${componentId}"
                     objectId="${suggestion != null ? suggestion.id : null}"
                     activateWysiwygBackupManager="true"/>
-      $('#title').focus();
+      $('#title').trigger('focus');
     });
 
     function getSuggestionContent() {
@@ -104,7 +104,7 @@
         notyError(error.msg);
       } else {
         sp.editor.wysiwyg.lastBackupManager.clear();
-        $('#suggestion').submit();
+        $('#suggestion').trigger('submit');
       }
     }
 
@@ -112,11 +112,11 @@
       sp.editor.wysiwyg.lastBackupManager.clear();
       <c:choose>
       <c:when test="${suggestion == null}">
-      $('#actions').attr('method', 'GET').attr('action', '${backUri}').submit();
+      $('#actions').attr('method', 'GET').attr('action', '${backUri}').trigger('submit');
       </c:when>
       <c:otherwise>
       $('#actions').attr('method', 'GET').attr('action',
-          '${componentUriBase}suggestions/${target}').submit();
+          '${componentUriBase}suggestions/${target}').trigger('submit');
       </c:otherwise>
       </c:choose>
     }

@@ -86,6 +86,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <!-- design -->
 
+<!DOCTYPE html>
 <html>
 <head>
 <view:looknfeel/>

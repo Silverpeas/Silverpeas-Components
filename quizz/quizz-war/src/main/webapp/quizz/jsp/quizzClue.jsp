@@ -35,6 +35,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%
 String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 %>
+<!DOCTYPE html>
 <html>
 <head>
 <title>___/ Silverpeas - Corporate Portal Organizer \_______________________________</title>

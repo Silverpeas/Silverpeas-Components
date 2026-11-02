@@ -212,6 +212,7 @@ if (action.equals("SendQuestions")) {
 }
 if (action.equals("UpdateQuestions")) {
 %>
+<!DOCTYPE html>
 <html>
 <head>
 	<title>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</title>

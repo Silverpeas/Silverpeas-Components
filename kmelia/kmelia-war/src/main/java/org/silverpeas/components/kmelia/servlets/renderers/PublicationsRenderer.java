@@ -634,7 +634,7 @@ public class PublicationsRenderer implements Renderer {
     writer.write(raterRatingEntity
         .toJSonScript("raterRatingEntity_" + raterRatingEntity.getContributionId()));
     writer.write(
-        "<div silverpeas-rating readonly=\"true\" shownbraterratings=\"false\" " +
+        "<div silverpeas-rating readonlymode=\"true\" shownbraterratings=\"false\" " +
             "starsize=\"small\" " +
             "raterrating=\"raterRatingEntity_" + raterRatingEntity.getContributionId() +
             "\"></div>");

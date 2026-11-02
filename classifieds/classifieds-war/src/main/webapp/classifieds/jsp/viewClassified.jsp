@@ -150,9 +150,9 @@
     }
   }
 
-  $(document).ready(function() {
+  $(function() {
 
-      $('.classified_thumbs a').click(function() {
+      $('.classified_thumbs a').on('click', function() {
             cheminImage=$(this).children('img').attr('src');
             $('.selected').removeClass('selected');
             $(this).addClass('selected');

@@ -123,8 +123,8 @@ function deleteConfirm(id,nom) {
 
 var listNodeJSON = ${requestScope.ListCategoryJSON};
 
-$(document).ready(function() {
-    $('#categoryList tbody').bind('sortupdate', function(event, ui) {
+$(function() {
+    $('#categoryList tbody').on('sortupdate', function(event, ui) {
         var updatedNode = new Array(); //tableau de NodeEntity réordonnés sérialisés en JSON
         var data = $('#categoryList tbody').sortable('toArray'); //tableau de valeurs categ-{nodeId} réordonnés
         for (var i=0; i<data.length; i++)

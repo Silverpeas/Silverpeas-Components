@@ -44,7 +44,7 @@
 <c:set var="hierarchicalValidatorStatus" value="${formDetail.hierarchicalValidatorState}"/>
 
 <script type="text/javascript">
-  $(document).ready(function() {
+  $(function() {
     if (${hierarchicalValidatorStatus != VALIDATOR_OK}) {
       $(".validateButton").hide();
     }

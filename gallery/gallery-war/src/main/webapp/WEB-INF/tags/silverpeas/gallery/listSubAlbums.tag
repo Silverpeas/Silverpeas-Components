@@ -41,10 +41,10 @@
 <script type="text/javascript">
 
   <c:if test="${highestUserRole.isGreaterThanOrEquals(adminRole)}">
-  $(document).ready(function() {
+  $(function() {
     $("#albumList").sortable({opacity : 0.4, cursor : 'move'});
 
-    $('#albumList').bind('sortupdate', function(event, ui) {
+    $('#albumList').on('sortupdate', function(event, ui) {
       var reg = new RegExp("album", "g");
       var data = $('#albumList').sortable('serialize');
       data += "&";  // pour que le dernier élément soit de la même longueur que les autres
