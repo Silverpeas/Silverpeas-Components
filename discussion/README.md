@@ -258,3 +258,20 @@ explicitement. Les limites du navigateur (autorisation, fenêtres de navigation 
 indisponible) peuvent restreindre les notifications ou leur déduplication entre onglets.
 
 Aucun changement SQL supplémentaire n'est requis.
+
+### Recherche native Silverpeas
+
+Le champ de recherche interroge l’index Silverpeas de l’instance courante, au-delà des messages
+chargés dans l’historique. Les résultats sont classés par pertinence, paginés par 20 et relus en
+base pour exclure les messages supprimés. Chaque lien ouvre le message dans son contexte.
+Le texte des messages, avec les noms lisibles des @mentions, est indexé après commit ; les
+modifications remplacent l’entrée et les suppressions la retirent. Les images et le contenu des
+pièces jointes ne sont pas analysés par cette recherche.
+
+Après la première installation de cette évolution, lancer la réindexation native de l’instance
+Discussion dans l’administration Silverpeas pour inclure les messages déjà présents. Le bean
+`discussionIndexation` fournit cette intégration. L’indexeur natif est asynchrone : un message
+peut apparaître dans les résultats après un bref délai. Les résultats du moteur global Silverpeas
+peuvent aussi ouvrir un message via la route native `searchResult`.
+
+Aucun changement SQL n’est nécessaire.

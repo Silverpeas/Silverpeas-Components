@@ -61,6 +61,8 @@ public class DefaultConversationService implements ConversationService {
   @Inject
   private DiscussionMentionService mentions;
   @Inject
+  private org.silverpeas.components.discussion.search.DiscussionMessageIndex messageIndex;
+  @Inject
   private org.silverpeas.components.discussion.notification.DiscussionSubscriptionDispatcher subscriptions;
 
   @Inject
@@ -143,6 +145,7 @@ public class DefaultConversationService implements ConversationService {
     message.createdBy(User.getCurrentRequester());
     messages.save(message);
     messages.flush();
+    messageIndex.schedule(instanceId, message.getId());
     imageService.store(instanceId, message.getId(), images);
     imageService.storeFiles(instanceId, message.getId(), files);
     mentions.notifyNewMentions(instanceId, message, "");
@@ -196,6 +199,7 @@ public class DefaultConversationService implements ConversationService {
     message.edit(mentions.normalize(instanceId, body), message.isFilesAttached() || !imageService.list(instanceId, messageId).isEmpty());
     message.updatedBy(User.getCurrentRequester());
     messages.save(message);
+    messageIndex.schedule(instanceId, message.getId());
     mentions.notifyNewMentions(instanceId, message, previousBody);
     if (!java.util.Objects.equals(previousBody, message.getBody())) {
       subscriptions.schedule(new org.silverpeas.components.discussion.notification.DiscussionSubscriptionEvent(
@@ -213,6 +217,7 @@ public class DefaultConversationService implements ConversationService {
     message.delete();
     message.updatedBy(User.getCurrentRequester());
     messages.save(message);
+    messageIndex.schedule(instanceId, message.getId());
     changes.changed(instanceId);
   }
 

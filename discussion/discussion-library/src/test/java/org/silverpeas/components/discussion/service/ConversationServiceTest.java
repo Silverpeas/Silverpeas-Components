@@ -66,6 +66,8 @@ class ConversationServiceTest {
   private DiscussionAttachmentService imageService;
   @TestManagedMock
   private org.silverpeas.components.discussion.notification.DiscussionSubscriptionDispatcher subscriptions;
+  @TestManagedMock
+  private org.silverpeas.components.discussion.search.DiscussionMessageIndex messageIndex;
   @TestedBean
   private DefaultConversationService service;
   private Conversation conversation;
@@ -163,6 +165,7 @@ class ConversationServiceTest {
       service.delete("discussion1", "message", 0);
       verify(changes, times(2)).changed("discussion1");
       verify(message).delete();
+      verify(messageIndex, times(2)).schedule("discussion1", "message");
     }
   }
 
@@ -214,6 +217,7 @@ class ConversationServiceTest {
       var captured = org.mockito.ArgumentCaptor.forClass(DiscussionMessage.class);
       verify(conversations).main("discussion1", true);
       verify(messages).save(captured.capture());
+      verify(messageIndex).schedule(eq("discussion1"), any());
       assertEquals("conversation", captured.getValue().getConversationId());
       assertEquals(5, captured.getValue().getSequenceNumber());
       assertEquals("new message", captured.getValue().getBody());
@@ -272,7 +276,8 @@ class ConversationServiceTest {
       current.when(User::getCurrentRequester).thenReturn(user);
       when(message.getConversationId()).thenReturn("other-conversation");
       assertThrows(IllegalArgumentException.class, () -> service.setLike("discussion1", "message", true));
-      when(message.getConversationId()).thenReturn("conversation");
+      when(message.getId()).thenReturn("message");
+    when(message.getConversationId()).thenReturn("conversation");
       when(message.isDeleted()).thenReturn(true);
       assertThrows(IllegalArgumentException.class, () -> service.setLike("discussion1", "message", true));
       when(user.isAccessGuest()).thenReturn(true);
@@ -414,6 +419,7 @@ class ConversationServiceTest {
     verify(message).setPinned(false);
     when(message.getConversationId()).thenReturn("other-conversation");
     assertThrows(IllegalArgumentException.class, () -> service.setPinned("discussion1", "message", true));
+    when(message.getId()).thenReturn("message");
     when(message.getConversationId()).thenReturn("conversation");
     when(message.isDeleted()).thenReturn(true);
     assertThrows(IllegalArgumentException.class, () -> service.setPinned("discussion1", "message", true));
@@ -516,6 +522,7 @@ class ConversationServiceTest {
   private DiscussionMessage existingMessage(String author) {
     var message = mock(DiscussionMessage.class);
     when(messages.getById("message")).thenReturn(message);
+    when(message.getId()).thenReturn("message");
     when(message.getConversationId()).thenReturn("conversation");
     when(message.getCreatorId()).thenReturn(author);
     when(message.getVersion()).thenReturn(0L);
