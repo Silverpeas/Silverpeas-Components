@@ -74,7 +74,7 @@ public class DiscussionMessageIndex {
     long before = Long.MAX_VALUE;
     List<DiscussionMessage> batch;
     do {
-      batch = messages.history(conversation.getId(), before, BATCH_SIZE);
+      batch = messages.allHistory(conversation.getId(), before, BATCH_SIZE);
       batch.forEach(message -> indexMessage(instanceId, message));
       if (!batch.isEmpty()) {
         before = batch.getLast().getSequenceNumber();

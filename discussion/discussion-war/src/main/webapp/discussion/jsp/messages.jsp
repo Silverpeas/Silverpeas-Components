@@ -31,25 +31,37 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <c:url var="base" value="${requestScope.componentUriBase}"/>
 <c:url var="discussionIcons" value="/discussion/jsp/icons/discussion-icons.svg"/>
+<c:set var="messageActionBase" value="${base}messages/"/>
+<c:if test="${not empty threadRoot}"><c:set var="messageActionBase" value="${base}threads/${threadRoot.id}/messages/"/></c:if>
 <fmt:message key="discussion.edit" var="editLabel"/>
 <fmt:message key="discussion.delete" var="deleteLabel"/>
 <fmt:message key="discussion.pin" var="pinLabel"/>
 <fmt:message key="discussion.unpin" var="unpinLabel"/>
 <fmt:message key="discussion.like" var="likeLabel"/>
 <fmt:message key="discussion.unlike" var="unlikeLabel"/>
-<div class="discussion-page" data-before="${messagePage.nextBefore}" data-more="${messagePage.hasMore}" data-last-sequence="${messagePage.lastSequence}" data-unread-count="${messagePage.unreadCount}">
+<div class="discussion-page" data-before="${messagePage.nextBefore}" data-more="${messagePage.hasMore}" data-last-sequence="${messagePage.lastSequence}" data-sync-sequence="${messagePage.syncSequence}" data-unread-count="${messagePage.unreadCount}">
   <c:set var="unreadBoundaryShown" value="${false}"/>
   <c:forEach items="${messagePage.chronologicalMessages}" var="message">
     <c:choose>
       <c:when test="${message.deleted}">
-        <article id="message-${message.id}" class="discussion-message" data-sequence="${message.sequenceNumber}" hidden></article>
+        <c:choose>
+          <c:when test="${empty threadRoot and message.replyCount gt 0}">
+            <article id="message-${message.id}" class="discussion-message discussion-thread-remnant" data-sequence="${message.sequenceNumber}">
+              <a class="discussion-thread-link" href="${base}threads/${message.id}"><svg class="discussion-icon" aria-hidden="true"><use href="${discussionIcons}#reply"/></svg>
+                <fmt:message key="discussion.thread"/> · <c:out value="${message.replyCount}"/> <fmt:message key="${message.replyCount eq 1 ? 'discussion.replyCountOne' : 'discussion.replies'}"/>
+                <c:if test="${message.unreadReplyCount gt 0}"><span class="discussion-thread-unread"><c:out value="${message.unreadReplyCount}"/> <fmt:message key="${message.unreadReplyCount eq 1 ? 'discussion.unreadRepliesOne' : 'discussion.unreadReplies'}"/></span></c:if>
+              </a>
+            </article>
+          </c:when>
+          <c:otherwise><article id="message-${message.id}" class="discussion-message" data-sequence="${message.sequenceNumber}" hidden></article></c:otherwise>
+        </c:choose>
       </c:when>
       <c:otherwise>
     <c:if test="${message.unread and not unreadBoundaryShown}">
       <div class="discussion-unread-divider" role="separator" aria-label="<fmt:message key='discussion.unread'/>"><span><fmt:message key="discussion.unread"/></span></div>
       <c:set var="unreadBoundaryShown" value="${true}"/>
     </c:if>
-    <article id="message-${message.id}" class="discussion-message ${message.unread ? 'discussion-message--unread' : ''} ${currentUser.id eq message.creatorId ? 'discussion-message--own' : ''}" data-sequence="${message.sequenceNumber}">
+    <article id="message-${message.id}" class="discussion-message ${not empty threadRoot and message.id eq threadRoot.id ? 'discussion-message--thread-root' : ''} ${message.unread ? 'discussion-message--unread' : ''} ${currentUser.id eq message.creatorId ? 'discussion-message--own' : ''}" data-sequence="${message.sequenceNumber}">
       <div class="discussion-avatar" aria-hidden="true">
         <span><c:out value="${fn:toUpperCase(fn:substring(message.creator.displayedName, 0, 1))}"/></span>
         <c:set var="messageAvatar" value="${message.creator.smallAvatar}"/>
@@ -61,6 +73,7 @@
       <div class="discussion-message-content">
         <header class="discussion-message-header">
           <span class="discussion-author"><c:out value="${message.creator.displayedName}"/></span>
+          <c:if test="${not empty threadRoot and message.id eq threadRoot.id}"><span class="discussion-thread-origin-label"><fmt:message key="discussion.threadOrigin"/></span></c:if>
           <c:if test="${message.pinned}"><span class="discussion-pinned-badge"><svg class="discussion-icon" aria-hidden="true"><use href="${discussionIcons}#pin"/></svg> <fmt:message key="discussion.pinned"/></span></c:if>
           <time><fmt:formatDate value="${message.creationDate}" type="both" dateStyle="short" timeStyle="short"/></time>
           <c:if test="${message.unread}"><span class="discussion-unread-badge"><fmt:message key="discussion.unreadMessage"/></span></c:if>
@@ -86,17 +99,27 @@
               </ul>
             </c:if>
             <div class="discussion-message-footer">
+            <c:if test="${empty threadRoot and empty message.threadRootId}">
+              <a class="discussion-thread-link ${message.replyCount eq 0 ? 'discussion-thread-link--empty' : ''}" href="${base}threads/${message.id}">
+                <svg class="discussion-icon" aria-hidden="true"><use href="${discussionIcons}#reply"/></svg>
+                <c:choose>
+                  <c:when test="${message.replyCount gt 0}"><c:out value="${message.replyCount}"/> <fmt:message key="${message.replyCount eq 1 ? 'discussion.replyCountOne' : 'discussion.replies'}"/></c:when>
+                  <c:otherwise><fmt:message key="discussion.reply"/></c:otherwise>
+                </c:choose>
+                <c:if test="${message.unreadReplyCount gt 0}"><span class="discussion-thread-unread"><c:out value="${message.unreadReplyCount}"/> <fmt:message key="${message.unreadReplyCount eq 1 ? 'discussion.unreadRepliesOne' : 'discussion.unreadReplies'}"/></span></c:if>
+              </a>
+            </c:if>
             <c:if test="${canWrite and (currentUser.id eq message.creatorId or highestUserRole.name() eq 'ADMIN')}">
               <div class="discussion-actions">
                 <details class="discussion-edit">
                   <summary class="discussion-icon-button" title="${fn:escapeXml(editLabel)}" aria-label="${fn:escapeXml(editLabel)}"><svg class="discussion-icon" aria-hidden="true"><use href="${discussionIcons}#edit"/></svg></summary>
-                  <form method="post" action="${base}messages/${message.id}/edit">
+                  <form method="post" action="${messageActionBase}${message.id}/edit">
                     <input type="hidden" name="version" value="${message.version}"/>
                     <textarea name="body" maxlength="2000" data-allow-empty="${not empty messageImages[message.id] or not empty messageFiles[message.id]}" required aria-label="<fmt:message key='discussion.message'/>"><c:out value="${message.body}"/></textarea>
                     <button class="sp_button discussion-button--primary" type="submit"><fmt:message key="discussion.save"/></button>
                   </form>
                 </details>
-                <form class="discussion-delete" method="post" action="${base}messages/${message.id}/delete">
+                <form class="discussion-delete" method="post" action="${messageActionBase}${message.id}/delete">
                   <input type="hidden" name="version" value="${message.version}"/>
                   <button class="discussion-icon-button discussion-button--danger" type="submit" title="${fn:escapeXml(deleteLabel)}" aria-label="${fn:escapeXml(deleteLabel)}"><svg class="discussion-icon" aria-hidden="true"><use href="${discussionIcons}#delete"/></svg></button>
                 </form>

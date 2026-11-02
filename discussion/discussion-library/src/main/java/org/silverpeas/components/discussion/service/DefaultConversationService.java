@@ -96,14 +96,22 @@ public class DefaultConversationService implements ConversationService {
       throw new IllegalArgumentException("Invalid update range");
     }
     Conversation conversation = conversations.main(instanceId, false);
-    var selected = messages.selected(conversation.getId(), messageIds);
+    var selected = messages.selected(conversation.getId(), messageIds).stream()
+        .filter(message -> message.getThreadRootId() == null).toList();
     var newer = messages.newer(conversation.getId(), after);
+    return updatedPage(conversation, selected, newer);
+  }
+
+  private MessagePage updatedPage(Conversation conversation, List<DiscussionMessage> selected,
+      List<DiscussionMessage> newer) {
     var page = java.util.stream.Stream.concat(selected.stream(), newer.stream())
         .collect(java.util.stream.Collectors.toMap(DiscussionMessage::getId, message -> message,
             (first, second) -> second)).values().stream()
         .sorted(java.util.Comparator.comparingLong(DiscussionMessage::getSequenceNumber).reversed())
         .toList();
-    return readablePage(conversation, page, 0, false);
+    var readable = readablePage(conversation, page, 0, false);
+    long cursor = newer.size() == 100 ? newer.getLast().getSequenceNumber() : conversation.getLastSequence();
+    return new MessagePage(readable.messages(), 0, false, readable.lastSequence(), readable.unreadCount(), cursor);
   }
 
   private MessagePage readablePage(Conversation conversation, List<DiscussionMessage> page,
@@ -115,6 +123,13 @@ public class DefaultConversationService implements ConversationService {
     page.forEach(message -> message.setUnread(!message.isDeleted()
         && message.getSequenceNumber() > lastRead && !userId.equals(message.getCreatorId())
         && !viewed.contains(message.getId())));
+    var rootIds = page.stream().filter(message -> message.getThreadRootId() == null)
+        .map(DiscussionMessage::getId).toList();
+    var statistics = messages.threadStatistics(conversation.getId(), rootIds, userId, lastRead);
+    page.forEach(message -> {
+      long[] counts = statistics.getOrDefault(message.getId(), new long[2]);
+      message.setThreadStatistics(counts[0], counts[1]);
+    });
     return new MessagePage(page, next, more, conversation.getLastSequence(),
         messages.unread(conversation.getId(), userId, lastRead));
   }
@@ -131,6 +146,20 @@ public class DefaultConversationService implements ConversationService {
 
   @Override
   public void publish(String instanceId, String body, List<DiscussionImageUpload> images, List<DiscussionFileUpload> files) {
+    post(instanceId, null, body, images, files);
+  }
+
+  @Override
+  public void reply(String instanceId, String rootId, String body, List<DiscussionImageUpload> images,
+      List<DiscussionFileUpload> files) {
+    if (rootId == null || rootId.isBlank()) {
+      throw new IllegalArgumentException("A thread root is required");
+    }
+    post(instanceId, rootId, body, images, files);
+  }
+
+  private void post(String instanceId, String rootId, String body, List<DiscussionImageUpload> images,
+      List<DiscussionFileUpload> files) {
     access.require(instanceId, SilverpeasRole.WRITER);
     if (images == null || images.size() > DiscussionImageUpload.MAX_IMAGES || images.stream().anyMatch(java.util.Objects::isNull)) {
       throw new IllegalArgumentException("Too many images");
@@ -141,6 +170,9 @@ public class DefaultConversationService implements ConversationService {
     Conversation conversation = conversations.main(instanceId, true);
     var message = new DiscussionMessage(conversation.getId(), conversation.nextSequence(),
         mentions.normalize(instanceId, body == null ? "" : body), !images.isEmpty() || !files.isEmpty());
+    if (rootId != null) {
+      message.attachToThread(messageIn(conversation, rootId));
+    }
     message.setFilesAttached(!files.isEmpty());
     message.createdBy(User.getCurrentRequester());
     messages.save(message);
@@ -288,7 +320,52 @@ public class DefaultConversationService implements ConversationService {
     access.require(instanceId, SilverpeasRole.WRITER);
     Conversation conversation = conversations.main(instanceId, false);
     DiscussionMessage message = messageIn(conversation, messageId);
-    return history(instanceId, message.getSequenceNumber() + 1, 30);
+    return message.getThreadRootId() == null
+        ? history(instanceId, message.getSequenceNumber() + 1, 30)
+        : threadHistory(instanceId, message.getThreadRootId(), message.getSequenceNumber() + 1, 30);
+  }
+
+  @Override
+  public DiscussionMessage threadRoot(String instanceId, String messageId) {
+    access.require(instanceId, SilverpeasRole.WRITER);
+    var conversation = conversations.main(instanceId, false);
+    var message = messageIn(conversation, messageId);
+    return message.getThreadRootId() == null ? message : messageIn(conversation, message.getThreadRootId());
+  }
+
+  private DiscussionMessage requireRoot(Conversation conversation, String rootId) {
+    var root = messageIn(conversation, rootId);
+    if (root.getThreadRootId() != null) {
+      throw new IllegalArgumentException("Nested discussion threads are not supported");
+    }
+    return root;
+  }
+
+  @Override
+  public MessagePage threadHistory(String instanceId, String rootId, long before, int limit) {
+    access.require(instanceId, SilverpeasRole.WRITER);
+    if (before <= 0 || limit < 1 || limit > 100) {
+      throw new IllegalArgumentException("Invalid thread history page");
+    }
+    var conversation = conversations.main(instanceId, false);
+    requireRoot(conversation, rootId);
+    var found = messages.threadHistory(conversation.getId(), rootId, before, limit + 1);
+    boolean more = found.size() > limit;
+    var page = found.subList(0, Math.min(limit, found.size()));
+    return readablePage(conversation, page, page.isEmpty() ? before : page.getLast().getSequenceNumber(), more);
+  }
+
+  @Override
+  public MessagePage threadUpdates(String instanceId, String rootId, long after, List<String> messageIds) {
+    access.require(instanceId, SilverpeasRole.WRITER);
+    if (after < 0 || messageIds.size() > 100) {
+      throw new IllegalArgumentException("Invalid thread update range");
+    }
+    var conversation = conversations.main(instanceId, false);
+    requireRoot(conversation, rootId);
+    var selected = messages.selected(conversation.getId(), messageIds).stream()
+        .filter(message -> rootId.equals(message.getId()) || rootId.equals(message.getThreadRootId())).toList();
+    return updatedPage(conversation, selected, messages.threadNewer(conversation.getId(), rootId, after));
   }
 
   private DiscussionMessage messageIn(Conversation conversation, String messageId) {

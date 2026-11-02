@@ -28,7 +28,12 @@ import org.silverpeas.components.discussion.model.DiscussionMessage;
 
 /** Descending history page; nextBefore is exclusive and stable under concurrent appends. */
 public record MessagePage(List<DiscussionMessage> messages, long nextBefore, boolean hasMore,
-                          long lastSequence, long unreadCount) {
+                          long lastSequence, long unreadCount, long syncSequence) {
+  public MessagePage(List<DiscussionMessage> messages, long nextBefore, boolean hasMore,
+      long lastSequence, long unreadCount) {
+    this(messages, nextBefore, hasMore, lastSequence, unreadCount, lastSequence);
+  }
+  public long getSyncSequence() { return syncSequence; }
   public MessagePage {
     messages = List.copyOf(messages);
   }

@@ -87,11 +87,105 @@ public class DiscussionWebController extends
   @Path("messages/{id}")
   @RedirectToInternalJsp("discussion.jsp")
   public void message(DiscussionWebRequestContext context) {
+    var root = webResult(() -> conversations().threadRoot(context.getComponentInstanceId(),
+        context.getPathVariables().get("id")));
+    if (!root.getId().equals(context.getPathVariables().get("id"))) {
+      context.getRequest().setAttribute("threadRoot", root);
+    }
     var page = webResult(() -> conversations().historyAround(context.getComponentInstanceId(),
         context.getPathVariables().get("id")));
     prepareHistory(context, page);
     context.getRequest().setAttribute("focusedMessageId", context.getPathVariables().get("id"));
     preparePage(context);
+  }
+
+  @GET
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("threads/{root}")
+  @RedirectToInternalJsp("discussion.jsp")
+  public void thread(DiscussionWebRequestContext context) {
+    String rootId = prepareThread(context);
+    prepareHistory(context, webResult(() -> conversations().threadHistory(
+        context.getComponentInstanceId(), rootId, Long.MAX_VALUE, 30)));
+    preparePage(context);
+  }
+
+  private String prepareThread(DiscussionWebRequestContext context) {
+    String id = context.getPathVariables().get("root");
+    var root = webResult(() -> conversations().threadRoot(context.getComponentInstanceId(), id));
+    if (!root.getId().equals(id)) {
+      throw new WebApplicationException(400);
+    }
+    context.getRequest().setAttribute("threadRoot", root);
+    return id;
+  }
+
+  @GET
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("threads/{root}/history")
+  @RedirectToInternalJsp("messages.jsp")
+  public void threadHistory(DiscussionWebRequestContext context) {
+    String rootId = prepareThread(context);
+    prepareHistory(context, webResult(() -> conversations().threadHistory(
+        context.getComponentInstanceId(), rootId, number(context, "before", Long.MAX_VALUE), 30)));
+  }
+
+  @GET
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("threads/{root}/updates")
+  @RedirectToInternalJsp("messages.jsp")
+  public void threadUpdates(DiscussionWebRequestContext context) {
+    String rootId = prepareThread(context);
+    String ids = context.getRequest().getParameter("ids");
+    if (ids != null && ids.length() > 4100) {
+      throw new WebApplicationException(400);
+    }
+    var selected = ids == null || ids.isBlank() ? java.util.List.<String>of()
+        : java.util.Arrays.asList(ids.split(","));
+    prepareHistory(context, webResult(() -> conversations().threadUpdates(context.getComponentInstanceId(),
+        rootId, number(context, "after", 0), selected)));
+  }
+
+  @POST
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("threads/{root}/reply")
+  @RedirectToInternal("threads/{root}")
+  public void reply(DiscussionWebRequestContext context) {
+    String rootId = prepareThread(context);
+    webAction(() -> {
+      var uploads = uploads(context);
+      conversations().reply(context.getComponentInstanceId(), rootId, context.getRequest().getParameter("body"),
+          uploads.images(), uploads.files());
+    });
+    context.addRedirectVariable("root", rootId);
+  }
+
+  private void requireThreadMessage(DiscussionWebRequestContext context) {
+    String rootId = context.getPathVariables().get("root");
+    var actualRoot = webResult(() -> conversations().threadRoot(context.getComponentInstanceId(),
+        context.getPathVariables().get("id")));
+    if (!rootId.equals(actualRoot.getId())) {
+      throw new WebApplicationException(400);
+    }
+    context.addRedirectVariable("root", rootId);
+  }
+
+  @POST
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("threads/{root}/messages/{id}/edit")
+  @RedirectToInternal("threads/{root}")
+  public void threadEdit(DiscussionWebRequestContext context) {
+    requireThreadMessage(context);
+    edit(context);
+  }
+
+  @POST
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("threads/{root}/messages/{id}/delete")
+  @RedirectToInternal("threads/{root}")
+  public void threadDelete(DiscussionWebRequestContext context) {
+    requireThreadMessage(context);
+    delete(context);
   }
 
   private transient org.silverpeas.components.discussion.search.DiscussionSearchService searchService;
@@ -281,8 +375,18 @@ public class DiscussionWebController extends
     if (typingService == null) {
       typingService = ServiceProvider.getService(org.silverpeas.components.discussion.service.DiscussionTypingService.class);
     }
-    webAction(() -> typingService.typing(context.getComponentInstanceId(),
-        context.getRequest().getSession().getId() + ":" + tab, Boolean.parseBoolean(active)));
+    webAction(() -> {
+      String rootId = context.getRequest().getParameter("threadRootId");
+      String session = context.getRequest().getSession().getId() + ":" + tab;
+      if (rootId == null || rootId.isEmpty()) {
+        typingService.typing(context.getComponentInstanceId(), session, Boolean.parseBoolean(active));
+      } else {
+        if (!rootId.matches("[a-zA-Z0-9-]{1,40}")) {
+          throw new IllegalArgumentException("Invalid typing scope");
+        }
+        typingService.typing(context.getComponentInstanceId(), session, Boolean.parseBoolean(active), rootId);
+      }
+    });
   }
 
   private void loadHistory(DiscussionWebRequestContext context, long before) {
@@ -313,27 +417,37 @@ public class DiscussionWebController extends
   public void publish(DiscussionWebRequestContext context) {
     webAction(() -> {
       var request = context.getRequest();
-      var items = org.silverpeas.core.util.file.FileUploadUtil.isRequestMultipart(request)
-          ? request.getFileItems().stream().filter(file -> !file.isFormField()
-              && (file.getSize() > 0 || file.getFileName() != null && !file.getFileName().isBlank())).toList()
-          : java.util.List.<org.silverpeas.core.util.file.FileItem>of();
-      var images = items.stream().filter(file -> "images".equals(file.getFieldName())).toList();
-      var files = items.stream().filter(file -> "files".equals(file.getFieldName())).toList();
-      if (images.size() > org.silverpeas.components.discussion.service.DiscussionImageUpload.MAX_IMAGES
-          || files.size() > org.silverpeas.components.discussion.service.DiscussionFileUpload.MAX_FILES) {
-        throw new IllegalArgumentException("Too many attachments");
-      }
-      if (!files.isEmpty()) {
+      var uploads = uploads(context);
+      if (!uploads.files().isEmpty()) {
         conversations().publish(context.getComponentInstanceId(), request.getParameter("body"),
-            images.stream().map(org.silverpeas.components.discussion.service.DiscussionImageUpload::read).toList(),
-            files.stream().map(org.silverpeas.components.discussion.service.DiscussionFileUpload::read).toList());
-      } else if (!images.isEmpty()) {
-        conversations().publish(context.getComponentInstanceId(), request.getParameter("body"),
-            images.stream().map(org.silverpeas.components.discussion.service.DiscussionImageUpload::read).toList());
+            uploads.images(), uploads.files());
+      } else if (!uploads.images().isEmpty()) {
+        conversations().publish(context.getComponentInstanceId(), request.getParameter("body"), uploads.images());
       } else {
         conversations().publish(context.getComponentInstanceId(), request.getParameter("body"));
       }
     });
+  }
+
+  private record MessageUploads(
+      java.util.List<org.silverpeas.components.discussion.service.DiscussionImageUpload> images,
+      java.util.List<org.silverpeas.components.discussion.service.DiscussionFileUpload> files) { }
+
+  private MessageUploads uploads(DiscussionWebRequestContext context) {
+    var request = context.getRequest();
+    var items = org.silverpeas.core.util.file.FileUploadUtil.isRequestMultipart(request)
+        ? request.getFileItems().stream().filter(file -> !file.isFormField()
+            && (file.getSize() > 0 || file.getFileName() != null && !file.getFileName().isBlank())).toList()
+        : java.util.List.<org.silverpeas.core.util.file.FileItem>of();
+    var images = items.stream().filter(file -> "images".equals(file.getFieldName())).toList();
+    var files = items.stream().filter(file -> "files".equals(file.getFieldName())).toList();
+    if (images.size() > org.silverpeas.components.discussion.service.DiscussionImageUpload.MAX_IMAGES
+        || files.size() > org.silverpeas.components.discussion.service.DiscussionFileUpload.MAX_FILES) {
+      throw new IllegalArgumentException("Too many attachments");
+    }
+    return new MessageUploads(
+        images.stream().map(org.silverpeas.components.discussion.service.DiscussionImageUpload::read).toList(),
+        files.stream().map(org.silverpeas.components.discussion.service.DiscussionFileUpload::read).toList());
   }
 
   @POST

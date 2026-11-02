@@ -33,7 +33,8 @@
     const scroller = window.DiscussionScroll || document.getElementById('discussion-scroll');
     const failure = document.getElementById('discussion-live-error');
     const articles = () => Array.from(history.querySelectorAll('.discussion-message'));
-    const latest = () => Math.max(0, ...articles().map(row => Number(row.dataset.sequence)));
+    let syncSequence = 0;
+    const latest = () => Math.max(syncSequence, ...articles().map(row => Number(row.dataset.sequence)));
     // Opening an older message must not follow new messages during the initial catch-up.
     let followLatest = !discussion.dataset.messageId && !window.location.hash.startsWith('#message-');
     const enableFollowing = () => { followLatest = true; };
@@ -122,6 +123,11 @@
           throw new Error('Invalid discussion update');
         }
         merge(page);
+        // A scope may contain no new rows while other threads advance the shared sequence.
+        const received = Number(page.dataset.syncSequence);
+        if (Number.isSafeInteger(received) && received >= 0) {
+          syncSequence = Math.max(syncSequence, received);
+        }
         // A reconnect can require several bounded batches to catch up completely.
         dirty ||= Number(page.dataset.lastSequence) > latest();
       }

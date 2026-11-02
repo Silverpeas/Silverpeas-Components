@@ -34,6 +34,11 @@ public interface ConversationService {
   List<String> participantIds(String instanceId);
   Map<String, LikeState> likeStates(String instanceId, List<String> messageIds);
   LikeState setLike(String instanceId, String messageId, boolean liked);
+  DiscussionMessage threadRoot(String instanceId, String messageId);
+  MessagePage threadHistory(String instanceId, String rootId, long before, int limit);
+  MessagePage threadUpdates(String instanceId, String rootId, long after, List<String> messageIds);
+  void reply(String instanceId, String rootId, String body, List<DiscussionImageUpload> images,
+      List<DiscussionFileUpload> files);
   MessagePage historyAround(String instanceId, String messageId);
   MessagePage history(String instanceId, long before, int limit);
   MessagePage updates(String instanceId, long after, List<String> messageIds);

@@ -24,6 +24,7 @@
 package org.silverpeas.components.discussion.service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import jakarta.persistence.OptimisticLockException;
 import org.junit.jupiter.api.BeforeEach;
@@ -83,6 +84,124 @@ class ConversationServiceTest {
     user = mock(User.class);
     when(user.getId()).thenReturn("user");
     when(access.require(eq("discussion1"), any())).thenReturn(SilverpeasRole.WRITER);
+  }
+
+  @Test
+  void repliesShareTheConversationSequenceAndNativeMessageFeatures() {
+    var root = existingMessage("other-author");
+    when(conversation.nextSequence()).thenReturn(5L);
+    try (var current = mockStatic(User.class)) {
+      current.when(User::getCurrentRequester).thenReturn(user);
+      var image = mock(DiscussionImageUpload.class);
+      var file = mock(DiscussionFileUpload.class);
+      service.reply("discussion1", "message", "Une réponse", List.of(image), List.of(file));
+      verify(imageService).store(eq("discussion1"), any(), eq(List.of(image)));
+      verify(imageService).storeFiles(eq("discussion1"), any(), eq(List.of(file)));
+      var saved = org.mockito.ArgumentCaptor.forClass(DiscussionMessage.class);
+      verify(messages).save(saved.capture());
+      assertEquals("message", saved.getValue().getThreadRootId());
+      assertEquals("conversation", saved.getValue().getConversationId());
+      assertEquals(5, saved.getValue().getSequenceNumber());
+      verify(conversations).main("discussion1", true);
+      verify(mentions).notifyNewMentions("discussion1", saved.getValue(), "");
+      verify(messageIndex).schedule(eq("discussion1"), any());
+      verify(subscriptions).schedule(argThat(event -> "message".equals(event.message().getThreadRootId())));
+      verify(changes).published(eq("discussion1"), any(), eq("user"), any(), eq("Une réponse"));
+    }
+  }
+
+  @Test
+  void threadOperationsRequireTheSameWriterAccessAsTheMainConversation() {
+    when(access.require("discussion1", SilverpeasRole.WRITER)).thenThrow(SecurityException.class);
+    assertThrows(SecurityException.class,
+        () -> service.reply("discussion1", "root", "reply", List.of(), List.of()));
+    assertThrows(SecurityException.class,
+        () -> service.threadRoot("discussion1", "reply"));
+    assertThrows(SecurityException.class,
+        () -> service.threadHistory("discussion1", "root", Long.MAX_VALUE, 30));
+    assertThrows(SecurityException.class,
+        () -> service.threadUpdates("discussion1", "root", 0, List.of()));
+    verifyNoInteractions(conversations, messages);
+  }
+
+  @Test
+  void foreignAndNestedThreadRootsCannotBeUsedToPublishReplies() {
+    var root = existingMessage("other-author");
+    when(root.getConversationId()).thenReturn("foreign-conversation");
+    assertThrows(IllegalArgumentException.class,
+        () -> service.reply("discussion1", "message", "reply", List.of(), List.of()));
+    when(root.getConversationId()).thenReturn("conversation");
+    when(root.getThreadRootId()).thenReturn("actual-root");
+    assertThrows(IllegalArgumentException.class,
+        () -> service.reply("discussion1", "message", "reply", List.of(), List.of()));
+    assertThrows(IllegalArgumentException.class,
+        () -> service.reply("discussion1", "", "reply", List.of(), List.of()));
+    verify(messages, never()).save(any(DiscussionMessage.class));
+    verifyNoInteractions(imageService, messageIndex, subscriptions);
+  }
+
+  @Test
+  void replyPermalinksResolveTheirRootAndLoadTheThreadAroundTheReply() {
+    var root = existingMessage("other-author");
+    var reply = mock(DiscussionMessage.class);
+    when(reply.getId()).thenReturn("reply");
+    when(reply.getConversationId()).thenReturn("conversation");
+    when(reply.getThreadRootId()).thenReturn("message");
+    when(reply.getSequenceNumber()).thenReturn(5L);
+    when(messages.getById("reply")).thenReturn(reply);
+    when(messages.threadHistory("conversation", "message", 6, 31)).thenReturn(List.of(reply, root));
+    try (var current = mockStatic(User.class)) {
+      current.when(User::getCurrentRequester).thenReturn(user);
+      assertSame(root, service.threadRoot("discussion1", "reply"));
+      assertEquals(List.of(reply, root), service.historyAround("discussion1", "reply").messages());
+      verify(messages, never()).history(anyString(), anyLong(), anyInt());
+    }
+  }
+
+  @Test
+  void timelineUpdatesSkipRepliesAndAdvanceCursorAcrossOtherThreads() {
+    var root = existingMessage("other-author");
+    var reply = mock(DiscussionMessage.class);
+    when(reply.getId()).thenReturn("reply");
+    when(reply.getThreadRootId()).thenReturn("message");
+    when(messages.selected("conversation", List.of("message", "reply"))).thenReturn(List.of(root, reply));
+    when(messages.threadStatistics("conversation", List.of("message"), "user", 0))
+        .thenReturn(Map.of("message", new long[]{3, 2}));
+    when(conversation.getLastSequence()).thenReturn(99L);
+    try (var current = mockStatic(User.class)) {
+      current.when(User::getCurrentRequester).thenReturn(user);
+      var page = service.updates("discussion1", 4, List.of("message", "reply"));
+      assertEquals(List.of(root), page.messages());
+      assertEquals(99, page.getSyncSequence());
+      verify(root).setThreadStatistics(3, 2);
+    }
+  }
+
+  @Test
+  void threadUpdatesFilterOtherThreadsAndHistoryRetainsPagination() {
+    var root = existingMessage("other-author");
+    var reply = mock(DiscussionMessage.class);
+    when(reply.getId()).thenReturn("reply");
+    when(reply.getThreadRootId()).thenReturn("message");
+    when(reply.getSequenceNumber()).thenReturn(5L);
+    var other = mock(DiscussionMessage.class);
+    when(other.getId()).thenReturn("foreign-reply");
+    when(other.getThreadRootId()).thenReturn("other-root");
+    when(messages.selected("conversation", List.of("reply", "foreign-reply"))).thenReturn(List.of(reply, other));
+    when(messages.threadNewer("conversation", "message", 4)).thenReturn(List.of(reply));
+    when(messages.threadHistory("conversation", "message", 6, 2)).thenReturn(List.of(reply, root));
+    try (var current = mockStatic(User.class)) {
+      current.when(User::getCurrentRequester).thenReturn(user);
+      var updates = service.threadUpdates("discussion1", "message", 4, List.of("reply", "foreign-reply"));
+      assertEquals(List.of(reply), updates.messages());
+      var history = service.threadHistory("discussion1", "message", 6, 1);
+      assertEquals(List.of(reply), history.messages());
+      assertTrue(history.hasMore());
+      assertEquals(5, history.nextBefore());
+      when(root.getThreadRootId()).thenReturn("nested-root");
+      assertThrows(IllegalArgumentException.class,
+          () -> service.threadHistory("discussion1", "message", 6, 30));
+    }
   }
 
   @Test

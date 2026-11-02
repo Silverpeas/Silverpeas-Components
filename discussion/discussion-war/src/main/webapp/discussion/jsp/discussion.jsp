@@ -30,6 +30,16 @@
 <%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view" %>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <c:url var="base" value="${requestScope.componentUriBase}"/>
+<c:set var="historyUrl" value="${base}history"/>
+<c:set var="updatesUrl" value="${base}updates"/>
+<c:set var="composeUrl" value="${base}messages/add"/>
+<fmt:message key="${empty threadRoot ? 'discussion.post' : 'discussion.reply'}" var="composeActionLabel"/>
+<fmt:message key="${empty threadRoot ? 'discussion.placeholder' : 'discussion.replyPlaceholder'}" var="composePlaceholder"/>
+<c:if test="${not empty threadRoot}">
+  <c:set var="historyUrl" value="${base}threads/${threadRoot.id}/history"/>
+  <c:set var="updatesUrl" value="${base}threads/${threadRoot.id}/updates"/>
+  <c:set var="composeUrl" value="${base}threads/${threadRoot.id}/reply"/>
+</c:if>
 <!DOCTYPE html>
 <html>
 <head>
@@ -63,7 +73,7 @@
 </view:operationPane>
 <view:window>
   <view:frame>
-    <main id="discussion" data-history="${base}history" data-participants="${base}participants" data-publications="${base}publications" data-updates="${base}updates"
+    <main id="discussion" data-history="${historyUrl}" data-thread-root-id="${threadRoot.id}" data-participants="${base}participants" data-publications="${base}publications" data-updates="${updatesUrl}"
         data-files="${base}files" data-pins="${base}pins" data-instance-id="${discussionInstanceId}" data-read="${base}messages/read" data-typing="${base}typing" data-user-id="${currentUser.id}"
         data-typing-one="<fmt:message key='discussion.typingOne'/>" data-typing-many="<fmt:message key='discussion.typingMany'/>"
         data-message-id="<c:out value='${focusedMessageId}'/>"
@@ -75,7 +85,13 @@
       <header class="discussion-header">
         <div class="discussion-heading">
           <h1><c:out value="${instanceInfo.title}"/></h1>
-          <c:if test="${not empty instanceInfo.description}"><p class="discussion-subtitle"><c:out value="${instanceInfo.description}"/></p></c:if>
+          <c:if test="${not empty threadRoot}">
+            <p class="discussion-thread-context"><a href="${base}messages/${threadRoot.id}#message-${threadRoot.id}"><fmt:message key="discussion.backToDiscussion"/></a>
+              <strong><fmt:message key="discussion.thread"/></strong>
+              <c:if test="${not threadRoot.deleted}"><span><fmt:message key="discussion.replyTo"/> <c:out value="${threadRoot.creator.displayedName}"/></span></c:if>
+            </p>
+          </c:if>
+          <c:if test="${empty threadRoot and not empty instanceInfo.description}"><p class="discussion-subtitle"><c:out value="${instanceInfo.description}"/></p></c:if>
         </div>
         <form id="discussion-search" class="discussion-search" action="${base}search" method="get" role="search">
           <label class="discussion-compose-label" for="discussion-search-query"><fmt:message key="discussion.search"/></label>
@@ -115,12 +131,12 @@
           <p id="discussion-viewer-error" class="discussion-presence-error" role="status" hidden><fmt:message key="discussion.viewerError"/></p>
           <p id="discussion-live-error" class="discussion-hint" role="status" hidden><fmt:message key="discussion.liveError"/></p>
           <c:if test="${canWrite}">
-            <form class="discussion-composer" method="post" enctype="multipart/form-data" action="${base}messages/add">
+            <form class="discussion-composer" method="post" enctype="multipart/form-data" action="${composeUrl}">
               <p id="discussion-typing" class="discussion-hint" role="status" aria-live="polite" hidden></p>
               <label for="discussion-body" class="discussion-compose-label"><fmt:message key="discussion.compose"/></label>
               <div class="discussion-compose-box">
               <textarea rows="1" id="discussion-body" name="body" maxlength="2000" required aria-describedby="discussion-compose-hint"
-                  placeholder="<fmt:message key='discussion.placeholder'/>"></textarea>
+                  placeholder="${fn:escapeXml(composePlaceholder)}"></textarea>
               <div class="discussion-image-picker">
                 <button class="discussion-icon-button discussion-add-image" type="button" aria-label="<fmt:message key='discussion.addImages'/>"
                     title="<fmt:message key='discussion.addImages'/> — <fmt:message key='discussion.imagesHint'/>"><svg class="discussion-icon" aria-hidden="true"><use href="<c:url value='/discussion/jsp/icons/discussion-icons.svg'/>#image"/></svg></button>
@@ -139,7 +155,7 @@
               </div>
               <div class="discussion-composer-footer">
                 <span id="discussion-compose-hint" class="discussion-hint discussion-compose-label"><fmt:message key="discussion.hint"/></span>
-                <button class="discussion-send" type="submit" title="<fmt:message key='discussion.post'/>" aria-label="<fmt:message key='discussion.post'/>"><svg class="discussion-icon" aria-hidden="true"><use href="<c:url value='/discussion/jsp/icons/discussion-icons.svg'/>#send"/></svg></button>
+                <button class="discussion-send" type="submit" title="${fn:escapeXml(composeActionLabel)}" aria-label="${fn:escapeXml(composeActionLabel)}"><svg class="discussion-icon" aria-hidden="true"><use href="<c:url value='/discussion/jsp/icons/discussion-icons.svg'/>#send"/></svg></button>
               </div>
               </div>
             </form>

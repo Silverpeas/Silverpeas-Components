@@ -36,6 +36,7 @@ CREATE TABLE sc_discussion_message (
   id VARCHAR(40) PRIMARY KEY,
   conversationId VARCHAR(40) NOT NULL,
   sequenceNumber BIGINT NOT NULL,
+  threadRootId VARCHAR(40),
   body NVARCHAR(2000) NOT NULL,
   filesAttached BIT DEFAULT 0 NOT NULL,
   pinned BIT DEFAULT 0 NOT NULL,
@@ -46,6 +47,7 @@ CREATE TABLE sc_discussion_message (
   lastUpdatedBy VARCHAR(40) NOT NULL,
   version BIGINT NOT NULL,
   CONSTRAINT fk_discussion_message FOREIGN KEY (conversationId) REFERENCES sc_discussion_conversation(id),
+  CONSTRAINT fk_discussion_thread FOREIGN KEY (threadRootId) REFERENCES sc_discussion_message(id),
   CONSTRAINT uq_discussion_sequence UNIQUE (conversationId, sequenceNumber)
 );
 CREATE TABLE sc_discussion_read (
@@ -93,3 +95,5 @@ CREATE TABLE sc_discussion_seen (
   CONSTRAINT fk_discussion_seen_conv FOREIGN KEY (conversationId) REFERENCES sc_discussion_conversation(id),
   CONSTRAINT uq_discussion_seen UNIQUE (messageId, userId)
 );
+
+CREATE INDEX idx_discussion_thread ON sc_discussion_message (conversationId, threadRootId, sequenceNumber);
