@@ -73,7 +73,8 @@
       property('--discussion-right', Math.max(0, document.documentElement.clientWidth - box.right + 1) + 'px');
       property('--discussion-sidebar-width', Math.max(0, box.right - column.right - 1) + 'px');
       property('--discussion-composer-height', (composer?.getBoundingClientRect().height || 0) + 'px');
-      property('--discussion-authors-height', window.innerWidth <= 760 ? sidebar.getBoundingClientRect().height + 'px' : '0px');
+      property('--discussion-authors-height', window.innerWidth <= 760 && !discussion.classList.contains('discussion-thread-open')
+          ? sidebar.getBoundingClientRect().height + 'px' : '0px');
     };
     const schedule = () => {
       window.cancelAnimationFrame(pending);

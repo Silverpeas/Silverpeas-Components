@@ -32,6 +32,8 @@
     const history = document.getElementById('discussion-history');
     const scroller = window.DiscussionScroll || document.getElementById('discussion-scroll');
     const failure = document.getElementById('discussion-live-error');
+    const inactive = () => document.hidden || (window.DiscussionContext?.embedded
+        && !window.frameElement?.getBoundingClientRect().width);
     const articles = () => Array.from(history.querySelectorAll('.discussion-message'));
     let syncSequence = 0;
     const latest = () => Math.max(syncSequence, ...articles().map(row => Number(row.dataset.sequence)));
@@ -134,7 +136,7 @@
     };
     const refresh = async () => {
       dirty = true;
-      if (document.hidden || loading || stopped) {
+      if (inactive() || loading || stopped) {
         return;
       }
       window.clearTimeout(retryTimer);
@@ -143,7 +145,7 @@
         do {
           dirty = false;
           await synchronize();
-        } while (dirty && !document.hidden && !stopped);
+        } while (dirty && !inactive() && !stopped);
         failure.hidden = Boolean(source?.isEnabled());
         retryDelay = 1000;
       } catch (error) {
@@ -179,9 +181,9 @@
         failure.hidden = false;
         return;
       }
-      source.addEventListener('DISCUSSION_CHANGED', changed, 'discussionLiveChanged');
-      source.addEventListener('OPEN_EVENT_SOURCE', refresh, 'discussionLiveOpen');
-      source.addEventListener('error', disconnected, 'discussionLiveError');
+      source.addEventListener('DISCUSSION_CHANGED', changed, (window.DiscussionContext?.eventId('discussionLiveChanged') || 'discussionLiveChanged'));
+      source.addEventListener('OPEN_EVENT_SOURCE', refresh, (window.DiscussionContext?.eventId('discussionLiveOpen') || 'discussionLiveOpen'));
+      source.addEventListener('error', disconnected, (window.DiscussionContext?.eventId('discussionLiveError') || 'discussionLiveError'));
       // Close the gap between rendering the JSP and subscribing to the event source.
       refresh();
     };
@@ -192,7 +194,7 @@
     }
     document.addEventListener('discussion:read', refresh);
     document.addEventListener('visibilitychange', () => {
-      if (!document.hidden) {
+      if (!inactive()) {
         refresh();
       }
     });
