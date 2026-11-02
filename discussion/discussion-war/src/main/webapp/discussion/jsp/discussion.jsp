@@ -31,7 +31,7 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <c:url var="base" value="${requestScope.componentUriBase}"/>
 <c:if test="${not empty initialThreadRootId}">
-  <c:url var="initialThreadUrl" value="${base}threads/${initialThreadRootId}">
+  <c:url var="initialThreadUrl" value="${requestScope.componentUriBase}threads/${initialThreadRootId}">
     <c:param name="message" value="${initialThreadMessageId}"/>
   </c:url>
 </c:if>
