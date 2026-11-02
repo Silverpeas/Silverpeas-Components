@@ -136,25 +136,20 @@
         frame.setAttribute('aria-busy', 'false');
       }
     });
-    discussion.addEventListener('click', event => {
-      const link = event.target.closest('a.discussion-thread-link');
-      if (!link || event.defaultPrevented || event.button !== 0
-          || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) { return; }
-      const url = new URL(link.href, window.location.href);
-      if (url.origin !== window.location.origin || !/\/threads\/[a-zA-Z0-9-]{1,40}$/.test(url.pathname)) { return; }
-      event.preventDefault();
+    const open = (url, link) => {
       const saved = anchor();
       trigger?.setAttribute('aria-expanded', 'false');
       trigger = link;
-      trigger.setAttribute('aria-expanded', 'true');
-      trigger.setAttribute('aria-controls', panel.id);
+      trigger?.setAttribute('aria-expanded', 'true');
+      trigger?.setAttribute('aria-controls', panel.id);
       accordions.hidden = true;
       accordions.inert = true;
       panel.hidden = false;
       discussion.classList.add('discussion-thread-open');
       responsive();
       closeButton.focus({preventScroll:true});
-      if (current !== url.href || !ready) {
+      const sameThread = current && new URL(current).pathname === url.pathname;
+      if (!sameThread || !ready || (url.searchParams.has('message') && current !== url.href)) {
         current = url.href;
         ready = false;
         fallback.href = current;
@@ -166,7 +161,26 @@
         frame.src = current;
       } else { notifyFrame(false); }
       restoreAnchor(saved);
+    };
+    discussion.addEventListener('click', event => {
+      const link = event.target.closest('a.discussion-thread-link');
+      if (!link || event.defaultPrevented || event.button !== 0
+          || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) { return; }
+      const url = new URL(link.href, window.location.href);
+      if (url.origin !== window.location.origin || !/\/threads\/[a-zA-Z0-9-]{1,40}$/.test(url.pathname)) { return; }
+      event.preventDefault();
+      open(url, link);
     });
+    if (discussion.dataset.initialThreadUrl) {
+      const url = new URL(discussion.dataset.initialThreadUrl, window.location.href);
+      if (url.origin === window.location.origin && /\/threads\/[a-zA-Z0-9-]{1,40}$/.test(url.pathname)) {
+        if (url.searchParams.has('message')) {
+          url.hash = 'message-' + url.searchParams.get('message');
+        }
+        // Let the main history first position itself on the original message.
+        window.requestAnimationFrame(() => window.requestAnimationFrame(() => open(url)));
+      }
+    }
     closeButton.addEventListener('click', close);
     panel.addEventListener('discussion:close-thread', close);
     document.addEventListener('keydown', event => {

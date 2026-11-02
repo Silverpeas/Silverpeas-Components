@@ -30,6 +30,11 @@
 <%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view" %>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <c:url var="base" value="${requestScope.componentUriBase}"/>
+<c:if test="${not empty initialThreadRootId}">
+  <c:url var="initialThreadUrl" value="${base}threads/${initialThreadRootId}">
+    <c:param name="message" value="${initialThreadMessageId}"/>
+  </c:url>
+</c:if>
 <c:set var="historyUrl" value="${base}history"/>
 <c:set var="updatesUrl" value="${base}updates"/>
 <c:set var="composeUrl" value="${base}messages/add"/>
@@ -74,7 +79,7 @@
 </view:operationPane>
 <view:window>
   <view:frame>
-    <main id="discussion" data-history="${historyUrl}" data-thread-root-id="${threadRoot.id}" data-participants="${base}participants" data-publications="${base}publications" data-updates="${updatesUrl}"
+    <main id="discussion" data-history="${historyUrl}" data-thread-root-id="${threadRoot.id}" data-initial-thread-url="${fn:escapeXml(initialThreadUrl)}" data-participants="${base}participants" data-publications="${base}publications" data-updates="${updatesUrl}"
         data-files="${base}files" data-pins="${base}pins" data-instance-id="${discussionInstanceId}" data-read="${base}messages/read" data-typing="${base}typing" data-user-id="${currentUser.id}"
         data-typing-one="<fmt:message key='discussion.typingOne'/>" data-typing-many="<fmt:message key='discussion.typingMany'/>"
         data-message-id="<c:out value='${focusedMessageId}'/>"

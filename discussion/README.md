@@ -318,5 +318,11 @@ est fermé, puis rattrape les changements à sa réouverture.
 
 Sur mobile, le panneau prend toute la surface de l’application. Le contenu principal devient
 inactif et les messages qu’il contient ne sont pas marqués comme lus derrière le panneau. Les
-liens directs et l’ouverture avec les touches de modification conservent la vue de fil dédiée.
+liens directs vers un fil et l’ouverture d’un compteur avec les touches de modification conservent
+la vue de fil dédiée.
 Aucune migration SQL supplémentaire n’est nécessaire.
+
+Les permaliens de messages provenant des notifications, de la recherche, des épingles ou des
+fichiers affichent désormais le flux principal autour du message d’origine et ouvrent le panneau
+latéral sur la réponse ciblée. Le paramètre de ciblage du fil est vérifié côté serveur : une
+réponse appartenant à un autre fil ou une autre instance ne peut pas être chargée dans ce contexte.

@@ -89,13 +89,15 @@ public class DiscussionWebController extends
   public void message(DiscussionWebRequestContext context) {
     var root = webResult(() -> conversations().threadRoot(context.getComponentInstanceId(),
         context.getPathVariables().get("id")));
-    if (!root.getId().equals(context.getPathVariables().get("id"))) {
-      context.getRequest().setAttribute("threadRoot", root);
+    String targetId = context.getPathVariables().get("id");
+    if (!root.getId().equals(targetId)) {
+      context.getRequest().setAttribute("initialThreadRootId", root.getId());
+      context.getRequest().setAttribute("initialThreadMessageId", targetId);
     }
-    var page = webResult(() -> conversations().historyAround(context.getComponentInstanceId(),
-        context.getPathVariables().get("id")));
+    // Canonical message links always render the main conversation; replies open in its panel.
+    var page = webResult(() -> conversations().historyAround(context.getComponentInstanceId(), root.getId()));
     prepareHistory(context, page);
-    context.getRequest().setAttribute("focusedMessageId", context.getPathVariables().get("id"));
+    context.getRequest().setAttribute("focusedMessageId", root.getId());
     preparePage(context);
   }
 
@@ -105,8 +107,18 @@ public class DiscussionWebController extends
   @RedirectToInternalJsp("discussion.jsp")
   public void thread(DiscussionWebRequestContext context) {
     String rootId = prepareThread(context);
-    prepareHistory(context, webResult(() -> conversations().threadHistory(
-        context.getComponentInstanceId(), rootId, Long.MAX_VALUE, 30)));
+    String target = context.getRequest().getParameter("message");
+    if (target != null && !target.isBlank() && !target.equals(rootId)) {
+      var actualRoot = webResult(() -> conversations().threadRoot(context.getComponentInstanceId(), target));
+      if (!rootId.equals(actualRoot.getId())) {
+        throw new WebApplicationException(400);
+      }
+      prepareHistory(context, webResult(() -> conversations().historyAround(context.getComponentInstanceId(), target)));
+      context.getRequest().setAttribute("focusedMessageId", target);
+    } else {
+      prepareHistory(context, webResult(() -> conversations().threadHistory(
+          context.getComponentInstanceId(), rootId, Long.MAX_VALUE, 30)));
+    }
     preparePage(context);
   }
 
