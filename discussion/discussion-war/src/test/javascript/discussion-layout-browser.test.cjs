@@ -157,3 +157,18 @@ test('short thread messages start at the top while the main conversation keeps b
     assert.ok(mobileGap < 70,'Thread messages also start at the top on mobile');
   } finally { await browser.close(); }
 });
+
+
+test('the original thread message has a side marker only while it is unread', async () => {
+  const browser = await chromium.launch({executablePath:process.env.CHROME_PATH,args:['--no-sandbox']});
+  try {
+    const {frame} = await open(browser,1280,900);
+    const row = frame.locator('.discussion-message').first();
+    await row.evaluate(node=>node.classList.add('discussion-message--thread-root'));
+    assert.equal(await row.evaluate(node=>getComputedStyle(node).borderLeftWidth),'0px');
+    await row.evaluate(node=>node.classList.add('discussion-message--unread'));
+    assert.equal(await row.evaluate(node=>getComputedStyle(node).borderLeftWidth),'3px');
+    await row.evaluate(node=>node.classList.remove('discussion-message--unread'));
+    assert.equal(await row.evaluate(node=>getComputedStyle(node).borderLeftWidth),'0px');
+  } finally { await browser.close(); }
+});

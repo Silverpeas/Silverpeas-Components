@@ -331,7 +331,6 @@ html.discussion-document { overflow-anchor: none; scroll-behavior: auto; }
 }
 
 #discussion .discussion-thread-origin-label { color: var(--color-text-second-niveau, #626262); font-size: 0.85em; }
-#discussion .discussion-message--thread-root { border-left: 2px solid var(--color-lien-action, #3975b5); }
 #discussion .discussion-thread-context { flex-basis: 100%; }
 
 /* Threads start below their header, while the main conversation keeps its chat alignment. */
