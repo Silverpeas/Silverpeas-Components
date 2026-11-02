@@ -468,17 +468,32 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   public boolean displayNbPublis() {
     return StringUtil
-        .getBooleanValue(getComponentParameterValue(InstanceParameters.displayNbItemsOnFolders));
+        .getBooleanValue(getComponentParameterValue(InstanceParameters.DISPLAY_NB));
   }
 
   public boolean isRightsOnTopicsEnabled() {
     return StringUtil.
-        getBooleanValue(getComponentParameterValue(InstanceParameters.rightsOnFolders));
+        getBooleanValue(getComponentParameterValue(InstanceParameters.RIGHTS_ON_TOPICS));
+  }
+
+  /**
+   * Are the managers of the application forced as managers of the folders having their own access
+   * rights?
+   * @return true if the application managers are always managers of such folders, false otherwise.
+   */
+  public boolean areAppManagersForcedAsFolderManagers() {
+    return StringUtil.getBooleanValue(
+        getComponentParameterValue(InstanceParameters.APP_MANAGERS_FORCED_AS_FOLDER_MANAGERS));
+  }
+
+  private FolderManagers getFolderManagers() {
+    return new FolderManagers(areAppManagersForcedAsFolderManagers(),
+        () -> getProfile(SilverpeasRole.ADMIN.getName()));
   }
 
   private boolean isRightsOnTopicsEnabled(String componentId) {
     return StringUtil.getBooleanValue(getOrganisationController()
-        .getComponentParameterValue(componentId, InstanceParameters.rightsOnFolders));
+        .getComponentParameterValue(componentId, InstanceParameters.RIGHTS_ON_TOPICS));
   }
 
   public boolean attachmentsInPubList() {
@@ -829,6 +844,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
         parentProfile = getRecursiveTopicProfile(profileAdmin, parentId);
       }
       if (parentProfile != null) {
+        getFolderManagers().addApplicationManagers(parentProfile);
         updateTopicRole(profileAdmin, node.getId(),
             parentProfile.getAllGroups().toArray(new String[0]),
             parentProfile.getAllUsers().toArray(new String[0]));
@@ -1660,17 +1676,17 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   public boolean isTargetValidationEnable() {
     return String.valueOf(KmeliaHelper.VALIDATION_TARGET_1)
-        .equalsIgnoreCase(getComponentParameterValue(InstanceParameters.validation));
+        .equalsIgnoreCase(getComponentParameterValue(InstanceParameters.VALIDATION));
   }
 
   public boolean isTargetMultiValidationEnable() {
     return String.valueOf(KmeliaHelper.VALIDATION_TARGET_N)
-        .equalsIgnoreCase(getComponentParameterValue(InstanceParameters.validation));
+        .equalsIgnoreCase(getComponentParameterValue(InstanceParameters.VALIDATION));
   }
 
   public boolean isCollegiateValidationEnable() {
     return String.valueOf(KmeliaHelper.VALIDATION_COLLEGIATE)
-        .equalsIgnoreCase(getComponentParameterValue(InstanceParameters.validation));
+        .equalsIgnoreCase(getComponentParameterValue(InstanceParameters.VALIDATION));
   }
 
   public boolean isValidationTabVisible() {
@@ -1696,7 +1712,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   public boolean isCoWritingEnable() {
-    return StringUtil.getBooleanValue(getComponentParameterValue(InstanceParameters.coWriting));
+    return StringUtil.getBooleanValue(getComponentParameterValue(InstanceParameters.CO_WRITING));
   }
 
   private boolean isPublicationClassifiedOnPDC(String pubId) {
@@ -2089,8 +2105,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       sel.setSelectedElements(userIds);
       sel.setSelectedSets(groupIds);
     }
-    FolderManagers.lockApplicationManagers(sel, role,
-        () -> getProfile(SilverpeasRole.ADMIN.getName()));
+    getFolderManagers().lockApplicationManagers(sel, role);
   }
 
   private void deleteTopicRoles(NodeDetail node) {
@@ -2113,8 +2128,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   /**
    * Updates the specified role of the given topic with the given users and groups. The topic
-   * then uses its own access rights. The managers of the application cannot be removed from the
-   * managers of the topic.
+   * then uses its own access rights. If the managers of the application are forced as managers
+   * of the topics, they cannot be removed from the managers of the topic.
    * @param role the name of the role to update.
    * @param nodeId the unique identifier of the topic.
    * @param groupIds the identifiers of the groups to set in the role.
@@ -2124,8 +2139,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
    */
   public void updateTopicRole(String role, String nodeId, String[] groupIds, String[] userIds) {
     ProfileInst profile = getTopicProfile(role, nodeId);
-    FolderManagers.checkNoApplicationManagerRemoved(profile, userIds, groupIds,
-        () -> getProfile(SilverpeasRole.ADMIN.getName()));
+    getFolderManagers().checkNoApplicationManagerRemoved(profile, userIds, groupIds);
 
     // Update the topic
     NodeDetail topic = getNodeHeader(nodeId);

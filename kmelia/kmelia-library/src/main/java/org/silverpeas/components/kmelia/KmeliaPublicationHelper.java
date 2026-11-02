@@ -42,7 +42,7 @@ public class KmeliaPublicationHelper {
     } else if ("writer".equals(profile)) {
       // check if co-writing is enabled
       return StringUtil.getBooleanValue(
-          getParameterValue(instanceId, InstanceParameters.coWriting));
+          getParameterValue(instanceId, InstanceParameters.CO_WRITING));
     }
     return false;
   }
@@ -51,7 +51,7 @@ public class KmeliaPublicationHelper {
       User ownerDetail) {
     if (hasWritePrivilege(currentUserId, profile, ownerDetail)) {
       boolean removeOnlyForAdmin = StringUtil.getBooleanValue(
-          getParameterValue(instanceId, InstanceParameters.suppressionOnlyForAdmin));
+          getParameterValue(instanceId, InstanceParameters.SUPPRESSION_ONLY_FOR_ADMIN));
       return !removeOnlyForAdmin || "admin".equals(profile);
     }
     return false;
@@ -70,7 +70,7 @@ public class KmeliaPublicationHelper {
   }
 
   public static boolean isPublicationsOnRootAllowed(String instanceId) {
-    String parameterValue = getParameterValue(instanceId, InstanceParameters.nbPubliOnRoot);
+    String parameterValue = getParameterValue(instanceId, InstanceParameters.NB_PUBLI_ON_ROOT);
     if (StringUtil.isDefined(parameterValue)) {
       return Integer.parseInt(parameterValue) == 0;
     }
@@ -78,7 +78,7 @@ public class KmeliaPublicationHelper {
   }
 
   public static boolean isTreeEnabled(String instanceId) {
-    String param = getParameterValue(instanceId, InstanceParameters.treeEnabled);
+    String param = getParameterValue(instanceId, InstanceParameters.TREE_ENABLED);
     if (!StringUtil.isDefined(param)) {
       return true;
     }
