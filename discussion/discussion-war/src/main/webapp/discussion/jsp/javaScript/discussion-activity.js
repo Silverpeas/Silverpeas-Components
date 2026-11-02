@@ -137,6 +137,7 @@
     permission.addEventListener('click', async () => {
       await root.DiscussionDesktop?.requestPermission();
       permission.hidden = !root.Notification || root.Notification.permission !== 'default';
+      document.dispatchEvent(new Event('discussion:notification-permission'));
     });
     window.addEventListener('pagehide', () => {
       stop(); stopped = true;

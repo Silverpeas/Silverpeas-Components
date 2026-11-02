@@ -35,12 +35,14 @@ import org.silverpeas.components.discussion.service.DiscussionMentionService;
 public class DiscussionMessageServerEvent extends AuthorizedDiscussionEvent implements IgnoreStoring {
   private final DiscussionNewMessage message;
   private final ComponentInstLight component;
+  private final org.silverpeas.components.discussion.service.DiscussionNotificationSettings preferences;
 
   public DiscussionMessageServerEvent(DiscussionNewMessage message, ComponentInstLight component,
-      ComponentAccessController access) {
+      ComponentAccessController access, org.silverpeas.components.discussion.service.DiscussionNotificationSettings preferences) {
     super(message.instanceId(), access);
     this.message = message;
     this.component = component;
+    this.preferences = preferences;
   }
 
   @Override
@@ -49,7 +51,8 @@ public class DiscussionMessageServerEvent extends AuthorizedDiscussionEvent impl
   @Override
   public boolean isConcerned(String sessionId, User receiver) {
     return receiver != null && !message.authorId().equals(receiver.getId())
-        && super.isConcerned(sessionId, receiver);
+        && super.isConcerned(sessionId, receiver)
+        && preferences.enabledFor(message.instanceId(), receiver.getId());
   }
 
   @Override

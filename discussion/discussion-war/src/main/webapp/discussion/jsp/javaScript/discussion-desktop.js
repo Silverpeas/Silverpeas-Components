@@ -31,6 +31,9 @@
   const namespace = 'silverpeas.discussion.' + (root.webContext || '');
   const views = new Map();
   const seen = new Set();
+  const preferences = new Map();
+  const preferenceKey = (instanceId, userId) => instanceId + ":" + userId;
+  const enabled = message => preferences.get(preferenceKey(message.instanceId, message.userId))?.enabled !== false;
   const queries = new Map();
   const channel = typeof root.BroadcastChannel === 'function'
       ? new root.BroadcastChannel(namespace + '.desktop') : null;
@@ -89,11 +92,11 @@
         return;
       }
     } catch (error) { return; }
-    if (!root.Notification || root.Notification.permission !== 'granted' || await anyView(message)) {
+    if (!enabled(message) || !root.Notification || root.Notification.permission !== 'granted' || await anyView(message)) {
       return;
     }
     const show = () => {
-      if (viewing(message) || !claim(message.userId + ':' + message.messageId)) {
+      if (!enabled(message) || viewing(message) || !claim(message.userId + ':' + message.messageId)) {
         return;
       }
       const options = {body:message.text, tag:'discussion-' + message.messageId, renotify:false,
@@ -127,11 +130,34 @@
       views.set(id, {instanceId, userId, active});
       return () => views.delete(id);
     },
+    setPreference(instanceId, userId, enabled, revision) {
+      const key = preferenceKey(instanceId, userId);
+      const previous = preferences.get(key);
+      if (typeof enabled !== 'boolean' || !Number.isSafeInteger(revision) || revision < -1
+          || previous && revision < previous.revision) {
+        return previous;
+      }
+      const value = {enabled, revision};
+      preferences.set(key, value);
+      if (!previous || previous.enabled !== enabled || previous.revision !== revision) {
+        root.dispatchEvent(new root.CustomEvent('discussion:notification-setting', {
+          detail:{instanceId, userId, enabled, revision}
+        }));
+      }
+      return value;
+    },
     requestPermission: () => root.Notification?.requestPermission()
   };
   const connect = () => {
     if (root.spServerEventSource?.isEnabled()) {
       root.spServerEventSource.addEventListener('DISCUSSION_NEW_MESSAGE', receive, 'discussionDesktop');
+      root.spServerEventSource.addEventListener('DISCUSSION_NOTIFICATION_PREFERENCE', event => {
+        try {
+          const value = JSON.parse(event.data);
+          root.DiscussionDesktop.setPreference(value.instanceId, value.userId, value.enabled, value.revision);
+        } catch (error) { /* Ignore malformed preference events. */ }
+      }, 'discussionDesktopPreference');
+      root.spServerEventSource.addEventListener('OPEN_EVENT_SOURCE', () => preferences.clear(), 'discussionDesktopReconnect');
     }
   };
   if (typeof whenSilverpeasReady === 'function') {

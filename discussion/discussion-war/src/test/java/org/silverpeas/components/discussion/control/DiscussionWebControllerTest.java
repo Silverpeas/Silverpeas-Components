@@ -56,6 +56,8 @@ class DiscussionWebControllerTest {
   private org.silverpeas.components.discussion.web.DiscussionPublicationService publications;
   @TestManagedMock
   private org.silverpeas.components.discussion.service.DiscussionTypingService typing;
+  @TestManagedMock
+  private org.silverpeas.components.discussion.service.DiscussionNotificationSettings notificationSettings;
   private DiscussionWebController controller;
   private DiscussionWebRequestContext context;
   private HttpRequest request;
@@ -250,6 +252,17 @@ class DiscussionWebControllerTest {
     when(request.getFileItems()).thenReturn(java.util.Collections.nCopies(5, file));
     assertEquals(400, assertThrows(WebApplicationException.class, () -> controller.publish(context)).getResponse().getStatus());
     verifyNoInteractions(service);
+  }
+
+  @Test
+  void notificationSettingsArePersonalAndRejectNonBooleanValues() {
+    when(request.getParameter("enabled")).thenReturn("false");
+    controller.saveNotificationPreferences(context);
+    verify(notificationSettings).save("discussion1", false);
+    controller.notificationPreferences(context);
+    verify(notificationSettings).current("discussion1");
+    when(request.getParameter("enabled")).thenReturn("invalid");
+    assertEquals(400, assertThrows(WebApplicationException.class, () -> controller.saveNotificationPreferences(context)).getResponse().getStatus());
   }
 
   @Test

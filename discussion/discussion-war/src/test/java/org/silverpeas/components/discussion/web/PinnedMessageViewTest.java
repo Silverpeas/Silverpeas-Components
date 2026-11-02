@@ -52,5 +52,8 @@ class PinnedMessageViewTest {
     var viewable = new org.silverpeas.components.discussion.service.DiscussionFile("file", "budget.pdf", "/silverpeas/attached_file/file", 42, "message1", "fr", true);
     assertEquals(true, resolver.getValue(context, viewable, "viewable"));
     assertEquals("fr", resolver.getValue(context, viewable, "language"));
+    var preference = new org.silverpeas.components.discussion.service.DesktopPreference(false, 3);
+    assertEquals(false, resolver.getValue(context, preference, "enabled"));
+    assertEquals(3L, resolver.getValue(context, preference, "revision"));
   }
 }

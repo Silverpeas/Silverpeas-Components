@@ -45,6 +45,8 @@ public class DiscussionChangeDispatcher {
   private org.silverpeas.core.admin.service.OrganizationController organization;
   @Inject
   private Event<DiscussionNewMessage> newMessages;
+  @Inject
+  private org.silverpeas.components.discussion.service.DiscussionNotificationSettings preferences;
 
   public DiscussionChangeDispatcher() {
     // CDI constructor.
@@ -73,7 +75,7 @@ public class DiscussionChangeDispatcher {
       @Observes(during = TransactionPhase.AFTER_SUCCESS) DiscussionNewMessage message) {
     var component = organization.getComponentInstLight(message.instanceId());
     if (component != null) {
-      notifier.notify(new DiscussionMessageServerEvent(message, component, access));
+      notifier.notify(new DiscussionMessageServerEvent(message, component, access, preferences));
     }
   }
 

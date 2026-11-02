@@ -50,8 +50,15 @@ class DiscussionChangeDispatcherTest {
   private ComponentAccessController access;
   @TestManagedMock
   private org.silverpeas.core.admin.service.OrganizationController organization;
+  @TestManagedMock
+  private org.silverpeas.components.discussion.service.DiscussionNotificationSettings preferences;
   @TestedBean
   private DiscussionChangeDispatcher dispatcher;
+
+  @org.junit.jupiter.api.BeforeEach
+  void enableDesktopByDefault() {
+    when(this.preferences.enabledFor(anyString(), anyString())).thenReturn(true);
+  }
 
   @Test
   void mutationsScheduleInvalidationsAndReadsTargetTheirAuthor() {
@@ -119,6 +126,9 @@ class DiscussionChangeDispatcherTest {
     when(access.isUserAuthorized("2", "discussion1")).thenReturn(true);
     when(access.getUserRoles(eq("2"), eq("discussion1"), any())).thenReturn(Set.of(SilverpeasRole.WRITER));
     assertTrue(event.isConcerned("session", recipient));
+    when(this.preferences.enabledFor("discussion1", "2")).thenReturn(false);
+    assertFalse(event.isConcerned("session", recipient));
+    when(this.preferences.enabledFor("discussion1", "2")).thenReturn(true);
     assertTrue(event.getData("session", recipient).contains("Projet IA"));
     assertTrue(event.getData("session", recipient).contains("messages/m1"));
     String payload = event.getData("session", recipient);

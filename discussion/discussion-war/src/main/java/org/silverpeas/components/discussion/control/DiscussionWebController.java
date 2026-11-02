@@ -94,6 +94,8 @@ public class DiscussionWebController extends
     preparePage(context);
   }
 
+  private transient org.silverpeas.components.discussion.service.DiscussionNotificationSettings notificationSettings;
+
   private void preparePage(DiscussionWebRequestContext context) {
     context.getRequest().setAttribute("discussionInstanceId", context.getComponentInstanceId());
     if (instanceInfo == null) {
@@ -111,6 +113,7 @@ public class DiscussionWebController extends
     publications(context);
     pins(context);
     sharedFiles(context);
+    notificationPreferences(context);
   }
 
   @POST
@@ -201,6 +204,34 @@ public class DiscussionWebController extends
   @RedirectToInternalJsp("files.jsp")
   public void sharedFiles(DiscussionWebRequestContext context) {
     context.getRequest().setAttribute("sharedFiles", webResult(() -> conversations().sharedFiles(context.getComponentInstanceId())));
+  }
+
+  private org.silverpeas.components.discussion.service.DiscussionNotificationSettings notificationSettings() {
+    if (notificationSettings == null) {
+      notificationSettings = ServiceProvider.getService(org.silverpeas.components.discussion.service.DiscussionNotificationSettings.class);
+    }
+    return notificationSettings;
+  }
+
+  @GET
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("notification-preferences")
+  @RedirectToInternalJsp("notification-preferences.jsp")
+  public void notificationPreferences(DiscussionWebRequestContext context) {
+    context.getRequest().setAttribute("desktopPreference", webResult(() -> notificationSettings().current(context.getComponentInstanceId())));
+  }
+
+  @POST
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("notification-preferences")
+  @RedirectToInternalJsp("notification-preferences.jsp")
+  public void saveNotificationPreferences(DiscussionWebRequestContext context) {
+    String value = context.getRequest().getParameter("enabled");
+    if (!"true".equals(value) && !"false".equals(value)) {
+      throw new WebApplicationException(400);
+    }
+    context.getRequest().setAttribute("desktopPreference", webResult(() -> notificationSettings().save(
+        context.getComponentInstanceId(), Boolean.parseBoolean(value))));
   }
 
   @POST
