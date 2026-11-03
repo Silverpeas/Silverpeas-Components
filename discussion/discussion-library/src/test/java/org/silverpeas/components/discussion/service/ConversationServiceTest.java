@@ -69,6 +69,8 @@ class ConversationServiceTest {
   private org.silverpeas.components.discussion.notification.DiscussionSubscriptionDispatcher subscriptions;
   @TestManagedMock
   private org.silverpeas.components.discussion.search.DiscussionMessageIndex messageIndex;
+  @TestManagedMock
+  private DiscussionLinkedEventService linkedEvents;
   @TestedBean
   private DefaultConversationService service;
   private Conversation conversation;
@@ -645,6 +647,44 @@ class ConversationServiceTest {
     when(conversations.current("discussion1", true)).thenReturn(channel);
     assertThrows(IllegalArgumentException.class, () -> service.publish("discussion1", "Message"));
     verify(messages, never()).save(any(DiscussionMessage.class));
+  }
+
+  @Test
+  void eventDeletionIsOptionalAndFailureNeverDeletesTheMessage() {
+    var message = existingMessage("user");
+    when(message.getBody()).thenReturn("event body");
+    try (var current = mockStatic(User.class)) {
+      current.when(User::getCurrentRequester).thenReturn(user);
+      service.delete("discussion1", "message", 0);
+      verifyNoInteractions(linkedEvents);
+      clearInvocations(message, messages, likes);
+      doThrow(SecurityException.class).when(linkedEvents).delete("event body");
+      assertThrows(SecurityException.class, () -> service.delete("discussion1", "message", 0, true));
+      verify(message, never()).delete();
+      verify(messages, never()).save(any(DiscussionMessage.class));
+      doNothing().when(linkedEvents).delete("event body");
+      service.delete("discussion1", "message", 0, true);
+      var order = inOrder(linkedEvents, message);
+      order.verify(linkedEvents, atLeastOnce()).delete("event body");
+      order.verify(message).delete();
+    }
+  }
+
+  @Test
+  void deletionInformationRequiresTheSameAuthorAndVersionChecksAsDeletion() {
+    var message = existingMessage("another");
+    try (var current = mockStatic(User.class)) {
+      current.when(User::getCurrentRequester).thenReturn(user);
+      assertThrows(SecurityException.class, () -> service.deletion("discussion1", "message", 0));
+      verifyNoInteractions(linkedEvents);
+      when(message.getCreatorId()).thenReturn("user");
+      when(message.getVersion()).thenReturn(1L);
+      assertThrows(jakarta.persistence.OptimisticLockException.class, () -> service.deletion("discussion1", "message", 0));
+      verifyNoInteractions(linkedEvents);
+      when(message.getBody()).thenReturn("body");
+      when(linkedEvents.describe("body")).thenReturn(DiscussionEventDeletion.none());
+      assertEquals(DiscussionEventDeletion.none(), service.deletion("discussion1", "message", 1));
+    }
   }
 
   private DiscussionMessage existingMessage(String author) {

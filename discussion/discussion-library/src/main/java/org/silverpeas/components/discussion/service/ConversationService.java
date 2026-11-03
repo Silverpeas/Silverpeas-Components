@@ -50,6 +50,8 @@ public interface ConversationService {
   Map<String, List<DiscussionImage>> images(String instanceId, List<String> messageIds);
   void edit(String instanceId, String messageId, long version, String body);
   void delete(String instanceId, String messageId, long version);
+  void delete(String instanceId, String messageId, long version, boolean deleteEvent);
+  DiscussionEventDeletion deletion(String instanceId, String messageId, long version);
   long markVisible(String instanceId, List<String> messageIds);
   void markRead(String instanceId, long sequence);
 }

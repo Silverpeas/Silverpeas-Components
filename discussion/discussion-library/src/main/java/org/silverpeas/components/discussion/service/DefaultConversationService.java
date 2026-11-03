@@ -50,6 +50,8 @@ public class DefaultConversationService implements ConversationService {
   @Inject
   private DiscussionReadStateRepository readStates;
   @Inject
+  private DiscussionLinkedEventService linkedEvents;
+  @Inject
   private DiscussionAccess access;
 
   @Inject
@@ -246,7 +248,18 @@ public class DefaultConversationService implements ConversationService {
 
   @Override
   public void delete(String instanceId, String messageId, long version) {
+    delete(instanceId, messageId, version, false);
+  }
+
+  @Override
+  public DiscussionEventDeletion deletion(String instanceId, String messageId, long version) {
+    return linkedEvents.describe(editable(instanceId, messageId, version).getBody());
+  }
+
+  @Override
+  public void delete(String instanceId, String messageId, long version, boolean deleteEvent) {
     DiscussionMessage message = editable(instanceId, messageId, version);
+    if (deleteEvent) { linkedEvents.delete(message.getBody()); }
     likes.deleteMessage(messageId);
     imageService.removeAfterCommit(instanceId, messageId);
     message.delete();

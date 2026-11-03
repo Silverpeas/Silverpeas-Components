@@ -420,3 +420,13 @@ Les liens permanents des événements Almanach sont affichés sous le libellé c
 Le rendu s'applique aussi aux messages déjà stockés et aux chargements d'historique
 ou mises à jour en temps réel. Seuls les liens natifs CalendarEvent de la même origine
 et du même contexte applicatif sont reconnus ; les autres URL restent explicites.
+
+La suppression d'un message contenant un lien permanent natif vers un événement
+Almanach propose de conserver l'événement, de supprimer le message et l'événement,
+ou d'annuler. Le choix combiné dépend des droits natifs Almanach, revérifiés lors
+du POST ; les deux suppressions partagent la même transaction. Pour un événement
+récurrent, le dialogue avertit que toutes les occurrences seront supprimées.
+Les annulations et notifications passent par l'API calendrier native.
+La reconnaissance fonctionne aussi pour les annonces existantes tant que leur corps
+contient un unique événement natif distinct de cette installation. Aucun lien ambigu
+vers plusieurs événements n'entraîne de suppression automatique. Aucun changement SQL.

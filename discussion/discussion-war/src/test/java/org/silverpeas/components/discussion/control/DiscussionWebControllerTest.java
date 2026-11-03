@@ -94,6 +94,20 @@ class DiscussionWebControllerTest {
   }
 
   @Test
+  void linkedEventDeletionRequiresAnExplicitBooleanAndTheThreadRootIsValidated() {
+    when(request.getParameter("version")).thenReturn("2");
+    when(request.getParameter("deleteEvent")).thenReturn("true");
+    controller.delete(context);
+    verify(service).delete("discussion1", "message", 2, true);
+    when(request.getParameter("deleteEvent")).thenReturn("unknown");
+    assertEquals(400, assertThrows(WebApplicationException.class, () -> controller.delete(context)).getResponse().getStatus());
+    controller.channelDeletionInfo(context);
+    verify(service).deletion("discussion1", "message", 2);
+    when(context.getPathVariables()).thenReturn(Map.of("root", "foreign", "id", "message"));
+    assertEquals(400, assertThrows(WebApplicationException.class, () -> controller.threadDeletionInfo(context)).getResponse().getStatus());
+  }
+
+  @Test
   void eventCreationUsesTheAuthenticatedTimeZoneAndCurrentChannelOrThread() {
     var zone = java.time.ZoneId.of("Europe/Paris");
     when(context.getZoneId()).thenReturn(zone);
