@@ -73,6 +73,8 @@ class ConversationServiceTest {
   private DiscussionLinkedEventService linkedEvents;
   @TestManagedMock
   private DiscussionLinkedIdeaService linkedIdeas;
+  @TestManagedMock
+  private DiscussionLinkedVoteService linkedVotes;
   @TestedBean
   private DefaultConversationService service;
   private Conversation conversation;
@@ -686,10 +688,15 @@ class ConversationServiceTest {
       when(message.getBody()).thenReturn("body");
       when(linkedEvents.describe("body")).thenReturn(DiscussionEventDeletion.none());
       when(linkedIdeas.describe("body")).thenReturn(DiscussionMessageDeletion.messageOnly());
+      when(linkedVotes.describe("body")).thenReturn(DiscussionMessageDeletion.messageOnly());
       assertEquals(DiscussionMessageDeletion.messageOnly(), service.deletion("discussion1", "message", 1));
       var idea = new DiscussionMessageDeletion("idea", true, "Une idée", false);
       when(linkedIdeas.describe("body")).thenReturn(idea);
       assertEquals(idea, service.deletion("discussion1", "message", 1));
+      when(linkedIdeas.describe("body")).thenReturn(DiscussionMessageDeletion.messageOnly());
+      var vote = new DiscussionMessageDeletion("vote", true, "Question", false);
+      when(linkedVotes.describe("body")).thenReturn(vote);
+      assertEquals(vote, service.deletion("discussion1", "message", 1));
       when(linkedEvents.describe("body")).thenReturn(new DiscussionEventDeletion(true, true, "Réunion", true));
       assertEquals(new DiscussionMessageDeletion("event", true, "Réunion", true), service.deletion("discussion1", "message", 1));
     }
@@ -714,6 +721,23 @@ class ConversationServiceTest {
       order.verify(linkedIdeas, atLeastOnce()).delete("idea body");
       order.verify(message).delete();
       assertThrows(IllegalArgumentException.class, () -> service.delete("discussion1", "message", 0, true, true));
+    }
+  }
+
+  @Test
+  void nativeVoteDeletionMustBeExplicitAndCannotBeCombinedWithAnotherContribution() {
+    var message = existingMessage("user");
+    when(message.getBody()).thenReturn("vote body");
+    try (var current = mockStatic(User.class)) {
+      current.when(User::getCurrentRequester).thenReturn(user);
+      doThrow(SecurityException.class).when(linkedVotes).delete("vote body");
+      assertThrows(SecurityException.class, () -> service.delete("discussion1", "message", 0, false, false, true));
+      verify(message, never()).delete();
+      doNothing().when(linkedVotes).delete("vote body");
+      service.delete("discussion1", "message", 0, false, false, true);
+      verify(linkedVotes, times(2)).delete("vote body");
+      verify(message).delete();
+      assertThrows(IllegalArgumentException.class, () -> service.delete("discussion1", "message", 0, false, true, true));
     }
   }
 

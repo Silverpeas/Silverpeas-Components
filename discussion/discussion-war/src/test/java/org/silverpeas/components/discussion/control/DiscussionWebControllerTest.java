@@ -66,6 +66,8 @@ class DiscussionWebControllerTest {
   private org.silverpeas.components.discussion.service.DiscussionEventService eventService;
   @TestManagedMock
   private org.silverpeas.components.discussion.service.DiscussionIdeaService ideaService;
+  @TestManagedMock
+  private org.silverpeas.components.discussion.service.DiscussionVoteService voteService;
   private DiscussionWebController controller;
   private DiscussionWebRequestContext context;
   private HttpRequest request;
@@ -119,6 +121,31 @@ class DiscussionWebControllerTest {
     assertEquals(400, assertThrows(WebApplicationException.class, () -> controller.delete(context)).getResponse().getStatus());
     when(request.getParameter("deleteEvent")).thenReturn("false");
     when(request.getParameter("deleteIdea")).thenReturn("unknown");
+    assertEquals(400, assertThrows(WebApplicationException.class, () -> controller.delete(context)).getResponse().getStatus());
+  }
+
+  @Test
+  void voteCreationAcceptsOneQuestionAndExplicitNativeSettingsWithinTheCurrentThread() {
+    when(request.getParameter("vote")).thenReturn("pollingStation1");
+    when(request.getParameter("question")).thenReturn("Quel jour ?");
+    when(request.getParameter("answers")).thenReturn("Mardi\nJeudi");
+    when(request.getParameter("multiple")).thenReturn("false");
+    when(request.getParameter("anonymous")).thenReturn("true");
+    when(request.getParameter("threadRootId")).thenReturn("root");
+    var created = new org.silverpeas.components.discussion.service.DiscussionVoteService.Created("123", "/vote");
+    when(voteService.create(eq("discussion1"), eq("root"), any())).thenReturn(created);
+    controller.channelCreateVote(context);
+    verify(voteService).create("discussion1", "root", new org.silverpeas.components.discussion.service.DiscussionVoteInput("pollingStation1", "Quel jour ?", List.of("Mardi", "Jeudi"), false, true));
+    verify(request).setAttribute("createdVote", created);
+    controller.channelVoteOptions(context);
+    verify(voteService).options(eq("discussion1"), any());
+    when(request.getParameter("anonymous")).thenReturn("invalid");
+    assertEquals(400, assertThrows(WebApplicationException.class, () -> controller.createVote(context)).getResponse().getStatus());
+    when(request.getParameter("deleteVote")).thenReturn("true");
+    when(request.getParameter("version")).thenReturn("2");
+    controller.delete(context);
+    verify(service).delete("discussion1", "message", 2, false, false, true);
+    when(request.getParameter("deleteIdea")).thenReturn("true");
     assertEquals(400, assertThrows(WebApplicationException.class, () -> controller.delete(context)).getResponse().getStatus());
   }
 

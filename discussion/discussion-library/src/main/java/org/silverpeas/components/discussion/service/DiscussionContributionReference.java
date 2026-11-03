@@ -52,9 +52,15 @@ public final class DiscussionContributionReference {
       String prefix = application.getPath().replaceFirst("/+$", "") + "/Contribution/";
       if (url.getUserInfo() != null || url.getHost() == null
           || !url.getHost().equalsIgnoreCase(application.getHost()) || url.getPort() != application.getPort()
-          || !url.getScheme().equalsIgnoreCase(application.getScheme()) || !url.getPath().startsWith(prefix)) {
+          || !url.getScheme().equalsIgnoreCase(application.getScheme())) {
         return Optional.empty();
       }
+      String context = application.getPath().replaceFirst("/+$", "");
+      var vote = Pattern.compile(Pattern.quote(context) + "/RpollingStation/(pollingStation[0-9]+)/searchResult").matcher(url.getPath());
+      if (vote.matches() && url.getRawQuery() != null && url.getRawQuery().matches("Type=QuestionContainer&Id=[0-9]{1,10}")) {
+        return Optional.of(ContributionIdentifier.from(vote.group(1), url.getRawQuery().substring("Type=QuestionContainer&Id=".length()), "QuestionContainer"));
+      }
+      if (!url.getPath().startsWith(prefix)) { return Optional.empty(); }
       String decoded = new String(Base64.getDecoder().decode(url.getPath().substring(prefix.length())), StandardCharsets.UTF_8);
       return LINKED.matcher(decoded).matches() ? Optional.of(ContributionIdentifier.decode(decoded)) : Optional.empty();
     } catch (IllegalArgumentException e) {

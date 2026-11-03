@@ -54,6 +54,8 @@ public class DefaultConversationService implements ConversationService {
   @Inject
   private DiscussionLinkedIdeaService linkedIdeas;
   @Inject
+  private DiscussionLinkedVoteService linkedVotes;
+  @Inject
   private DiscussionAccess access;
 
   @Inject
@@ -258,7 +260,8 @@ public class DefaultConversationService implements ConversationService {
     String body = editable(instanceId, messageId, version).getBody();
     var event = linkedEvents.describe(body);
     if (event.linked()) { return new DiscussionMessageDeletion("event", event.canDeleteEvent(), event.title(), event.recurrent()); }
-    return linkedIdeas.describe(body);
+    var idea = linkedIdeas.describe(body);
+    return "idea".equals(idea.kind()) ? idea : linkedVotes.describe(body);
   }
 
   @Override
@@ -268,10 +271,16 @@ public class DefaultConversationService implements ConversationService {
 
   @Override
   public void delete(String instanceId, String messageId, long version, boolean deleteEvent, boolean deleteIdea) {
-    if (deleteEvent && deleteIdea) { throw new IllegalArgumentException("Select only one linked contribution"); }
+    delete(instanceId, messageId, version, deleteEvent, deleteIdea, false);
+  }
+
+  @Override
+  public void delete(String instanceId, String messageId, long version, boolean deleteEvent, boolean deleteIdea, boolean deleteVote) {
+    if ((deleteEvent ? 1 : 0) + (deleteIdea ? 1 : 0) + (deleteVote ? 1 : 0) > 1) { throw new IllegalArgumentException("Select only one linked contribution"); }
     DiscussionMessage message = editable(instanceId, messageId, version);
     if (deleteEvent) { linkedEvents.delete(message.getBody()); }
     if (deleteIdea) { linkedIdeas.delete(message.getBody()); }
+    if (deleteVote) { linkedVotes.delete(message.getBody()); }
     likes.deleteMessage(messageId);
     imageService.removeAfterCommit(instanceId, messageId);
     message.delete();

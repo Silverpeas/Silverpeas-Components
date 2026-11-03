@@ -475,3 +475,41 @@ les droits et la version du message, puis utilise la collection native pour reti
 l'idée avec son nettoyage de contenu. Une erreur de droits laisse le message intact.
 Les choix Almanach et Boîte à idées sont distincts ; leur cumul est refusé.
 Aucune nouvelle table ni migration SQL n'est nécessaire.
+
+
+### Créer un vote
+
+L'icône de graphique du compositeur ouvre un vote natif dans une application Vote
+(`pollingStation`) directement dans le même espace. Les applications Sondage
+(`survey`) ne sont jamais proposées. Il faut un accès effectif et le rôle éditeur
+ou gestionnaire dans la cible ; Discussion exige aussi un canal non archivé et le
+droit d'écriture. Ces contrôles sont refaits au POST.
+
+Le formulaire contient une seule question (160 caractères), de 2 à 10 réponses
+distinctes (200 caractères chacune, une par ligne), le choix unique ou multiple et
+l'anonymat. Le paramètre natif `useAnonymousMode=yes` force l'anonymat côté serveur,
+même si le navigateur soumet le contraire. Le vote est ouvert immédiatement, sans
+date de fin, avec résultats immédiats selon le rendu natif ; les autres réglages
+peuvent être gérés ensuite dans Vote.
+
+Le moteur Core `QuestionContainerService` enregistre un unique `Question` de style
+`radio` ou `checkbox`, avec ses réponses natives, son auteur et son indexation.
+La participation, les résultats et le contrôle des participations restent dans
+Vote. Discussion publie une annonce dans le canal ou le fil courant et affiche
+le lien natif sous « Participer au vote ». Le brouillon et les fichiers du message
+restent intacts, les doubles clics sont bloqués et aucune création en échec n'est
+relancée automatiquement.
+
+La création native historique fonctionne hors transaction. L'adaptateur nettoie
+un vote partiellement créé lorsqu'il connaît son identifiant et enregistre une
+compensation CDI `AFTER_FAILURE` pour supprimer le vote si la transaction de son
+annonce échoue. Il ne prétend pas rendre ce moteur historique atomique avec JPA.
+Les tests du nettoyage utilisent des collaborateurs simulés ; aucun vote réel n'est
+créé ou supprimé dans l'instance de développement.
+
+La confirmation de suppression propose de garder le vote ou de supprimer les deux,
+selon les droits natifs éditeur/gestionnaire revérifiés au POST. La suppression
+native retire aussi les participations et réponses. Les URL étrangères, liens de
+Sondage ou messages citant plusieurs contributions ne sélectionnent aucun vote à
+supprimer. Le moteur calendrier et la boîte à idées conservent leurs choix propres.
+La dépendance Core est `provided` ; aucune migration SQL, toujours version 001.

@@ -41,7 +41,7 @@
     };
     const submit = (form, deleteEvent) => {
       if (!form.isConnected) { settle(form); return; }
-      for (const name of ['deleteEvent', 'deleteIdea']) {
+      for (const name of ['deleteEvent', 'deleteIdea', 'deleteVote']) {
         let input = form.elements[name];
         if (!input) {
           input = document.createElement('input');
@@ -49,7 +49,7 @@
           input.name = name;
           form.append(input);
         }
-        input.value = String(deleteEvent && kind === (name === 'deleteIdea' ? 'idea' : 'event'));
+        input.value = String(deleteEvent && kind === ({deleteEvent:'event', deleteIdea:'idea', deleteVote:'vote'})[name]);
       }
       // A fast response can still be inside the first native submit event's dispatch.
       window.setTimeout(() => {
@@ -77,7 +77,7 @@
         if (!state || !['true','false'].includes(state.dataset.linked)
             || !['true','false'].includes(state.dataset.canDeleteEvent)) { throw new Error('Invalid deletion response'); }
         kind = state.dataset.kind || (state.dataset.linked === 'true' ? 'event' : 'message');
-        if (!['event', 'idea', 'message'].includes(kind)) { throw new Error('Invalid deletion kind'); }
+        if (!['event', 'idea', 'vote', 'message'].includes(kind)) { throw new Error('Invalid deletion kind'); }
         active = form;
         title.textContent = state.dataset.title || '';
         title.hidden = !title.textContent;

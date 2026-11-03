@@ -150,7 +150,12 @@
     try {
       const url = new URL(href);
       const base = new URL(discussion.dataset.contributionBase, document.baseURI);
-      if (url.origin !== base.origin || !url.pathname.startsWith(base.pathname) || url.username || url.password) { return false; }
+      if (url.origin !== base.origin || url.username || url.password) { return false; }
+      const context = base.pathname.replace(/\/Contribution\/$/, '');
+      const votePath = url.pathname.slice(context.length);
+      if (url.pathname.startsWith(context + '/') && /^\/RpollingStation\/pollingStation[0-9]+\/searchResult$/.test(votePath)
+          && /^\?Type=QuestionContainer&Id=[0-9]{1,10}$/.test(url.search)) { return discussion.dataset.viewVoteLabel || ''; }
+      if (!url.pathname.startsWith(base.pathname)) { return false; }
       const identifier = atob(decodeURIComponent(url.pathname.slice(base.pathname.length)));
       if (/^almanach[0-9]+:CalendarEvent:[a-zA-Z0-9-]{1,40}$/.test(identifier)) { return discussion.dataset.viewEventLabel || ''; }
       if (/^suggestionBox[0-9]+:Suggestion:[a-zA-Z0-9-]{1,40}$/.test(identifier)) { return discussion.dataset.viewIdeaLabel || ''; }
