@@ -36,4 +36,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
   <symbol id="arrow-left" viewBox="0 0 24 24"><path d="M20 12H4m7-7-7 7 7 7"/></symbol>
   <symbol id="close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
   <symbol id="menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
+  <symbol id="plus" viewBox="0 0 24 24"><path d="M12 4v16M4 12h16"/></symbol>
+  <symbol id="settings" viewBox="0 0 24 24"><path d="m9 3-.5 2.1-2 .9-1.9-.6-2 3.4L4.2 10v2L2.6 13.2l2 3.4 1.9-.6 2 .9L9 19h4l.5-2.1 2-.9 1.9.6 2-3.4L17.8 12v-2l1.6-1.2-2-3.4-1.9.6-2-.9L13 3Z"/><circle cx="11" cy="11" r="3"/></symbol>
 </svg>

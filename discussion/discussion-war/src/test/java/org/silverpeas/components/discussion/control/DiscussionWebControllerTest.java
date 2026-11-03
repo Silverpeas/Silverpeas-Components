@@ -92,6 +92,15 @@ class DiscussionWebControllerTest {
   }
 
   @Test
+  void refreshedChannelListsExposeManagementControlsOnlyToManagers() {
+    controller.channelList(context);
+    verify(request).setAttribute("canManageChannels", false);
+    when(context.getHighestUserRole()).thenReturn(SilverpeasRole.ADMIN);
+    controller.channelList(context);
+    verify(request).setAttribute("canManageChannels", true);
+  }
+
+  @Test
   void canonicalNotificationRequestSelectsItsMessageChannelBeforeRendering() {
     when(context.getResponse()).thenReturn(mock(jakarta.servlet.http.HttpServletResponse.class));
     controller.beforeRequestProcessing(context);

@@ -53,6 +53,25 @@ class DiscussionChannelServiceTest {
   private DiscussionChannelService service;
 
   @Test
+  void managersCanReactivateAnArchivedChannelWithoutReplacingItsHistoryContainer() {
+    var channel = Conversation.channel("discussion1", "Projet", "Description");
+    channel.setArchived(true);
+    String scope = channel.getScopeKey();
+    when(conversations.channel("discussion1", scope, true)).thenReturn(channel);
+    when(conversations.channels("discussion1")).thenReturn(List.of(channel));
+    var user = mock(User.class);
+    when(user.getId()).thenReturn("manager");
+    try (var current = mockStatic(User.class)) {
+      current.when(User::getCurrentRequester).thenReturn(user);
+      service.update("discussion1", scope, "Projet", "Description", false);
+      assertFalse(channel.isArchived());
+      assertEquals(scope, channel.getScopeKey());
+      verify(conversations).save(channel);
+      verify(access).require("discussion1", SilverpeasRole.ADMIN);
+    }
+  }
+
+  @Test
   void channelMetadataValidatesInputAndGeneralCannotBeArchived() {
     var general = new Conversation("discussion1");
     assertTrue(general.isMain());

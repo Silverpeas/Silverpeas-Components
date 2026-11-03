@@ -54,6 +54,8 @@
         const current = row.dataset.channelScope === scope;
         const link = row.querySelector('a');
         if (current) { link.setAttribute('aria-current', 'page'); }
+        const settings = row.querySelector('.discussion-channel-settings');
+        if (settings) { settings.hidden = !current; }
         row.classList.toggle('discussion-channel-unread', Number(row.dataset.unread) > 0);
         if (!current && row.dataset.archived !== 'true') { unread += Number(row.dataset.unread) || 0; }
       });
@@ -70,11 +72,14 @@
         const response = await sp.ajaxRequest(discussion.dataset.channels).send();
         if (!alive) { return; }
         const page = new DOMParser().parseFromString(response.responseText, 'text/html');
-        const updated = page.querySelector('.discussion-channel-list');
+        const updated = page.querySelector('.discussion-channel-groups');
         if (!updated) { throw new Error('Invalid channel response'); }
         const focusedScope = list.contains(document.activeElement)
             ? document.activeElement.closest('[data-channel-scope]')?.dataset.channelScope : null;
+        const archivesOpen = list.querySelector('#discussion-channel-archives')?.open === true;
         list.replaceChildren(document.importNode(updated, true));
+        const archives = list.querySelector('#discussion-channel-archives');
+        if (archives) { archives.open = archivesOpen; }
         error.hidden = true;
         markCurrent();
         if (focusedScope) {
@@ -113,7 +118,9 @@
         dialog.showModal();
       };
       document.getElementById('discussion-channel-create').addEventListener('click', () => openDialog(true));
-      document.getElementById('discussion-channel-settings').addEventListener('click', () => openDialog(false));
+      list.addEventListener('click', event => {
+        if (event.target.closest('.discussion-channel-settings')) { openDialog(false); }
+      });
       form.querySelector('.discussion-channel-cancel').addEventListener('click', () => dialog.close());
       archive.addEventListener('change', () => { form.elements.archived.value = String(archive.checked); });
     }

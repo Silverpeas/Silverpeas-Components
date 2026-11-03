@@ -752,6 +752,7 @@ public class DiscussionWebController extends
   @Path("channels")
   @RedirectToInternalJsp("channels.jsp")
   public void channelList(DiscussionWebRequestContext context) {
+    context.getRequest().setAttribute("canManageChannels", context.getHighestUserRole() == SilverpeasRole.ADMIN);
     context.getRequest().setAttribute("channels", webResult(() -> channels().list(context.getComponentInstanceId())));
     context.getRequest().setAttribute("instanceUriBase", context.getInstanceUriBase());
   }
