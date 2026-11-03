@@ -510,7 +510,14 @@ public class DiscussionWebController extends
     if (deleteEvent != null && !"true".equals(deleteEvent) && !"false".equals(deleteEvent)) { throw new WebApplicationException(400); }
     String deleteIdea = context.getRequest().getParameter("deleteIdea");
     if (deleteIdea != null && !"true".equals(deleteIdea) && !"false".equals(deleteIdea)) { throw new WebApplicationException(400); }
-    if ("true".equals(deleteEvent) && "true".equals(deleteIdea)) { throw new WebApplicationException(400); }
+    String deleteVote = context.getRequest().getParameter("deleteVote");
+    if (deleteVote != null && !"true".equals(deleteVote) && !"false".equals(deleteVote)) { throw new WebApplicationException(400); }
+    if ((Boolean.parseBoolean(deleteEvent) ? 1 : 0) + (Boolean.parseBoolean(deleteIdea) ? 1 : 0) + (Boolean.parseBoolean(deleteVote) ? 1 : 0) > 1) { throw new WebApplicationException(400); }
+    if ("true".equals(deleteVote)) {
+      webAction(() -> conversations().delete(context.getComponentInstanceId(),
+          context.getPathVariables().get("id"), number(context, "version", -1), false, false, true));
+      return;
+    }
     if ("true".equals(deleteIdea)) {
       webAction(() -> conversations().delete(context.getComponentInstanceId(),
           context.getPathVariables().get("id"), number(context, "version", -1), false, true));
@@ -798,6 +805,52 @@ public class DiscussionWebController extends
   public void channelNotifications(DiscussionWebRequestContext context) {
     webAction(() -> channels().notifications(context.getComponentInstanceId(), context.getRequest().getParameter("mode")));
   }
+
+  private org.silverpeas.components.discussion.service.DiscussionVoteService votes() {
+    return ServiceProvider.getService(org.silverpeas.components.discussion.service.DiscussionVoteService.class);
+  }
+
+  @GET
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("vote-options")
+  @RedirectToInternalJsp("vote-options.jsp")
+  public void voteOptions(DiscussionWebRequestContext context) {
+    context.getRequest().setAttribute("voteOptions", webResult(() -> votes().options(context.getComponentInstanceId(), getLanguage())));
+  }
+
+  @GET
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("channels/{channel}/vote-options")
+  @RedirectToInternalJsp("vote-options.jsp")
+  public void channelVoteOptions(DiscussionWebRequestContext context) { voteOptions(context); }
+
+  @POST
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("votes")
+  @RedirectToInternalJsp("vote-created.jsp")
+  public void createVote(DiscussionWebRequestContext context) {
+    context.getRequest().setAttribute("createdVote", webResult(() -> {
+      var request = context.getRequest();
+      String answers = request.getParameter("answers");
+      if (answers == null || answers.length() > 2100) { throw new IllegalArgumentException("Invalid vote answers"); }
+      String multiple = request.getParameter("multiple");
+      String anonymous = request.getParameter("anonymous");
+      if (!("true".equals(multiple) || "false".equals(multiple))
+          || !("true".equals(anonymous) || "false".equals(anonymous))) {
+        throw new IllegalArgumentException("Invalid vote settings");
+      }
+      var input = new org.silverpeas.components.discussion.service.DiscussionVoteInput(
+          request.getParameter("vote"), request.getParameter("question"), java.util.Arrays.asList(answers.split("\\n", -1)),
+          Boolean.parseBoolean(multiple), Boolean.parseBoolean(anonymous));
+      return votes().create(context.getComponentInstanceId(), request.getParameter("threadRootId"), input);
+    }));
+  }
+
+  @POST
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("channels/{channel}/votes")
+  @RedirectToInternalJsp("vote-created.jsp")
+  public void channelCreateVote(DiscussionWebRequestContext context) { createVote(context); }
 
   private org.silverpeas.components.discussion.service.DiscussionIdeaService ideas() {
     return ServiceProvider.getService(org.silverpeas.components.discussion.service.DiscussionIdeaService.class);

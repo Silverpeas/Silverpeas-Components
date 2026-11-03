@@ -32,9 +32,9 @@
     <h2 id="discussion-delete-event-heading"><fmt:message key="discussion.deleteEventHeading"/></h2>
     <button id="discussion-delete-event-close" class="discussion-icon-button" type="button" aria-label="<fmt:message key='GML.close'/>"><svg class="discussion-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
   </header>
-  <p id="discussion-delete-question" data-event="<fmt:message key='discussion.deleteEventQuestion'/>" data-idea="<fmt:message key='discussion.deleteIdeaQuestion'/>" data-message="<fmt:message key='discussion.deleteMessageQuestion'/>"></p>
+  <p id="discussion-delete-question" data-vote="<fmt:message key='discussion.deleteVoteQuestion'/>" data-event="<fmt:message key='discussion.deleteEventQuestion'/>" data-idea="<fmt:message key='discussion.deleteIdeaQuestion'/>" data-message="<fmt:message key='discussion.deleteMessageQuestion'/>"></p>
   <p id="discussion-delete-event-title"></p>
-  <p id="discussion-delete-event-denied" class="discussion-hint" data-event="<fmt:message key='discussion.deleteEventDenied'/>" data-idea="<fmt:message key='discussion.deleteIdeaDenied'/>" hidden><fmt:message key="discussion.deleteEventDenied"/></p>
+  <p id="discussion-delete-event-denied" data-vote="<fmt:message key='discussion.deleteVoteDenied'/>" class="discussion-hint" data-event="<fmt:message key='discussion.deleteEventDenied'/>" data-idea="<fmt:message key='discussion.deleteIdeaDenied'/>" hidden><fmt:message key="discussion.deleteEventDenied"/></p>
   <p id="discussion-delete-event-recurrent" class="discussion-hint" hidden><fmt:message key="discussion.deleteEventRecurrent"/></p>
   <footer>
     <button id="discussion-delete-event-cancel" type="button"><fmt:message key="GML.cancel"/></button>

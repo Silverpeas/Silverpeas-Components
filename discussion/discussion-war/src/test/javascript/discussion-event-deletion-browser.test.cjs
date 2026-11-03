@@ -81,7 +81,7 @@ test('linked event deletion offers cancellation, message only and both without d
     await open(page);
     await page.locator('#discussion-delete-message-only').click();
     await page.waitForFunction(()=>posts.length===1);
-    assert.deepEqual(await page.evaluate(()=>posts),[{version:'3',deleteEvent:'false',deleteIdea:'false'}]);
+    assert.deepEqual(await page.evaluate(()=>posts),[{version:'3',deleteEvent:'false',deleteIdea:'false',deleteVote:'false'}]);
   } finally {await browser.close();}
 });
 
@@ -92,7 +92,7 @@ test('delete both sends an explicit choice while recurring occurrences are clear
     assert.equal(await page.locator('#discussion-delete-event-recurrent').isVisible(),true);
     await page.locator('#discussion-delete-message-and-event').click();
     await page.waitForFunction(()=>posts.length===1);
-    assert.deepEqual(await page.evaluate(()=>posts),[{version:'3',deleteEvent:'true',deleteIdea:'false'}]);
+    assert.deepEqual(await page.evaluate(()=>posts),[{version:'3',deleteEvent:'true',deleteIdea:'false',deleteVote:'false'}]);
     assert.equal(await page.locator('#discussion-delete-event-dialog').evaluate(n=>n.open),false);
   } finally {await browser.close();}
 });
@@ -174,7 +174,7 @@ test('idea deletion offers the explicit linked choice without sending the Almana
     assert.equal(await page.evaluate(()=>posts.length),0);
     await page.locator('#discussion-delete-message-and-event').click();
     await page.waitForFunction(()=>posts.length===1);
-    assert.deepEqual(await page.evaluate(()=>posts),[{version:'3',deleteEvent:'false',deleteIdea:'true'}]);
+    assert.deepEqual(await page.evaluate(()=>posts),[{version:'3',deleteEvent:'false',deleteIdea:'true',deleteVote:'false'}]);
   } finally {await browser.close();}
 });
 
@@ -195,4 +195,16 @@ test('idea without deletion rights explains that it is kept and canceling an ord
     await ordinary.page.waitForFunction(()=>!document.querySelector('.discussion-delete button').disabled);
     assert.equal(await ordinary.page.evaluate(()=>posts.length),0);
   } finally {await ordinary.browser.close();}
+});
+
+
+test('vote deletion confirms the linked vote and never sends idea or event deletion flags',async()=>{
+  const {browser,page}=await setup({kind:'vote'});
+  try {
+    await open(page);
+    assert.equal(await page.locator('#discussion-delete-question').textContent(),labels['discussion.deleteVoteQuestion']);
+    await page.locator('#discussion-delete-message-and-event').click();
+    await page.waitForFunction(()=>posts.length===1);
+    assert.deepEqual(await page.evaluate(()=>posts),[{version:'3',deleteEvent:'false',deleteIdea:'false',deleteVote:'true'}]);
+  } finally {await browser.close();}
 });

@@ -458,24 +458,24 @@ html.discussion-embedded #discussion .discussion-channels, html.discussion-embed
 
 /* Native Almanach and suggestion creation from either message composer. */
 #discussion .discussion-add-event[hidden], #discussion #discussion-add-idea[hidden], #discussion #discussion-event-retry[hidden], #discussion #discussion-event-error[hidden], #discussion #discussion-idea-retry[hidden], #discussion #discussion-idea-error[hidden] { display: none; }
-:is(#discussion-event-dialog, #discussion-idea-dialog) { width: min(36rem, calc(100vw - 2rem)); max-height: calc(100dvh - 2rem); overflow-y: auto; box-sizing: border-box; border: 1px solid var(--color-trait-separateur, #ddd); border-radius: 2px; padding: 1.25rem; background: var(--bgColor-card, #fff); color: var(--color-text, #333); }
-:is(#discussion-event-dialog, #discussion-idea-dialog)::backdrop { background: rgb(0 0 0 / 25%); }
-:is(#discussion-event-dialog, #discussion-idea-dialog) header, :is(#discussion-event-dialog, #discussion-idea-dialog) footer { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
-:is(#discussion-event-dialog, #discussion-idea-dialog) header h2 { margin: 0; font-size: 1.15em; }
-:is(#discussion-event-dialog, #discussion-idea-dialog) footer { flex-wrap: wrap; justify-content: flex-end; margin-top: 1rem; }
-:is(#discussion-event-fields, #discussion-idea-fields) { border: 0; padding: 0; margin: 0; min-width: 0; }
-:is(#discussion-event-fields, #discussion-idea-fields) label { display: block; font-weight: 700; margin: 0.75rem 0 0.3rem; }
-:is(#discussion-event-fields, #discussion-idea-fields) input, :is(#discussion-event-fields, #discussion-idea-fields) select, :is(#discussion-event-fields, #discussion-idea-fields) textarea { display: block; width: 100%; box-sizing: border-box; min-width: 0; padding: 0.5rem; border: 1px solid var(--color-trait-separateur, #ddd); border-radius: 2px; font: inherit; }
-:is(#discussion-event-fields, #discussion-idea-fields) textarea { min-height: 5rem; }
-:is(#discussion-event-dialog, #discussion-idea-dialog) .discussion-event-dates { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1rem; }
-:is(#discussion-event-dialog, #discussion-idea-dialog) .discussion-hint { font-size: 0.85em; color: var(--color-text-label, #666); }
-:is(#discussion-event-dialog, #discussion-idea-dialog) .discussion-presence-error { color: var(--color-error, #a12622); }
+:is(#discussion-event-dialog, #discussion-idea-dialog, #discussion-vote-dialog) { width: min(36rem, calc(100vw - 2rem)); max-height: calc(100dvh - 2rem); overflow-y: auto; box-sizing: border-box; border: 1px solid var(--color-trait-separateur, #ddd); border-radius: 2px; padding: 1.25rem; background: var(--bgColor-card, #fff); color: var(--color-text, #333); }
+:is(#discussion-event-dialog, #discussion-idea-dialog, #discussion-vote-dialog)::backdrop { background: rgb(0 0 0 / 25%); }
+:is(#discussion-event-dialog, #discussion-idea-dialog, #discussion-vote-dialog) header, :is(#discussion-event-dialog, #discussion-idea-dialog, #discussion-vote-dialog) footer { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
+:is(#discussion-event-dialog, #discussion-idea-dialog, #discussion-vote-dialog) header h2 { margin: 0; font-size: 1.15em; }
+:is(#discussion-event-dialog, #discussion-idea-dialog, #discussion-vote-dialog) footer { flex-wrap: wrap; justify-content: flex-end; margin-top: 1rem; }
+:is(#discussion-event-fields, #discussion-idea-fields, #discussion-vote-fields) { border: 0; padding: 0; margin: 0; min-width: 0; }
+:is(#discussion-event-fields, #discussion-idea-fields, #discussion-vote-fields) label { display: block; font-weight: 700; margin: 0.75rem 0 0.3rem; }
+:is(#discussion-event-fields, #discussion-idea-fields, #discussion-vote-fields) input, :is(#discussion-event-fields, #discussion-idea-fields, #discussion-vote-fields) select, :is(#discussion-event-fields, #discussion-idea-fields, #discussion-vote-fields) textarea { display: block; width: 100%; box-sizing: border-box; min-width: 0; padding: 0.5rem; border: 1px solid var(--color-trait-separateur, #ddd); border-radius: 2px; font: inherit; }
+:is(#discussion-event-fields, #discussion-idea-fields, #discussion-vote-fields) textarea { min-height: 5rem; }
+:is(#discussion-event-dialog, #discussion-idea-dialog, #discussion-vote-dialog) .discussion-event-dates { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1rem; }
+:is(#discussion-event-dialog, #discussion-idea-dialog, #discussion-vote-dialog) .discussion-hint { font-size: 0.85em; color: var(--color-text-label, #666); }
+:is(#discussion-event-dialog, #discussion-idea-dialog, #discussion-vote-dialog) .discussion-presence-error { color: var(--color-error, #a12622); }
 @media (max-width: 480px) {
-  :is(#discussion-event-dialog, #discussion-idea-dialog) { padding: 0.8rem; }
-  :is(#discussion-event-dialog, #discussion-idea-dialog) .discussion-event-dates { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  :is(#discussion-event-dialog, #discussion-idea-dialog, #discussion-vote-dialog) { padding: 0.8rem; }
+  :is(#discussion-event-dialog, #discussion-idea-dialog, #discussion-vote-dialog) .discussion-event-dates { grid-template-columns: minmax(0, 1fr); gap: 0; }
 }
-:is(#discussion-event-fields, #discussion-idea-fields) select { height: auto; min-height: 2.5rem; line-height: normal; }
-:is(#discussion-event-dialog, #discussion-idea-dialog) footer > button { min-height: 2.4rem; padding: 0.4rem 0.75rem; font: inherit; }
+:is(#discussion-event-fields, #discussion-idea-fields, #discussion-vote-fields) select { height: auto; min-height: 2.5rem; line-height: normal; }
+:is(#discussion-event-dialog, #discussion-idea-dialog, #discussion-vote-dialog) footer > button { min-height: 2.4rem; padding: 0.4rem 0.75rem; font: inherit; }
 
 #discussion-delete-event-dialog { width: min(38rem, calc(100vw - 2rem)); max-height: calc(100dvh - 2rem); overflow-y: auto; padding: 1.25rem; border: 1px solid var(--color-trait-separateur, #ddd); border-radius: 2px; background: var(--bgColor-card, #fff); color: var(--color-text, #333); }
 #discussion-delete-event-dialog::backdrop { background: rgb(0 0 0 / 25%); }
@@ -498,3 +498,8 @@ html.discussion-embedded #discussion .discussion-channels, html.discussion-embed
 @media (hover: none) { #discussion .discussion-propose-idea { opacity: 1; } }
 
 #discussion-idea-dialog footer > .button { background: var(--color-lien-action, #5b9900); color: #fff; border: 1px solid var(--color-lien-action, #5b9900); border-radius: 2px; }
+
+#discussion #discussion-add-vote[hidden], #discussion #discussion-vote-error[hidden], #discussion #discussion-vote-retry[hidden] { display: none; }
+#discussion-vote-fields .discussion-vote-check { display: flex; align-items: center; gap: 0.5rem; font-weight: 400; }
+#discussion-vote-fields .discussion-vote-check input { width: auto; }
+#discussion-vote-dialog footer > .button { min-height: 2.4rem; background: var(--color-lien-action, #5b9900); color: #fff; border: 1px solid var(--color-lien-action, #5b9900); border-radius: 2px; }

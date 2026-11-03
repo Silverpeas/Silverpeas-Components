@@ -52,6 +52,7 @@ public interface ConversationService {
   void delete(String instanceId, String messageId, long version);
   void delete(String instanceId, String messageId, long version, boolean deleteEvent);
   void delete(String instanceId, String messageId, long version, boolean deleteEvent, boolean deleteIdea);
+  void delete(String instanceId, String messageId, long version, boolean deleteEvent, boolean deleteIdea, boolean deleteVote);
   DiscussionMessageDeletion deletion(String instanceId, String messageId, long version);
   long markVisible(String instanceId, List<String> messageIds);
   void markRead(String instanceId, long sequence);
