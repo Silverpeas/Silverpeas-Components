@@ -513,3 +513,16 @@ native retire aussi les participations et réponses. Les URL étrangères, liens
 Sondage ou messages citant plusieurs contributions ne sélectionnent aucun vote à
 supprimer. Le moteur calendrier et la boîte à idées conservent leurs choix propres.
 La dépendance Core est `provided` ; aucune migration SQL, toujours version 001.
+
+
+Les liens natifs vers les événements, idées, votes et publications utilisent le
+mécanisme `sp-link` de Silverpeas : ils ouvrent la ressource dans la navigation
+courante, y compris depuis un fil, et conservent la structure de la plateforme.
+Les publications de l'accordéon utilisent aussi ce mécanisme. Les liens étrangers
+à l'installation et les autres URL conservent leur ouverture dans un nouvel onglet.
+
+Les URL des publications citées sont remplacées par leur titre, fourni par la liste
+des citations autorisées côté serveur. Le titre suit les actualisations de cette
+liste et s'applique aussi à l'historique chargé ensuite. L'URL complète reste dans
+l'infobulle et la destination est conservée ; sans titre autorisé disponible, elle
+reste explicite. Aucun appel réseau par message ni modification du texte stocké.

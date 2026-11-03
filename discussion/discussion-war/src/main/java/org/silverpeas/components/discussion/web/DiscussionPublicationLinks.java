@@ -27,6 +27,7 @@ import java.net.URI;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -51,6 +52,12 @@ final class DiscussionPublicationLinks {
       }
       String root = application.getPath().replaceFirst("/$", "");
       String path = link.getPath();
+      String contribution = root + "/Contribution/";
+      if (path.startsWith(contribution)) {
+        String identifier = new String(Base64.getDecoder().decode(path.substring(contribution.length())), StandardCharsets.UTF_8);
+        var match = Pattern.compile("(?:kmelia|toolbox|kmax)[0-9]+:Publication:([0-9]{1,18})").matcher(identifier);
+        return match.matches() ? match.group(1) : "";
+      }
       String prefix = root + "/Publication/";
       if (path.startsWith(prefix)) {
         String id = path.substring(prefix.length());

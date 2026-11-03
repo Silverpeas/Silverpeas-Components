@@ -48,6 +48,16 @@ class DiscussionPublicationLinksTest {
   }
 
   @Test
+  void recognizesModernPublicationContributionsButNotOtherContributionTypes() {
+    String base = "https://silverpeas.test/silverpeas/Contribution/";
+    String identifier = java.util.Base64.getEncoder().encodeToString("kmelia2:Publication:12".getBytes(java.nio.charset.StandardCharsets.UTF_8));
+    assertEquals(List.of("12"), DiscussionPublicationLinks.ids(base + identifier, APP));
+    String event = java.util.Base64.getEncoder().encodeToString("almanach2:CalendarEvent:12".getBytes(java.nio.charset.StandardCharsets.UTF_8));
+    assertTrue(DiscussionPublicationLinks.ids(base + event, APP).isEmpty());
+    assertTrue(DiscussionPublicationLinks.ids(base + "%invalid", APP).isEmpty());
+  }
+
+  @Test
   void rejectsExternalOriginsInvalidPathsProtocolsAndUnknownPublicationFormats() {
     for (String url : List.of("https://evil.test/silverpeas/Publication/12", "https://silverpeas.test.evil/Publication/12",
         "http://silverpeas.test/silverpeas/Publication/12", "https://silverpeas.test:8443/silverpeas/Publication/12",

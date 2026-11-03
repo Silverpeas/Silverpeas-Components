@@ -263,6 +263,13 @@ class DiscussionPersistenceTest {
     try (var bodies = messages.publicationLinkBodies("c1")) {
       assertEquals(List.of("/silverpeas/Publication/12"), bodies.toList());
     }
+    String modern = "/silverpeas/Contribution/" + java.util.Base64.getEncoder().encodeToString(
+        "kmelia2:Publication:12".getBytes(java.nio.charset.StandardCharsets.UTF_8));
+    session.createNativeMutationQuery("update sc_discussion_message set body=:body where id='m1'")
+        .setParameter("body", modern).executeUpdate();
+    try (var bodies = messages.publicationLinkBodies("c1")) {
+      assertEquals(List.of(modern), bodies.toList());
+    }
     session.createNativeMutationQuery("update sc_discussion_message set body='Citation removed' where id='m1'").executeUpdate();
     try (var bodies = messages.publicationLinkBodies("c1")) {
       assertTrue(bodies.toList().isEmpty());
