@@ -414,3 +414,9 @@ L'historique se rafraîchit après succès, même sans connexion SSE/WebSocket a
 
 L'intégration utilise les API calendrier du Core, sans dépendance au WAR Almanach,
 sans table ou migration SQL supplémentaire. La migration Discussion reste en 001.
+
+Les liens permanents des événements Almanach sont affichés sous le libellé court
+« Voir l’événement », tout en conservant leur URL complète pour le clic et l'infobulle.
+Le rendu s'applique aussi aux messages déjà stockés et aux chargements d'historique
+ou mises à jour en temps réel. Seuls les liens natifs CalendarEvent de la même origine
+et du même contexte applicatif sont reconnus ; les autres URL restent explicites.
