@@ -840,7 +840,7 @@ public class DiscussionWebController extends
         throw new IllegalArgumentException("Invalid vote settings");
       }
       var input = new org.silverpeas.components.discussion.service.DiscussionVoteInput(
-          request.getParameter("vote"), request.getParameter("question"), java.util.Arrays.asList(answers.split("\\n", -1)),
+          request.getParameter("vote"), request.getParameter("question"), java.util.Arrays.asList(answers.split("\\R", -1)),
           Boolean.parseBoolean(multiple), Boolean.parseBoolean(anonymous));
       return votes().create(context.getComponentInstanceId(), request.getParameter("threadRootId"), input);
     }));

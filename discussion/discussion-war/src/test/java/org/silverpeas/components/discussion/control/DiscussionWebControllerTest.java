@@ -150,6 +150,26 @@ class DiscussionWebControllerTest {
   }
 
   @Test
+  void voteAnswersAcceptBrowserMultipartCrlfAndOtherLineEndingsWithoutWeakeningValidation() {
+    when(request.getParameter("vote")).thenReturn("pollingStation1");
+    when(request.getParameter("question")).thenReturn("Quel LLM préférez-vous ?");
+    when(request.getParameter("multiple")).thenReturn("false");
+    when(request.getParameter("anonymous")).thenReturn("false");
+    when(request.getParameter("threadRootId")).thenReturn("");
+    for (String separator : List.of("\r\n", "\n", "\r")) {
+      clearInvocations(voteService);
+      when(request.getParameter("answers")).thenReturn("Mistral" + separator + "Kimi");
+      controller.createVote(context);
+      verify(voteService).create("discussion1", "", new org.silverpeas.components.discussion.service.DiscussionVoteInput(
+          "pollingStation1", "Quel LLM préférez-vous ?", List.of("Mistral", "Kimi"), false, false));
+    }
+    for (String invalid : List.of("Mistral\r\n\r\nKimi", "Mistral\r\n", "Mistral\r\nmistral")) {
+      when(request.getParameter("answers")).thenReturn(invalid);
+      assertEquals(400, assertThrows(WebApplicationException.class, () -> controller.createVote(context)).getResponse().getStatus());
+    }
+  }
+
+  @Test
   void ideaCreationForwardsTheSelectedBoxTextAndSourceWithinTheCurrentThread() {
     when(request.getParameter("box")).thenReturn("suggestionBox1");
     when(request.getParameter("title")).thenReturn("Une idée");
