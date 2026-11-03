@@ -508,7 +508,13 @@ public class DiscussionWebController extends
   public void delete(DiscussionWebRequestContext context) {
     String deleteEvent = context.getRequest().getParameter("deleteEvent");
     if (deleteEvent != null && !"true".equals(deleteEvent) && !"false".equals(deleteEvent)) { throw new WebApplicationException(400); }
-    if ("true".equals(deleteEvent)) {
+    String deleteIdea = context.getRequest().getParameter("deleteIdea");
+    if (deleteIdea != null && !"true".equals(deleteIdea) && !"false".equals(deleteIdea)) { throw new WebApplicationException(400); }
+    if ("true".equals(deleteEvent) && "true".equals(deleteIdea)) { throw new WebApplicationException(400); }
+    if ("true".equals(deleteIdea)) {
+      webAction(() -> conversations().delete(context.getComponentInstanceId(),
+          context.getPathVariables().get("id"), number(context, "version", -1), false, true));
+    } else if ("true".equals(deleteEvent)) {
       webAction(() -> conversations().delete(context.getComponentInstanceId(),
           context.getPathVariables().get("id"), number(context, "version", -1), true));
     } else {

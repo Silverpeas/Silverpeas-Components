@@ -52,6 +52,8 @@ public class DefaultConversationService implements ConversationService {
   @Inject
   private DiscussionLinkedEventService linkedEvents;
   @Inject
+  private DiscussionLinkedIdeaService linkedIdeas;
+  @Inject
   private DiscussionAccess access;
 
   @Inject
@@ -252,14 +254,24 @@ public class DefaultConversationService implements ConversationService {
   }
 
   @Override
-  public DiscussionEventDeletion deletion(String instanceId, String messageId, long version) {
-    return linkedEvents.describe(editable(instanceId, messageId, version).getBody());
+  public DiscussionMessageDeletion deletion(String instanceId, String messageId, long version) {
+    String body = editable(instanceId, messageId, version).getBody();
+    var event = linkedEvents.describe(body);
+    if (event.linked()) { return new DiscussionMessageDeletion("event", event.canDeleteEvent(), event.title(), event.recurrent()); }
+    return linkedIdeas.describe(body);
   }
 
   @Override
   public void delete(String instanceId, String messageId, long version, boolean deleteEvent) {
+    delete(instanceId, messageId, version, deleteEvent, false);
+  }
+
+  @Override
+  public void delete(String instanceId, String messageId, long version, boolean deleteEvent, boolean deleteIdea) {
+    if (deleteEvent && deleteIdea) { throw new IllegalArgumentException("Select only one linked contribution"); }
     DiscussionMessage message = editable(instanceId, messageId, version);
     if (deleteEvent) { linkedEvents.delete(message.getBody()); }
+    if (deleteIdea) { linkedIdeas.delete(message.getBody()); }
     likes.deleteMessage(messageId);
     imageService.removeAfterCommit(instanceId, messageId);
     message.delete();

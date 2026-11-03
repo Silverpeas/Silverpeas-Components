@@ -455,3 +455,23 @@ reste soumis aux droits et à la validation de la boîte cible.
 La bibliothèque SuggestionBox est une dépendance `provided`, déjà présente dans
 l'EAR Silverpeas ; elle n'est pas embarquée une seconde fois dans le WAR Discussion.
 Aucune modification SQL : la migration Discussion reste en 001.
+
+
+### Confirmation de suppression des messages et idées
+
+Tous les messages demandent confirmation avant le POST de suppression. La croix,
+Échap et « Annuler » ne suppriment rien. Pour une idée ou un événement natif cité par
+un unique lien permanent de cette installation, le dialogue propose de supprimer
+seulement le message ou les deux contributions. Les liens vers plusieurs idées ou
+événements distincts ne sélectionnent aucune contribution arbitraire : seule la
+suppression du message est alors proposée. Les annonces existantes sont reconnues.
+
+La suppression d'une idée suit les règles de SuggestionBox : accès effectif à la
+boîte, auteur ou gestionnaire pour un brouillon/une idée refusée ; gestionnaire de
+la boîte ou administrateur de plateforme pour une idée publiée ou en validation.
+Un simple auteur ne peut donc pas supprimer son idée déjà soumise. Le dialogue
+l'explique et conserve l'idée quand les droits sont insuffisants. Le POST revérifie
+les droits et la version du message, puis utilise la collection native pour retirer
+l'idée avec son nettoyage de contenu. Une erreur de droits laisse le message intact.
+Les choix Almanach et Boîte à idées sont distincts ; leur cumul est refusé.
+Aucune nouvelle table ni migration SQL n'est nécessaire.

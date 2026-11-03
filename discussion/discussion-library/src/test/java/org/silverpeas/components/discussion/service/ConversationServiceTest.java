@@ -71,6 +71,8 @@ class ConversationServiceTest {
   private org.silverpeas.components.discussion.search.DiscussionMessageIndex messageIndex;
   @TestManagedMock
   private DiscussionLinkedEventService linkedEvents;
+  @TestManagedMock
+  private DiscussionLinkedIdeaService linkedIdeas;
   @TestedBean
   private DefaultConversationService service;
   private Conversation conversation;
@@ -683,7 +685,35 @@ class ConversationServiceTest {
       verifyNoInteractions(linkedEvents);
       when(message.getBody()).thenReturn("body");
       when(linkedEvents.describe("body")).thenReturn(DiscussionEventDeletion.none());
-      assertEquals(DiscussionEventDeletion.none(), service.deletion("discussion1", "message", 1));
+      when(linkedIdeas.describe("body")).thenReturn(DiscussionMessageDeletion.messageOnly());
+      assertEquals(DiscussionMessageDeletion.messageOnly(), service.deletion("discussion1", "message", 1));
+      var idea = new DiscussionMessageDeletion("idea", true, "Une idée", false);
+      when(linkedIdeas.describe("body")).thenReturn(idea);
+      assertEquals(idea, service.deletion("discussion1", "message", 1));
+      when(linkedEvents.describe("body")).thenReturn(new DiscussionEventDeletion(true, true, "Réunion", true));
+      assertEquals(new DiscussionMessageDeletion("event", true, "Réunion", true), service.deletion("discussion1", "message", 1));
+    }
+  }
+
+  @Test
+  void linkedIdeaDeletionIsExplicitAndDeniedIdeaDeletionKeepsTheMessage() {
+    var message = existingMessage("user");
+    when(message.getBody()).thenReturn("idea body");
+    try (var current = mockStatic(User.class)) {
+      current.when(User::getCurrentRequester).thenReturn(user);
+      service.delete("discussion1", "message", 0);
+      verifyNoInteractions(linkedIdeas);
+      clearInvocations(message, messages);
+      doThrow(SecurityException.class).when(linkedIdeas).delete("idea body");
+      assertThrows(SecurityException.class, () -> service.delete("discussion1", "message", 0, false, true));
+      verify(message, never()).delete();
+      verify(messages, never()).save(any(DiscussionMessage.class));
+      doNothing().when(linkedIdeas).delete("idea body");
+      service.delete("discussion1", "message", 0, false, true);
+      var order = inOrder(linkedIdeas, message);
+      order.verify(linkedIdeas, atLeastOnce()).delete("idea body");
+      order.verify(message).delete();
+      assertThrows(IllegalArgumentException.class, () -> service.delete("discussion1", "message", 0, true, true));
     }
   }
 

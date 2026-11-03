@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-/* Ask about the linked Almanach event before allowing the native message deletion POST. */
+/* Confirm every deletion, with an explicit choice for a linked native contribution. */
 (() => {
   'use strict';
   document.addEventListener('DOMContentLoaded', () => {
@@ -34,20 +34,23 @@
     const only = document.getElementById('discussion-delete-message-only');
     let active;
     let generation = 0;
+    let kind = 'message';
     const settle = form => {
       form.querySelector('button[type=submit]').disabled = false;
       form.dispatchEvent(new CustomEvent('discussion-deletion-settled', {bubbles:true}));
     };
     const submit = (form, deleteEvent) => {
       if (!form.isConnected) { settle(form); return; }
-      let input = form.elements.deleteEvent;
-      if (!input) {
-        input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = 'deleteEvent';
-        form.append(input);
+      for (const name of ['deleteEvent', 'deleteIdea']) {
+        let input = form.elements[name];
+        if (!input) {
+          input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = name;
+          form.append(input);
+        }
+        input.value = String(deleteEvent && kind === (name === 'deleteIdea' ? 'idea' : 'event'));
       }
-      input.value = String(deleteEvent);
       // A fast response can still be inside the first native submit event's dispatch.
       window.setTimeout(() => {
         if (!form.isConnected) { settle(form); return; }
@@ -73,12 +76,20 @@
         const state = page.querySelector('.discussion-event-deletion');
         if (!state || !['true','false'].includes(state.dataset.linked)
             || !['true','false'].includes(state.dataset.canDeleteEvent)) { throw new Error('Invalid deletion response'); }
-        if (state.dataset.linked === 'false') { submit(form, false); return; }
+        kind = state.dataset.kind || (state.dataset.linked === 'true' ? 'event' : 'message');
+        if (!['event', 'idea', 'message'].includes(kind)) { throw new Error('Invalid deletion kind'); }
         active = form;
         title.textContent = state.dataset.title || '';
-        both.hidden = state.dataset.canDeleteEvent !== 'true';
-        document.getElementById('discussion-delete-event-denied').hidden = !both.hidden;
-        document.getElementById('discussion-delete-event-recurrent').hidden = state.dataset.recurrent !== 'true';
+        title.hidden = !title.textContent;
+        const linked = kind !== 'message';
+        both.hidden = !linked || state.dataset.canDeleteEvent !== 'true';
+        const question = document.getElementById('discussion-delete-question');
+        question.textContent = question.dataset[kind];
+        const denied = document.getElementById('discussion-delete-event-denied');
+        denied.hidden = !linked || !both.hidden;
+        denied.textContent = denied.dataset[kind] || '';
+        only.textContent = linked ? only.dataset.linked : only.dataset.message;
+        document.getElementById('discussion-delete-event-recurrent').hidden = kind !== 'event' || state.dataset.recurrent !== 'true';
         dialog.showModal();
         document.getElementById('discussion-delete-event-cancel').focus();
       } catch (failure) {

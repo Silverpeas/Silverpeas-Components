@@ -33,8 +33,8 @@ labels['GML.cancel']='Annuler';
 labels['GML.close']='Fermer';
 const dialog=fs.readFileSync(path.join(assets,'event-delete-dialog.jsp'),'utf8').replace(/<%[\s\S]*?%>/g,'').replace(/<view:setBundle[^>]*\/>/g,'').replace(/<fmt:message key=['"]([^'"]+)['"]\s*\/>/g,(_,key)=>labels[key]);
 const row=(text='Original')=>`<article id="message-1" class="discussion-message" data-sequence="1"><p class="discussion-body">${text}</p><form class="discussion-delete" action="/channels/main/messages/m1/delete" data-deletion-info="/channels/main/messages/m1/deletion"><input name="version" type="hidden" value="3"><input name="deleteEvent" type="hidden" value="false"><button type="submit">Supprimer</button></form></article>`;
-const state=({linked=true,allowed=true,recurrent=false}={})=>`<span class="discussion-event-deletion" data-linked="${linked}" data-can-delete-event="${allowed}" data-recurrent="${recurrent}" data-title="Réunion &lt;img src=x&gt;"></span>`;
-async function setup({linked=true,allowed=true,recurrent=false,live=false}={}) {
+const state=({linked=true,allowed=true,recurrent=false,kind=linked?'event':'message'}={})=>`<span class="discussion-event-deletion" data-kind="${kind}" data-linked="${linked}" data-can-delete-event="${allowed}" data-recurrent="${recurrent}" data-title="Réunion &lt;img src=x&gt;"></span>`;
+async function setup({linked=true,allowed=true,recurrent=false,live=false,kind=linked?'event':'message'}={}) {
   const browser=await chromium.launch({executablePath:process.env.CHROME_PATH,args:['--no-sandbox']});
   const page=await browser.newPage({viewport:{width:1100,height:850}});
   await page.setContent(`<base href="http://discussion.test/"><main id="discussion" data-instance-id="discussion1" ${live?'data-updates="/updates"':''}><div id="discussion-scroll"><div id="discussion-history"><div class="discussion-page">${row()}</div></div></div><span class="discussion-unread-count">0</span><p id="discussion-live-error" hidden>Erreur</p>${dialog}</main>`);
@@ -52,7 +52,7 @@ async function setup({linked=true,allowed=true,recurrent=false,live=false}={}) {
         return Promise.resolve({responseText:infoHtml});
       }};
     }};
-  },{html:state({linked,allowed,recurrent}),updated:row('Updated')});
+  },{html:state({linked,allowed,recurrent,kind}),updated:row('Updated')});
   await page.addScriptTag({path:path.join(assets,'javaScript/discussion-deletion.js')});
   if(live)await page.addScriptTag({path:path.join(assets,'javaScript/discussion-live.js')});
   await page.evaluate(()=>document.dispatchEvent(new Event('DOMContentLoaded')));
@@ -81,7 +81,7 @@ test('linked event deletion offers cancellation, message only and both without d
     await open(page);
     await page.locator('#discussion-delete-message-only').click();
     await page.waitForFunction(()=>posts.length===1);
-    assert.deepEqual(await page.evaluate(()=>posts),[{version:'3',deleteEvent:'false'}]);
+    assert.deepEqual(await page.evaluate(()=>posts),[{version:'3',deleteEvent:'false',deleteIdea:'false'}]);
   } finally {await browser.close();}
 });
 
@@ -92,12 +92,12 @@ test('delete both sends an explicit choice while recurring occurrences are clear
     assert.equal(await page.locator('#discussion-delete-event-recurrent').isVisible(),true);
     await page.locator('#discussion-delete-message-and-event').click();
     await page.waitForFunction(()=>posts.length===1);
-    assert.deepEqual(await page.evaluate(()=>posts),[{version:'3',deleteEvent:'true'}]);
+    assert.deepEqual(await page.evaluate(()=>posts),[{version:'3',deleteEvent:'true',deleteIdea:'false'}]);
     assert.equal(await page.locator('#discussion-delete-event-dialog').evaluate(n=>n.open),false);
   } finally {await browser.close();}
 });
 
-test('read-only event rights hide the combined deletion choice and ordinary messages keep their native delete action',async()=>{
+test('read-only event rights hide the combined deletion choice and ordinary messages also require confirmation',async()=>{
   const {browser,page}=await setup({allowed:false});
   try {
     await open(page);
@@ -109,7 +109,12 @@ test('read-only event rights hide the combined deletion choice and ordinary mess
   } finally {await browser.close();}
   const second=await setup({linked:false});
   try {
-    await second.page.locator('.discussion-delete button').click();
+    await open(second.page);
+    assert.equal(await second.page.evaluate(()=>posts.length),0);
+    assert.equal(await second.page.locator('#discussion-delete-question').textContent(),labels['discussion.deleteMessageQuestion']);
+    assert.equal(await second.page.locator('#discussion-delete-message-and-event').isVisible(),false);
+    assert.equal(await second.page.locator('#discussion-delete-message-only').textContent(),labels['discussion.deleteMessageConfirm']);
+    await second.page.locator('#discussion-delete-message-only').click();
     await second.page.waitForFunction(()=>posts.length===1);
     assert.equal(await second.page.locator('#discussion-delete-event-dialog').evaluate(n=>n.open),false);
     assert.equal(await second.page.evaluate(()=>posts[0].deleteEvent),'false');
@@ -157,4 +162,37 @@ test('live updates preserve the message until the confirmation is dismissed and 
     await page.waitForFunction(()=>document.querySelector('.discussion-body').textContent==='Updated');
     assert.equal(await page.evaluate(()=>posts.length),0);
   } finally {await browser.close();}
+});
+
+
+test('idea deletion offers the explicit linked choice without sending the Almanach flag',async()=>{
+  const {browser,page}=await setup({kind:'idea'});
+  try {
+    await open(page);
+    assert.equal(await page.locator('#discussion-delete-question').textContent(),labels['discussion.deleteIdeaQuestion']);
+    assert.equal(await page.locator('#discussion-delete-event-recurrent').isVisible(),false);
+    assert.equal(await page.evaluate(()=>posts.length),0);
+    await page.locator('#discussion-delete-message-and-event').click();
+    await page.waitForFunction(()=>posts.length===1);
+    assert.deepEqual(await page.evaluate(()=>posts),[{version:'3',deleteEvent:'false',deleteIdea:'true'}]);
+  } finally {await browser.close();}
+});
+
+test('idea without deletion rights explains that it is kept and canceling an ordinary message never posts',async()=>{
+  const {browser,page}=await setup({kind:'idea',allowed:false});
+  try {
+    await open(page);
+    assert.equal(await page.locator('#discussion-delete-event-denied').textContent(),labels['discussion.deleteIdeaDenied']);
+    assert.equal(await page.locator('#discussion-delete-message-and-event').isVisible(),false);
+    await page.locator('#discussion-delete-message-only').click();
+    await page.waitForFunction(()=>posts.length===1);
+    assert.equal(await page.evaluate(()=>posts[0].deleteIdea),'false');
+  } finally {await browser.close();}
+  const ordinary=await setup({linked:false});
+  try {
+    await open(ordinary.page);
+    await ordinary.page.locator('#discussion-delete-event-close').click();
+    await ordinary.page.waitForFunction(()=>!document.querySelector('.discussion-delete button').disabled);
+    assert.equal(await ordinary.page.evaluate(()=>posts.length),0);
+  } finally {await ordinary.browser.close();}
 });
