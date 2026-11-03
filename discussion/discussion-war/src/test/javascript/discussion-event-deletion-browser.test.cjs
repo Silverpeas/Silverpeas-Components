@@ -30,6 +30,7 @@ const assets=path.join(__dirname,'../../main/webapp/discussion/jsp');
 const props=fs.readFileSync(path.join(__dirname,'../../../../discussion-configuration/src/main/config/properties/org/silverpeas/components/discussion/multilang/DiscussionBundle_fr.properties'),'utf8');
 const labels=Object.fromEntries(props.split('\n').filter(line=>line.startsWith('discussion.')&&line.includes('=')).map(line=>{const i=line.indexOf('=');return [line.slice(0,i).trim(),line.slice(i+1).trim()];}));
 labels['GML.cancel']='Annuler';
+labels['GML.close']='Fermer';
 const dialog=fs.readFileSync(path.join(assets,'event-delete-dialog.jsp'),'utf8').replace(/<%[\s\S]*?%>/g,'').replace(/<view:setBundle[^>]*\/>/g,'').replace(/<fmt:message key=['"]([^'"]+)['"]\s*\/>/g,(_,key)=>labels[key]);
 const row=(text='Original')=>`<article id="message-1" class="discussion-message" data-sequence="1"><p class="discussion-body">${text}</p><form class="discussion-delete" action="/channels/main/messages/m1/delete" data-deletion-info="/channels/main/messages/m1/deletion"><input name="version" type="hidden" value="3"><input name="deleteEvent" type="hidden" value="false"><button type="submit">Supprimer</button></form></article>`;
 const state=({linked=true,allowed=true,recurrent=false}={})=>`<span class="discussion-event-deletion" data-linked="${linked}" data-can-delete-event="${allowed}" data-recurrent="${recurrent}" data-title="Réunion &lt;img src=x&gt;"></span>`;
@@ -67,6 +68,10 @@ test('linked event deletion offers cancellation, message only and both without d
   try {
     await open(page);
     assert.equal(await page.evaluate(()=>posts.length),0);
+    await page.locator('#discussion-delete-event-close').click();
+    await page.waitForFunction(()=>!document.querySelector('.discussion-delete button').disabled);
+    assert.equal(await page.evaluate(()=>posts.length),0);
+    await open(page);
     assert.equal(await page.locator('#discussion-delete-event-title').textContent(),'Réunion <img src=x>');
     assert.equal(await page.locator('#discussion-delete-event-dialog img').count(),0);
     assert.equal(await page.evaluate(()=>calls[0].params.version),'3');
@@ -140,6 +145,11 @@ test('live updates preserve the message until the confirmation is dismissed and 
       const box=await page.locator('#discussion-delete-event-dialog').boundingBox();
       assert.ok(box.x>=0&&box.x+box.width<=width);
       assert.equal(await page.locator('#discussion-delete-event-dialog').evaluate(n=>n.scrollWidth<=n.clientWidth),true);
+      assert.equal(await page.locator('#discussion-delete-event-close').getAttribute('aria-label'),'Fermer');
+      const style=await page.locator('#discussion-delete-message-and-event').evaluate(n=>{const s=getComputedStyle(n);return {border:s.borderTopStyle,background:s.backgroundColor,color:s.color};});
+      assert.equal(style.border,'solid');
+      assert.notEqual(style.background,'rgba(0, 0, 0, 0)');
+      assert.notEqual(style.color,style.background);
     }
     await page.locator('#discussion-delete-event-cancel').click();
     await page.waitForFunction(()=>!document.querySelector('.discussion-delete button').disabled);
