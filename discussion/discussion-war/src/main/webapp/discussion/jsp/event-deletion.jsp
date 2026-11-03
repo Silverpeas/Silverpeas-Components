@@ -25,4 +25,4 @@
 --%>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="jakarta.tags.core" prefix="c" %>
-<span class="discussion-event-deletion" data-linked="${eventDeletion.linked}" data-can-delete-event="${eventDeletion.canDeleteEvent}" data-title="<c:out value='${eventDeletion.title}'/>" data-recurrent="${eventDeletion.recurrent}"></span>
+<span class="discussion-event-deletion" data-kind="${eventDeletion.kind}" data-linked="${eventDeletion.kind ne 'message'}" data-can-delete-event="${eventDeletion.canDeleteLinked}" data-title="<c:out value='${eventDeletion.title}'/>" data-recurrent="${eventDeletion.recurrent}"></span>

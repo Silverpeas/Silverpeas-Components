@@ -110,6 +110,19 @@ class DiscussionWebControllerTest {
   }
 
   @Test
+  void ideaDeletionRequiresItsOwnExplicitChoiceAndRejectsConflictingFlags() {
+    when(request.getParameter("version")).thenReturn("2");
+    when(request.getParameter("deleteIdea")).thenReturn("true");
+    controller.delete(context);
+    verify(service).delete("discussion1", "message", 2, false, true);
+    when(request.getParameter("deleteEvent")).thenReturn("true");
+    assertEquals(400, assertThrows(WebApplicationException.class, () -> controller.delete(context)).getResponse().getStatus());
+    when(request.getParameter("deleteEvent")).thenReturn("false");
+    when(request.getParameter("deleteIdea")).thenReturn("unknown");
+    assertEquals(400, assertThrows(WebApplicationException.class, () -> controller.delete(context)).getResponse().getStatus());
+  }
+
+  @Test
   void ideaCreationForwardsTheSelectedBoxTextAndSourceWithinTheCurrentThread() {
     when(request.getParameter("box")).thenReturn("suggestionBox1");
     when(request.getParameter("title")).thenReturn("Une idée");
