@@ -54,7 +54,28 @@ class DiscussionNotificationSettingsTest {
   @TestManagedMock private ComponentAccessController receivers;
   @org.silverpeas.core.persistence.datasource.PersistOperation
   @TestManagedMock private org.silverpeas.core.persistence.datasource.model.jpa.JpaPersistOperation persistOperation;
+  @TestManagedMock private org.silverpeas.components.discussion.repository.DiscussionMessageRepository messages;
   @TestedBean private DiscussionNotificationSettings settings;
+
+  @Test
+  void channelModesFilterDesktopDeliveryUsingTheActualMessageAndRecipient() {
+    var conversation = mock(Conversation.class);
+    when(conversation.getId()).thenReturn("projects");
+    when(conversations.forMessage("discussion1", "message")).thenReturn(conversation);
+    var message = mock(org.silverpeas.components.discussion.model.DiscussionMessage.class);
+    when(message.getBody()).thenReturn("Bonjour @[Bernard](2)");
+    when(messages.getById("message")).thenReturn(message);
+    var state = new org.silverpeas.components.discussion.model.DiscussionReadState("projects", "2");
+    when(states.find("projects", "2")).thenReturn(Optional.of(state));
+    assertFalse(settings.channelMutedForMessage("discussion1", "message", "2"));
+    state.setNotificationMode("MENTIONS");
+    assertFalse(settings.channelMutedForMessage("discussion1", "message", "2"));
+    when(message.getBody()).thenReturn("Bonjour @[Autre utilisateur](12)");
+    assertTrue(settings.channelMutedForMessage("discussion1", "message", "2"));
+    state.setNotificationMode("NONE");
+    assertTrue(settings.channelMutedForMessage("discussion1", "message", "2"));
+    assertFalse(settings.channelMutedForMessage("discussion1", "message", "3"));
+  }
 
   @Test
   void preferencesBelongToTheRequesterAndDoNotMarkMessagesRead() {

@@ -30,6 +30,7 @@
 <%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view" %>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <c:url var="base" value="${requestScope.componentUriBase}"/>
+<c:url var="instanceBase" value="${requestScope.instanceUriBase}"/>
 <c:if test="${not empty initialThreadRootId}">
   <c:url var="initialThreadUrl" value="${requestScope.componentUriBase}threads/${initialThreadRootId}">
     <c:param name="message" value="${initialThreadMessageId}"/>
@@ -53,6 +54,7 @@
   <view:looknfeel/>
   <view:includePlugin name="preview"/>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-threads.js'/>" defer></script>
+  <script src="<c:url value='/discussion/jsp/javaScript/discussion-channels.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-search.js'/>" defer></script>
   <view:includePlugin name="subscription"/>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-subscription.js'/>" defer></script>
@@ -79,7 +81,7 @@
 </view:operationPane>
 <view:window>
   <view:frame>
-    <main id="discussion" data-history="${historyUrl}" data-thread-root-id="${threadRoot.id}" data-initial-thread-url="${fn:escapeXml(initialThreadUrl)}" data-participants="${base}participants" data-publications="${base}publications" data-updates="${updatesUrl}"
+    <main id="discussion" data-channel-scope="${currentChannel.scopeKey}" data-channels="${instanceBase}channels" data-history="${historyUrl}" data-thread-root-id="${threadRoot.id}" data-initial-thread-url="${fn:escapeXml(initialThreadUrl)}" data-participants="${base}participants" data-publications="${base}publications" data-updates="${updatesUrl}"
         data-files="${base}files" data-pins="${base}pins" data-instance-id="${discussionInstanceId}" data-read="${base}messages/read" data-typing="${base}typing" data-user-id="${currentUser.id}"
         data-typing-one="<fmt:message key='discussion.typingOne'/>" data-typing-many="<fmt:message key='discussion.typingMany'/>"
         data-message-id="<c:out value='${focusedMessageId}'/>"
@@ -89,19 +91,21 @@
         data-close-image="<fmt:message key='discussion.closeImage'/>" data-emoji-label="<fmt:message key='discussion.emoji'/>"
         data-mention-label="<fmt:message key='discussion.mention'/>">
       <header class="discussion-header">
+        <button id="discussion-channels-toggle" class="discussion-channel-toggle" type="button" aria-controls="discussion-channels" aria-expanded="false"><svg class="discussion-icon" aria-hidden="true"><use href="<c:url value='/discussion/jsp/icons/discussion-icons.svg'/>#menu"/></svg><fmt:message key="discussion.channels"/><span id="discussion-channels-unread" class="discussion-channel-count" hidden></span></button>
         <div class="discussion-heading">
-          <h1><c:out value="${instanceInfo.title}"/></h1>
+          <h1 title="<c:out value='${instanceInfo.description}'/>"><c:out value="${instanceInfo.title}"/></h1>
           <c:if test="${not empty threadRoot}">
             <p class="discussion-thread-context"><a class="discussion-thread-back" href="${base}messages/${threadRoot.id}#message-${threadRoot.id}"><svg class="discussion-icon" aria-hidden="true"><use href="<c:url value='/discussion/jsp/icons/discussion-icons.svg'/>#arrow-left"/></svg><fmt:message key="discussion.backToDiscussion"/></a>
               <strong><fmt:message key="discussion.thread"/></strong>
               <c:if test="${not threadRoot.deleted}"><span><fmt:message key="discussion.replyTo"/> <c:out value="${threadRoot.creator.displayedName}"/></span></c:if>
             </p>
           </c:if>
-          <c:if test="${empty threadRoot and not empty instanceInfo.description}"><p class="discussion-subtitle"><c:out value="${instanceInfo.description}"/></p></c:if>
+          <c:if test="${empty threadRoot}"><p class="discussion-subtitle discussion-channel-heading"><strong># <span id="discussion-channel-title"><c:choose><c:when test="${empty currentChannel.channelName}"><fmt:message key="discussion.general"/></c:when><c:otherwise><c:out value="${currentChannel.channelName}"/></c:otherwise></c:choose></span></strong><span><c:choose><c:when test="${currentChannel.main and empty currentChannel.channelDescription}"><c:out value="${instanceInfo.description}"/></c:when><c:otherwise><c:out value="${currentChannel.channelDescription}"/></c:otherwise></c:choose></span><c:if test="${currentChannel.archived}"><span class="discussion-channel-archived"><fmt:message key="discussion.channelArchived"/></span></c:if></p></c:if>
         </div>
         <form id="discussion-search" class="discussion-search" action="${base}search" method="get" role="search">
           <label class="discussion-compose-label" for="discussion-search-query"><fmt:message key="discussion.search"/></label>
           <input type="search" id="discussion-search-query" name="q" maxlength="200" placeholder="<fmt:message key='discussion.search'/>" autocomplete="off"/>
+          <label class="discussion-search-scope"><input id="discussion-search-all-channels" type="checkbox" name="allChannels" value="true"/><fmt:message key="discussion.allChannels"/></label>
           <button type="submit" class="discussion-icon-button" aria-label="<fmt:message key='discussion.searchSubmit'/>"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="m15 15 6 6"/></svg></button>
         </form>
         <div class="discussion-reading">
@@ -117,6 +121,24 @@
           <span data-user-id="<c:out value='${candidate.id}'/>" data-name="<c:out value='${candidate.name}'/>"></span>
         </c:forEach>
       </template>
+      <nav id="discussion-channels" class="discussion-channels" aria-label="<fmt:message key='discussion.channels'/>" hidden>
+        <div class="discussion-channels-heading"><h2><fmt:message key="discussion.channels"/></h2><button id="discussion-channels-close" class="discussion-icon-button" type="button" aria-label="<fmt:message key='discussion.closeChannels'/>"><svg class="discussion-icon" aria-hidden="true"><use href="<c:url value='/discussion/jsp/icons/discussion-icons.svg'/>#close"/></svg></button></div>
+        <div id="discussion-channel-list"><jsp:include page="channels.jsp"/></div>
+        <c:if test="${canManageChannels}"><button id="discussion-channel-create" class="discussion-button--quiet" type="button"><fmt:message key="discussion.createChannel"/></button><button id="discussion-channel-settings" class="discussion-button--quiet" type="button"><fmt:message key="discussion.manageChannel"/></button></c:if>
+        <p id="discussion-channels-error" class="discussion-presence-error" hidden role="status"><fmt:message key="discussion.error"/></p>
+      </nav>
+      <c:if test="${canManageChannels}">
+        <dialog id="discussion-channel-dialog" class="discussion-channel-dialog">
+          <form method="post" action="${instanceBase}channels/create" data-create="${instanceBase}channels/create" data-update="${instanceBase}channels/${currentChannel.scopeKey}/settings">
+            <h2><fmt:message key="discussion.manageChannel"/></h2>
+            <label><fmt:message key="discussion.channelName"/><input name="name" required maxlength="80" data-current="<c:out value='${currentChannel.channelName}'/>"/></label>
+            <label><fmt:message key="discussion.channelDescription"/><textarea name="description" maxlength="255" data-current="<c:out value='${currentChannel.channelDescription}'/>"></textarea></label>
+            <label class="discussion-channel-archive-choice"><input name="archive" type="checkbox" data-current="${currentChannel.archived}" data-main="${currentChannel.main}"/><fmt:message key="discussion.archiveChannel"/></label>
+            <input name="archived" type="hidden" value="false"/>
+            <div><button type="button" class="discussion-channel-cancel"><fmt:message key="GML.cancel"/></button><button type="submit"><fmt:message key="GML.validate"/></button></div>
+          </form>
+        </dialog>
+      </c:if>
       <div class="discussion-workspace">
         <div class="discussion-stream">
           <div id="discussion-scroll" class="discussion-scroll" tabindex="0" role="region" aria-label="<fmt:message key='discussion.history'/>">
@@ -209,6 +231,12 @@
           <details class="discussion-sidebar-section" id="discussion-notifications-section" name="discussion-sidebar">
             <summary><h2><fmt:message key="discussion.notifications"/></h2></summary>
             <div class="discussion-sidebar-content">
+              <form id="discussion-channel-notifications" method="post" action="${instanceBase}channels/${currentChannel.scopeKey}/notifications">
+                <label for="discussion-channel-notification-mode"><fmt:message key="discussion.channelNotifications"/></label>
+                <select id="discussion-channel-notification-mode" name="mode" data-current="${channelNotificationMode}">
+                  <option value="ALL"><fmt:message key="discussion.notifyAll"/></option><option value="MENTIONS"><fmt:message key="discussion.notifyMentions"/></option><option value="NONE"><fmt:message key="discussion.notifyNone"/></option>
+                </select><button type="submit" class="discussion-button--quiet"><fmt:message key="GML.validate"/></button>
+              </form>
               <form id="discussion-notification-settings" action="${base}notification-preferences" method="post"
                   data-enabled="${desktopPreference.enabled}" data-revision="${desktopPreference.revision}"
                   data-denied="<fmt:message key='discussion.notificationsDenied'/>" data-unsupported="<fmt:message key='discussion.notificationsUnsupported'/>">

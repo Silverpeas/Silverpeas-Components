@@ -53,8 +53,27 @@ class DiscussionTypingServiceTest {
   private org.silverpeas.core.security.session.SessionManagement sessions;
   @TestManagedMock
   private ConversationService conversations;
+  @TestManagedMock
+  private DiscussionChannelContext channelContext;
   @TestedBean
   private DiscussionTypingService service;
+
+  @Test
+  void typingStatesForTheSameBrowserTabAreIndependentBetweenChannels() {
+    var user = mock(User.class);
+    when(user.getId()).thenReturn("2");
+    when(users.getCurrentRequester()).thenReturn(user);
+    when(channelContext.getScope()).thenReturn("main");
+    service.typing("discussion1", "tab", true);
+    when(channelContext.getScope()).thenReturn("projects");
+    service.typing("discussion1", "tab", true);
+    when(channelContext.getScope()).thenReturn("main");
+    service.typing("discussion1", "tab", false);
+    var events = ArgumentCaptor.forClass(DiscussionTypingServerEvent.class);
+    verify(notifier, times(3)).notify(events.capture());
+    assertTrue(events.getAllValues().get(1).getData("session", user).contains("\"channelScope\":\"projects\""));
+    assertTrue(events.getValue().getData("session", user).contains("\"ttl\":0"));
+  }
 
   @Test
   void typingIsScopedToEachValidatedThreadIncludingStopSignals() {

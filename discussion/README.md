@@ -332,3 +332,36 @@ dans ce document uniquement. Dans le panneau, le fil utilise une zone de défile
 se trouve à gauche, près du séparateur des colonnes. Seul le conteneur de défilement est en RTL ;
 les messages, champs et dialogues gardent leur direction LTR. Le proxy de défilement commun est
 utilisé pour la pagination, le positionnement des notifications et les accusés de lecture.
+
+
+## Canaux publics
+
+Chaque instance propose un canal Général (l'ancienne conversation `main`) et des canaux
+supplémentaires partageant ses droits d'accès. Le volet Canaux est réduit par défaut.
+Sur ordinateur il décale la conversation ; sur mobile il la recouvre temporairement.
+Les responsables créent, renomment et archivent les canaux. Général ne peut pas être archivé.
+L'archivage conserve les messages, les pièces jointes et les liens directs.
+
+Les historiques, séquences, non-lus, mentions non lues, réactions, épingles, publications
+et fichiers sont isolés par conversation. Les fils appartiennent au canal de leur racine.
+Le routage `channels/{scope}/...` conserve la sélection dans chaque requête, sans état
+sur le contrôleur de session. Le contexte CDI est limité à la requête ; les traitements
+asynchrones résolvent explicitement le canal du message. Les anciennes URL de notification
+restent valables et ouvrent le bon canal et, au besoin, le panneau du fil.
+
+La recherche utilise l'index Silverpeas, dans le canal courant ou tous les canaux de
+l'instance. Les résultats sont revérifiés en base et identifient leur canal. La réindexation
+et la suppression d'une instance parcourent tous ses canaux.
+
+Les brouillons texte, leurs fichiers sélectionnés et l'ancre de lecture sont conservés
+pendant les changements de canal dans l'iframe native, dans la mémoire du navigateur
+(pour les 30 derniers canaux visités par utilisateur/instance). Ils disparaissent à la
+fermeture/rechargement complet de la fenêtre Silverpeas. Ils ne sont pas envoyés au serveur.
+
+Chaque utilisateur peut choisir ALL, MENTIONS ou NONE par canal, en plus de son réglage
+global des notifications de bureau. Les canaux sans notification conservent leurs non-lus.
+Les événements utilisent le canal partagé SSE/WebSocket natif ; aucun polling des canaux.
+La saisie et la suppression des notifications quand on consulte un canal sont cloisonnées.
+
+Voir [sql-dev/channels/README.md](sql-dev/channels/README.md) pour mettre à jour une base
+existante. La version de migration reste 001.

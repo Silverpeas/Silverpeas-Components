@@ -62,7 +62,8 @@ class DiscussionMessageIndexTest {
   void prepare() {
     var conversation = mock(Conversation.class);
     when(conversation.getId()).thenReturn("c1");
-    when(conversations.main("discussion1", false)).thenReturn(conversation);
+    when(conversations.forMessage(eq("discussion1"), anyString())).thenReturn(conversation);
+    when(conversations.channels("discussion1")).thenReturn(List.of(conversation));
   }
 
   @Test

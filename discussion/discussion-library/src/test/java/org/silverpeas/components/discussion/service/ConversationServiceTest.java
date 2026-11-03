@@ -80,7 +80,7 @@ class ConversationServiceTest {
     conversation = mock(Conversation.class);
     when(conversation.getId()).thenReturn("conversation");
     when(conversation.getLastSequence()).thenReturn(4L);
-    when(conversations.main(eq("discussion1"), anyBoolean())).thenReturn(conversation);
+    when(conversations.current(eq("discussion1"), anyBoolean())).thenReturn(conversation);
     user = mock(User.class);
     when(user.getId()).thenReturn("user");
     when(access.require(eq("discussion1"), any())).thenReturn(SilverpeasRole.WRITER);
@@ -102,7 +102,7 @@ class ConversationServiceTest {
       assertEquals("message", saved.getValue().getThreadRootId());
       assertEquals("conversation", saved.getValue().getConversationId());
       assertEquals(5, saved.getValue().getSequenceNumber());
-      verify(conversations).main("discussion1", true);
+      verify(conversations).current("discussion1", true);
       verify(mentions).notifyNewMentions("discussion1", saved.getValue(), "");
       verify(messageIndex).schedule(eq("discussion1"), any());
       verify(subscriptions).schedule(argThat(event -> "message".equals(event.message().getThreadRootId())));
@@ -334,7 +334,7 @@ class ConversationServiceTest {
           && event.instanceId().equals("discussion1") && event.sender() == user));
       verify(changes).changed("discussion1");
       var captured = org.mockito.ArgumentCaptor.forClass(DiscussionMessage.class);
-      verify(conversations).main("discussion1", true);
+      verify(conversations).current("discussion1", true);
       verify(messages).save(captured.capture());
       verify(messageIndex).schedule(eq("discussion1"), any());
       assertEquals("conversation", captured.getValue().getConversationId());
@@ -636,6 +636,15 @@ class ConversationServiceTest {
     assertThrows(SecurityException.class, () -> service.sharedFiles("discussion1"));
     assertThrows(SecurityException.class, () -> service.files("discussion1", List.of("foreign")));
     verifyNoInteractions(messages, imageService);
+  }
+
+  @Test
+  void archivedChannelCannotAcceptNewMessages() {
+    var channel = mock(Conversation.class);
+    when(channel.isArchived()).thenReturn(true);
+    when(conversations.current("discussion1", true)).thenReturn(channel);
+    assertThrows(IllegalArgumentException.class, () -> service.publish("discussion1", "Message"));
+    verify(messages, never()).save(any(DiscussionMessage.class));
   }
 
   private DiscussionMessage existingMessage(String author) {

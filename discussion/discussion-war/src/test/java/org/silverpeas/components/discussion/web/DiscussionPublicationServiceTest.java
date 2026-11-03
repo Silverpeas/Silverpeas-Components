@@ -67,7 +67,7 @@ class DiscussionPublicationServiceTest {
   void listsDistinctAuthorizedPublicationsWithLocalizedTitlesFromTheWholeConversation() {
     var conversation = mock(Conversation.class);
     when(conversation.getId()).thenReturn("conversation");
-    when(conversations.main("discussion1", false)).thenReturn(conversation);
+    when(conversations.current("discussion1", false)).thenReturn(conversation);
     when(messages.publicationLinkBodies("conversation")).thenReturn(Stream.of(
         "https://silverpeas.test/silverpeas/Publication/12 /silverpeas/Publication/12",
         "/silverpeas/Publication/34 /silverpeas/Publication/56 /silverpeas/Publication/99"));
@@ -103,7 +103,7 @@ class DiscussionPublicationServiceTest {
   void resolvesLongReferenceListsInBoundedBatches() {
     var conversation = mock(Conversation.class);
     when(conversation.getId()).thenReturn("conversation");
-    when(conversations.main("discussion1", false)).thenReturn(conversation);
+    when(conversations.current("discussion1", false)).thenReturn(conversation);
     when(messages.publicationLinkBodies("conversation")).thenReturn(
         java.util.stream.IntStream.rangeClosed(1, 205).mapToObj(id -> "/silverpeas/Publication/" + id));
     var user = mock(User.class);

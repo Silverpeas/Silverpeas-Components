@@ -71,7 +71,7 @@ public class DefaultConversationService implements ConversationService {
   @Override
   public List<String> participantIds(String instanceId) {
     access.require(instanceId, SilverpeasRole.WRITER);
-    Conversation conversation = conversations.main(instanceId, false);
+    Conversation conversation = conversations.current(instanceId, false);
     return messages.authorIds(conversation.getId());
   }
 
@@ -81,7 +81,7 @@ public class DefaultConversationService implements ConversationService {
     if (before <= 0 || limit < 1 || limit > 100) {
       throw new IllegalArgumentException("Invalid history page");
     }
-    Conversation conversation = conversations.main(instanceId, false);
+    Conversation conversation = conversations.current(instanceId, false);
     var found = messages.history(conversation.getId(), before, limit + 1);
     boolean more = found.size() > limit;
     var page = found.subList(0, Math.min(limit, found.size()));
@@ -95,7 +95,7 @@ public class DefaultConversationService implements ConversationService {
     if (after < 0 || messageIds.size() > 100) {
       throw new IllegalArgumentException("Invalid update range");
     }
-    Conversation conversation = conversations.main(instanceId, false);
+    Conversation conversation = conversations.current(instanceId, false);
     var selected = messages.selected(conversation.getId(), messageIds).stream()
         .filter(message -> message.getThreadRootId() == null).toList();
     var newer = messages.newer(conversation.getId(), after);
@@ -167,7 +167,10 @@ public class DefaultConversationService implements ConversationService {
     if (files == null || files.size() > DiscussionFileUpload.MAX_FILES || files.stream().anyMatch(java.util.Objects::isNull)) {
       throw new IllegalArgumentException("Too many attachments");
     }
-    Conversation conversation = conversations.main(instanceId, true);
+    Conversation conversation = conversations.current(instanceId, true);
+    if (conversation.isArchived()) {
+      throw new IllegalArgumentException("This channel is archived");
+    }
     var message = new DiscussionMessage(conversation.getId(), conversation.nextSequence(),
         mentions.normalize(instanceId, body == null ? "" : body), !images.isEmpty() || !files.isEmpty());
     if (rootId != null) {
@@ -195,7 +198,7 @@ public class DefaultConversationService implements ConversationService {
     if (messageIds.size() > 200) {
       throw new IllegalArgumentException("Too many message identifiers");
     }
-    var conversation = conversations.main(instanceId, false);
+    var conversation = conversations.current(instanceId, false);
     var result = new java.util.HashMap<String, List<DiscussionImage>>();
     messages.selected(conversation.getId(), messageIds).stream().filter(message -> !message.isDeleted())
         .forEach(message -> result.put(message.getId(), imageService.list(instanceId, message.getId())));
@@ -208,7 +211,7 @@ public class DefaultConversationService implements ConversationService {
     if (messageIds.size() > 200) {
       throw new IllegalArgumentException("Too many message identifiers");
     }
-    var conversation = conversations.main(instanceId, false);
+    var conversation = conversations.current(instanceId, false);
     var result = new java.util.HashMap<String, List<DiscussionFile>>();
     messages.selected(conversation.getId(), messageIds).stream()
         .filter(message -> !message.isDeleted() && message.isFilesAttached())
@@ -219,7 +222,7 @@ public class DefaultConversationService implements ConversationService {
   @Override
   public List<DiscussionFile> sharedFiles(String instanceId) {
     access.require(instanceId, SilverpeasRole.WRITER);
-    var conversation = conversations.main(instanceId, false);
+    var conversation = conversations.current(instanceId, false);
     return messages.fileMessageIds(conversation.getId()).stream()
         .flatMap(id -> imageService.files(instanceId, id).stream()).toList();
   }
@@ -259,21 +262,21 @@ public class DefaultConversationService implements ConversationService {
     if (messageIds.size() > 200) {
       throw new IllegalArgumentException("Too many message identifiers");
     }
-    Conversation conversation = conversations.main(instanceId, false);
+    Conversation conversation = conversations.current(instanceId, false);
     return likes.states(conversation.getId(), messageIds, User.getCurrentRequester().getId());
   }
 
   @Override
   public List<PinnedMessage> pinnedMessages(String instanceId) {
     access.require(instanceId, SilverpeasRole.WRITER);
-    return messages.pinned(conversations.main(instanceId, false).getId()).stream()
+    return messages.pinned(conversations.current(instanceId, false).getId()).stream()
         .map(PinnedMessage::from).toList();
   }
 
   @Override
   public DiscussionMessage setPinned(String instanceId, String messageId, boolean pinned) {
     access.require(instanceId, SilverpeasRole.WRITER);
-    var conversation = conversations.main(instanceId, true);
+    var conversation = conversations.current(instanceId, true);
     var message = messageIn(conversation, messageId);
     if (message.isDeleted()) {
       throw new IllegalArgumentException("Deleted message");
@@ -294,7 +297,7 @@ public class DefaultConversationService implements ConversationService {
     if (user.isAnonymous() || user.isAccessGuest()) {
       throw new SecurityException("A user account is required to react");
     }
-    Conversation conversation = conversations.main(instanceId, true);
+    Conversation conversation = conversations.current(instanceId, true);
     DiscussionMessage message = messageIn(conversation, messageId);
     if (message.isDeleted()) {
       throw new IllegalArgumentException("Deleted message");
@@ -318,7 +321,7 @@ public class DefaultConversationService implements ConversationService {
   @Override
   public MessagePage historyAround(String instanceId, String messageId) {
     access.require(instanceId, SilverpeasRole.WRITER);
-    Conversation conversation = conversations.main(instanceId, false);
+    Conversation conversation = conversations.current(instanceId, false);
     DiscussionMessage message = messageIn(conversation, messageId);
     return message.getThreadRootId() == null
         ? history(instanceId, message.getSequenceNumber() + 1, 30)
@@ -328,7 +331,7 @@ public class DefaultConversationService implements ConversationService {
   @Override
   public DiscussionMessage threadRoot(String instanceId, String messageId) {
     access.require(instanceId, SilverpeasRole.WRITER);
-    var conversation = conversations.main(instanceId, false);
+    var conversation = conversations.current(instanceId, false);
     var message = messageIn(conversation, messageId);
     return message.getThreadRootId() == null ? message : messageIn(conversation, message.getThreadRootId());
   }
@@ -347,7 +350,7 @@ public class DefaultConversationService implements ConversationService {
     if (before <= 0 || limit < 1 || limit > 100) {
       throw new IllegalArgumentException("Invalid thread history page");
     }
-    var conversation = conversations.main(instanceId, false);
+    var conversation = conversations.current(instanceId, false);
     requireRoot(conversation, rootId);
     var found = messages.threadHistory(conversation.getId(), rootId, before, limit + 1);
     boolean more = found.size() > limit;
@@ -361,7 +364,7 @@ public class DefaultConversationService implements ConversationService {
     if (after < 0 || messageIds.size() > 100) {
       throw new IllegalArgumentException("Invalid thread update range");
     }
-    var conversation = conversations.main(instanceId, false);
+    var conversation = conversations.current(instanceId, false);
     requireRoot(conversation, rootId);
     var selected = messages.selected(conversation.getId(), messageIds).stream()
         .filter(message -> rootId.equals(message.getId()) || rootId.equals(message.getThreadRootId())).toList();
@@ -378,7 +381,7 @@ public class DefaultConversationService implements ConversationService {
 
   private DiscussionMessage editable(String instanceId, String messageId, long version) {
     SilverpeasRole role = access.require(instanceId, SilverpeasRole.WRITER);
-    Conversation conversation = conversations.main(instanceId, true);
+    Conversation conversation = conversations.current(instanceId, true);
     DiscussionMessage message = messageIn(conversation, messageId);
     if (role != SilverpeasRole.ADMIN &&
         !User.getCurrentRequester().getId().equals(message.getCreatorId())) {
@@ -397,7 +400,7 @@ public class DefaultConversationService implements ConversationService {
       throw new IllegalArgumentException("Invalid visible message batch");
     }
     String userId = User.getCurrentRequester().getId();
-    Conversation conversation = conversations.main(instanceId, true);
+    Conversation conversation = conversations.current(instanceId, true);
     var ids = messageIds.stream().distinct().toList();
     var selected = messages.selected(conversation.getId(), ids);
     if (selected.size() != ids.size()) {
@@ -429,7 +432,7 @@ public class DefaultConversationService implements ConversationService {
     if (user.isAccessGuest() || user.isAnonymous()) {
       return;
     }
-    Conversation conversation = conversations.main(instanceId, true);
+    Conversation conversation = conversations.current(instanceId, true);
     DiscussionReadState state = readStates.find(conversation.getId(), user.getId())
         .orElseGet(() -> {
           var newState = new DiscussionReadState(conversation.getId(), user.getId());

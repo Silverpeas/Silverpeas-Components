@@ -37,9 +37,11 @@ import org.silverpeas.core.security.authorization.ComponentAccessController;
 /** Bounded, expiring state scoped by authenticated user and browser tab. */
 @Service
 public class DiscussionTypingService {
-  private record Key(String instanceId, String userId, String session, String threadRootId) { }
+  private record Key(String instanceId, String userId, String session, String threadRootId, String channelScope) { }
   private record State(long expiry, long sentAt) { }
   private final Map<Key, State> states = new HashMap<>();
+  @Inject
+  private DiscussionChannelContext channelContext;
   @Inject
   private DiscussionAccess access;
   @Inject
@@ -70,7 +72,8 @@ public class DiscussionTypingService {
     var user = users.getCurrentRequester();
     long now = System.currentTimeMillis();
     states.entrySet().removeIf(entry -> entry.getValue().expiry() < now);
-    var key = new Key(instanceId, user.getId(), session, threadRootId);
+    String scope = channelContext.getScope() == null ? "main" : channelContext.getScope();
+    var key = new Key(instanceId, user.getId(), session, threadRootId, scope);
     var previous = states.get(key);
     if (active) {
       long lastSent = previous == null ? 0 : previous.sentAt();
@@ -90,9 +93,9 @@ public class DiscussionTypingService {
     }
     long expiry = states.entrySet().stream()
         .filter(entry -> entry.getKey().instanceId().equals(instanceId) && entry.getKey().userId().equals(user.getId())
-            && entry.getKey().threadRootId().equals(threadRootId))
+            && entry.getKey().threadRootId().equals(threadRootId) && entry.getKey().channelScope().equals(scope))
         .mapToLong(entry -> entry.getValue().expiry()).max().orElse(0);
     notifier.notify(new DiscussionTypingServerEvent(new DiscussionTyping(instanceId, user.getId(),
-        user.getDisplayedName(), expiry, threadRootId), receivers, sessions));
+        user.getDisplayedName(), expiry, threadRootId, scope), receivers, sessions));
   }
 }

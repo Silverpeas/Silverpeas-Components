@@ -55,7 +55,7 @@ test('search queries the entire discussion without replacing history or draft an
     assert.equal(await page.locator('#discussion-search-status').textContent(),'Loading');
     const request=await page.evaluate(()=>({url:requests[0].url,params:requests[0].params}));
     assert.ok(request.url.endsWith('/discussion1/search'),JSON.stringify(request));
-    assert.deepEqual(request.params,{q:'projet',offset:'0'});
+    assert.deepEqual(request.params,{q:'projet',offset:'0',allChannels:'false'});
     await page.evaluate(html=>requests[0].resolve(html),fragment('old-message',20,21,true));
     await page.waitForFunction(()=>document.getElementById('discussion-search-count').textContent==='21');
     assert.equal(await page.locator('#discussion-search-section').evaluate(n=>n.open),true);

@@ -24,7 +24,10 @@
 package org.silverpeas.components.discussion.notification;
 
 /** Ephemeral typing state; zero expiry means stopped. No draft content is retained. */
-public record DiscussionTyping(String instanceId, String userId, String name, long expiresAt, String threadRootId) {
+public record DiscussionTyping(String instanceId, String userId, String name, long expiresAt, String threadRootId, String channelScope) {
+  public DiscussionTyping(String instanceId, String userId, String name, long expiresAt, String threadRootId) {
+    this(instanceId, userId, name, expiresAt, threadRootId, "main");
+  }
   public DiscussionTyping(String instanceId, String userId, String name, long expiresAt) {
     this(instanceId, userId, name, expiresAt, "");
   }

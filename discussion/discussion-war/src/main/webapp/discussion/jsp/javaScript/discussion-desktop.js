@@ -39,7 +39,7 @@
       ? new root.BroadcastChannel(namespace + '.desktop') : null;
   const token = () => String(Date.now()) + '-' + Math.random().toString(36).slice(2);
   const viewing = message => [...views.values()].some(view => view.instanceId === message.instanceId
-      && view.userId === message.userId && view.active());
+      && view.userId === message.userId && (view.channelScope || 'main') === (message.channelScope || 'main') && view.active());
   if (channel) {
     channel.onmessage = ({data}) => {
       if (data.kind === 'query' && viewing(data)) {
@@ -62,7 +62,7 @@
       const finish = result => { queries.delete(id); resolve(result); };
       const timer = root.setTimeout(() => finish(false), 150);
       queries.set(id, () => { root.clearTimeout(timer); finish(true); });
-      channel.postMessage({kind:'query', token:id, instanceId:message.instanceId, userId:message.userId});
+      channel.postMessage({kind:'query', token:id, instanceId:message.instanceId, userId:message.userId, channelScope:message.channelScope || 'main'});
     });
   };
   const claim = id => {
@@ -125,9 +125,9 @@
     }
   };
   root.DiscussionDesktop = {
-    register(instanceId, userId, active) {
+    register(instanceId, userId, active, channelScope = 'main') {
       const id = token();
-      views.set(id, {instanceId, userId, active});
+      views.set(id, {instanceId, userId, active, channelScope});
       return () => views.delete(id);
     },
     setPreference(instanceId, userId, enabled, revision) {

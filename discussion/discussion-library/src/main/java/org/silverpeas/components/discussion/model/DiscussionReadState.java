@@ -46,6 +46,17 @@ public class DiscussionReadState extends SilverpeasJpaEntity<DiscussionReadState
   @Column(nullable = false)
   private boolean desktopNotifications = true;
 
+  @Column(nullable = false, length = 10)
+  private String notificationMode = "ALL";
+
+  public String getNotificationMode() { return notificationMode; }
+  public void setNotificationMode(String mode) {
+    if (!java.util.Set.of("ALL", "MENTIONS", "NONE").contains(mode)) {
+      throw new IllegalArgumentException("Invalid channel notification preference");
+    }
+    notificationMode = mode;
+  }
+
   public boolean isDesktopNotifications() { return desktopNotifications; }
   public void setDesktopNotifications(boolean enabled) { desktopNotifications = enabled; }
 

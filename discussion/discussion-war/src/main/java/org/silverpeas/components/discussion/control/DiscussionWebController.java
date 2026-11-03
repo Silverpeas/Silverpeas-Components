@@ -49,6 +49,7 @@ import org.silverpeas.core.web.mvc.webcomponent.annotation.WebComponentControlle
 public class DiscussionWebController extends
     org.silverpeas.core.web.mvc.webcomponent.WebComponentController<DiscussionWebRequestContext> {
   private static final String BASE = "org.silverpeas.components.discussion.";
+  private transient org.silverpeas.components.discussion.service.DiscussionChannelService channelService;
   private transient ConversationService conversations;
   private transient DiscussionInstanceInfoService instanceInfo;
   private transient DiscussionMentionService mentions;
@@ -68,7 +69,23 @@ public class DiscussionWebController extends
 
   @Override
   protected void beforeRequestProcessing(DiscussionWebRequestContext context) {
+    String scope = context.getPathVariables().get("channel");
+    String messageId = context.getPathVariables().get("id");
+    if (messageId == null) { messageId = context.getPathVariables().get("root"); }
+    if (scope != null) {
+      String selected = scope;
+      webResult(() -> channels().select(context.getComponentInstanceId(), selected));
+      context.setChannelScope(scope);
+    } else if (messageId != null) {
+      String target = messageId;
+      var channel = webResult(() -> channels().selectMessage(context.getComponentInstanceId(), target));
+      context.setChannelScope(channel.getScopeKey());
+    } else {
+      // Explicitly select the default on every request, including reused servlet threads.
+      webResult(() -> channels().select(context.getComponentInstanceId(), "main"));
+    }
     super.beforeRequestProcessing(context);
+    context.getRequest().setAttribute("instanceUriBase", context.getInstanceUriBase());
     context.getResponse().setHeader("Cache-Control", "no-store");
   }
 
@@ -215,8 +232,12 @@ public class DiscussionWebController extends
       throw new WebApplicationException(400);
     }
     var page = webResult(() -> searchService.search(context.getComponentInstanceId(),
-        context.getRequest().getParameter("q"), (int) offset));
+        context.getRequest().getParameter("q"), (int) offset,
+        "true".equals(context.getRequest().getParameter("allChannels"))));
     context.getRequest().setAttribute("searchPage", page);
+    context.getRequest().setAttribute("searchChannels", webResult(() -> channels().list(context.getComponentInstanceId())).stream()
+        .collect(java.util.stream.Collectors.toMap(item -> item.conversation().getId(),
+            item -> item.conversation().getChannelName() == null ? context.getMultilang().getString("discussion.general") : item.conversation().getChannelName())));
     context.getRequest().setAttribute("searchBodies", page.messages().stream().collect(
         java.util.stream.Collectors.toMap(org.silverpeas.components.discussion.model.DiscussionMessage::getId,
             message -> DiscussionMentionService.displayText(message.getBody()))));
@@ -249,6 +270,14 @@ public class DiscussionWebController extends
         !context.getUser().isAnonymous() && !context.getUser().isAccessGuest();
     context.getRequest().setAttribute("mentionCandidates", canMention
         ? webResult(() -> mentions.candidates(context.getComponentInstanceId())) : java.util.List.of());
+    var available = webResult(() -> channels().list(context.getComponentInstanceId()));
+    context.getRequest().setAttribute("channels", available);
+    // Canonical notification links resolve the channel from the message rather than the URL.
+    var current = webResult(() -> channels().select(context.getComponentInstanceId(), context.getChannelScope()));
+    context.getRequest().setAttribute("currentChannel", current);
+    context.getRequest().setAttribute("channelNotificationMode", webResult(() -> channels().notificationMode(context.getComponentInstanceId())));
+    context.getRequest().setAttribute("canManageChannels", context.getHighestUserRole() == SilverpeasRole.ADMIN);
+    if (current.isArchived()) { context.getRequest().setAttribute("canWrite", false); }
     participants(context);
     publications(context);
     pins(context);
@@ -501,6 +530,259 @@ public class DiscussionWebController extends
   public void markRead(DiscussionWebRequestContext context) {
     webAction(() -> conversations().markRead(context.getComponentInstanceId(),
         number(context, "sequence", -1)));
+  }
+
+  @GET
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("channels/{channel}/Main")
+    @RedirectToInternalJsp("discussion.jsp")
+  public void channelHome(DiscussionWebRequestContext context) {
+    home(context);
+  }
+
+  @GET
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("channels/{channel}/messages/{id}")
+  @RedirectToInternalJsp("discussion.jsp")
+  public void channelMessage(DiscussionWebRequestContext context) {
+    message(context);
+  }
+
+  @GET
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("channels/{channel}/threads/{root}")
+  @RedirectToInternalJsp("discussion.jsp")
+  public void channelThread(DiscussionWebRequestContext context) {
+    thread(context);
+  }
+
+  @GET
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("channels/{channel}/threads/{root}/history")
+  @RedirectToInternalJsp("messages.jsp")
+  public void channelThreadHistory(DiscussionWebRequestContext context) {
+    threadHistory(context);
+  }
+
+  @GET
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("channels/{channel}/threads/{root}/updates")
+  @RedirectToInternalJsp("messages.jsp")
+  public void channelThreadUpdates(DiscussionWebRequestContext context) {
+    threadUpdates(context);
+  }
+
+  @POST
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("channels/{channel}/threads/{root}/reply")
+  @RedirectToInternal("threads/{root}")
+  public void channelReply(DiscussionWebRequestContext context) {
+    reply(context);
+  }
+
+  @POST
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("channels/{channel}/threads/{root}/messages/{id}/edit")
+  @RedirectToInternal("threads/{root}")
+  public void channelThreadEdit(DiscussionWebRequestContext context) {
+    threadEdit(context);
+  }
+
+  @POST
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("channels/{channel}/threads/{root}/messages/{id}/delete")
+  @RedirectToInternal("threads/{root}")
+  public void channelThreadDelete(DiscussionWebRequestContext context) {
+    threadDelete(context);
+  }
+
+  @GET
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("channels/{channel}/search")
+  @RedirectToInternalJsp("search.jsp")
+  public void channelSearch(DiscussionWebRequestContext context) {
+    search(context);
+  }
+
+  @GET
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("channels/{channel}/searchResult")
+  @RedirectToInternal("messages/{id}")
+  public void channelSearchResult(DiscussionWebRequestContext context) {
+    searchResult(context);
+  }
+
+  @POST
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("channels/{channel}/messages/{id}/like")
+  @RedirectToInternalJsp("like.jsp")
+  public void channelLike(DiscussionWebRequestContext context) {
+    like(context);
+  }
+
+  @GET
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("channels/{channel}/history")
+  @RedirectToInternalJsp("messages.jsp")
+  public void channelHistory(DiscussionWebRequestContext context) {
+    history(context);
+  }
+
+  @GET
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("channels/{channel}/participants")
+  @RedirectToInternalJsp("participants.jsp")
+  public void channelParticipants(DiscussionWebRequestContext context) {
+    participants(context);
+  }
+
+  @GET
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("channels/{channel}/updates")
+  @RedirectToInternalJsp("messages.jsp")
+  public void channelUpdates(DiscussionWebRequestContext context) {
+    updates(context);
+  }
+
+  @GET
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("channels/{channel}/publications")
+  @RedirectToInternalJsp("publications.jsp")
+  public void channelPublications(DiscussionWebRequestContext context) {
+    publications(context);
+  }
+
+  @GET
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("channels/{channel}/pins")
+  @RedirectToInternalJsp("pins.jsp")
+  public void channelPins(DiscussionWebRequestContext context) {
+    pins(context);
+  }
+
+  @POST
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("channels/{channel}/messages/{id}/pin")
+  @RedirectToInternalJsp("pin.jsp")
+  public void channelPin(DiscussionWebRequestContext context) {
+    pin(context);
+  }
+
+  @GET
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("channels/{channel}/files")
+  @RedirectToInternalJsp("files.jsp")
+  public void channelSharedFiles(DiscussionWebRequestContext context) {
+    sharedFiles(context);
+  }
+
+  @GET
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("channels/{channel}/notification-preferences")
+  @RedirectToInternalJsp("notification-preferences.jsp")
+  public void channelNotificationPreferences(DiscussionWebRequestContext context) {
+    notificationPreferences(context);
+  }
+
+  @POST
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("channels/{channel}/notification-preferences")
+  @RedirectToInternalJsp("notification-preferences.jsp")
+  public void channelSaveNotificationPreferences(DiscussionWebRequestContext context) {
+    saveNotificationPreferences(context);
+  }
+
+  @POST
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("channels/{channel}/typing")
+  @RedirectToInternalJsp("typing.jsp")
+  public void channelTyping(DiscussionWebRequestContext context) {
+    typing(context);
+  }
+
+  @POST
+  @Path("channels/{channel}/messages/add")
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @RedirectToInternal("Main")
+  public void channelPublish(DiscussionWebRequestContext context) {
+    publish(context);
+  }
+
+  @POST
+  @Path("channels/{channel}/messages/{id}/edit")
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @RedirectToInternal("Main")
+  public void channelEdit(DiscussionWebRequestContext context) {
+    edit(context);
+  }
+
+  @POST
+  @Path("channels/{channel}/messages/{id}/delete")
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @RedirectToInternal("Main")
+  public void channelDelete(DiscussionWebRequestContext context) {
+    delete(context);
+  }
+
+  @POST
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("channels/{channel}/messages/read")
+  @RedirectToInternalJsp("read.jsp")
+  public void channelVisible(DiscussionWebRequestContext context) {
+    visible(context);
+  }
+
+  @POST
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("channels/{channel}/read")
+  @RedirectToInternal("Main")
+  public void channelMarkRead(DiscussionWebRequestContext context) {
+    markRead(context);
+  }
+
+  private org.silverpeas.components.discussion.service.DiscussionChannelService channels() {
+    if (channelService == null) {
+      channelService = ServiceProvider.getService(org.silverpeas.components.discussion.service.DiscussionChannelService.class);
+    }
+    return channelService;
+  }
+
+  @GET
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("channels")
+  @RedirectToInternalJsp("channels.jsp")
+  public void channelList(DiscussionWebRequestContext context) {
+    context.getRequest().setAttribute("channels", webResult(() -> channels().list(context.getComponentInstanceId())));
+    context.getRequest().setAttribute("instanceUriBase", context.getInstanceUriBase());
+  }
+
+  @POST
+  @LowestRoleAccess(SilverpeasRole.ADMIN)
+  @Path("channels/create")
+  @RedirectToInternal("channels/{createdChannel}/Main")
+  public void createChannel(DiscussionWebRequestContext context) {
+    var channel = webResult(() -> channels().create(context.getComponentInstanceId(),
+        context.getRequest().getParameter("name"), context.getRequest().getParameter("description")));
+    context.addRedirectVariable("createdChannel", channel.getScopeKey());
+  }
+
+  @POST
+  @LowestRoleAccess(SilverpeasRole.ADMIN)
+  @Path("channels/{channel}/settings")
+  @RedirectToInternal("Main")
+  public void updateChannel(DiscussionWebRequestContext context) {
+    String archived = context.getRequest().getParameter("archived");
+    if (!"true".equals(archived) && !"false".equals(archived)) { throw new WebApplicationException(400); }
+    webAction(() -> channels().update(context.getComponentInstanceId(), context.getPathVariables().get("channel"),
+        context.getRequest().getParameter("name"), context.getRequest().getParameter("description"), Boolean.parseBoolean(archived)));
+  }
+
+  @POST
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("channels/{channel}/notifications")
+  @RedirectToInternal("Main")
+  public void channelNotifications(DiscussionWebRequestContext context) {
+    webAction(() -> channels().notifications(context.getComponentInstanceId(), context.getRequest().getParameter("mode")));
   }
 
   private ConversationService conversations() {

@@ -46,6 +46,13 @@ public class DiscussionReadStateRepository extends SilverpeasJpaEntityRepository
         .getResultStream().findFirst().orElse(true);
   }
 
+  public java.util.Set<String> excludedFromNotifications(String conversationId, boolean mention) {
+    return new java.util.HashSet<>(getEntityManager().createQuery("""
+        select r.userId from DiscussionReadState r where r.conversationId = :conversation
+        and (r.notificationMode = 'NONE' or (:mention = false and r.notificationMode = 'MENTIONS'))
+        """, String.class).setParameter("conversation", conversationId).setParameter("mention", mention).getResultList());
+  }
+
   public void deleteConversation(String conversationId) {
     getEntityManager().createQuery(
         "delete from DiscussionReadState r where r.conversationId = :conversation")

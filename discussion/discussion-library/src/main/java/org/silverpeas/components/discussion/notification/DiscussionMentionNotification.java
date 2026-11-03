@@ -66,6 +66,15 @@ public class DiscussionMentionNotification extends
   protected String getComponentInstanceId() { return instanceId; }
   @Override
   protected String getSender() { return sender.getId(); }
+  private Set<String> excluded = Set.of();
+
+  public void excludeUsers(Set<String> users) { excluded = Set.copyOf(users); }
+
+  @Override
+  protected Collection<String> getUserIdsToExcludeFromNotifying() {
+    return java.util.stream.Stream.concat(super.getUserIdsToExcludeFromNotifying().stream(), excluded.stream()).distinct().toList();
+  }
+
   @Override
   protected Collection<String> getUserIdsToNotify() { return recipients; }
   @Override

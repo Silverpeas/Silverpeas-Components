@@ -60,6 +60,8 @@ class DiscussionWebControllerTest {
   private org.silverpeas.components.discussion.service.DiscussionTypingService typing;
   @TestManagedMock
   private org.silverpeas.components.discussion.service.DiscussionNotificationSettings notificationSettings;
+  @TestManagedMock
+  private org.silverpeas.components.discussion.service.DiscussionChannelService channels;
   private DiscussionWebController controller;
   private DiscussionWebRequestContext context;
   private HttpRequest request;
@@ -75,6 +77,11 @@ class DiscussionWebControllerTest {
     context = mock(DiscussionWebRequestContext.class);
     request = mock(HttpRequest.class);
     when(context.getRequest()).thenReturn(request);
+    when(context.getChannelScope()).thenReturn("main");
+    var channel = mock(org.silverpeas.components.discussion.model.Conversation.class);
+    when(channel.getScopeKey()).thenReturn("main");
+    when(channels.select(anyString(), anyString())).thenReturn(channel);
+    when(channels.selectMessage(anyString(), anyString())).thenReturn(channel);
     when(context.getComponentInstanceId()).thenReturn("discussion1");
     when(context.getUser()).thenReturn(mock(UserDetail.class));
     when(context.getHighestUserRole()).thenReturn(SilverpeasRole.WRITER);
@@ -82,6 +89,25 @@ class DiscussionWebControllerTest {
     var root = mock(org.silverpeas.components.discussion.model.DiscussionMessage.class);
     when(root.getId()).thenReturn("message");
     when(service.threadRoot("discussion1", "message")).thenReturn(root);
+  }
+
+  @Test
+  void canonicalNotificationRequestSelectsItsMessageChannelBeforeRendering() {
+    when(context.getResponse()).thenReturn(mock(jakarta.servlet.http.HttpServletResponse.class));
+    controller.beforeRequestProcessing(context);
+    verify(channels).selectMessage("discussion1", "message");
+    verify(context).setChannelScope("main");
+    when(context.getPathVariables()).thenReturn(Map.of("channel", "projects", "id", "message"));
+    controller.beforeRequestProcessing(context);
+    verify(channels).select("discussion1", "projects");
+    verify(context).setChannelScope("projects");
+  }
+
+  @Test
+  void invalidChannelNotificationPreferenceReturnsBadRequest() {
+    when(request.getParameter("mode")).thenReturn("unknown");
+    doThrow(IllegalArgumentException.class).when(channels).notifications("discussion1", "unknown");
+    assertEquals(400, assertThrows(WebApplicationException.class, () -> controller.channelNotifications(context)).getResponse().getStatus());
   }
 
   @Test
@@ -130,7 +156,7 @@ class DiscussionWebControllerTest {
     var page = new org.silverpeas.components.discussion.search.DiscussionSearchPage(List.of(), 0, 0);
     when(request.getParameter("q")).thenReturn("projet");
     when(request.getParameter("offset")).thenReturn("20");
-    when(search.search("discussion1", "projet", 20)).thenReturn(page);
+    when(search.search("discussion1", "projet", 20, false)).thenReturn(page);
     controller.search(context);
     verify(request).setAttribute("searchPage", page);
     when(request.getParameter("offset")).thenReturn("-1");
@@ -384,7 +410,8 @@ class DiscussionWebControllerTest {
         var restriction = method.getAnnotation(
             org.silverpeas.core.web.mvc.webcomponent.annotation.LowestRoleAccess.class);
         assertNotNull(restriction, method.getName());
-        assertEquals(SilverpeasRole.WRITER, restriction.value(), method.getName());
+        assertEquals(java.util.Set.of("createChannel", "updateChannel").contains(method.getName())
+            ? SilverpeasRole.ADMIN : SilverpeasRole.WRITER, restriction.value(), method.getName());
       }
     }
   }

@@ -30,10 +30,36 @@ import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEn
 
 @Repository
 public class ConversationRepository extends SilverpeasJpaEntityRepository<Conversation> {
+  @jakarta.inject.Inject
+  private org.silverpeas.components.discussion.service.DiscussionChannelContext context;
+
+  public Conversation current(String instanceId, boolean lock) {
+    String scope = context.getScope();
+    return scope == null || "main".equals(scope) ? main(instanceId, lock) : channel(instanceId, scope, lock);
+  }
+
+  public java.util.List<Conversation> channels(String instanceId) {
+    return getEntityManager().createQuery(
+        "select c from Conversation c where c.componentInstanceId = :instance order by c.scopeKey",
+        Conversation.class).setParameter("instance", instanceId).getResultList();
+  }
+
+  public Conversation forMessage(String instanceId, String messageId) {
+    return getEntityManager().createQuery("""
+        select c from Conversation c, DiscussionMessage m where m.id.id = :message
+        and m.conversationId = c.id.id and c.componentInstanceId = :instance
+        """, Conversation.class).setParameter("message", messageId).setParameter("instance", instanceId)
+        .getResultStream().findFirst().orElseThrow(() -> new IllegalArgumentException("Unknown discussion message"));
+  }
+
   public Conversation main(String instanceId, boolean lock) {
+    return channel(instanceId, "main", lock);
+  }
+
+  public Conversation channel(String instanceId, String scope, boolean lock) {
     var query = getEntityManager().createQuery(
         "select c from Conversation c where c.componentInstanceId = :instance and c.scopeKey = :scope",
-        Conversation.class).setParameter("instance", instanceId).setParameter("scope", "main");
+        Conversation.class).setParameter("instance", instanceId).setParameter("scope", scope);
     if (lock) {
       query.setLockMode(LockModeType.PESSIMISTIC_WRITE);
     }

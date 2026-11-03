@@ -44,6 +44,8 @@ import org.silverpeas.core.security.authorization.ComponentAccessController;
 public class DiscussionNotificationSettings {
   public record Change(String instanceId, String userId, DesktopPreference preference) { }
   @Inject
+  private org.silverpeas.components.discussion.repository.DiscussionMessageRepository messages;
+  @Inject
   private DiscussionAccess access;
   @Inject
   private ConversationRepository conversations;
@@ -81,6 +83,15 @@ public class DiscussionNotificationSettings {
     var preference = new DesktopPreference(enabled, state.getVersion());
     changes.fire(new Change(instanceId, user.getId(), preference));
     return preference;
+  }
+
+  @Transactional(Transactional.TxType.REQUIRES_NEW)
+  public boolean channelMutedForMessage(String instanceId, String messageId, String userId) {
+    var channel = conversations.forMessage(instanceId, messageId);
+    var message = messages.getById(messageId);
+    String mode = states.find(channel.getId(), userId).map(DiscussionReadState::getNotificationMode).orElse("ALL");
+    return "NONE".equals(mode) || "MENTIONS".equals(mode)
+        && !DiscussionMentionService.mentionsUser(message.getBody(), userId);
   }
 
   /** Internal receiver lookup: the server event has already checked this user's instance access. */

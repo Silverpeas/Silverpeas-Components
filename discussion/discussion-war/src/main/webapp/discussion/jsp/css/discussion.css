@@ -377,3 +377,43 @@ html.discussion-embedded body > * { direction: ltr; }
 
 /* Use the outer application's density in both composers, despite their different viewport widths. */
 html.discussion-embedded #discussion .discussion-composer { padding: var(--discussion-shared-composer-padding, 0.75rem 1rem); }
+
+/* Channels start collapsed; the main iframe remains the conversation scroll surface. */
+#discussion .discussion-channel-toggle { display: inline-flex; align-items: center; gap: 0.4rem; flex: none; padding: 0.4rem 0.55rem; border: 1px solid var(--color-trait-separateur, #ddd); border-radius: 2px; color: var(--color-text, #333); background: var(--bgColor-card, #fff); cursor: pointer; }
+#discussion .discussion-channels[hidden] { display: none; }
+#discussion .discussion-channels { position: fixed; top: var(--discussion-sidebar-top); bottom: 0; left: 0; z-index: 30; width: 13rem; box-sizing: border-box; overflow-y: auto; background: var(--bgColor-bloc-fond-clair, #f5f5f5); border-right: 1px solid var(--color-trait-separateur, #ddd); padding: 0.65rem; }
+#discussion.discussion-channels-open .discussion-workspace { margin-left: 13rem; }
+#discussion .discussion-channels-heading { display: flex; justify-content: space-between; align-items: center; }
+#discussion .discussion-channels-heading h2 { margin: 0; font-size: 1em; }
+#discussion .discussion-channel-list { list-style: none; padding: 0; margin: 0.75rem 0; }
+#discussion .discussion-channel-link { display: flex; align-items: center; gap: 0.4rem; padding: 0.6rem; color: inherit; border-left: 3px solid transparent; text-decoration: none; }
+#discussion .discussion-channel-link:hover { background: var(--bgColor-card, #fff); }
+#discussion .discussion-channel-link[aria-current="page"] { border-left-color: var(--color-lien, #5b9900); background: var(--bgColor-card, #fff); }
+#discussion .discussion-channel-unread .discussion-channel-name { font-weight: bold; }
+#discussion .discussion-channel-name { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+#discussion .discussion-channel-count { font-size: 0.8em; font-weight: bold; color: var(--color-lien, #5b9900); }
+#discussion .discussion-channel-archived { font-size: 0.75em; color: var(--color-text-label, #666); }
+#discussion .discussion-channels > button { display: block; margin-top: 0.5rem; }
+#discussion .discussion-channel-heading { display: flex; gap: 0.75rem; min-width: 0; }
+#discussion .discussion-channel-heading > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#discussion .discussion-search-scope { display: flex; align-items: center; gap: 0.25rem; font-size: 0.8em; white-space: nowrap; }
+#discussion .discussion-search { flex-wrap: wrap; }
+#discussion .discussion-search-channel { display: block; color: var(--color-text-label, #666); }
+#discussion-channel-dialog { width: min(28rem, 90vw); box-sizing: border-box; border: 1px solid var(--color-trait-separateur, #ddd); border-radius: 2px; padding: 1.25rem; }
+#discussion-channel-dialog::backdrop { background: rgb(0 0 0 / 25%); }
+#discussion-channel-dialog label { display: block; margin: 0.75rem 0; }
+#discussion-channel-dialog input:not([type="checkbox"], [type="hidden"]), #discussion-channel-dialog textarea { display: block; box-sizing: border-box; width: 100%; margin-top: 0.3rem; }
+#discussion-channel-dialog form > div { display: flex; justify-content: flex-end; gap: 0.5rem; }
+#discussion-channel-notifications { margin-bottom: 1rem; }
+#discussion-channel-notifications label { display: block; margin-bottom: 0.5rem; }
+#discussion-channel-notifications select { max-width: 100%; }
+html.discussion-embedded #discussion .discussion-channels, html.discussion-embedded #discussion-channel-dialog { display: none; }
+@media (max-width: 760px) {
+  #discussion.discussion-channels-open .discussion-workspace { margin-left: 0; }
+  #discussion .discussion-channels { width: min(19rem, 100vw); z-index: 70; box-shadow: 0.3rem 0 1rem rgb(0 0 0 / 12%); }
+  #discussion .discussion-channel-heading { display: block; }
+  #discussion .discussion-channel-heading > span { display: none; }
+}
+
+#discussion .discussion-search input[type="checkbox"] { width: auto; flex: none; padding: 0; }
+#discussion .discussion-channel-mentions { color: var(--color-lien-action, #5b9900); font-size: 0.8em; font-weight: bold; }

@@ -49,6 +49,8 @@ class DiscussionPersistenceTest {
   private static final String URL = "jdbc:h2:mem:discussion;DB_CLOSE_DELAY=-1";
   @TestManagedMock
   private EntityManagerProvider provider;
+  @TestManagedMock
+  private org.silverpeas.components.discussion.service.DiscussionChannelContext channelContext;
   @TestedBean
   private ConversationRepository conversations;
   @TestedBean
@@ -61,6 +63,30 @@ class DiscussionPersistenceTest {
   private DiscussionSeenRepository seen;
   private SessionFactory factory;
   private Session session;
+
+  @Test
+  void channelsKeepMessagesSequencesReadsAndPreferencesIsolated() {
+    session.createNativeMutationQuery("""
+        insert into sc_discussion_conversation
+        (id, instanceId, scopeKey, channelName, lastSequence, createDate, createdBy, lastUpdateDate, lastUpdatedBy, version)
+        values ('c3', 'discussion1', 'projects', 'Projects', 1, CURRENT_TIMESTAMP, 'user', CURRENT_TIMESTAMP, 'user', 0)
+        """).executeUpdate();
+    insertMessage("project1", "c3", 1, "other", false);
+    assertEquals(2, conversations.channels("discussion1").size());
+    when(channelContext.getScope()).thenReturn("projects");
+    assertEquals("c3", conversations.current("discussion1", true).getId());
+    assertEquals("c3", conversations.forMessage("discussion1", "project1").getId());
+    assertThrows(IllegalArgumentException.class, () -> conversations.forMessage("discussion2", "project1"));
+    assertThrows(IllegalArgumentException.class, () -> conversations.channel("discussion2", "projects", false));
+    assertEquals(List.of("project1"), messages.history("c3", Long.MAX_VALUE, 30).stream().map(DiscussionMessage::getId).toList());
+    assertTrue(messages.selected("c1", List.of("project1")).isEmpty());
+    assertEquals(1, messages.unread("c3", "user", 0));
+    session.createNativeMutationQuery("update sc_discussion_read set notificationMode = 'NONE' where id = 'r1'").executeUpdate();
+    session.clear();
+    assertEquals(java.util.Set.of("user"), reads.excludedFromNotifications("c1", true));
+    assertTrue(reads.excludedFromNotifications("c3", false).isEmpty());
+    assertTrue(reads.find("c3", "user").isEmpty());
+  }
 
   @BeforeEach
   void database() throws Exception {
@@ -396,6 +422,38 @@ class DiscussionPersistenceTest {
       try (var rows = statement.executeQuery("select count(*) from sc_discussion_like")) {
         assertTrue(rows.next());
         assertEquals(0, rows.getInt(1));
+      }
+    }
+  }
+
+  @Test
+  void developmentChannelUpgradePreservesGeneralHistoryAndDefaults() throws Exception {
+    try (var connection = DriverManager.getConnection("jdbc:h2:mem:channelUpgrade", "sa", "");
+         var statement = connection.createStatement()) {
+      for (String sql : installerStatements("h2")) {
+        statement.execute(sql.lines().filter(line -> !line.contains("channelName")
+            && !line.contains("channelDescription") && !line.contains("archived BOOLEAN")
+            && !line.contains("notificationMode")).collect(Collectors.joining("\n")));
+      }
+      statement.execute("""
+          insert into sc_discussion_conversation
+          (id, instanceId, scopeKey, lastSequence, createDate, createdBy, lastUpdateDate, lastUpdatedBy, version)
+          values ('old', 'discussion1', 'main', 1, CURRENT_TIMESTAMP, 'user', CURRENT_TIMESTAMP, 'user', 0)
+          """);
+      statement.execute("""
+          insert into sc_discussion_message
+          (id, conversationId, sequenceNumber, body, deleted, createDate, createdBy, lastUpdateDate, lastUpdatedBy, version)
+          values ('kept', 'old', 1, 'Un message existant', false, CURRENT_TIMESTAMP, 'user', CURRENT_TIMESTAMP, 'user', 0)
+          """);
+      String additive = java.nio.file.Files.readString(java.nio.file.Path.of("../sql-dev/channels/h2-add-channels.sql"));
+      for (String sql : additive.split(";")) {
+        if (!sql.isBlank()) { statement.execute(sql); }
+      }
+      try (var rows = statement.executeQuery("select m.body, c.scopeKey, c.archived from sc_discussion_message m join sc_discussion_conversation c on m.conversationId = c.id")) {
+        assertTrue(rows.next());
+        assertEquals("Un message existant", rows.getString(1));
+        assertEquals("main", rows.getString(2));
+        assertFalse(rows.getBoolean(3));
       }
     }
   }

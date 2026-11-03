@@ -95,6 +95,10 @@ public class DiscussionMentionService {
     }
   }
 
+  public static boolean mentionsUser(String body, String userId) {
+    return MENTION.matcher(body == null ? "" : body).results().anyMatch(match -> userId.equals(match.group(2)));
+  }
+
   public static String displayText(String body) {
     return MENTION.matcher(body == null ? "" : body)
         .replaceAll(match -> Matcher.quoteReplacement("@" + match.group(1)));
