@@ -73,7 +73,7 @@
         }
         const selected = existing?.contains(window.getSelection()?.anchorNode);
         // Reconcile deferred rows when the interaction ends, without periodic polling.
-        if (!row.hidden && (existing?.querySelector('details[open], .discussion-like-button:disabled, .discussion-pin-form button:disabled') ||
+        if (!row.hidden && (existing?.querySelector('details[open], .discussion-like-button:disabled, .discussion-pin-form button:disabled, .discussion-delete button:disabled') ||
             existing?.contains(document.activeElement) || selected)) {
           deferred.add(row.id);
           selectionPending ||= selected;
@@ -216,6 +216,7 @@
         refresh();
       }
     });
+    discussion.addEventListener('discussion-deletion-settled', () => refresh());
     discussion.addEventListener('discussion-reaction-settled', event => {
       fingerprints.delete(event.target.closest('.discussion-message')?.id);
       refresh();

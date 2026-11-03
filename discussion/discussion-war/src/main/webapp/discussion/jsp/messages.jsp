@@ -119,7 +119,8 @@
                     <button class="sp_button discussion-button--primary" type="submit"><fmt:message key="discussion.save"/></button>
                   </form>
                 </details>
-                <form class="discussion-delete" method="post" action="${messageActionBase}${message.id}/delete">
+                <form class="discussion-delete" data-deletion-info="${messageActionBase}${message.id}/deletion" method="post" action="${messageActionBase}${message.id}/delete">
+                  <input type="hidden" name="deleteEvent" value="false"/>
                   <input type="hidden" name="version" value="${message.version}"/>
                   <button class="discussion-icon-button discussion-button--danger" type="submit" title="${fn:escapeXml(deleteLabel)}" aria-label="${fn:escapeXml(deleteLabel)}"><svg class="discussion-icon" aria-hidden="true"><use href="${discussionIcons}#delete"/></svg></button>
                 </form>

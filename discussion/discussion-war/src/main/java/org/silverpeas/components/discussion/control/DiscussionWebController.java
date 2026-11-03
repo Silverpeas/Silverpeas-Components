@@ -506,8 +506,15 @@ public class DiscussionWebController extends
   @LowestRoleAccess(SilverpeasRole.WRITER)
   @RedirectToInternal("Main")
   public void delete(DiscussionWebRequestContext context) {
-    webAction(() -> conversations().delete(context.getComponentInstanceId(),
-        context.getPathVariables().get("id"), number(context, "version", -1)));
+    String deleteEvent = context.getRequest().getParameter("deleteEvent");
+    if (deleteEvent != null && !"true".equals(deleteEvent) && !"false".equals(deleteEvent)) { throw new WebApplicationException(400); }
+    if ("true".equals(deleteEvent)) {
+      webAction(() -> conversations().delete(context.getComponentInstanceId(),
+          context.getPathVariables().get("id"), number(context, "version", -1), true));
+    } else {
+      webAction(() -> conversations().delete(context.getComponentInstanceId(),
+          context.getPathVariables().get("id"), number(context, "version", -1)));
+    }
   }
 
   @POST
@@ -830,6 +837,36 @@ public class DiscussionWebController extends
   @Path("channels/{channel}/events")
   @RedirectToInternalJsp("event-created.jsp")
   public void channelCreateEvent(DiscussionWebRequestContext context) { createEvent(context); }
+
+  @GET
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("messages/{id}/deletion")
+  @RedirectToInternalJsp("event-deletion.jsp")
+  public void deletionInfo(DiscussionWebRequestContext context) {
+    context.getRequest().setAttribute("eventDeletion", webResult(() -> conversations().deletion(
+        context.getComponentInstanceId(), context.getPathVariables().get("id"), number(context, "version", -1))));
+  }
+
+  @GET
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("channels/{channel}/messages/{id}/deletion")
+  @RedirectToInternalJsp("event-deletion.jsp")
+  public void channelDeletionInfo(DiscussionWebRequestContext context) { deletionInfo(context); }
+
+  @GET
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("threads/{root}/messages/{id}/deletion")
+  @RedirectToInternalJsp("event-deletion.jsp")
+  public void threadDeletionInfo(DiscussionWebRequestContext context) {
+    requireThreadMessage(context);
+    deletionInfo(context);
+  }
+
+  @GET
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("channels/{channel}/threads/{root}/messages/{id}/deletion")
+  @RedirectToInternalJsp("event-deletion.jsp")
+  public void channelThreadDeletionInfo(DiscussionWebRequestContext context) { threadDeletionInfo(context); }
 
   private ConversationService conversations() {
     if (conversations == null) {

@@ -74,6 +74,7 @@
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-files.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-file-picker.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-events.js'/>" defer></script>
+  <script src="<c:url value='/discussion/jsp/javaScript/discussion-deletion.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-document-viewer.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-notification-settings.js'/>" defer></script>
 </head>
@@ -271,6 +272,7 @@
         </aside>
       </div>
       <c:if test="${canWrite}"><jsp:include page="event-dialog.jsp"/></c:if>
+      <jsp:include page="event-delete-dialog.jsp"/>
     </main>
   </view:frame>
 </view:window>
