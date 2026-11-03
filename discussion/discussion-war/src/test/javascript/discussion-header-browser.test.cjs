@@ -44,7 +44,7 @@ async function setup(width=1280) {
   const browser=await chromium.launch({executablePath:process.env.CHROME_PATH,args:['--no-sandbox']});
   const page=await browser.newPage({viewport:{width,height:800}});
   await page.route('http://discussion.test/discussion/jsp/icons/**',route=>route.fulfill({contentType:'image/svg+xml',body:fs.readFileSync(path.join(assets,'icons/discussion-icons.svg'))}));
-  await page.setContent(`<base href="http://discussion.test/"><main id="discussion"><header class="discussion-header"><div class="discussion-heading"><h1>Discussion sur l’IA</h1></div>${form}${reading}</header><textarea id="draft">Brouillon conservé</textarea><details id="discussion-search-section" hidden><summary>Résultats <span id="discussion-search-count"></span></summary><p id="discussion-search-status" data-loading="Chargement" data-error="Erreur"></p><div id="discussion-search-results"></div><button id="discussion-search-more" hidden>Suite</button><button id="discussion-search-close">Fermer</button></details></main>`);
+  await page.setContent(`<base href="http://discussion.test/"><main id="discussion"><header class="discussion-header"><div class="discussion-heading"><h1>Discussion sur l’IA</h1></div>${form}${reading}</header><textarea id="draft">Brouillon conservé</textarea>${render(source.match(/<details id="discussion-search-section"[\s\S]*?<\/details>/)[0])}</main>`);
   await page.addStyleTag({content:'body{margin:0;font:16px Arial}'+fs.readFileSync(path.join(assets,'css/discussion.css'),'utf8')});
   await page.evaluate(()=>{
     window.requests=[];
@@ -140,5 +140,29 @@ test('real compact header and its open picker fit desktop and narrow iframe widt
       assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,'header fits '+width);
       await page.keyboard.press('Escape');
     }
+  } finally {await browser.close();}
+});
+
+
+test('real search results have a compact labelled close icon beside the heading',async()=>{
+  const {browser,page}=await setup();
+  try {
+    await page.locator('#discussion-search-query').fill('agent');
+    await page.locator('#discussion-search').evaluate(n=>n.requestSubmit());
+    await page.evaluate(html=>requests[0].resolve(html),fragment('result'));
+    const close=page.locator('#discussion-search-close');
+    await close.waitFor({state:'visible'});
+    assert.equal(await close.getAttribute('aria-label'),'Fermer la recherche');
+    assert.equal(await close.getAttribute('title'),'Fermer la recherche');
+    assert.equal((await close.textContent()).trim(),'');
+    assert.equal(await close.locator('use').getAttribute('href'),'/discussion/jsp/icons/discussion-icons.svg#close');
+    const button=await close.boundingBox();
+    const heading=await page.locator('#discussion-search-section > summary').boundingBox();
+    assert.ok(button.width<=36&&button.height<=36);
+    assert.ok(button.y>=heading.y&&button.y+button.height<=heading.y+heading.height);
+    await close.focus();
+    await page.keyboard.press('Enter');
+    assert.equal(await page.locator('#discussion-search-section').isVisible(),false);
+    assert.equal(await page.locator('#draft').inputValue(),'Brouillon conservé');
   } finally {await browser.close();}
 });

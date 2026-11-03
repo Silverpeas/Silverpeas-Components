@@ -488,3 +488,7 @@ html.discussion-embedded #discussion .discussion-channels, html.discussion-embed
 #discussion-delete-event-dialog #discussion-delete-message-and-event[hidden] { display: none; }
 #discussion-delete-event-title { font-weight: 700; overflow-wrap: anywhere; }
 #discussion .discussion-delete-error { display: block; max-width: 18rem; color: var(--color-error, #a12622); font-size: 0.85em; }
+
+#discussion-search-section { position: relative; }
+#discussion #discussion-search-section > summary { padding-right: 3.5rem; min-height: 3rem; box-sizing: border-box; }
+#discussion #discussion-search-close { position: absolute; top: 0.5rem; right: 0.65rem; width: 2rem; height: 2rem; }
