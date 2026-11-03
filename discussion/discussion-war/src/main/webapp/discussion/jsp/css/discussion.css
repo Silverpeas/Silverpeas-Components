@@ -407,7 +407,7 @@ html.discussion-embedded #discussion .discussion-composer { padding: var(--discu
 #discussion .discussion-channel-archives .discussion-channel-list { margin-top: 0; }
 #discussion .discussion-channel-heading { display: flex; gap: 0.75rem; min-width: 0; }
 #discussion .discussion-channel-heading > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-#discussion .discussion-search-scope { display: flex; align-items: center; gap: 0.25rem; font-size: 0.8em; white-space: nowrap; }
+
 #discussion .discussion-search { flex-wrap: wrap; }
 #discussion .discussion-search-channel { display: block; color: var(--color-text-label, #666); }
 #discussion-channel-dialog { width: min(28rem, 90vw); box-sizing: border-box; border: 1px solid var(--color-trait-separateur, #ddd); border-radius: 2px; padding: 1.25rem; }
@@ -426,5 +426,32 @@ html.discussion-embedded #discussion .discussion-channels, html.discussion-embed
   #discussion .discussion-channel-heading > span { display: none; }
 }
 
-#discussion .discussion-search input[type="checkbox"] { width: auto; flex: none; padding: 0; }
+
 #discussion .discussion-channel-mentions { color: var(--color-lien-action, #5b9900); font-size: 0.8em; font-weight: bold; }
+
+/* Compact search scope picker and contextual unread indicator. */
+#discussion .discussion-reading[hidden] { display: none; }
+#discussion .discussion-unread { color: var(--color-lien-action, #5b9900); }
+#discussion .discussion-search { position: relative; flex-wrap: nowrap; gap: 0.4rem; }
+#discussion .discussion-search > input[type="search"] { padding-right: 2.2rem; }
+#discussion .discussion-search-submit { width: 0; position: relative; align-self: stretch; }
+#discussion .discussion-search-submit > button { position: absolute; right: 0.65rem; top: 50%; transform: translateY(-50%); min-width: 1.8rem; min-height: 1.8rem; }
+#discussion .discussion-search-scope { flex: none; position: relative; }
+#discussion .discussion-search-scope > summary { border: 1px solid transparent; border-radius: 2px; }
+#discussion .discussion-search-scope > summary:focus-visible { outline: 2px solid var(--color-lien-action, #5b9900); outline-offset: 1px; }
+#discussion .discussion-search-scope.is-all-channels > summary { color: var(--color-lien-action, #5b9900); border-color: var(--color-trait-separateur, #ddd); background: var(--bgColor-bloc-fond-clair, #f5f5f5); }
+#discussion .discussion-search-scope.is-all-channels > summary::after { content: ''; position: absolute; top: 4px; right: 4px; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+#discussion .discussion-search-scope-menu { position: absolute; right: 0; top: calc(100% + 0.4rem); width: min(15rem, calc(100vw - 2rem)); z-index: 40; margin: 0; padding: 0.5rem; border: 1px solid var(--color-trait-separateur, #ddd); border-radius: 2px; background: var(--bgColor-card, #fff); box-shadow: 0 4px 12px rgb(0 0 0 / 12%); }
+#discussion .discussion-search-scope-menu legend { float: left; width: 100%; margin: 0; padding: 0.25rem 0.5rem 0.5rem; font-size: 0.8em; color: var(--color-text-label, #666); }
+#discussion .discussion-search-scope-menu label { display: flex; clear: both; align-items: center; gap: 0.5rem; padding: 0.6rem 0.5rem; cursor: pointer; white-space: nowrap; font-size: 0.9em; }
+#discussion .discussion-search-scope-menu input { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); }
+#discussion .discussion-search-scope-menu label > svg { visibility: hidden; }
+#discussion .discussion-search-scope-menu input:checked + svg { visibility: visible; color: var(--color-lien-action, #5b9900); }
+#discussion .discussion-search-scope-menu input:checked ~ span { color: var(--color-lien-action, #5b9900); font-weight: 700; }
+#discussion .discussion-search-scope-menu label:hover { background: var(--bgColor-bloc-fond-clair, #f5f5f5); }
+#discussion .discussion-search-scope-menu label:focus-within { outline: 2px solid var(--color-lien-action, #5b9900); outline-offset: -2px; }
+#discussion .discussion-search-scope-menu label:has(input:checked),
+#discussion .discussion-search-scope.is-all-channels > summary { background: color-mix(in srgb, var(--color-lien-action, #5b9900) 7%, var(--bgColor-card, #fff)); }
+@media (min-width: 761px) {
+  #discussion .discussion-search > input[type="search"] { width: min(26vw, 20rem); }
+}
