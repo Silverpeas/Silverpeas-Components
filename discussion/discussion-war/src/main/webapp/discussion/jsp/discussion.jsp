@@ -202,11 +202,11 @@
           <div id="discussion-sidebar-accordions">
           <details id="discussion-search-section" class="discussion-sidebar-section" name="discussion-sidebar" hidden>
             <summary><h2><fmt:message key="discussion.searchResults"/> <span id="discussion-search-count" class="discussion-people-count"></span></h2></summary>
+            <button id="discussion-search-close" type="button" class="discussion-icon-button" title="<fmt:message key='discussion.searchClose'/>" aria-label="<fmt:message key='discussion.searchClose'/>"><svg class="discussion-icon" aria-hidden="true"><use href="<c:url value='/discussion/jsp/icons/discussion-icons.svg'/>#close"/></svg></button>
             <div class="discussion-sidebar-content">
               <p id="discussion-search-status" class="discussion-hint" role="status" aria-live="polite" data-loading="<fmt:message key='discussion.searchLoading'/>" data-error="<fmt:message key='discussion.searchError'/>"></p>
               <div id="discussion-search-results"></div>
               <button id="discussion-search-more" type="button" class="button discussion-button--quiet" hidden><fmt:message key="discussion.searchMore"/></button>
-              <button id="discussion-search-close" type="button" class="button discussion-button--quiet"><fmt:message key="discussion.searchClose"/></button>
             </div>
           </details>
           <details class="discussion-sidebar-section" name="discussion-sidebar" open>
