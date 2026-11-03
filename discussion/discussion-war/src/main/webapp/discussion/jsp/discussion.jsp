@@ -62,6 +62,8 @@
   <link rel="stylesheet" href="<c:url value='/discussion/jsp/css/discussion.css'/>"/>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-desktop.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-activity.js'/>" defer></script>
+  <script src="<c:url value='/discussion/jsp/javaScript/vendor/markdown-it-15.0.3.min.js'/>" defer></script>
+  <script src="<c:url value='/discussion/jsp/javaScript/discussion-markdown.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-editor.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-layout.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion.js'/>" defer></script>
@@ -90,6 +92,10 @@
         data-files="${base}files" data-pins="${base}pins" data-instance-id="${discussionInstanceId}" data-read="${base}messages/read" data-typing="${base}typing" data-user-id="${currentUser.id}"
         data-typing-one="<fmt:message key='discussion.typingOne'/>" data-typing-many="<fmt:message key='discussion.typingMany'/>"
         data-message-id="<c:out value='${focusedMessageId}'/>"
+        data-format-label="<fmt:message key='discussion.formatLabel'/>" data-format-bold="<fmt:message key='discussion.formatBold'/>"
+        data-format-italic="<fmt:message key='discussion.formatItalic'/>" data-format-strike="<fmt:message key='discussion.formatStrike'/>"
+        data-format-bullets="<fmt:message key='discussion.formatBullets'/>" data-format-numbers="<fmt:message key='discussion.formatNumbers'/>"
+        data-format-quote="<fmt:message key='discussion.formatQuote'/>" data-format-code="<fmt:message key='discussion.formatCode'/>" data-format-link="<fmt:message key='discussion.formatLink'/>"
         data-length-error="<fmt:message key='discussion.hint'/>"
         data-view-vote-label="<fmt:message key='discussion.viewVote'/>" data-view-idea-label="<fmt:message key='discussion.viewIdea'/>" data-contribution-base="<c:url value='/Contribution/'/>" data-view-event-label="<fmt:message key='discussion.viewEvent'/>"
         data-profile-base="<c:url value='/Rprofil/jsp/Main'/>"

@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-/* Refresh derived pin content without replacing the native accordion. */
+/* Native image selection and clipboard paste share attachment validation and previews. */
 (() => {
   'use strict';
   document.addEventListener('DOMContentLoaded', () => {
@@ -93,8 +93,8 @@
       textarea.required = files.length === 0 && !document.getElementById('discussion-files')?.files.length;
       document.dispatchEvent(new Event('discussion:attachments'));
     };
-    input.addEventListener('change', () => {
-      const next = [...files, ...input.files];
+    const addFiles = incoming => {
+      const next = [...files, ...incoming];
       if (next.length > 4 || next.some(file => file.size <= 0 || file.size > 5 * 1024 * 1024
           || !['image/jpeg', 'image/png', 'image/gif'].includes(file.type))) {
         error.textContent = input.dataset.error;
@@ -104,6 +104,18 @@
         error.hidden = true;
       }
       render();
+    };
+    input.addEventListener('change', () => addFiles([...input.files]));
+    textarea.addEventListener('paste', event => {
+      const clipboard = event.clipboardData;
+      if (!clipboard) { return; }
+      const images = [...(clipboard.items || [])]
+          .filter(item => item.kind === 'file' && item.type.startsWith('image/'))
+          .map(item => item.getAsFile()).filter(Boolean);
+      if (!images.length) { return; }
+      // The textarea keeps the browser's plain-text paste when the clipboard also contains text.
+      if (!clipboard.getData('text/plain')) { event.preventDefault(); }
+      addFiles(images);
     });
     window.addEventListener('pagehide', release);
     window.addEventListener('pageshow', event => { if (event.persisted) { render(); } });
