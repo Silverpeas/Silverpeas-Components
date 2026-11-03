@@ -147,3 +147,19 @@ test('missing authorized Vote blocks creation and stale option responses cannot 
     assert.equal(await page.locator('#discussion-vote-question').inputValue(),'Quel jour ?');
   } finally {await browser.close();}
 });
+
+
+test('browser multipart serialization sends CRLF answer separators even when the textarea uses LF',async()=>{
+  const {browser,page}=await setup();
+  try {
+    await open(page);
+    await fill(page);
+    const wire=await page.evaluate(async()=>{
+      const data=new FormData();
+      data.append('answers',document.getElementById('discussion-vote-answers').value);
+      return new Request('http://discussion.test/votes',{method:'POST',body:data}).text();
+    });
+    assert.ok(wire.includes('Mardi\r\nJeudi'));
+    assert.equal(await page.evaluate(()=>calls.filter(c=>c.post).length),0);
+  } finally {await browser.close();}
+});
