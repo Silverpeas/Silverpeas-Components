@@ -526,3 +526,31 @@ des citations autorisées côté serveur. Le titre suit les actualisations de ce
 liste et s'applique aussi à l'historique chargé ensuite. L'URL complète reste dans
 l'infobulle et la destination est conservée ; sans titre autorisé disponible, elle
 reste explicite. Aucun appel réseau par message ni modification du texte stocké.
+
+
+### Markdown et collage d'images
+
+Le compositeur reste un champ texte. Le bouton « Aa » affiche une barre masquée
+par défaut : gras, italique, barré, listes, citation, bloc de code et lien nommé.
+`Ctrl+B`/`Cmd+B` et `Ctrl+I`/`Cmd+I` appliquent ou retirent la mise en forme autour de
+la sélection. Les marqueurs restent visibles pendant la rédaction et sont stockés
+en texte, dans la limite existante de 2 000 caractères. Les mentions conservent leurs
+identifiants et notifications lorsqu'elles sont entourées de marqueurs.
+
+Les messages et réponses sont rendus avec markdown-it 15.0.3, embarqué localement
+avec sa licence et les notices de ses dépendances. Le profil `zero` n'active qu'un
+sous-ensemble : pas de HTML, images Markdown, tableaux, titres ou styles libres.
+Les protocoles exécutables ne sont pas autorisés. Le code reste littéral, les mentions
+restent cliquables hors code et les liens nommés conservent le libellé saisi. Les liens
+natifs continuent d'utiliser la navigation Silverpeas. Les nouveaux fragments de
+l'historique et les mises à jour utilisent le même rendu ; aucun HTML n'est stocké.
+Les messages existants contenant de la syntaxe Markdown sont aussi interprétés.
+
+Coller une image dans le compositeur ajoute une pièce jointe avec aperçu et retrait,
+sans la convertir en donnée Base64 dans le message. Le collage et le sélecteur
+partagent les mêmes contrôles : JPEG, PNG ou GIF, 4 images maximum, 5 Mo chacune.
+Un collage refusé conserve les images et le brouillon précédents. Le texte normal
+ou une légende présente avec l'image conserve le comportement de collage natif.
+Les brouillons de canaux et les messages composés uniquement d'images continuent de
+fonctionner avec les pièces jointes natives et leur validation serveur.
+Aucune modification SQL ni changement de version de migration.

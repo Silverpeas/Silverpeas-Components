@@ -204,12 +204,32 @@
     });
   }
 
-  function renderBody(body) {
-    if (body.dataset.rendered) {
-      return;
+  function decorateWebLink(link, original, autoLabel = true) {
+    link.href = new URL(link.getAttribute('href'), document.baseURI).href;
+    const label = contributionLabel(link.href);
+    if (label && autoLabel) {
+      link.textContent = label;
+      link.title = original;
+      link.classList.add('discussion-event-link');
     }
+    const publication = publicationId(link.href);
+    if (publication && autoLabel) {
+      link.dataset.publicationId = publication;
+      link.dataset.publicationOriginal = original;
+      link.textContent = publicationTitles.get(publication) || original;
+      link.title = original;
+    }
+    if (label || publication) {
+      link.classList.add('sp-link');
+      link.target = '_self';
+    } else {
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+    }
+  }
+  function renderInlineText(text) {
     const content = document.createDocumentFragment();
-    for (const token of tokenize(body.textContent)) {
+    for (const token of tokenize(text)) {
       if (token.type === 'text') {
         content.appendChild(document.createTextNode(token.text));
       } else {
@@ -220,30 +240,36 @@
           link.className = 'discussion-mention';
         } else {
           link.href = token.href;
-          const label = contributionLabel(token.href);
-          if (label) {
-            link.textContent = label;
-            link.title = token.text;
-            link.className = 'discussion-event-link';
-          }
-          const publication = publicationId(token.href);
-          if (publication) {
-            link.dataset.publicationId = publication;
-            link.dataset.publicationOriginal = token.text;
-            link.textContent = publicationTitles.get(publication) || token.text;
-            link.title = token.text;
-          }
-          if (label || publication) {
-            // Silverpeas hooks sp-link in the main frame and dynamically loaded thread frames.
-            link.classList.add('sp-link');
-            link.target = '_self';
-          } else {
-            link.target = '_blank';
-            link.rel = 'noopener noreferrer';
-          }
+          decorateWebLink(link, token.text);
         }
         content.appendChild(link);
       }
+    }
+    return content;
+  }
+  function renderBody(body) {
+    if (body.dataset.rendered) { return; }
+    const markdown = root.DiscussionMarkdown?.render(body.textContent);
+    const content = markdown || renderInlineText(body.textContent);
+    if (markdown) {
+      body.classList.add('discussion-body--markdown');
+      content.querySelectorAll('[data-discussion-mention]').forEach(mention => {
+        if (mention.closest('a')) { mention.replaceWith(document.createTextNode(mention.textContent)); return; }
+        const link = document.createElement('a');
+        link.href = discussion.dataset.profileBase + '?userId=' + encodeURIComponent(mention.dataset.discussionMention);
+        link.className = 'discussion-mention';
+        link.textContent = mention.textContent;
+        mention.replaceWith(link);
+      });
+      content.querySelectorAll('a:not(.discussion-mention)').forEach(link => decorateWebLink(link, link.textContent, false));
+      const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT);
+      const texts = [];
+      while (walker.nextNode()) {
+        if (!walker.currentNode.parentElement?.closest('a, pre, code') && /https?:\/\/|@\[/i.test(walker.currentNode.textContent)) {
+          texts.push(walker.currentNode);
+        }
+      }
+      texts.forEach(text => text.replaceWith(renderInlineText(text.textContent)));
     }
     body.replaceChildren(content);
     body.dataset.rendered = 'true';
@@ -317,6 +343,7 @@
     mentionButton.addEventListener('click', () => insert(textarea, '@', selection[0], selection[1]));
     tools.append(emojiButton, mentionButton, picker);
     textarea.after(tools);
+    root.DiscussionMarkdown?.enhanceEditor(textarea, tools, insert);
 
     const list = element('div', 'discussion-mention-list');
     list.id = 'discussion-mentions-' + (++listNumber);

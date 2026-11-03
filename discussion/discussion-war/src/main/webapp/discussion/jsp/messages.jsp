@@ -79,7 +79,7 @@
           <time><fmt:formatDate value="${message.creationDate}" type="both" dateStyle="short" timeStyle="short"/></time>
           <c:if test="${message.unread}"><span class="discussion-unread-badge"><fmt:message key="discussion.unreadMessage"/></span></c:if>
         </header>
-            <c:if test="${not empty fn:trim(message.body)}"><p class="discussion-body"><c:out value="${message.body}"/></p></c:if>
+            <c:if test="${not empty fn:trim(message.body)}"><div class="discussion-body"><c:out value="${message.body}"/></div></c:if>
             <c:if test="${not empty messageImages[message.id]}">
               <div class="discussion-message-images">
                 <c:forEach items="${messageImages[message.id]}" var="image">
