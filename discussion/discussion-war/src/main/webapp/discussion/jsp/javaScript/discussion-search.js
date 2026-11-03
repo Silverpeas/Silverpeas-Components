@@ -94,6 +94,9 @@
     };
     form.addEventListener('submit', event => { event.preventDefault(); load(false); });
     input.addEventListener('input', () => { if (!input.value.trim()) { reset(); } });
+    document.getElementById('discussion-search-scope')?.addEventListener('change', () => {
+      if (input.value.trim()) { load(false); }
+    });
     more.addEventListener('click', () => load(true));
     close.addEventListener('click', () => { reset(); input.focus(); });
     window.addEventListener('pagehide', reset);

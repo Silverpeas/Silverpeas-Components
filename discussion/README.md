@@ -372,3 +372,10 @@ via son engrenage. Les canaux archivés sont regroupés dans la section Archives
 repliée au chargement. Son état d'ouverture est conservé pendant les rafraîchissements
 événementiels. Pour réactiver un canal, le sélectionner dans Archives, ouvrir son
 engrenage, décocher « Archiver ce canal » et valider. L'historique est conservé.
+
+L'en-tête utilise une bulle avec le compteur de non-lus, masquée à zéro et synchronisée
+avec les événements et accusés de lecture existants. Le filtre près du champ de recherche
+propose « Ce canal » ou « Tous les canaux ». Sa couleur, son point et son infobulle
+indiquent la portée active. Un changement de portée relance la recherche depuis la
+première page sans mélanger les réponses en cours. Les commandes sont accessibles
+au clavier ; Échap et un clic extérieur ferment le sélecteur.

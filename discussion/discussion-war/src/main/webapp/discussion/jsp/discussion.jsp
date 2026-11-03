@@ -55,6 +55,7 @@
   <view:includePlugin name="preview"/>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-threads.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-channels.js'/>" defer></script>
+  <script src="<c:url value='/discussion/jsp/javaScript/discussion-header.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-search.js'/>" defer></script>
   <view:includePlugin name="subscription"/>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-subscription.js'/>" defer></script>
@@ -105,15 +106,18 @@
         <form id="discussion-search" class="discussion-search" action="${base}search" method="get" role="search">
           <label class="discussion-compose-label" for="discussion-search-query"><fmt:message key="discussion.search"/></label>
           <input type="search" id="discussion-search-query" name="q" maxlength="200" placeholder="<fmt:message key='discussion.search'/>" autocomplete="off"/>
-          <label class="discussion-search-scope"><input id="discussion-search-all-channels" type="checkbox" name="allChannels" value="true"/><fmt:message key="discussion.allChannels"/></label>
-          <button type="submit" class="discussion-icon-button" aria-label="<fmt:message key='discussion.searchSubmit'/>"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="m15 15 6 6"/></svg></button>
+          <span class="discussion-search-submit"><button type="submit" class="discussion-icon-button" title="<fmt:message key='discussion.searchSubmit'/>" aria-label="<fmt:message key='discussion.searchSubmit'/>"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="m15 15 6 6"/></svg></button></span>
+          <details id="discussion-search-scope" class="discussion-search-scope" data-label="<fmt:message key='discussion.searchScopeLabel'/>">
+            <summary class="discussion-icon-button" title="<fmt:message key='discussion.searchThisChannel'/>" aria-label="<fmt:message key='discussion.searchThisChannel'/>"><svg class="discussion-icon" aria-hidden="true"><use href="<c:url value='/discussion/jsp/icons/discussion-icons.svg'/>#filter"/></svg></summary>
+            <fieldset class="discussion-search-scope-menu">
+              <legend><fmt:message key="discussion.searchIn"/></legend>
+              <label><input type="radio" name="allChannels" value="false" checked data-label="<fmt:message key='discussion.thisChannel'/>"/><svg class="discussion-icon" aria-hidden="true"><use href="<c:url value='/discussion/jsp/icons/discussion-icons.svg'/>#check"/></svg><span><fmt:message key="discussion.thisChannel"/></span></label>
+              <label><input id="discussion-search-all-channels" type="radio" name="allChannels" value="true" data-label="<fmt:message key='discussion.allChannels'/>"/><svg class="discussion-icon" aria-hidden="true"><use href="<c:url value='/discussion/jsp/icons/discussion-icons.svg'/>#check"/></svg><span><fmt:message key="discussion.allChannels"/></span></label>
+            </fieldset>
+          </details>
         </form>
-        <div class="discussion-reading">
-          <span class="discussion-unread">
-            <span class="discussion-unread-count"><c:out value="${messagePage.unreadCount}"/></span>
-            <fmt:message key="discussion.unread"/>
-          </span>
-
+        <div class="discussion-reading" role="status" aria-live="polite" aria-atomic="true" data-unread-label="<fmt:message key='discussion.unreadSummary'/>" hidden>
+          <span class="discussion-unread"><svg class="discussion-icon" aria-hidden="true"><use href="<c:url value='/discussion/jsp/icons/discussion-icons.svg'/>#unread"/></svg><span class="discussion-unread-count"><c:out value="${messagePage.unreadCount}"/></span></span>
         </div>
       </header>
       <template id="discussion-mention-directory">
