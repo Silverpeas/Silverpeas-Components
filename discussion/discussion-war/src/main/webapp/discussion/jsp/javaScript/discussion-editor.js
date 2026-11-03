@@ -145,6 +145,19 @@
     button.appendChild(icon(name));
     return button;
   }
+  function isEventPermalink(href) {
+    if (!discussion.dataset.contributionBase || !discussion.dataset.viewEventLabel) { return false; }
+    try {
+      const url = new URL(href);
+      const base = new URL(discussion.dataset.contributionBase, document.baseURI);
+      if (url.origin !== base.origin || !url.pathname.startsWith(base.pathname) || url.username || url.password) { return false; }
+      const identifier = atob(decodeURIComponent(url.pathname.slice(base.pathname.length)));
+      return /^almanach[0-9]+:CalendarEvent:[a-zA-Z0-9-]{1,40}$/.test(identifier);
+    } catch (failure) {
+      return false;
+    }
+  }
+
   function renderBody(body) {
     if (body.dataset.rendered) {
       return;
@@ -161,6 +174,11 @@
           link.className = 'discussion-mention';
         } else {
           link.href = token.href;
+          if (isEventPermalink(token.href)) {
+            link.textContent = discussion.dataset.viewEventLabel;
+            link.title = token.text;
+            link.className = 'discussion-event-link';
+          }
           link.target = '_blank';
           link.rel = 'noopener noreferrer';
         }

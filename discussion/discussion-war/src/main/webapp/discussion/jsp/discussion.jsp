@@ -88,6 +88,7 @@
         data-typing-one="<fmt:message key='discussion.typingOne'/>" data-typing-many="<fmt:message key='discussion.typingMany'/>"
         data-message-id="<c:out value='${focusedMessageId}'/>"
         data-length-error="<fmt:message key='discussion.hint'/>"
+        data-contribution-base="<c:url value='/Contribution/'/>" data-view-event-label="<fmt:message key='discussion.viewEvent'/>"
         data-profile-base="<c:url value='/Rprofil/jsp/Main'/>"
         data-icons="<c:url value='/discussion/jsp/icons/discussion-icons.svg'/>"
         data-close-image="<fmt:message key='discussion.closeImage'/>" data-emoji-label="<fmt:message key='discussion.emoji'/>"
