@@ -94,7 +94,7 @@ class DiscussionMentionServiceTest {
   void nativeNotificationIsBuiltOnlyInTheAfterCommitObserver() {
     var message = new DiscussionMessage("conversation", 1, "@[Alice](2)");
     try (var helper = mockStatic(UserNotificationHelper.class)) {
-      new DiscussionMentionDispatcher(mock(Event.class)).notifyAfterCommit(new DiscussionMentionEvent("discussion1", message, sender, Set.of("2")));
+      new DiscussionMentionDispatcher(mock(Event.class), mock(org.silverpeas.components.discussion.repository.DiscussionReadStateRepository.class)).notifyAfterCommit(new DiscussionMentionEvent("discussion1", message, sender, Set.of("2")));
       var notification = ArgumentCaptor.forClass(DiscussionMentionNotification.class);
       helper.verify(() -> UserNotificationHelper.buildAndSend(notification.capture()));
       assertEquals(Set.of("2"), notification.getValue().getUserIdsToNotify());
@@ -107,7 +107,7 @@ class DiscussionMentionServiceTest {
   @Test
   void notificationsAreScheduledAsTransactionalEvents() {
     Event<DiscussionMentionEvent> events = mock(Event.class);
-    var dispatcher = new DiscussionMentionDispatcher(events);
+    var dispatcher = new DiscussionMentionDispatcher(events, mock(org.silverpeas.components.discussion.repository.DiscussionReadStateRepository.class));
     var event = new DiscussionMentionEvent("discussion1", new DiscussionMessage("c", 1, "Hello"), sender, Set.of("2"));
     dispatcher.schedule(event);
     verify(events).fire(event);

@@ -52,14 +52,15 @@ public class DiscussionMessageServerEvent extends AuthorizedDiscussionEvent impl
   public boolean isConcerned(String sessionId, User receiver) {
     return receiver != null && !message.authorId().equals(receiver.getId())
         && super.isConcerned(sessionId, receiver)
-        && preferences.enabledFor(message.instanceId(), receiver.getId());
+        && preferences.enabledFor(message.instanceId(), receiver.getId())
+        && !preferences.channelMutedForMessage(message.instanceId(), message.messageId(), receiver.getId());
   }
 
   @Override
   public String getData(String sessionId, User receiver) {
     String language = receiver.getUserPreferences().getLanguage();
     return JSONCodec.encodeObject(json -> json.put("instanceId", message.instanceId())
-        .put("messageId", message.messageId()).put("userId", receiver.getId())
+        .put("channelScope", message.channelScope()).put("messageId", message.messageId()).put("userId", receiver.getId())
         .put("title", component.getLabel(language))
         .put("text", message.authorName() + ": " + (message.body().isBlank() ? "📎" : DiscussionMentionService.displayText(message.body())))
         .put("url", URLUtil.getApplicationURL() + "/Rdiscussion/" + message.instanceId() + "/messages/" + message.messageId()));

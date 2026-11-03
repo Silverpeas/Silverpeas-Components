@@ -54,6 +54,10 @@ public class DiscussionSearchService {
   private SearchEngine engine;
 
   public DiscussionSearchPage search(String instanceId, String text, int offset) {
+    return search(instanceId, text, offset, false);
+  }
+
+  public DiscussionSearchPage search(String instanceId, String text, int offset, boolean allChannels) {
     access.require(instanceId, SilverpeasRole.WRITER);
     if (text == null || text.isBlank()) {
       return new DiscussionSearchPage(List.of(), 0, 0);
@@ -69,13 +73,15 @@ public class DiscussionSearchService {
           .filter(entry -> instanceId.equals(entry.getComponent())
               && DiscussionMessageIndex.TYPE.equals(entry.getObjectType()))
           .map(entry -> entry.getObjectId()).distinct().toList();
-      var conversation = conversations.main(instanceId, false);
+      var selectedChannels = allChannels ? conversations.channels(instanceId)
+          : List.of(conversations.current(instanceId, false));
       var existing = new HashMap<String, DiscussionMessage>();
       // Bound SQL IN clauses, including on Oracle, and discard stale/deleted index hits.
       for (int start = 0; start < ids.size(); start += 200) {
-        messages.selected(conversation.getId(), ids.subList(start, Math.min(start + 200, ids.size())))
+        var batch = ids.subList(start, Math.min(start + 200, ids.size()));
+        selectedChannels.forEach(conversation -> messages.selected(conversation.getId(), batch)
             .stream().filter(message -> !message.isDeleted())
-            .forEach(message -> existing.put(message.getId(), message));
+            .forEach(message -> existing.put(message.getId(), message)));
       }
       var ordered = ids.stream().map(existing::get).filter(Objects::nonNull).toList();
       int from = Math.min(offset, ordered.size());

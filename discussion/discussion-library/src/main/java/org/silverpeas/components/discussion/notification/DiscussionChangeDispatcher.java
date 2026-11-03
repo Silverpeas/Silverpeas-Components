@@ -64,8 +64,11 @@ public class DiscussionChangeDispatcher {
     events.fire(new DiscussionChange(instanceId, userId));
   }
 
+  @Inject
+  private org.silverpeas.components.discussion.service.DiscussionChannelContext channelContext;
+
   public void published(String instanceId, String messageId, String authorId, String authorName, String body) {
-    newMessages.fire(new DiscussionNewMessage(instanceId, messageId, authorId, authorName, body));
+    newMessages.fire(new DiscussionNewMessage(instanceId, messageId, authorId, authorName, body, channelContext.getScope() == null ? "main" : channelContext.getScope()));
   }
 
   // AFTER_SUCCESS runs after the publishing transaction has completed. Component lookup

@@ -34,7 +34,7 @@ public class DiscussionTypingServerEvent extends AuthorizedDiscussionEvent imple
     super(typing.instanceId(), access);
     getId();
     withData((session, receiver) -> JSONCodec.encodeObject(json -> json.put("instanceId", typing.instanceId())
-        .put("userId", typing.userId()).put("threadRootId", typing.threadRootId()).put("name", typing.name()).put("revision", getId())
+        .put("channelScope", typing.channelScope()).put("userId", typing.userId()).put("threadRootId", typing.threadRootId()).put("name", typing.name()).put("revision", getId())
         .put("ttl", Math.max(0, typing.expiresAt() - System.currentTimeMillis()))));
     this.userId = typing.userId();
     this.sessions = sessions;

@@ -30,7 +30,7 @@ import jakarta.persistence.UniqueConstraint;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
 
-/** A conversation container; the application currently creates only the main one per instance. */
+/** A channel within an application instance, with its own sequence and read receipts. */
 @Entity
 @Table(name = "sc_discussion_conversation", uniqueConstraints =
     @UniqueConstraint(columnNames = {"instanceId", "scopeKey"}))
@@ -43,6 +43,13 @@ public class Conversation extends SilverpeasJpaEntity<Conversation, UuidIdentifi
   @Column(nullable = false)
   private long lastSequence;
 
+  @Column(length = 80)
+  private String channelName;
+  @Column(length = 255)
+  private String channelDescription;
+  @Column(nullable = false)
+  private boolean archived;
+
   protected Conversation() {
     // JPA constructor.
   }
@@ -50,6 +57,34 @@ public class Conversation extends SilverpeasJpaEntity<Conversation, UuidIdentifi
   public Conversation(String componentInstanceId) {
     this.componentInstanceId = componentInstanceId;
     this.scopeKey = "main";
+  }
+
+  public static Conversation channel(String instanceId, String name, String description) {
+    var channel = new Conversation(instanceId);
+    channel.scopeKey = java.util.UUID.randomUUID().toString();
+    channel.rename(name, description);
+    return channel;
+  }
+
+  public void rename(String name, String description) {
+    if (name == null || name.isBlank() || name.strip().length() > 80
+        || description != null && description.strip().length() > 255) {
+      throw new IllegalArgumentException("Invalid channel name or description");
+    }
+    channelName = name.strip();
+    channelDescription = description == null || description.isBlank() ? null : description.strip();
+  }
+
+  public String getScopeKey() { return scopeKey; }
+  public String getChannelName() { return channelName; }
+  public String getChannelDescription() { return channelDescription; }
+  public boolean isMain() { return "main".equals(scopeKey); }
+  public boolean isArchived() { return archived; }
+  public void setArchived(boolean value) {
+    if (isMain() && value) {
+      throw new IllegalArgumentException("The general channel cannot be archived");
+    }
+    archived = value;
   }
 
   public String getComponentInstanceId() { return componentInstanceId; }

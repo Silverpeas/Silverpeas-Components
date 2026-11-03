@@ -71,7 +71,7 @@
       more.disabled = true;
       more.hidden = !append;
       try {
-        const response = await sp.ajaxRequest(form.action).withParam('q', text).withParam('offset', String(next)).send();
+        const response = await sp.ajaxRequest(form.action).withParam('q', text).withParam('offset', String(next)).withParam('allChannels', String(document.getElementById('discussion-search-all-channels')?.checked === true)).send();
         if (token !== generation) { return; }
         const page = new DOMParser().parseFromString(response.responseText, 'text/html');
         const fragment = page.querySelector('.discussion-search-page');

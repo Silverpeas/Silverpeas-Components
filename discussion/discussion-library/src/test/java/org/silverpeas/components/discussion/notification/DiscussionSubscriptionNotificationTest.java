@@ -55,7 +55,7 @@ class DiscussionSubscriptionNotificationTest {
 
   @Test
   void schedulingDoesNotSendBeforeCommit() {
-    var dispatcher = new DiscussionSubscriptionDispatcher(events);
+    var dispatcher = new DiscussionSubscriptionDispatcher(events, mock(org.silverpeas.components.discussion.repository.DiscussionReadStateRepository.class));
     var event = event(NotifAction.CREATE);
     try (var helper = mockStatic(UserNotificationHelper.class)) {
       dispatcher.schedule(event);

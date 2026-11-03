@@ -58,7 +58,7 @@ public class DiscussionPublicationService {
 
   public List<DiscussionPublication> list(String instanceId, String language) {
     access.require(instanceId, SilverpeasRole.WRITER);
-    var conversation = conversations.main(instanceId, false);
+    var conversation = conversations.current(instanceId, false);
     var application = URI.create(URLUtil.getAbsoluteApplicationURL());
     List<String> ids;
     try (var bodies = messages.publicationLinkBodies(conversation.getId())) {

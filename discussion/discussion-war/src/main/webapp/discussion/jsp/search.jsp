@@ -29,13 +29,14 @@
 <%@ taglib uri="jakarta.tags.functions" prefix="fn" %>
 <%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view" %>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
-<c:url var="base" value="${requestScope.componentUriBase}"/>
+<c:url var="base" value="${requestScope.instanceUriBase}"/>
 <div class="discussion-search-page" data-next-offset="${searchPage.nextOffset}" data-has-more="${searchPage.hasMore}" data-total="${searchPage.total}">
   <c:if test="${empty searchPage.messages}"><p class="discussion-hint"><fmt:message key="discussion.searchEmpty"/></p></c:if>
   <ul class="discussion-search-list">
     <c:forEach items="${searchPage.messages}" var="message">
       <li>
         <a href="${base}messages/${message.id}#message-${message.id}">
+          <small class="discussion-search-channel"># <c:out value="${searchChannels[message.conversationId]}"/></small>
           <strong><c:out value="${message.creator.displayedName}"/></strong>
           <c:if test="${not empty message.threadRootId}"><small class="discussion-thread-search-label"><fmt:message key="discussion.inThread"/></small></c:if>
           <time><fmt:formatDate value="${message.creationDate}" type="both" dateStyle="short" timeStyle="short"/></time>

@@ -76,7 +76,7 @@ class DiscussionLifecycleTest {
   void deletionRemovesChildrenBeforeTheConversation() {
     var conversation = mock(Conversation.class);
     when(conversation.getId()).thenReturn("conversation");
-    when(conversations.main("discussion1", true)).thenReturn(conversation);
+    when(conversations.channels("discussion1")).thenReturn(java.util.List.of(conversation));
     destruction.preDestroy("discussion1");
     var order = inOrder(seen, likes, messages, readStates, conversations);
     order.verify(seen).deleteConversation("conversation");

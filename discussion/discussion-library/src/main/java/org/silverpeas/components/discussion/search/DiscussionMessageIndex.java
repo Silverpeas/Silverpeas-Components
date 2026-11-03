@@ -58,7 +58,7 @@ public class DiscussionMessageIndex {
 
   @Transactional(Transactional.TxType.REQUIRES_NEW)
   public void afterCommit(@Observes(during = TransactionPhase.AFTER_SUCCESS) DiscussionIndexEvent event) {
-    var conversation = conversations.main(event.instanceId(), false);
+    var conversation = conversations.forMessage(event.instanceId(), event.messageId());
     var found = messages.selected(conversation.getId(), List.of(event.messageId()));
     if (found.isEmpty()) {
       index.delete(new IndexEntryKey(event.instanceId(), TYPE, event.messageId()));
@@ -70,11 +70,14 @@ public class DiscussionMessageIndex {
   /** Called by Silverpeas administration with its already checked component scope. */
   @Transactional
   public void reindex(String instanceId) {
-    var conversation = conversations.main(instanceId, false);
+    conversations.channels(instanceId).forEach(conversation -> reindexConversation(instanceId, conversation.getId()));
+  }
+
+  private void reindexConversation(String instanceId, String conversationId) {
     long before = Long.MAX_VALUE;
     List<DiscussionMessage> batch;
     do {
-      batch = messages.allHistory(conversation.getId(), before, BATCH_SIZE);
+      batch = messages.allHistory(conversationId, before, BATCH_SIZE);
       batch.forEach(message -> indexMessage(instanceId, message));
       if (!batch.isEmpty()) {
         before = batch.getLast().getSequenceNumber();

@@ -35,14 +35,17 @@ import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelp
 @Service
 public class DiscussionSubscriptionDispatcher {
   @Inject
+  private org.silverpeas.components.discussion.repository.DiscussionReadStateRepository preferences;
+  @Inject
   private Event<DiscussionSubscriptionEvent> events;
 
   public DiscussionSubscriptionDispatcher() {
     // CDI constructor.
   }
 
-  DiscussionSubscriptionDispatcher(Event<DiscussionSubscriptionEvent> events) {
+  DiscussionSubscriptionDispatcher(Event<DiscussionSubscriptionEvent> events, org.silverpeas.components.discussion.repository.DiscussionReadStateRepository preferences) {
     this.events = events;
+    this.preferences = preferences;
   }
 
   public void schedule(DiscussionSubscriptionEvent event) {
@@ -52,6 +55,8 @@ public class DiscussionSubscriptionDispatcher {
   @Transactional(Transactional.TxType.REQUIRES_NEW)
   public void afterCommit(
       @Observes(during = TransactionPhase.AFTER_SUCCESS) DiscussionSubscriptionEvent event) {
-    UserNotificationHelper.buildAndSend(new DiscussionSubscriptionNotification(event));
+    var notification = new DiscussionSubscriptionNotification(event);
+    notification.excludeUsers(preferences.excludedFromNotifications(event.message().getConversationId(), false));
+    UserNotificationHelper.buildAndSend(notification);
   }
 }

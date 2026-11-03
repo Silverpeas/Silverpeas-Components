@@ -26,4 +26,15 @@ package org.silverpeas.components.discussion.control;
 import org.silverpeas.core.web.mvc.webcomponent.WebComponentRequestContext;
 
 public class DiscussionWebRequestContext extends WebComponentRequestContext<DiscussionWebController> {
+  private String channelScope;
+
+  public String getChannelScope() { return channelScope == null ? "main" : channelScope; }
+
+  public void setChannelScope(String scope) { channelScope = scope; }
+  public String getInstanceUriBase() { return super.getComponentUriBase(); }
+
+  @Override
+  public String getComponentUriBase() {
+    return super.getComponentUriBase() + (channelScope == null ? "" : "channels/" + channelScope + "/");
+  }
 }

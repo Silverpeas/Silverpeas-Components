@@ -148,6 +148,17 @@ public class DiscussionMessageRepository extends SilverpeasJpaEntityRepository<D
         .setParameter("lastRead", lastRead).setParameter("user", userId).getSingleResult();
   }
 
+  public long unreadMentions(String conversationId, String userId, long lastRead) {
+    return getEntityManager().createQuery("""
+        select count(m) from DiscussionMessage m where m.conversationId = :conversation
+        and m.sequenceNumber > :lastRead and m.creatorId <> :user and m.deleted = false
+        and m.body like :mention
+        and not exists (select s from DiscussionSeen s where s.messageId = m.id.id and s.userId = :user)
+        """, Long.class).setParameter("conversation", conversationId).setParameter("user", userId)
+        .setParameter("lastRead", lastRead).setParameter("mention", "%](" + userId + ")%")
+        .getSingleResult();
+  }
+
   public void deleteConversation(String conversationId) {
     // Remove the dependent replies first for databases checking the self-reference row by row.
     getEntityManager().createQuery(

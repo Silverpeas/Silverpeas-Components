@@ -55,7 +55,10 @@ public class DiscussionInstancePreDestruction implements ComponentInstancePreDes
   @Override
   @Transactional
   public void preDestroy(String instanceId) {
-    Conversation conversation = conversations.main(instanceId, true);
+    conversations.channels(instanceId).forEach(this::destroyConversation);
+  }
+
+  private void destroyConversation(Conversation conversation) {
     seen.deleteConversation(conversation.getId());
     likes.deleteConversation(conversation.getId());
     messages.deleteConversation(conversation.getId());

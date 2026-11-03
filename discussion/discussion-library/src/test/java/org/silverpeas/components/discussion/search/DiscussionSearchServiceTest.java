@@ -67,7 +67,28 @@ class DiscussionSearchServiceTest {
   void prepare() {
     var conversation = mock(Conversation.class);
     when(conversation.getId()).thenReturn("conversation1");
-    when(conversations.main("discussion1", false)).thenReturn(conversation);
+    when(conversations.current("discussion1", false)).thenReturn(conversation);
+  }
+
+  @Test
+  void searchingAllChannelsRetainsNativeRelevanceAndInstanceBoundaries() throws Exception {
+    var otherChannel = mock(Conversation.class);
+    when(otherChannel.getId()).thenReturn("conversation2");
+    var firstChannel = conversations.current("discussion1", false);
+    when(conversations.channels("discussion1")).thenReturn(List.of(firstChannel, otherChannel));
+    when(engine.search(any())).thenReturn(new PlainSearchResult(List.of(), List.of(
+        hit("discussion1", "DiscussionMessage", "project"), hit("discussion1", "DiscussionMessage", "general"))));
+    var general = message("general");
+    var project = message("project");
+    when(messages.selected(eq("conversation1"), anyList())).thenReturn(List.of(general));
+    when(messages.selected(eq("conversation2"), anyList())).thenReturn(List.of(project));
+    try (var users = mockStatic(User.class)) {
+      var user = mock(User.class);
+      when(user.getId()).thenReturn("42");
+      users.when(User::getCurrentRequester).thenReturn(user);
+      assertEquals(List.of("general"), service.search("discussion1", "projet", 0).messages().stream().map(DiscussionMessage::getId).toList());
+      assertEquals(List.of("project", "general"), service.search("discussion1", "projet", 0, true).messages().stream().map(DiscussionMessage::getId).toList());
+    }
   }
 
   @Test

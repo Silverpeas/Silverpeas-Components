@@ -102,7 +102,7 @@
     const receive = event => {
       try {
         const data = JSON.parse(event.data);
-        if (data.instanceId !== discussion.dataset.instanceId || data.userId === discussion.dataset.userId
+        if (data.instanceId !== discussion.dataset.instanceId || (data.channelScope || 'main') !== (discussion.dataset.channelScope || 'main') || data.userId === discussion.dataset.userId
             || (data.threadRootId || '') !== (discussion.dataset.threadRootId || '')
             || !Number.isFinite(data.revision) || !Number.isFinite(data.ttl)) {
           return;
@@ -124,7 +124,7 @@
       if (stopped || source) {
         return;
       }
-      unregister = root.DiscussionDesktop?.register(discussion.dataset.instanceId, discussion.dataset.userId, active);
+      unregister = root.DiscussionDesktop?.register(discussion.dataset.instanceId, discussion.dataset.userId, active, discussion.dataset.channelScope || 'main');
       source = root.spServerEventSource || window.spServerEventSource;
       if (source?.isEnabled()) {
         source.addEventListener('DISCUSSION_TYPING', receive, (window.DiscussionContext?.eventId('discussionTyping') || 'discussionTyping'));
