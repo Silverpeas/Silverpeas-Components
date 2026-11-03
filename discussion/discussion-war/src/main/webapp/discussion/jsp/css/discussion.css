@@ -479,9 +479,12 @@ html.discussion-embedded #discussion .discussion-channels, html.discussion-embed
 
 #discussion-delete-event-dialog { width: min(38rem, calc(100vw - 2rem)); max-height: calc(100dvh - 2rem); overflow-y: auto; padding: 1.25rem; border: 1px solid var(--color-trait-separateur, #ddd); border-radius: 2px; background: var(--bgColor-card, #fff); color: var(--color-text, #333); }
 #discussion-delete-event-dialog::backdrop { background: rgb(0 0 0 / 25%); }
-#discussion-delete-event-dialog h2 { margin-top: 0; font-size: 1.15em; }
+#discussion-delete-event-dialog header { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; margin-bottom: 1rem; }
+#discussion-delete-event-dialog h2 { margin: 0; font-size: 1.15em; }
+#discussion-delete-event-close { flex: 0 0 auto; }
 #discussion-delete-event-dialog footer { display: flex; justify-content: flex-end; gap: 0.6rem; flex-wrap: wrap; margin-top: 1.25rem; }
-#discussion-delete-event-dialog footer button { padding: 0.5rem 0.7rem; font: inherit; }
+#discussion-delete-event-dialog footer button { min-height: 2.5rem; padding: 0.5rem 0.7rem; font: inherit; border: 1px solid var(--color-trait-separateur, #aaa); border-radius: 2px; cursor: pointer; }
+#discussion-delete-event-dialog #discussion-delete-message-and-event { background: var(--color-lien-action, #3975b5); border-color: var(--color-lien-action, #3975b5); color: #fff; }
 #discussion-delete-event-dialog #discussion-delete-message-and-event[hidden] { display: none; }
 #discussion-delete-event-title { font-weight: 700; overflow-wrap: anywhere; }
 #discussion .discussion-delete-error { display: block; max-width: 18rem; color: var(--color-error, #a12622); font-size: 0.85em; }

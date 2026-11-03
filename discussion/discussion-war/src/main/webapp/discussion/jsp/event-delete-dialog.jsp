@@ -28,7 +28,10 @@
 <%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view" %>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <dialog id="discussion-delete-event-dialog" aria-labelledby="discussion-delete-event-heading" data-error="<fmt:message key='discussion.deleteEventError'/>">
-  <h2 id="discussion-delete-event-heading"><fmt:message key="discussion.deleteEventHeading"/></h2>
+  <header>
+    <h2 id="discussion-delete-event-heading"><fmt:message key="discussion.deleteEventHeading"/></h2>
+    <button id="discussion-delete-event-close" class="discussion-icon-button" type="button" aria-label="<fmt:message key='GML.close'/>"><svg class="discussion-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+  </header>
   <p><fmt:message key="discussion.deleteEventQuestion"/></p>
   <p id="discussion-delete-event-title"></p>
   <p id="discussion-delete-event-denied" class="discussion-hint" hidden><fmt:message key="discussion.deleteEventDenied"/></p>
@@ -36,6 +39,6 @@
   <footer>
     <button id="discussion-delete-event-cancel" type="button"><fmt:message key="GML.cancel"/></button>
     <button id="discussion-delete-message-only" type="button"><fmt:message key="discussion.deleteMessageOnly"/></button>
-    <button id="discussion-delete-message-and-event" class="discussion-button--danger" type="button"><fmt:message key="discussion.deleteMessageAndEvent"/></button>
+    <button id="discussion-delete-message-and-event" class="button" type="button"><fmt:message key="discussion.deleteMessageAndEvent"/></button>
   </footer>
 </dialog>

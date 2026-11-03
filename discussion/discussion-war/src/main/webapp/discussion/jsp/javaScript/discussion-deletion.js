@@ -98,7 +98,9 @@
     };
     only.addEventListener('click', () => confirm(false));
     both.addEventListener('click', () => { if (!both.hidden) { confirm(true); } });
-    document.getElementById('discussion-delete-event-cancel').addEventListener('click', () => dialog.close());
+    for (const id of ['discussion-delete-event-cancel', 'discussion-delete-event-close']) {
+      document.getElementById(id).addEventListener('click', () => dialog.close());
+    }
     dialog.addEventListener('close', () => {
       if (active) {
         const form = active;
