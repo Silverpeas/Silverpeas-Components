@@ -135,7 +135,7 @@ public class DiscussionMessageRepository extends SilverpeasJpaEntityRepository<D
         select m.body from DiscussionMessage m where m.conversationId = :conversation
         and m.deleted = false and (lower(m.body) like '%/publication/%'
         or lower(m.body) like '%/rkmelia/%' or lower(m.body) like '%/rtoolbox/%'
-        or lower(m.body) like '%/rkmax/%')
+        or lower(m.body) like '%/rkmax/%' or lower(m.body) like '%/contribution/%')
         """, String.class).setParameter("conversation", conversationId).getResultStream();
   }
 

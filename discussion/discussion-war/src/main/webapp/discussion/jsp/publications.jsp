@@ -33,7 +33,7 @@
   <c:if test="${empty citedPublications}"><p class="discussion-hint"><fmt:message key="discussion.noPublications"/></p></c:if>
   <ul>
     <c:forEach items="${citedPublications}" var="publication">
-      <li><a href="${fn:escapeXml(publication.url)}" target="_blank" rel="noopener noreferrer"><c:out value="${publication.title}"/></a></li>
+      <li><a data-publication-id="${fn:escapeXml(publication.id)}" href="${fn:escapeXml(publication.url)}" class="sp-link" target="_self"><c:out value="${publication.title}"/></a></li>
     </c:forEach>
   </ul>
 </div>

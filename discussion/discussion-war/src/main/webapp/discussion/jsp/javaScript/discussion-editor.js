@@ -165,6 +165,45 @@
     }
   }
 
+  function publicationId(href) {
+    if (!discussion.dataset.contributionBase) { return ''; }
+    try {
+      const url = new URL(href);
+      const base = new URL(discussion.dataset.contributionBase, document.baseURI);
+      if (url.origin !== base.origin || url.username || url.password) { return ''; }
+      const context = base.pathname.replace(/\/Contribution\/$/, '');
+      if (!url.pathname.startsWith(context + '/')) { return ''; }
+      const path = url.pathname.slice(context.length);
+      if (/^\/Publication\/[0-9]{1,18}$/.test(path)) { return path.slice('/Publication/'.length); }
+      if (/^\/R(?:kmelia|toolbox|kmax)\/[^/]+\/ViewPublication$/.test(path)) {
+        const id = url.searchParams.get('PubId') || '';
+        return /^[0-9]{1,18}$/.test(id) ? id : '';
+      }
+      if (/^\/R(?:kmelia|toolbox|kmax)\/[^/]+\/searchResult$/.test(path)) {
+        const id = url.searchParams.get('Id') || '';
+        return url.searchParams.get('Type') === 'Publication' && /^[0-9]{1,18}$/.test(id) ? id : '';
+      }
+      if (url.pathname.startsWith(base.pathname)) {
+        const identifier = atob(decodeURIComponent(url.pathname.slice(base.pathname.length)));
+        return /^(?:kmelia|toolbox|kmax)[0-9]+:Publication:([0-9]{1,18})$/.exec(identifier)?.[1] || '';
+      }
+      return '';
+    } catch (failure) {
+      return '';
+    }
+  }
+
+  const publicationTitles = new Map();
+  function refreshPublicationTitles() {
+    publicationTitles.clear();
+    discussion.querySelectorAll('.discussion-publications-list a[data-publication-id]').forEach(link => {
+      publicationTitles.set(link.dataset.publicationId, link.textContent);
+    });
+    discussion.querySelectorAll('.discussion-body a[data-publication-id]').forEach(link => {
+      link.textContent = publicationTitles.get(link.dataset.publicationId) || link.dataset.publicationOriginal;
+    });
+  }
+
   function renderBody(body) {
     if (body.dataset.rendered) {
       return;
@@ -187,8 +226,21 @@
             link.title = token.text;
             link.className = 'discussion-event-link';
           }
-          link.target = '_blank';
-          link.rel = 'noopener noreferrer';
+          const publication = publicationId(token.href);
+          if (publication) {
+            link.dataset.publicationId = publication;
+            link.dataset.publicationOriginal = token.text;
+            link.textContent = publicationTitles.get(publication) || token.text;
+            link.title = token.text;
+          }
+          if (label || publication) {
+            // Silverpeas hooks sp-link in the main frame and dynamically loaded thread frames.
+            link.classList.add('sp-link');
+            link.target = '_self';
+          } else {
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+          }
         }
         content.appendChild(link);
       }
@@ -363,6 +415,8 @@
         event.target.remove();
       }
     }, true);
+    refreshPublicationTitles();
+    document.addEventListener('discussion:publications-updated', refreshPublicationTitles);
     enhance(discussion);
     discussion.addEventListener('submit', async event => {
       const form = event.target;

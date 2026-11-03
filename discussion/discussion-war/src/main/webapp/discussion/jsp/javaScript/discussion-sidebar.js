@@ -56,6 +56,7 @@
           }
           content.replaceChildren(document.importNode(list, true));
           count.textContent = list.dataset.count;
+          document.dispatchEvent(new Event('discussion:publications-updated'));
           error.hidden = true;
         } while (dirty && !document.hidden);
       } catch (failure) {
