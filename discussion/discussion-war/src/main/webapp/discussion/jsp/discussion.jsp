@@ -73,6 +73,7 @@
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-composer.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-files.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-file-picker.js'/>" defer></script>
+  <script src="<c:url value='/discussion/jsp/javaScript/discussion-events.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-document-viewer.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-notification-settings.js'/>" defer></script>
 </head>
@@ -164,6 +165,7 @@
           <p id="discussion-live-error" class="discussion-hint" role="status" hidden><fmt:message key="discussion.liveError"/></p>
           <c:if test="${canWrite}">
             <form class="discussion-composer" method="post" enctype="multipart/form-data" action="${composeUrl}">
+              <p id="discussion-event-status" class="discussion-hint" role="status" aria-live="polite" hidden data-success="<fmt:message key='discussion.eventCreated'/>"></p>
               <p id="discussion-typing" class="discussion-hint" role="status" aria-live="polite" hidden></p>
               <label for="discussion-body" class="discussion-compose-label"><fmt:message key="discussion.compose"/></label>
               <div class="discussion-compose-box">
@@ -185,6 +187,7 @@
                 <div id="discussion-file-preview" class="discussion-file-preview"></div>
                 <p id="discussion-file-error" class="discussion-presence-error" role="status" hidden></p>
               </div>
+              <button id="discussion-add-event" class="discussion-icon-button discussion-add-event" type="button" title="<fmt:message key='discussion.createEvent'/>" aria-label="<fmt:message key='discussion.createEvent'/>" hidden><svg class="discussion-icon" aria-hidden="true"><use href="<c:url value='/discussion/jsp/icons/discussion-icons.svg'/>#calendar-plus"/></svg></button>
               <div class="discussion-composer-footer">
                 <span id="discussion-compose-hint" class="discussion-hint discussion-compose-label"><fmt:message key="discussion.hint"/></span>
                 <button class="discussion-send" type="submit" title="${fn:escapeXml(composeActionLabel)}" aria-label="${fn:escapeXml(composeActionLabel)}"><svg class="discussion-icon" aria-hidden="true"><use href="<c:url value='/discussion/jsp/icons/discussion-icons.svg'/>#send"/></svg></button>
@@ -266,6 +269,7 @@
           </section>
         </aside>
       </div>
+      <c:if test="${canWrite}"><jsp:include page="event-dialog.jsp"/></c:if>
     </main>
   </view:frame>
 </view:window>

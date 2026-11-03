@@ -455,3 +455,24 @@ html.discussion-embedded #discussion .discussion-channels, html.discussion-embed
 @media (min-width: 761px) {
   #discussion .discussion-search > input[type="search"] { width: min(26vw, 20rem); }
 }
+
+/* Native Almanach creation from either message composer. */
+#discussion .discussion-add-event[hidden], #discussion #discussion-event-retry[hidden], #discussion #discussion-event-error[hidden] { display: none; }
+#discussion-event-dialog { width: min(36rem, calc(100vw - 2rem)); max-height: calc(100dvh - 2rem); overflow-y: auto; box-sizing: border-box; border: 1px solid var(--color-trait-separateur, #ddd); border-radius: 2px; padding: 1.25rem; background: var(--bgColor-card, #fff); color: var(--color-text, #333); }
+#discussion-event-dialog::backdrop { background: rgb(0 0 0 / 25%); }
+#discussion-event-dialog header, #discussion-event-dialog footer { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
+#discussion-event-dialog header h2 { margin: 0; font-size: 1.15em; }
+#discussion-event-dialog footer { flex-wrap: wrap; justify-content: flex-end; margin-top: 1rem; }
+#discussion-event-fields { border: 0; padding: 0; margin: 0; min-width: 0; }
+#discussion-event-fields label { display: block; font-weight: 700; margin: 0.75rem 0 0.3rem; }
+#discussion-event-fields input, #discussion-event-fields select, #discussion-event-fields textarea { display: block; width: 100%; box-sizing: border-box; min-width: 0; padding: 0.5rem; border: 1px solid var(--color-trait-separateur, #ddd); border-radius: 2px; font: inherit; }
+#discussion-event-fields textarea { min-height: 5rem; }
+#discussion-event-dialog .discussion-event-dates { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1rem; }
+#discussion-event-dialog .discussion-hint { font-size: 0.85em; color: var(--color-text-label, #666); }
+#discussion-event-dialog .discussion-presence-error { color: var(--color-error, #a12622); }
+@media (max-width: 480px) {
+  #discussion-event-dialog { padding: 0.8rem; }
+  #discussion-event-dialog .discussion-event-dates { grid-template-columns: minmax(0, 1fr); gap: 0; }
+}
+#discussion-event-fields select { height: auto; min-height: 2.5rem; line-height: normal; }
+#discussion-event-dialog footer > button:not(.button) { min-height: 2.4rem; padding: 0.4rem 0.75rem; font: inherit; }

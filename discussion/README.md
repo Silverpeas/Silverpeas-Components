@@ -379,3 +379,38 @@ propose « Ce canal » ou « Tous les canaux ». Sa couleur, son point et son in
 indiquent la portée active. Un changement de portée relance la recherche depuis la
 première page sans mélanger les réponses en cours. Les commandes sont accessibles
 au clavier ; Échap et un clic extérieur ferment le sélecteur.
+
+
+## Créer un événement Almanach depuis un message
+
+L'icône calendrier « Créer un événement » ouvre un dialogue depuis le compositeur du
+canal ou d'un fil. Le brouillon texte et ses pièces jointes sont conservés. Le dialogue
+permet de choisir un Almanach du même espace, un titre, le début et la fin, ainsi qu'une
+description facultative. Le fuseau de l'utilisateur Silverpeas est affiché et appliqué
+côté serveur ; le fuseau du navigateur n'est pas utilisé pour interpréter les champs.
+Une durée d'une heure est proposée par défaut. Les heures inexistantes lors d'un
+changement d'heure sont refusées.
+
+Les cibles sont les calendriers principaux, non synchronisés depuis un agenda externe,
+des instances `almanach` directement dans le même espace. L'utilisateur doit avoir au
+moins le rôle éditeur (`PUBLISHER`) dans l'Almanach, conformément à sa création native.
+Si plusieurs instances conviennent, le dialogue les propose ; aucune cible d'un autre
+espace ni aucun calendrier personnel ne peut être soumis à la place. Sans cible
+accessible, le dialogue explique l'indisponibilité et empêche la création.
+
+Tous les autres utilisateurs actifs autorisés dans l'instance Discussion sont ajoutés
+comme invités, y compris ceux qui n'ont pas encore publié, avec dédoublonnage des
+membres de groupes. Le créateur est l'organisateur. Les comptes anonymes, invités,
+supprimés ou retirés sont exclus. Les identifiants des invités sont déterminés par le
+serveur, jamais par le navigateur.
+
+L'événement passe par `CalendarEvent.planOn`, qui fournit le lien permanent et les
+invitations natives Almanach. Il est enregistré dans la même transaction que le message
+Discussion annonçant son titre, ses horaires et son lien. Dans un fil, cette annonce
+est une réponse à sa racine. Les notifications natives ne partent qu'après validation
+de la transaction ; une erreur de publication annule aussi l'événement. Le compositeur
+empêche les doubles clics et ne relance pas automatiquement une création en erreur.
+L'historique se rafraîchit après succès, même sans connexion SSE/WebSocket active.
+
+L'intégration utilise les API calendrier du Core, sans dépendance au WAR Almanach,
+sans table ou migration SQL supplémentaire. La migration Discussion reste en 001.

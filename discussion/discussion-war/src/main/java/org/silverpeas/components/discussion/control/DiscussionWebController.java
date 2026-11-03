@@ -786,6 +786,51 @@ public class DiscussionWebController extends
     webAction(() -> channels().notifications(context.getComponentInstanceId(), context.getRequest().getParameter("mode")));
   }
 
+  private transient org.silverpeas.components.discussion.service.DiscussionEventService eventService;
+
+  private org.silverpeas.components.discussion.service.DiscussionEventService events() {
+    if (eventService == null) {
+      eventService = ServiceProvider.getService(org.silverpeas.components.discussion.service.DiscussionEventService.class);
+    }
+    return eventService;
+  }
+
+  @GET
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("event-options")
+  @RedirectToInternalJsp("event-options.jsp")
+  public void eventOptions(DiscussionWebRequestContext context) {
+    context.getRequest().setAttribute("eventOptions", webResult(() -> events().options(
+        context.getComponentInstanceId(), context.getZoneId(), getLanguage())));
+  }
+
+  @GET
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("channels/{channel}/event-options")
+  @RedirectToInternalJsp("event-options.jsp")
+  public void channelEventOptions(DiscussionWebRequestContext context) { eventOptions(context); }
+
+  @POST
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("events")
+  @RedirectToInternalJsp("event-created.jsp")
+  public void createEvent(DiscussionWebRequestContext context) {
+    context.getRequest().setAttribute("createdEvent", webResult(() -> {
+      var request = context.getRequest();
+      var input = new org.silverpeas.components.discussion.service.DiscussionEventInput(
+          request.getParameter("calendar"), request.getParameter("title"), request.getParameter("description"),
+          new org.silverpeas.components.discussion.service.DiscussionEventInput.Timing(
+              request.getParameter("start"), request.getParameter("end")));
+      return events().create(context.getComponentInstanceId(), request.getParameter("threadRootId"), input, context.getZoneId());
+    }));
+  }
+
+  @POST
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("channels/{channel}/events")
+  @RedirectToInternalJsp("event-created.jsp")
+  public void channelCreateEvent(DiscussionWebRequestContext context) { createEvent(context); }
+
   private ConversationService conversations() {
     if (conversations == null) {
       conversations = ServiceProvider.getService(ConversationService.class);
