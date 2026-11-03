@@ -116,8 +116,11 @@
                   <summary class="discussion-icon-button" title="${fn:escapeXml(editLabel)}" aria-label="${fn:escapeXml(editLabel)}"><svg class="discussion-icon" aria-hidden="true"><use href="${discussionIcons}#edit"/></svg></summary>
                   <form method="post" action="${messageActionBase}${message.id}/edit">
                     <input type="hidden" name="version" value="${message.version}"/>
-                    <textarea name="body" maxlength="2000" data-allow-empty="${not empty messageImages[message.id] or not empty messageFiles[message.id]}" required aria-label="<fmt:message key='discussion.message'/>"><c:out value="${message.body}"/></textarea>
-                    <button class="sp_button discussion-button--primary" type="submit"><fmt:message key="discussion.save"/></button>
+                    <textarea name="body" rows="4" maxlength="2000" data-allow-empty="${not empty messageImages[message.id] or not empty messageFiles[message.id]}" required aria-label="<fmt:message key='discussion.message'/>"><c:out value="${message.body}"/></textarea>
+                    <div class="discussion-edit-buttons">
+                      <button class="discussion-edit-cancel" type="button"><fmt:message key="GML.cancel"/></button>
+                      <button class="sp_button discussion-button--primary" type="submit"><fmt:message key="discussion.save"/></button>
+                    </div>
                   </form>
                 </details>
                 <form class="discussion-delete" data-deletion-info="${messageActionBase}${message.id}/deletion" method="post" action="${messageActionBase}${message.id}/delete">

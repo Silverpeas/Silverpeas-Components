@@ -131,7 +131,7 @@
       toggle.setAttribute('aria-expanded', String(!bar.hidden));
     });
     bar.addEventListener('keydown', event => {
-      if (event.key === 'Escape') { bar.hidden = true; toggle.setAttribute('aria-expanded','false'); toggle.focus(); }
+      if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); bar.hidden = true; toggle.setAttribute('aria-expanded','false'); toggle.focus(); }
     });
     textarea.addEventListener('keydown', event => {
       if ((event.ctrlKey || event.metaKey) && !event.altKey && !event.isComposing && ['b','i'].includes(event.key.toLowerCase())) {
