@@ -194,6 +194,7 @@
     }
     document.addEventListener('discussion:read', refresh);
     document.addEventListener('discussion:event-created', refresh);
+    document.addEventListener('discussion:idea-created', refresh);
     document.addEventListener('visibilitychange', () => {
       if (!inactive()) {
         refresh();

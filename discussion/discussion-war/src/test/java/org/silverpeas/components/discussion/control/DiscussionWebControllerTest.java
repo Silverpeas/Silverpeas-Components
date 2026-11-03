@@ -64,6 +64,8 @@ class DiscussionWebControllerTest {
   private org.silverpeas.components.discussion.service.DiscussionChannelService channels;
   @TestManagedMock
   private org.silverpeas.components.discussion.service.DiscussionEventService eventService;
+  @TestManagedMock
+  private org.silverpeas.components.discussion.service.DiscussionIdeaService ideaService;
   private DiscussionWebController controller;
   private DiscussionWebRequestContext context;
   private HttpRequest request;
@@ -105,6 +107,22 @@ class DiscussionWebControllerTest {
     verify(service).deletion("discussion1", "message", 2);
     when(context.getPathVariables()).thenReturn(Map.of("root", "foreign", "id", "message"));
     assertEquals(400, assertThrows(WebApplicationException.class, () -> controller.threadDeletionInfo(context)).getResponse().getStatus());
+  }
+
+  @Test
+  void ideaCreationForwardsTheSelectedBoxTextAndSourceWithinTheCurrentThread() {
+    when(request.getParameter("box")).thenReturn("suggestionBox1");
+    when(request.getParameter("title")).thenReturn("Une idée");
+    when(request.getParameter("description")).thenReturn("Texte");
+    when(request.getParameter("sourceId")).thenReturn("source");
+    when(request.getParameter("threadRootId")).thenReturn("root");
+    var created = new org.silverpeas.components.discussion.service.DiscussionIdeaService.Created("idea", "/idea", true);
+    when(ideaService.create(eq("discussion1"), eq("root"), any())).thenReturn(created);
+    controller.channelCreateIdea(context);
+    verify(ideaService).create("discussion1", "root", new org.silverpeas.components.discussion.service.DiscussionIdeaInput("suggestionBox1", "Une idée", "Texte", "source"));
+    verify(request).setAttribute("createdIdea", created);
+    controller.channelIdeaOptions(context);
+    verify(ideaService).options(eq("discussion1"), eq("source"), any());
   }
 
   @Test

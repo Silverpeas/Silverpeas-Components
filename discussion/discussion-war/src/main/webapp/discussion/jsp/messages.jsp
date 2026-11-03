@@ -36,6 +36,7 @@
 <fmt:message key="discussion.edit" var="editLabel"/>
 <fmt:message key="discussion.delete" var="deleteLabel"/>
 <fmt:message key="discussion.pin" var="pinLabel"/>
+<fmt:message key="discussion.proposeIdea" var="ideaLabel"/>
 <fmt:message key="discussion.unpin" var="unpinLabel"/>
 <fmt:message key="discussion.like" var="likeLabel"/>
 <fmt:message key="discussion.unlike" var="unlikeLabel"/>
@@ -125,6 +126,9 @@
                   <button class="discussion-icon-button discussion-button--danger" type="submit" title="${fn:escapeXml(deleteLabel)}" aria-label="${fn:escapeXml(deleteLabel)}"><svg class="discussion-icon" aria-hidden="true"><use href="${discussionIcons}#delete"/></svg></button>
                 </form>
               </div>
+            </c:if>
+            <c:if test="${canWrite}">
+              <button class="discussion-icon-button discussion-propose-idea" type="button" data-source-id="${message.id}" title="${fn:escapeXml(ideaLabel)}" aria-label="${fn:escapeXml(ideaLabel)}"><svg class="discussion-icon" aria-hidden="true"><use href="${discussionIcons}#bulb"/></svg></button>
             </c:if>
             <c:if test="${canReact}">
               <form class="discussion-pin-form" method="post" action="${base}messages/${message.id}/pin"

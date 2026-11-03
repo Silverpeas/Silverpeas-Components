@@ -145,14 +145,16 @@
     button.appendChild(icon(name));
     return button;
   }
-  function isEventPermalink(href) {
-    if (!discussion.dataset.contributionBase || !discussion.dataset.viewEventLabel) { return false; }
+  function contributionLabel(href) {
+    if (!discussion.dataset.contributionBase) { return ''; }
     try {
       const url = new URL(href);
       const base = new URL(discussion.dataset.contributionBase, document.baseURI);
       if (url.origin !== base.origin || !url.pathname.startsWith(base.pathname) || url.username || url.password) { return false; }
       const identifier = atob(decodeURIComponent(url.pathname.slice(base.pathname.length)));
-      return /^almanach[0-9]+:CalendarEvent:[a-zA-Z0-9-]{1,40}$/.test(identifier);
+      if (/^almanach[0-9]+:CalendarEvent:[a-zA-Z0-9-]{1,40}$/.test(identifier)) { return discussion.dataset.viewEventLabel || ''; }
+      if (/^suggestionBox[0-9]+:Suggestion:[a-zA-Z0-9-]{1,40}$/.test(identifier)) { return discussion.dataset.viewIdeaLabel || ''; }
+      return '';
     } catch (failure) {
       return false;
     }
@@ -174,8 +176,9 @@
           link.className = 'discussion-mention';
         } else {
           link.href = token.href;
-          if (isEventPermalink(token.href)) {
-            link.textContent = discussion.dataset.viewEventLabel;
+          const label = contributionLabel(token.href);
+          if (label) {
+            link.textContent = label;
             link.title = token.text;
             link.className = 'discussion-event-link';
           }

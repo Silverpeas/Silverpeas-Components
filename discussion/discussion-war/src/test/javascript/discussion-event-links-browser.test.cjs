@@ -32,7 +32,7 @@ const original = '📅 Réunion de projet\n4 nov. 2026 11:01 – 4 nov. 2026 12:
 async function setup() {
   const browser=await chromium.launch({executablePath:process.env.CHROME_PATH,args:['--no-sandbox']});
   const page=await browser.newPage();
-  await page.setContent(`<base href="http://discussion.test/"><main id="discussion" data-contribution-base="/silverpeas/Contribution/" data-view-event-label="Voir l’événement" data-profile-base="/Rprofil/jsp/Main" data-icons="/icons.svg" data-emoji-label="Emoji" data-mention-label="Mention"><p id="body" class="discussion-body"></p><form><textarea name="body" maxlength="2000"></textarea></form><section id="later"></section></main>`);
+  await page.setContent(`<base href="http://discussion.test/"><main id="discussion" data-contribution-base="/silverpeas/Contribution/" data-view-event-label="Voir l’événement" data-view-idea-label="Voir l’idée" data-profile-base="/Rprofil/jsp/Main" data-icons="/icons.svg" data-emoji-label="Emoji" data-mention-label="Mention"><p id="body" class="discussion-body"></p><form><textarea name="body" maxlength="2000"></textarea></form><section id="later"></section></main>`);
   return {browser,page};
 }
 async function initialize(page) {
@@ -77,5 +77,18 @@ test('history and live fragments get the same short link while foreign, malforme
     const texts=await page.locator('#later a').allTextContents();
     assert.deepEqual(texts,['Voir l’événement',publication,external,otherContext,malformed,credentials]);
     assert.equal(await page.locator('#later a').count(),6);
+  } finally {await browser.close();}
+});
+
+
+test('native suggestion links use the short idea label while foreign links remain explicit',async()=>{
+  const {browser,page}=await setup();
+  try {
+    const url='http://discussion.test/silverpeas/Contribution/'+Buffer.from('suggestionBox1:Suggestion:idea1').toString('base64');
+    await page.locator('#body').evaluate((node,text)=>{node.textContent=text;},url);
+    await initialize(page);
+    assert.equal(await page.locator('#body a').textContent(),'Voir l’idée');
+    assert.equal(await page.locator('#body a').getAttribute('href'),url);
+    assert.equal(await page.locator('#body a').getAttribute('title'),url);
   } finally {await browser.close();}
 });
