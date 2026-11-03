@@ -365,3 +365,10 @@ La saisie et la suppression des notifications quand on consulte un canal sont cl
 
 Voir [sql-dev/channels/README.md](sql-dev/channels/README.md) pour mettre à jour une base
 existante. La version de migration reste 001.
+
+Le bouton d'ouverture des canaux est une icône burger avec infobulle. Les responsables
+créent un canal via l'icône « + » en tête du volet et gèrent le canal sélectionné
+via son engrenage. Les canaux archivés sont regroupés dans la section Archives,
+repliée au chargement. Son état d'ouverture est conservé pendant les rafraîchissements
+événementiels. Pour réactiver un canal, le sélectionner dans Archives, ouvrir son
+engrenage, décocher « Archiver ce canal » et valider. L'historique est conservé.

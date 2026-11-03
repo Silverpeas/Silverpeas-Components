@@ -27,23 +27,26 @@ const fs = require('node:fs');
 const path = require('node:path');
 const {chromium} = require('playwright');
 const assets = path.join(__dirname, '../../main/webapp/discussion/jsp');
-const rows = (count = 3) => `<ul class="discussion-channel-list"><li data-channel-scope="main" data-unread="0"><a class="discussion-channel-link" href="/channels/main/Main"># Général</a></li><li data-channel-scope="projects" data-unread="${count}"><a class="discussion-channel-link" href="/channels/projects/Main"># Projets <span>${count}</span></a></li></ul>`;
+const contentTypes = {'.js':'application/javascript', '.svg':'image/svg+xml', '.css':'text/css'};
+const row = (scope, name, count, archived=false) => `<li data-channel-scope="${scope}" data-unread="${count}" data-archived="${archived}"><a class="discussion-channel-link" href="/channels/${scope}/Main"># ${name}</a><button class="discussion-icon-button discussion-channel-settings" type="button" title="Gérer ce canal" aria-label="Gérer ce canal" hidden><svg class="discussion-icon" aria-hidden="true"><use href="/assets/icons/discussion-icons.svg#settings"/></svg></button></li>`;
+const rows = (count = 3, archived=true) => `<div class="discussion-channel-groups"><ul class="discussion-channel-list">${row('main','Général',0)}${row('projects','Projets',count)}${archived?'':row('old','Ancien projet',0)}</ul>${archived?`<details id="discussion-channel-archives" class="discussion-channel-archives"><summary>Archives <span>1</span></summary><ul class="discussion-channel-list">${row('old','Ancien projet',9,true)}</ul></details>`:''}</div>`;
 const fixture = scope => `<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="/assets/css/discussion.css"><style>body{margin:0;font:16px Arial}</style><script>
 window.handlers=new Map();window.DiscussionContext={embedded:false,eventId:name=>name};
 window.spServerEventSource={isEnabled:()=>true,addEventListener:(name,fn,id)=>handlers.set(id,{name,fn}),removeEventListener:()=>{}};
 window.calls=[];window.sp={ajaxRequest:url=>({send:async()=>{calls.push(url);return {responseText:window.newRows||${JSON.stringify(rows())}};}})};
 </script><script src="/assets/javaScript/discussion-channels.js" defer></script><script src="/assets/javaScript/discussion-layout.js" defer></script></head><body>
 <main id="discussion" data-instance-id="discussion1" data-user-id="2" data-channel-scope="${scope}" data-channels="/channels">
-<header class="discussion-header"><button id="discussion-channels-toggle" aria-expanded="false" aria-controls="discussion-channels">Canaux <span id="discussion-channels-unread" hidden></span></button><div class="discussion-heading"><h1>Discussion</h1><p id="discussion-channel-title">${scope}</p></div></header>
-<nav id="discussion-channels" hidden><button id="discussion-channels-close">Fermer</button><div id="discussion-channel-list">${rows()}</div><button id="discussion-channel-create">Créer</button><button id="discussion-channel-settings">Gérer</button><p id="discussion-channels-error" hidden>Erreur</p></nav>
-<dialog id="discussion-channel-dialog"><form data-create="/channels/create" data-update="/channels/${scope}/settings"><input name="name" data-current="${scope}" required maxlength="80"><textarea name="description" data-current="Description"></textarea><label><input name="archive" type="checkbox" data-main="${scope==='main'}" data-current="false">Archiver</label><input name="archived" type="hidden" value="false"><button type="button" class="discussion-channel-cancel">Annuler</button></form></dialog>
+<header class="discussion-header"><button id="discussion-channels-toggle" aria-expanded="false" aria-controls="discussion-channels" title="Afficher les canaux" aria-label="Afficher les canaux"><svg class="discussion-icon" aria-hidden="true"><use href="/assets/icons/discussion-icons.svg#menu"/></svg><span id="discussion-channels-unread" hidden></span></button><div class="discussion-heading"><h1>Discussion</h1><p id="discussion-channel-title">${scope}</p></div></header>
+<nav id="discussion-channels" class="discussion-channels" hidden><button id="discussion-channels-close">Fermer</button><div id="discussion-channel-list">${rows()}</div><button id="discussion-channel-create" aria-label="Créer un canal" title="Créer un canal"><svg class="discussion-icon" aria-hidden="true"><use href="/assets/icons/discussion-icons.svg#plus"/></svg></button><p id="discussion-channels-error" hidden>Erreur</p></nav>
+<dialog id="discussion-channel-dialog"><form data-create="/channels/create" data-update="/channels/${scope}/settings"><input name="name" data-current="${scope}" required maxlength="80"><textarea name="description" data-current="Description"></textarea><label><input name="archive" type="checkbox" data-main="${scope==='main'}" data-current="${scope==='old'}">Archiver</label><input name="archived" type="hidden" value="false"><button type="button" class="discussion-channel-cancel">Annuler</button></form></dialog>
 <div class="discussion-workspace"><div class="discussion-stream"><div class="discussion-scroll"><section id="discussion-history"><article>Un message de ${scope}</article></section></div><form class="discussion-composer"><textarea id="discussion-body" name="body"></textarea><input type="file" name="images" multiple hidden><input type="file" name="files" multiple hidden></form></div><aside class="discussion-sidebar">Participants</aside></div></main></body></html>`;
 async function setup(width=1280) {
   const browser=await chromium.launch({executablePath:process.env.CHROME_PATH,args:['--no-sandbox']});
   const page=await browser.newPage({viewport:{width,height:850}});
+  page.setDefaultTimeout(5000);
   await page.route('http://discussion.test/**',route=>{
     const url=new URL(route.request().url());
-    if(url.pathname.startsWith('/assets/'))return route.fulfill({contentType:url.pathname.endsWith('.js')?'application/javascript':'text/css',body:fs.readFileSync(path.join(assets,url.pathname.slice(8)))});
+    if(url.pathname.startsWith('/assets/'))return route.fulfill({contentType:contentTypes[path.extname(url.pathname)],body:fs.readFileSync(path.join(assets,url.pathname.slice(8)))});
     if(url.pathname==='/')return route.fulfill({contentType:'text/html',body:'<iframe id="app" style="width:100%;height:800px;border:0" src="/channels/main/Main"></iframe>'});
     return route.fulfill({contentType:'text/html',body:fixture(url.pathname.split('/')[2])});
   });
@@ -106,11 +109,59 @@ test('native change events refresh channel unread counters and management preser
     await app.evaluate(html=>{window.newRows=html;for(const h of handlers.values()){if(h.name==='DISCUSSION_CHANGED')h.fn({data:JSON.stringify({instanceId:'discussion1'})});}},rows(8));
     await app.waitForFunction(()=>document.getElementById('discussion-channels-unread').textContent==='8');
     await app.locator('#discussion-channels-toggle').click();
-    await app.locator('#discussion-channel-settings').click();
+    await app.locator('.discussion-channel-settings:visible').click();
     assert.equal(await app.locator('input[name=archive]').isDisabled(),true);
     await app.locator('.discussion-channel-cancel').click();
     await app.locator('#discussion-channel-create').click();
     assert.equal(await app.locator('#discussion-channel-dialog form').getAttribute('action'),'/channels/create');
     assert.equal(await app.locator('input[name=name]').inputValue(),'');
   } finally {await browser.close();}
+});
+
+test('archives start collapsed, do not inflate active unread counts and retain their open state on live refresh', async () => {
+  const {browser, frame}=await setup();
+  try {
+    const app=frame();
+    await app.locator('#discussion-channels-toggle').click();
+    assert.equal(await app.locator('#discussion-channel-archives').evaluate(n=>n.open),false);
+    assert.equal(await app.locator('a[href="/channels/old/Main"]').isVisible(),false);
+    assert.equal(await app.locator('#discussion-channels-unread').textContent(),'3');
+    assert.equal((await app.locator('#discussion-channels-toggle').textContent()).trim(),'3');
+    assert.equal(await app.locator('#discussion-channels-toggle').getAttribute('aria-label'),'Afficher les canaux');
+    assert.equal(await app.locator('#discussion-channel-create').textContent(),'');
+    assert.equal(await app.locator('.discussion-channel-settings:visible').count(),1);
+    assert.equal(await app.locator('.discussion-channel-settings:visible').textContent(),'');
+    await app.locator('#discussion-channel-archives > summary').click();
+    await app.evaluate(html=>{window.newRows=html;for(const h of handlers.values()){if(h.name==='DISCUSSION_CHANGED')h.fn({data:JSON.stringify({instanceId:'discussion1'})});}},rows(6));
+    await app.waitForFunction(()=>document.getElementById('discussion-channels-unread').textContent==='6');
+    assert.equal(await app.locator('#discussion-channel-archives').evaluate(n=>n.open),true);
+    assert.equal(await app.locator('a[href="/channels/old/Main"]').isVisible(),true);
+    await app.locator('.discussion-channel-settings:visible').click();
+    assert.equal(await app.locator('#discussion-channel-dialog').evaluate(n=>n.open),true);
+  } finally { await browser.close(); }
+});
+
+test('an archived channel can be selected and reactivated from its own gear', async () => {
+  const {browser,page,frame}=await setup();
+  try {
+    await frame().locator('#discussion-channels-toggle').click();
+    await frame().locator('#discussion-channel-archives > summary').click();
+    await frame().locator('a[href="/channels/old/Main"]').click();
+    await page.waitForFunction(()=>document.getElementById('app').contentWindow.location.pathname.includes('/old/'));
+    const app=frame();
+    await app.locator('#discussion-channels-toggle').click();
+    assert.equal(await app.locator('#discussion-channel-archives').evaluate(n=>n.open),false);
+    await app.locator('#discussion-channel-archives > summary').click();
+    await app.locator('.discussion-channel-settings:visible').click();
+    assert.equal(await app.locator('input[name=archive]').isChecked(),true);
+    assert.equal(await app.locator('input[name=archive]').isDisabled(),false);
+    assert.equal(await app.locator('#discussion-channel-dialog form').getAttribute('action'),'/channels/old/settings');
+    await app.locator('input[name=archive]').uncheck();
+    assert.equal(await app.locator('input[name=archived]').inputValue(),'false');
+    await app.locator('.discussion-channel-cancel').click();
+    await app.evaluate(html=>{window.newRows=html;for(const h of handlers.values()){if(h.name==='DISCUSSION_CHANGED')h.fn({data:JSON.stringify({instanceId:'discussion1'})});}},rows(5,false));
+    await app.waitForFunction(()=>!document.getElementById('discussion-channel-archives'));
+    assert.equal(await app.locator('a[href="/channels/old/Main"]').isVisible(),true);
+    assert.equal(await app.locator('a[href="/channels/old/Main"]').getAttribute('aria-current'),'page');
+  } finally { await browser.close(); }
 });

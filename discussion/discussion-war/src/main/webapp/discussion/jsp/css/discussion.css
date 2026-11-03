@@ -393,7 +393,18 @@ html.discussion-embedded #discussion .discussion-composer { padding: var(--discu
 #discussion .discussion-channel-name { flex: 1; min-width: 0; overflow-wrap: anywhere; }
 #discussion .discussion-channel-count { font-size: 0.8em; font-weight: bold; color: var(--color-lien, #5b9900); }
 #discussion .discussion-channel-archived { font-size: 0.75em; color: var(--color-text-label, #666); }
-#discussion .discussion-channels > button { display: block; margin-top: 0.5rem; }
+#discussion .discussion-channels-heading h2 { flex: 1; }
+#discussion .discussion-channel-list > li { display: flex; align-items: center; min-width: 0; }
+#discussion .discussion-channel-link { flex: 1; min-width: 0; }
+#discussion .discussion-channel-settings { flex: none; }
+#discussion .discussion-channel-settings[hidden] { display: none; }
+#discussion .discussion-channel-archives { margin-top: 0.75rem; border-top: 1px solid var(--color-trait-separateur, #ddd); }
+#discussion .discussion-channel-archives > summary { display: flex; align-items: center; gap: 0.5rem; padding: 0.7rem 0.4rem; cursor: pointer; list-style: none; color: var(--color-text-label, #666); }
+#discussion .discussion-channel-archives > summary::-webkit-details-marker { display: none; }
+#discussion .discussion-channel-archives > summary::before { content: '›'; font-size: 1.2em; }
+#discussion .discussion-channel-archives[open] > summary::before { transform: rotate(90deg); }
+#discussion .discussion-channel-archives > summary:focus-visible { outline: 2px solid var(--color-lien-action, #3975b5); outline-offset: -2px; }
+#discussion .discussion-channel-archives .discussion-channel-list { margin-top: 0; }
 #discussion .discussion-channel-heading { display: flex; gap: 0.75rem; min-width: 0; }
 #discussion .discussion-channel-heading > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 #discussion .discussion-search-scope { display: flex; align-items: center; gap: 0.25rem; font-size: 0.8em; white-space: nowrap; }

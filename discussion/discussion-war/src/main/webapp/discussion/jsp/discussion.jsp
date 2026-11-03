@@ -91,7 +91,7 @@
         data-close-image="<fmt:message key='discussion.closeImage'/>" data-emoji-label="<fmt:message key='discussion.emoji'/>"
         data-mention-label="<fmt:message key='discussion.mention'/>">
       <header class="discussion-header">
-        <button id="discussion-channels-toggle" class="discussion-channel-toggle" type="button" aria-controls="discussion-channels" aria-expanded="false"><svg class="discussion-icon" aria-hidden="true"><use href="<c:url value='/discussion/jsp/icons/discussion-icons.svg'/>#menu"/></svg><fmt:message key="discussion.channels"/><span id="discussion-channels-unread" class="discussion-channel-count" hidden></span></button>
+        <button id="discussion-channels-toggle" class="discussion-channel-toggle" type="button" aria-controls="discussion-channels" aria-expanded="false" title="<fmt:message key='discussion.showChannels'/>" aria-label="<fmt:message key='discussion.showChannels'/>"><svg class="discussion-icon" aria-hidden="true"><use href="<c:url value='/discussion/jsp/icons/discussion-icons.svg'/>#menu"/></svg><span id="discussion-channels-unread" class="discussion-channel-count" hidden></span></button>
         <div class="discussion-heading">
           <h1 title="<c:out value='${instanceInfo.description}'/>"><c:out value="${instanceInfo.title}"/></h1>
           <c:if test="${not empty threadRoot}">
@@ -122,9 +122,9 @@
         </c:forEach>
       </template>
       <nav id="discussion-channels" class="discussion-channels" aria-label="<fmt:message key='discussion.channels'/>" hidden>
-        <div class="discussion-channels-heading"><h2><fmt:message key="discussion.channels"/></h2><button id="discussion-channels-close" class="discussion-icon-button" type="button" aria-label="<fmt:message key='discussion.closeChannels'/>"><svg class="discussion-icon" aria-hidden="true"><use href="<c:url value='/discussion/jsp/icons/discussion-icons.svg'/>#close"/></svg></button></div>
+        <div class="discussion-channels-heading"><h2><fmt:message key="discussion.channels"/></h2><c:if test="${canManageChannels}"><button id="discussion-channel-create" class="discussion-icon-button" type="button" title="<fmt:message key='discussion.createChannel'/>" aria-label="<fmt:message key='discussion.createChannel'/>"><svg class="discussion-icon" aria-hidden="true"><use href="<c:url value='/discussion/jsp/icons/discussion-icons.svg'/>#plus"/></svg></button></c:if><button id="discussion-channels-close" class="discussion-icon-button" type="button" aria-label="<fmt:message key='discussion.closeChannels'/>"><svg class="discussion-icon" aria-hidden="true"><use href="<c:url value='/discussion/jsp/icons/discussion-icons.svg'/>#close"/></svg></button></div>
         <div id="discussion-channel-list"><jsp:include page="channels.jsp"/></div>
-        <c:if test="${canManageChannels}"><button id="discussion-channel-create" class="discussion-button--quiet" type="button"><fmt:message key="discussion.createChannel"/></button><button id="discussion-channel-settings" class="discussion-button--quiet" type="button"><fmt:message key="discussion.manageChannel"/></button></c:if>
+
         <p id="discussion-channels-error" class="discussion-presence-error" hidden role="status"><fmt:message key="discussion.error"/></p>
       </nav>
       <c:if test="${canManageChannels}">
