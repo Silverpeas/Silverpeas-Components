@@ -62,6 +62,8 @@ class DiscussionWebControllerTest {
   private org.silverpeas.components.discussion.service.DiscussionNotificationSettings notificationSettings;
   @TestManagedMock
   private org.silverpeas.components.discussion.service.DiscussionChannelService channels;
+  @TestManagedMock
+  private org.silverpeas.components.discussion.service.DiscussionEventService eventService;
   private DiscussionWebController controller;
   private DiscussionWebRequestContext context;
   private HttpRequest request;
@@ -89,6 +91,29 @@ class DiscussionWebControllerTest {
     var root = mock(org.silverpeas.components.discussion.model.DiscussionMessage.class);
     when(root.getId()).thenReturn("message");
     when(service.threadRoot("discussion1", "message")).thenReturn(root);
+  }
+
+  @Test
+  void eventCreationUsesTheAuthenticatedTimeZoneAndCurrentChannelOrThread() {
+    var zone = java.time.ZoneId.of("Europe/Paris");
+    when(context.getZoneId()).thenReturn(zone);
+    when(request.getParameter("calendar")).thenReturn("calendar1");
+    when(request.getParameter("title")).thenReturn("Réunion");
+    when(request.getParameter("start")).thenReturn("2026-11-03T10:00");
+    when(request.getParameter("end")).thenReturn("2026-11-03T11:00");
+    when(request.getParameter("threadRootId")).thenReturn("root");
+    var created = new org.silverpeas.components.discussion.service.DiscussionEventService.CreatedEvent("event", "/event");
+    when(eventService.create(eq("discussion1"), eq("root"), any(), eq(zone))).thenReturn(created);
+    controller.channelCreateEvent(context);
+    verify(request).setAttribute("createdEvent", created);
+    var input = org.mockito.ArgumentCaptor.forClass(org.silverpeas.components.discussion.service.DiscussionEventInput.class);
+    verify(eventService).create(eq("discussion1"), eq("root"), input.capture(), eq(zone));
+    assertEquals("calendar1", input.getValue().calendarId());
+    assertEquals("2026-11-03T10:00", input.getValue().timing().start());
+    controller.channelEventOptions(context);
+    verify(eventService).options(eq("discussion1"), eq(zone), any());
+    when(request.getParameter("title")).thenReturn(" ");
+    assertEquals(400, assertThrows(WebApplicationException.class, () -> controller.createEvent(context)).getResponse().getStatus());
   }
 
   @Test
