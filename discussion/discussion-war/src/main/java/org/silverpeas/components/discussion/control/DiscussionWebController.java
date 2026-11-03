@@ -793,6 +793,45 @@ public class DiscussionWebController extends
     webAction(() -> channels().notifications(context.getComponentInstanceId(), context.getRequest().getParameter("mode")));
   }
 
+  private org.silverpeas.components.discussion.service.DiscussionIdeaService ideas() {
+    return ServiceProvider.getService(org.silverpeas.components.discussion.service.DiscussionIdeaService.class);
+  }
+
+  @GET
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("idea-options")
+  @RedirectToInternalJsp("idea-options.jsp")
+  public void ideaOptions(DiscussionWebRequestContext context) {
+    context.getRequest().setAttribute("ideaOptions", webResult(() -> ideas().options(
+        context.getComponentInstanceId(), context.getRequest().getParameter("sourceId"), getLanguage())));
+  }
+
+  @GET
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("channels/{channel}/idea-options")
+  @RedirectToInternalJsp("idea-options.jsp")
+  public void channelIdeaOptions(DiscussionWebRequestContext context) { ideaOptions(context); }
+
+  @POST
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("ideas")
+  @RedirectToInternalJsp("idea-created.jsp")
+  public void createIdea(DiscussionWebRequestContext context) {
+    context.getRequest().setAttribute("createdIdea", webResult(() -> {
+      var request = context.getRequest();
+      var input = new org.silverpeas.components.discussion.service.DiscussionIdeaInput(
+          request.getParameter("box"), request.getParameter("title"), request.getParameter("description"),
+          request.getParameter("sourceId"));
+      return ideas().create(context.getComponentInstanceId(), request.getParameter("threadRootId"), input);
+    }));
+  }
+
+  @POST
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("channels/{channel}/ideas")
+  @RedirectToInternalJsp("idea-created.jsp")
+  public void channelCreateIdea(DiscussionWebRequestContext context) { createIdea(context); }
+
   private transient org.silverpeas.components.discussion.service.DiscussionEventService eventService;
 
   private org.silverpeas.components.discussion.service.DiscussionEventService events() {

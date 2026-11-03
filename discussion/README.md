@@ -430,3 +430,28 @@ Les annulations et notifications passent par l'API calendrier native.
 La reconnaissance fonctionne aussi pour les annonces existantes tant que leur corps
 contient un unique événement natif distinct de cette installation. Aucun lien ambigu
 vers plusieurs événements n'entraîne de suppression automatique. Aucun changement SQL.
+
+
+### Proposer une idée
+
+L'ampoule du compositeur ouvre une proposition native dans une boîte à idées du même
+espace. L'action « Proposer une idée » au survol d'un message reprend son texte côté
+serveur, sans les identifiants techniques des mentions. Le titre et la description
+restent modifiables ; les pièces jointes ne sont pas recopiées. Le brouillon et les
+fichiers du compositeur restent intacts.
+
+Les cibles sont les instances `suggestionBox` directement dans le même espace, avec
+accès effectif et rôle au moins rédacteur. Les droits sont revérifiés au POST. Les
+messages sources d'un autre canal, supprimés ou inconnus et les canaux archivés sont
+refusés. Le texte saisi est encodé avant de devenir le contenu HTML natif de l'idée.
+
+`SuggestionCollection.add` puis `publish` conservent l'auteur, le circuit natif de
+validation, les notifications et l'indexation de la boîte à idées : un rédacteur
+soumet à validation, un éditeur publie directement. Le résultat précise si l'idée
+attend une validation. Un message avec son lien permanent « Voir l'idée » est ajouté
+dans le canal ou le fil courant ; le message source reste inchangé. L'accès à l'idée
+reste soumis aux droits et à la validation de la boîte cible.
+
+La bibliothèque SuggestionBox est une dépendance `provided`, déjà présente dans
+l'EAR Silverpeas ; elle n'est pas embarquée une seconde fois dans le WAR Discussion.
+Aucune modification SQL : la migration Discussion reste en 001.

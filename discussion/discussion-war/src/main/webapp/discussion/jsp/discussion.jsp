@@ -74,6 +74,7 @@
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-files.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-file-picker.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-events.js'/>" defer></script>
+  <script src="<c:url value='/discussion/jsp/javaScript/discussion-ideas.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-deletion.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-document-viewer.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-notification-settings.js'/>" defer></script>
@@ -89,7 +90,7 @@
         data-typing-one="<fmt:message key='discussion.typingOne'/>" data-typing-many="<fmt:message key='discussion.typingMany'/>"
         data-message-id="<c:out value='${focusedMessageId}'/>"
         data-length-error="<fmt:message key='discussion.hint'/>"
-        data-contribution-base="<c:url value='/Contribution/'/>" data-view-event-label="<fmt:message key='discussion.viewEvent'/>"
+        data-view-idea-label="<fmt:message key='discussion.viewIdea'/>" data-contribution-base="<c:url value='/Contribution/'/>" data-view-event-label="<fmt:message key='discussion.viewEvent'/>"
         data-profile-base="<c:url value='/Rprofil/jsp/Main'/>"
         data-icons="<c:url value='/discussion/jsp/icons/discussion-icons.svg'/>"
         data-close-image="<fmt:message key='discussion.closeImage'/>" data-emoji-label="<fmt:message key='discussion.emoji'/>"
@@ -190,6 +191,7 @@
                 <p id="discussion-file-error" class="discussion-presence-error" role="status" hidden></p>
               </div>
               <button id="discussion-add-event" class="discussion-icon-button discussion-add-event" type="button" title="<fmt:message key='discussion.createEvent'/>" aria-label="<fmt:message key='discussion.createEvent'/>" hidden><svg class="discussion-icon" aria-hidden="true"><use href="<c:url value='/discussion/jsp/icons/discussion-icons.svg'/>#calendar-plus"/></svg></button>
+              <button id="discussion-add-idea" class="discussion-icon-button" type="button" title="<fmt:message key='discussion.proposeIdea'/>" aria-label="<fmt:message key='discussion.proposeIdea'/>" hidden><svg class="discussion-icon" aria-hidden="true"><use href="<c:url value='/discussion/jsp/icons/discussion-icons.svg'/>#bulb"/></svg></button>
               <div class="discussion-composer-footer">
                 <span id="discussion-compose-hint" class="discussion-hint discussion-compose-label"><fmt:message key="discussion.hint"/></span>
                 <button class="discussion-send" type="submit" title="${fn:escapeXml(composeActionLabel)}" aria-label="${fn:escapeXml(composeActionLabel)}"><svg class="discussion-icon" aria-hidden="true"><use href="<c:url value='/discussion/jsp/icons/discussion-icons.svg'/>#send"/></svg></button>
@@ -271,7 +273,7 @@
           </section>
         </aside>
       </div>
-      <c:if test="${canWrite}"><jsp:include page="event-dialog.jsp"/></c:if>
+      <c:if test="${canWrite}"><jsp:include page="event-dialog.jsp"/><jsp:include page="idea-dialog.jsp"/></c:if>
       <jsp:include page="event-delete-dialog.jsp"/>
     </main>
   </view:frame>
