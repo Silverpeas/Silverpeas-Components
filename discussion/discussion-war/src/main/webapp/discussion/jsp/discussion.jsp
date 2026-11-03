@@ -65,6 +65,7 @@
   <script src="<c:url value='/discussion/jsp/javaScript/vendor/markdown-it-15.0.3.min.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-markdown.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-editor.js'/>" defer></script>
+  <script src="<c:url value='/discussion/jsp/javaScript/discussion-editing.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-layout.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-live.js'/>" defer></script>

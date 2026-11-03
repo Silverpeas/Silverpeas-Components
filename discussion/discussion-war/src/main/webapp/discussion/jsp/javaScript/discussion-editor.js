@@ -283,6 +283,7 @@
     textarea.dispatchEvent(new Event('input', {bubbles: true}));
     return true;
   }
+  const editorResets = new WeakMap();
   function enhanceEditor(textarea) {
     if (textarea.dataset.enhanced) {
       return;
@@ -310,6 +311,14 @@
     textarea.addEventListener('input', synchronize);
     textarea.form?.addEventListener('submit', synchronize);
     synchronize();
+    editorResets.set(textarea, body => {
+      const restored = decodeMentions(body);
+      mentions = restored.mentions;
+      previous = restored.text;
+      textarea.value = previous;
+      synchronize();
+      textarea.dispatchEvent(new Event('input', {bubbles:true}));
+    });
     const tools = element('div', 'discussion-editor-tools');
     const emojiButton = tool(discussion.dataset.emojiLabel, 'emoji');
     const mentionButton = tool(discussion.dataset.mentionLabel, 'mention');
@@ -427,7 +436,7 @@
     container.querySelectorAll('.discussion-body').forEach(renderBody);
     container.querySelectorAll('textarea[name="body"]').forEach(enhanceEditor);
   }
-  root.DiscussionEditor = {enhance};
+  root.DiscussionEditor = {enhance, reset:(textarea, body) => editorResets.get(textarea)?.(body)};
   document.addEventListener('DOMContentLoaded', () => {
     discussion = document.getElementById('discussion');
     if (!discussion) {

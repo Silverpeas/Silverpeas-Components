@@ -554,3 +554,13 @@ ou une légende présente avec l'image conserve le comportement de collage natif
 Les brouillons de canaux et les messages composés uniquement d'images continuent de
 fonctionner avec les pièces jointes natives et leur validation serveur.
 Aucune modification SQL ni changement de version de migration.
+
+
+L'édition d'un message affiche maintenant un panneau sur toute la largeur de son
+contenu, à la place du rendu publié et de ses actions. Les outils de mise en forme
+restent disponibles ; « Annuler » et « Enregistrer » sont alignés à droite. Annuler
+ou presser Échap dans le champ restaure le texte et les identifiants des mentions,
+sans POST, puis rend le focus au bouton Modifier. Fermer seulement la barre Markdown
+avec Échap laisse l'édition ouverte. Le panneau utilise le même formulaire, la même
+version optimiste et le même état natif `details[open]` pour protéger les éditions
+des remplacements en temps réel, y compris dans l'historique chargé à la demande.
