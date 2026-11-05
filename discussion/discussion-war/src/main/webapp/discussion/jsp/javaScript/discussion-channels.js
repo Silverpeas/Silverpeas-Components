@@ -33,21 +33,28 @@
     const list = document.getElementById('discussion-channel-list');
     const error = document.getElementById('discussion-channels-error');
     const media = window.matchMedia('(max-width: 760px)');
+    const close = document.getElementById('discussion-channels-close');
+    const showLabel = toggle.getAttribute('aria-label');
+    const hideLabel = close.getAttribute('aria-label') || close.textContent;
     const setOpen = open => {
       nav.hidden = !open;
       discussion.classList.toggle('discussion-channels-open', open);
       toggle.setAttribute('aria-expanded', String(open));
+      toggle.setAttribute('aria-label', open ? hideLabel : showLabel);
+      toggle.title = open ? hideLabel : showLabel;
       discussion.querySelector('.discussion-workspace').inert = open && media.matches;
       window.dispatchEvent(new Event('resize'));
     };
     toggle.addEventListener('click', () => setOpen(nav.hidden));
-    document.getElementById('discussion-channels-close').addEventListener('click', () => { setOpen(false); toggle.focus(); });
+    close.addEventListener('click', () => { setOpen(false); toggle.focus(); });
     document.addEventListener('keydown', event => {
       if (event.key === 'Escape' && !nav.hidden && !document.querySelector('dialog[open]')) {
         setOpen(false); toggle.focus();
       }
     });
     media.addEventListener('change', () => setOpen(!nav.hidden));
+    setOpen(true);
+    if (media.matches) { close.focus(); }
     const markCurrent = () => {
       let unread = 0;
       list.querySelectorAll('[data-channel-scope]').forEach(row => {

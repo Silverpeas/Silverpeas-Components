@@ -49,6 +49,11 @@ class DiscussionChannelServiceTest {
   private DiscussionReadStateRepository states;
   @TestManagedMock
   private DiscussionChannelContext context;
+  @TestManagedMock
+  private ConversationService conversationService;
+  @org.silverpeas.core.persistence.datasource.PersistOperation
+  @TestManagedMock
+  private org.silverpeas.core.persistence.datasource.model.jpa.JpaPersistOperation persistOperation;
   @TestedBean
   private DiscussionChannelService service;
 
@@ -134,4 +139,42 @@ class DiscussionChannelServiceTest {
       assertThrows(IllegalArgumentException.class, () -> service.notifications("discussion1", "invalid"));
     }
   }
+  @Test
+  void creatingAChannelAnnouncesItsLinkInGeneralAndRestoresTheSelectedChannel() {
+    var user = mock(User.class, RETURNS_DEEP_STUBS);
+    when(user.getId()).thenReturn("manager");
+    when(user.getUserPreferences().getLanguage()).thenReturn("fr");
+    when(context.getScope()).thenReturn("projects");
+    try (var current = mockStatic(User.class);
+         var urls = mockStatic(org.silverpeas.core.util.URLUtil.class)) {
+      current.when(User::getCurrentRequester).thenReturn(user);
+      urls.when(org.silverpeas.core.util.URLUtil::getApplicationURL).thenReturn("/silverpeas");
+      var channel = service.create("discussion1", "Projet [IA]", "Description");
+      var order = inOrder(conversations, context, conversationService);
+      order.verify(conversations).main("discussion1", true);
+      order.verify(conversations).channels("discussion1");
+      order.verify(conversations).save(channel);
+      order.verify(context).getScope();
+      order.verify(context).select("main");
+      order.verify(conversationService).publish("discussion1", "Un nouveau canal a été créé : "
+          + "[Projet \\[IA\\]](/silverpeas/Rdiscussion/discussion1/channels/" + channel.getScopeKey() + "/Main)");
+      order.verify(context).select("projects");
+    }
+  }
+
+  @Test
+  void announcementFailurePropagatesAndRestoresThePreviousChannelForTransactionRollback() {
+    var user = mock(User.class, RETURNS_DEEP_STUBS);
+    when(user.getId()).thenReturn("manager");
+    when(user.getUserPreferences().getLanguage()).thenReturn("fr");
+    when(context.getScope()).thenReturn("projects");
+    doThrow(new IllegalStateException("Cannot publish")).when(conversationService).publish(eq("discussion1"), anyString());
+    try (var current = mockStatic(User.class)) {
+      current.when(User::getCurrentRequester).thenReturn(user);
+      assertThrows(IllegalStateException.class, () -> service.create("discussion1", "Projet", ""));
+      verify(context).select("main");
+      verify(context).select("projects");
+    }
+  }
+
 }

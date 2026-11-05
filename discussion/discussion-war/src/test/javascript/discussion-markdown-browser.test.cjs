@@ -172,3 +172,14 @@ test('formatting never truncates a draft beyond the message length limit',async(
     assert.equal((await page.locator('input[name=body]').inputValue()).length,1999);
   } finally {await browser.close();}
 });
+
+
+test('channel creation announcements keep their readable label and use native iframe navigation',async()=>{
+  const {browser,page}=await setup({body:'Un nouveau canal a été créé : [Projet IA](/silverpeas/Rdiscussion/discussion1/channels/abc-123/Main)'});
+  try {
+    const link=page.locator('.discussion-body a');
+    assert.equal(await link.textContent(),'Projet IA');
+    assert.equal(await link.getAttribute('target'),'_self');
+    assert.equal(await link.evaluate(n=>n.classList.contains('sp-link')),true);
+  } finally {await browser.close();}
+});

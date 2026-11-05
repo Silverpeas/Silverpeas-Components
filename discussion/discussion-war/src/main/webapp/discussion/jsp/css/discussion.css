@@ -577,3 +577,5 @@ html.discussion-embedded #discussion .discussion-channels, html.discussion-embed
 #discussion .discussion-compose-box:has(> .discussion-rich-editor) > .discussion-file-picker { grid-row:5; }
 #discussion .discussion-compose-box:has(> .discussion-rich-editor) > .discussion-rich-error { grid-column:1 / -1; grid-row:6; }
 #discussion .discussion-compose-box:has(> .discussion-rich-editor) > :is(.discussion-editor-tools, .discussion-composer-footer) { grid-row:7; }
+
+html.discussion-embedded #discussion.discussion-channels-open .discussion-workspace { margin-left:0; }
