@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-/* The channel selection is part of each URL, never shared session state. */
+/* Browser-local display and last-channel preferences; explicit navigation remains authoritative. */
 (() => {
   'use strict';
   const sections = ['discussion-participants-section', 'discussion-publications-section',
@@ -41,6 +41,9 @@
       if (!value || typeof value !== 'object' || Array.isArray(value)) { return {}; }
       const result = {};
       if (typeof value.channels === 'boolean') { result.channels = value.channels; }
+      if (typeof value.selectedChannel === 'string' && /^[a-zA-Z0-9-]{1,40}$/.test(value.selectedChannel)) {
+        result.selectedChannel = value.selectedChannel;
+      }
       if (value.accordions && typeof value.accordions === 'object') {
         result.accordions = Object.fromEntries(sections.filter(id => typeof value.accordions[id] === 'boolean')
             .map(id => [id, value.accordions[id]]));
@@ -63,6 +66,22 @@
 
   document.addEventListener('DOMContentLoaded', () => {
     if (!key()) { return; }
+    const discussion = document.getElementById('discussion');
+    const current = discussion.dataset.channelScope;
+    const selected = read().selectedChannel;
+    if (discussion.dataset.restoreChannel === 'true' && selected && selected !== current) {
+      // Use a server-rendered active-channel link, never a URL obtained from browser storage.
+      const row = [...discussion.querySelectorAll('#discussion-channel-list [data-channel-scope]')]
+          .find(item => item.dataset.channelScope === selected && item.dataset.archived !== 'true');
+      const link = row?.querySelector('a.discussion-channel-link');
+      if (link && new URL(link.href).origin === location.origin) {
+        location.replace(link.href);
+        return;
+      }
+    }
+    if (current && /^[a-zA-Z0-9-]{1,40}$/.test(current)) {
+      save({...read(), selectedChannel: current});
+    }
     const accordions = sections.map(id => document.getElementById(id)).filter(Boolean);
     const previous = read().accordions || {};
     accordions.forEach(section => {

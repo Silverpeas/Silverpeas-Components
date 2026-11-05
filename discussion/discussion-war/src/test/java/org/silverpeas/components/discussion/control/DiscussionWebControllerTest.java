@@ -360,6 +360,17 @@ class DiscussionWebControllerTest {
   }
 
   @Test
+  void lastChannelRestorationIsRequestedOnlyForTheApplicationEntryPage() {
+    when(context.getPathVariables()).thenReturn(Map.of());
+    controller.home(context);
+    verify(request).setAttribute("restoreSelectedChannel", true);
+    clearInvocations(request);
+    when(context.getPathVariables()).thenReturn(Map.of("channel", "main"));
+    controller.channelHome(context);
+    verify(request).setAttribute("restoreSelectedChannel", false);
+  }
+
+  @Test
   void homepageLoadsOnlyTheLatestPageAndDoesNotMarkItRead() {
     var page = new MessagePage(List.of(), Long.MAX_VALUE, false, 0, 0);
     when(service.history("discussion1", Long.MAX_VALUE, 30)).thenReturn(page);
