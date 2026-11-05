@@ -65,9 +65,8 @@
   <link rel="stylesheet" href="<c:url value='/discussion/jsp/css/discussion.css'/>"/>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-desktop.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-activity.js'/>" defer></script>
-  <script src="<c:url value='/discussion/jsp/javaScript/vendor/markdown-it-15.0.3.min.js'/>" defer></script>
+  <view:includePlugin name="richEditor"/>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-markdown.js'/>" defer></script>
-  <script src="<c:url value='/discussion/jsp/javaScript/vendor/tiptap-3.32.2.min.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-rich-editor.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-editor.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-editing.js'/>" defer></script>

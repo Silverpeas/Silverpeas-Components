@@ -21,8 +21,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-// Vendor entry point only: the Silverpeas integration lives in discussion-rich-editor.js.
-export {Editor, Node} from '@tiptap/core';
-export {StarterKit} from '@tiptap/starter-kit';
-export {MarkdownSerializer, defaultMarkdownSerializer} from 'prosemirror-markdown';
-export {Plugin, PluginKey} from '@tiptap/pm/state';
+const path = require('node:path');
+const root = path.join(__dirname, '../../../target/core-editor-resources/util/javaScript/richEditor');
+const asset = file => path.join(root, file);
+async function load(page) {
+  if (await page.evaluate(() => !!window.SilverpeasRichContent && !!window.SilverpeasRichEditor)) { return; }
+  await page.addStyleTag({path: path.join(root, '../../styleSheets/richEditor.css')});
+  for (const file of ['vendor/markdown-it-15.0.3.min.js', 'silverpeas-markdown.js',
+    'silverpeas-rich-content.js', 'vendor/tiptap-3.32.2.min.js', 'silverpeas-rich-editor.js']) {
+    await page.addScriptTag({path: asset(file)});
+  }
+}
+module.exports = {asset, load};

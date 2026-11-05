@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+const sharedEditor = require('./shared-editor-assets.cjs');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const path = require('node:path');
@@ -45,6 +46,7 @@ test('safe rendering, emoji, keyboard mentions, and reversible likes work in the
         return {responseText:`<span class="discussion-like-state" data-count="${value === 'true' ? 1 : 0}" data-liked="${value}"></span>`};
       }})})})};
     });
+    await sharedEditor.load(page);
     await page.addScriptTag({path:path.join(__dirname,'../../main/webapp/discussion/jsp/javaScript/discussion-editor.js')});
     await page.evaluate(() => document.dispatchEvent(new Event('DOMContentLoaded')));
     assert.equal(await page.locator('.discussion-body img, .discussion-body script').count(),0);
@@ -79,6 +81,7 @@ test('editing saved mentions hides identifiers while preserving the submitted re
   try {
     const page=await browser.newPage();
     await page.setContent('<main id="discussion" data-icons="/icons.svg" data-emoji-label="Emoji" data-mention-label="Mention"><form><textarea name="body" maxlength="2000">@[Bernard Lemoine](2) et @[Bernard Lemoine](3)</textarea></form></main>');
+    await sharedEditor.load(page);
     await page.addScriptTag({path:path.join(__dirname,'../../main/webapp/discussion/jsp/javaScript/discussion-editor.js')});
     await page.evaluate(()=>document.dispatchEvent(new Event('DOMContentLoaded')));
     const editor=page.locator('textarea');
@@ -106,6 +109,7 @@ test('personalized message avatars cover initials and failed portraits fall back
     });
     await page.setContent('<base href="https://discussion.test/"><main id="discussion"><div class="discussion-avatar" id="custom"><span>A</span><img src="/custom.png" alt="" width="30" height="30"></div><div class="discussion-avatar" id="default"><span>B</span></div><div class="discussion-avatar" id="broken"><span>C</span><img src="/missing.png" alt=""></div></main>');
     await page.addStyleTag({path:path.join(__dirname,'../../main/webapp/discussion/jsp/css/discussion.css')});
+    await sharedEditor.load(page);
     await page.addScriptTag({path:path.join(__dirname,'../../main/webapp/discussion/jsp/javaScript/discussion-editor.js')});
     await page.evaluate(()=>document.dispatchEvent(new Event('DOMContentLoaded')));
     await page.waitForFunction(()=>document.querySelector('#custom img')?.naturalWidth>0);

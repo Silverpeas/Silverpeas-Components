@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+const sharedEditor = require('./shared-editor-assets.cjs');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const path = require('node:path');
@@ -36,6 +37,7 @@ async function setup() {
   return {browser,page};
 }
 async function initialize(page) {
+  await sharedEditor.load(page);
   await page.addScriptTag({path:script});
   await page.evaluate(()=>document.dispatchEvent(new Event('DOMContentLoaded')));
 }
