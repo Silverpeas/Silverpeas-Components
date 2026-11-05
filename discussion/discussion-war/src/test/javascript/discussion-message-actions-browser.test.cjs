@@ -67,3 +67,29 @@ test('touch screens always retain the edit, delete and pin actions',async()=>{
     assert.equal(await opacity(page,'.discussion-pin-form'),'1');
   } finally {await browser.close();}
 });
+
+test('like, quote, thread and icon actions share one vertical center despite native button styles',async()=>{
+  const browser=await chromium.launch({executablePath:process.env.CHROME_PATH,args:['--no-sandbox']});
+  try {
+    const page=await browser.newPage({viewport:{width:1100,height:850}});
+    await page.setContent(`<main id="discussion"><article class="discussion-message"><div></div><div><p>Message</p><div class="discussion-message-footer">
+      <form class="discussion-like-form"><button class="discussion-icon-button discussion-like-button"><svg class="discussion-icon"></svg><span>0</span></button></form>
+      <button class="discussion-quote"><svg class="discussion-icon"></svg>Citer</button>
+      <a class="discussion-thread-link" href="#"><svg class="discussion-icon"></svg>Créer un fil</a>
+      <div class="discussion-actions"><button class="discussion-icon-button" aria-label="Proposer une idée"><svg class="discussion-icon"></svg></button></div>
+      <form class="discussion-pin-form"><button class="discussion-icon-button" aria-label="Épingler"><svg class="discussion-icon"></svg></button></form>
+    </div></div></article></main>`);
+    await page.addStyleTag({content:'body{font:20px Arial}button{font:inherit;line-height:normal}form{margin:0}'});
+    await page.addStyleTag({path:css});
+    await page.locator('.discussion-message').hover();
+    for(const fontSize of ['16px','20px']) {
+      await page.locator('body').evaluate((n,size)=>n.style.fontSize=size,fontSize);
+      const centers=await page.locator('.discussion-message-footer .discussion-icon').evaluateAll(nodes=>nodes.map(n=>{const box=n.getBoundingClientRect();return box.y+box.height/2;}));
+      assert.ok(Math.max(...centers)-Math.min(...centers)<1,JSON.stringify(centers));
+      const heights=await page.locator('.discussion-like-button,.discussion-quote,.discussion-thread-link').evaluateAll(nodes=>nodes.map(n=>n.getBoundingClientRect().height));
+      assert.ok(Math.max(...heights)-Math.min(...heights)<1,JSON.stringify(heights));
+    }
+    await page.setViewportSize({width:390,height:850});
+    assert.equal(await page.locator('.discussion-message-footer').evaluate(n=>n.scrollWidth<=n.clientWidth),true);
+  } finally {await browser.close();}
+});
