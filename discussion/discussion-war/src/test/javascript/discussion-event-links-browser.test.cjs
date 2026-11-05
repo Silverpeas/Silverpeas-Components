@@ -201,3 +201,43 @@ test('pinned previews resolve publication titles before truncating and update sa
     assert.equal(await page.locator('#pin span').textContent(), url);
   } finally {await browser.close();}
 });
+
+test('URL-labelled Markdown links resolve publication titles while custom labels and foreign links stay unchanged', async () => {
+  const {browser,page}=await setup();
+  try {
+    const url='http://discussion.test/silverpeas/Publication/44';
+    const relative='/silverpeas/Publication/44';
+    const foreign='https://external.test/silverpeas/Publication/44';
+    await page.evaluate(({url,relative,foreign})=>{
+      document.getElementById('body').textContent=[
+        '['+url+']('+url+')', '[**'+url+'**]('+url+')', '<'+url+'>',
+        '['+relative+']('+relative+')', '[Consulter le projet]('+url+')',
+        '['+foreign+']('+url+')', '['+foreign+']('+foreign+')'
+      ].join('\n');
+      const list=document.createElement('div');list.className='discussion-publications-list';
+      const link=document.createElement('a');link.dataset.publicationId='44';link.textContent='Trame de visite';
+      list.append(link);document.getElementById('discussion').append(list);
+    },{url,relative,foreign});
+    await initialize(page);
+    assert.deepEqual(await page.locator('#body a').allTextContents(),[
+      'Trame de visite','Trame de visite','Trame de visite','Trame de visite',
+      'Consulter le projet',foreign,foreign
+    ]);
+    assert.equal(await page.locator('#body a').first().getAttribute('href'),url);
+    await page.evaluate(()=>{
+      document.querySelector('.discussion-publications-list a').textContent='Titre actualisé';
+      document.dispatchEvent(new Event('discussion:publications-updated'));
+    });
+    assert.deepEqual(await page.locator('#body a').allTextContents(),[
+      'Titre actualisé','Titre actualisé','Titre actualisé','Titre actualisé',
+      'Consulter le projet',foreign,foreign
+    ]);
+    await page.evaluate(()=>{
+      document.querySelector('.discussion-publications-list').replaceChildren();
+      document.dispatchEvent(new Event('discussion:publications-updated'));
+    });
+    assert.deepEqual(await page.locator('#body a').allTextContents(),[
+      url,url,url,relative,'Consulter le projet',foreign,foreign
+    ]);
+  } finally {await browser.close();}
+});
