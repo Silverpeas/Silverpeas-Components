@@ -81,4 +81,5 @@
   </profiles>
   <parameters>
   </parameters>
+  <maxInstancesPerPlatform>1</maxInstancesPerPlatform>
 </WAComponent>

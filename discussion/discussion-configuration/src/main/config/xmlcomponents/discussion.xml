@@ -134,4 +134,5 @@
       </help>
     </parameter>
   </parameters>
+  <maxInstancesPerSpace>1</maxInstancesPerSpace>
 </WAComponent>
