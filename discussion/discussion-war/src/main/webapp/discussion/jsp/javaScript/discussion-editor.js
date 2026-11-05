@@ -288,6 +288,20 @@
     if (textarea.dataset.enhanced) {
       return;
     }
+    if (root.DiscussionRichEditor) {
+      const options = {people, filterPeople, tool, emoji:EMOJI};
+      const details = textarea.closest('.discussion-edit');
+      if (details && !details.open) {
+        textarea.dataset.enhanced = 'pending';
+        details.addEventListener('toggle', () => {
+          if (details.open && !textarea.disabled) {
+            root.DiscussionRichEditor.enhance(textarea, options);
+            root.DiscussionRichEditor.focus(textarea);
+          }
+        });
+      } else { root.DiscussionRichEditor.enhance(textarea, options); }
+      return;
+    }
     textarea.dataset.enhanced = 'true';
     const decoded = decodeMentions(textarea.value);
     let mentions = decoded.mentions;
@@ -436,7 +450,9 @@
     container.querySelectorAll('.discussion-body').forEach(renderBody);
     container.querySelectorAll('textarea[name="body"]').forEach(enhanceEditor);
   }
-  root.DiscussionEditor = {enhance, reset:(textarea, body) => editorResets.get(textarea)?.(body)};
+  root.DiscussionEditor = {enhance,
+    focus:textarea => root.DiscussionRichEditor ? root.DiscussionRichEditor.focus(textarea) : textarea.focus(),
+    reset:(textarea, body) => root.DiscussionRichEditor ? root.DiscussionRichEditor.reset(textarea, body) : editorResets.get(textarea)?.(body)};
   document.addEventListener('DOMContentLoaded', () => {
     discussion = document.getElementById('discussion');
     if (!discussion) {

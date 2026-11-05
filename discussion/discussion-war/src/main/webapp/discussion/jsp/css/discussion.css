@@ -531,3 +531,49 @@ html.discussion-embedded #discussion .discussion-channels, html.discussion-embed
 #discussion .discussion-edit-buttons > .discussion-edit-cancel { background: var(--bgColor-card, #fff); color: var(--color-text, #333); border: 1px solid var(--color-trait-separateur, #aaa); border-radius: 2px; cursor: pointer; }
 
 #discussion .discussion-message-content:has(> .discussion-edit--inline) > :is(.discussion-body, .discussion-message-footer) { display: none; }
+
+/* The hidden textarea is only a compatibility bridge for native forms and activity signals. */
+#discussion textarea[hidden] { display:none !important; }
+#discussion .discussion-rich-editor { width:100%; min-width:0; box-sizing:border-box; }
+#discussion .discussion-rich-editor .tiptap {
+  min-height:2.6rem;
+  max-height:35vh;
+  overflow-y:auto;
+  padding:.65rem .75rem;
+  outline:none;
+  overflow-wrap:anywhere;
+  white-space:pre-wrap;
+  font:inherit;
+  line-height:1.5;
+}
+#discussion .discussion-rich-editor .tiptap > :first-child { margin-top:0; }
+#discussion .discussion-rich-editor .tiptap > :last-child { margin-bottom:0; }
+#discussion .discussion-rich-editor .tiptap p { margin:.35rem 0; }
+#discussion .discussion-rich-editor .tiptap:has(> p:only-child > br.ProseMirror-trailingBreak:only-child)::before {
+  content:attr(data-placeholder);
+  color:#777;
+  position:absolute;
+  pointer-events:none;
+}
+#discussion .discussion-rich-editor .tiptap ul,
+#discussion .discussion-rich-editor .tiptap ol { padding-left:1.6rem; margin:.4rem 0; }
+#discussion .discussion-rich-editor .tiptap blockquote { border-left:3px solid #ccc; padding-left:.75rem; margin:.5rem 0; }
+#discussion .discussion-rich-editor .tiptap pre { background:#f3f3f3; padding:.65rem; overflow-x:auto; white-space:pre; }
+#discussion .discussion-rich-editor .tiptap code { font-family:monospace; background:#f3f3f3; }
+#discussion .discussion-rich-editor .tiptap a { text-decoration:underline; }
+#discussion .discussion-rich-editor .discussion-mention { font-weight:600; }
+#discussion .discussion-format-tools button[aria-pressed=true] { background:#e8e8e8; color:#222; box-shadow:inset 0 -2px currentColor; }
+#discussion .discussion-link-editor:not([hidden]) { display:flex; flex-wrap:wrap; align-items:center; gap:.4rem; padding:.4rem .65rem; }
+#discussion .discussion-link-editor input { flex:1 1 10rem; min-width:0; box-sizing:border-box; }
+#discussion .discussion-link-editor [role=status],
+#discussion .discussion-rich-error { color:#a00; margin:.3rem .65rem; }
+#discussion .discussion-edit--inline .discussion-rich-editor .tiptap { min-height:7rem; }
+#discussion .discussion-rich-editor:focus-within { box-shadow:inset 0 0 0 1px #aaa; }
+#discussion .discussion-compose-box > .discussion-rich-editor { grid-column:1 / -1; grid-row:1; }
+#discussion .discussion-compose-box > .discussion-rich-editor .tiptap { min-height:3rem; max-height:min(18dvh, 9rem); }
+#discussion .discussion-compose-box:has(> .discussion-rich-editor) > .discussion-format-tools { grid-column:1 / -1; grid-row:2; }
+#discussion .discussion-compose-box:has(> .discussion-rich-editor) > .discussion-link-editor { grid-column:1 / -1; grid-row:3; }
+#discussion .discussion-compose-box:has(> .discussion-rich-editor) > .discussion-image-picker { grid-row:4; }
+#discussion .discussion-compose-box:has(> .discussion-rich-editor) > .discussion-file-picker { grid-row:5; }
+#discussion .discussion-compose-box:has(> .discussion-rich-editor) > .discussion-rich-error { grid-column:1 / -1; grid-row:6; }
+#discussion .discussion-compose-box:has(> .discussion-rich-editor) > :is(.discussion-editor-tools, .discussion-composer-footer) { grid-row:7; }

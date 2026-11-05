@@ -123,7 +123,8 @@
       notifyFrame(true);
       trigger?.setAttribute('aria-expanded', 'false');
       const focus = trigger?.isConnected ? trigger : discussion.querySelector('.discussion-composer textarea');
-      focus?.focus({preventScroll:true});
+      if (focus?.matches('textarea') && window.DiscussionEditor?.focus) { window.DiscussionEditor.focus(focus); }
+      else { focus?.focus({preventScroll:true}); }
       restoreAnchor(saved);
     };
     frame.addEventListener('load', () => {

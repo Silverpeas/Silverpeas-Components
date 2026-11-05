@@ -530,11 +530,11 @@ reste explicite. Aucun appel réseau par message ni modification du texte stock�
 
 ### Markdown et collage d'images
 
-Le compositeur reste un champ texte. Le bouton « Aa » affiche une barre masquée
+Le compositeur utilise maintenant un éditeur visuel Tiptap. Le bouton « Aa » affiche une barre masquée
 par défaut : gras, italique, barré, listes, citation, bloc de code et lien nommé.
 `Ctrl+B`/`Cmd+B` et `Ctrl+I`/`Cmd+I` appliquent ou retirent la mise en forme autour de
-la sélection. Les marqueurs restent visibles pendant la rédaction et sont stockés
-en texte, dans la limite existante de 2 000 caractères. Les mentions conservent leurs
+la sélection. La mise en forme est visible pendant la rédaction et la modification ; les marqueurs
+Markdown restent uniquement dans le stockage, dans la limite existante de 2 000 caractères. Les mentions conservent leurs
 identifiants et notifications lorsqu'elles sont entourées de marqueurs.
 
 Les messages et réponses sont rendus avec markdown-it 15.0.3, embarqué localement
@@ -564,3 +564,28 @@ sans POST, puis rend le focus au bouton Modifier. Fermer seulement la barre Mark
 avec Échap laisse l'édition ouverte. Le panneau utilise le même formulaire, la même
 version optimiste et le même état natif `details[open]` pour protéger les éditions
 des remplacements en temps réel, y compris dans l'historique chargé à la demande.
+
+
+### Édition visuelle Tiptap
+
+Tiptap 3.32.2 et le sérialiseur stable ProseMirror Markdown 1.13.4 sont embarqués
+localement, sous licence MIT, sans service cloud ni extension Pro. L'interface
+Silverpeas reste compacte : Aa déplie les formats et indique les styles actifs ;
+le lien dispose d'un petit formulaire de libellé et d'adresse. Les commandes clavier,
+annuler/rétablir, mentions atomiques, emojis et pièces jointes sont conservés.
+Les mentions sont sérialisées en `@[Nom](id)` ; seul le nom apparaît à l'écran.
+Les images collées utilisent toujours les pièces jointes natives.
+
+Les créations et réponses montent immédiatement l'éditeur ; les modifications le
+montent à l'ouverture uniquement. Les éditeurs retirés par l'historique ou une mise
+à jour sont détruits. Un champ texte masqué et désactivé conserve la compatibilité
+avec les brouillons de canaux et les signaux de saisie ; seul le champ `body`
+transmet le Markdown canonique. Les changements externes et l'annulation resynchronisent
+le rendu visuel. La longueur est contrôlée sur la source sérialisée, les collages
+HTML sont limités au schéma de l'éditeur et les liens exécutables sont refusés.
+
+Le code de reconstruction, le lockfile npm et les notices des dépendances figurent
+dans `discussion-war/src/main/frontend`. Le bundle représente environ 181 Ko gzip
+et ne demande aucun téléchargement externe à l'exécution. Maven utilise le bundle
+commité : Node/npm sont nécessaires uniquement pour sa reconstruction.
+Aucune migration SQL.

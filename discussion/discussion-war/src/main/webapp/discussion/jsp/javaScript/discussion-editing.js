@@ -41,7 +41,9 @@
         states.set(details, {placeholder, body});
         details.classList.add('discussion-edit--inline');
         content.append(details);
-        form.querySelector('textarea').focus();
+        const textarea = form.querySelector('textarea');
+        if (window.DiscussionEditor?.focus) { window.DiscussionEditor.focus(textarea); }
+        else { textarea.focus(); }
       } else if (!details.open && states.has(details)) {
         const {placeholder} = states.get(details);
         placeholder.replaceWith(details);
@@ -58,6 +60,10 @@
       else { textarea.value = state.body; textarea.dispatchEvent(new Event('input', {bubbles:true})); }
       details.open = false;
     };
+    discussion.addEventListener('discussion:cancel-edit', event => {
+      const details = event.target.closest('.discussion-edit[open]');
+      if (details) { cancel(details); }
+    });
     discussion.addEventListener('click', event => {
       const button = event.target.closest('.discussion-edit-cancel');
       if (button) { cancel(button.closest('.discussion-edit')); }

@@ -64,6 +64,8 @@
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-activity.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/vendor/markdown-it-15.0.3.min.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-markdown.js'/>" defer></script>
+  <script src="<c:url value='/discussion/jsp/javaScript/vendor/tiptap-3.32.2.min.js'/>" defer></script>
+  <script src="<c:url value='/discussion/jsp/javaScript/discussion-rich-editor.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-editor.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-editing.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-layout.js'/>" defer></script>
@@ -93,6 +95,9 @@
         data-files="${base}files" data-pins="${base}pins" data-instance-id="${discussionInstanceId}" data-read="${base}messages/read" data-typing="${base}typing" data-user-id="${currentUser.id}"
         data-typing-one="<fmt:message key='discussion.typingOne'/>" data-typing-many="<fmt:message key='discussion.typingMany'/>"
         data-message-id="<c:out value='${focusedMessageId}'/>"
+        data-message-required="<fmt:message key='discussion.messageRequired'/>"
+        data-link-text="<fmt:message key='discussion.linkText'/>" data-link-url="<fmt:message key='discussion.linkUrl'/>"
+        data-link-apply="<fmt:message key='discussion.linkApply'/>" data-link-invalid="<fmt:message key='discussion.linkInvalid'/>"
         data-format-label="<fmt:message key='discussion.formatLabel'/>" data-format-bold="<fmt:message key='discussion.formatBold'/>"
         data-format-italic="<fmt:message key='discussion.formatItalic'/>" data-format-strike="<fmt:message key='discussion.formatStrike'/>"
         data-format-bullets="<fmt:message key='discussion.formatBullets'/>" data-format-numbers="<fmt:message key='discussion.formatNumbers'/>"
