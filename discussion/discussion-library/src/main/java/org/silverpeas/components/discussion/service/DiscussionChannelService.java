@@ -132,7 +132,9 @@ public class DiscussionChannelService {
         .replace("*", "\\*").replace("_", "\\_").replace("`", "\\`").replace("~", "\\~");
     String url = org.silverpeas.core.util.URLUtil.getApplicationURL() + "/Rdiscussion/" + instanceId
         + "/channels/" + channel.getScopeKey() + "/Main";
-    String body = bundle.getStringWithParams("discussion.channelCreatedMessage", "[" + name + "](" + url + ")");
+    // This value is Markdown, not HTML: getStringWithParams would HTML-encode the name.
+    String body = java.text.MessageFormat.format(bundle.getString("discussion.channelCreatedMessage"),
+        "[" + name + "](" + url + ")");
     try {
       context.select("main");
       conversationService.publish(instanceId, body);
