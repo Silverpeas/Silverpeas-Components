@@ -34,7 +34,7 @@ const fixture = scope => `<!doctype html><html><head><meta charset="utf-8"><link
 window.handlers=new Map();window.DiscussionContext={embedded:false,eventId:name=>name};
 window.spServerEventSource={isEnabled:()=>true,addEventListener:(name,fn,id)=>handlers.set(id,{name,fn}),removeEventListener:()=>{}};
 window.calls=[];window.sp={ajaxRequest:url=>({send:async()=>{calls.push(url);return {responseText:window.newRows||${JSON.stringify(rows())}};}})};
-</script><script src="/assets/javaScript/discussion-channels.js" defer></script><script src="/assets/javaScript/discussion-layout.js" defer></script></head><body>
+</script><script src="/assets/javaScript/discussion-view-state.js" defer></script><script src="/assets/javaScript/discussion-channels.js" defer></script><script src="/assets/javaScript/discussion-layout.js" defer></script></head><body>
 <main id="discussion" data-instance-id="discussion1" data-user-id="2" data-channel-scope="${scope}" data-channels="/channels">
 <header class="discussion-header"><button id="discussion-channels-toggle" aria-expanded="false" aria-controls="discussion-channels" title="Afficher les canaux" aria-label="Afficher les canaux"><svg class="discussion-icon" aria-hidden="true"><use href="/assets/icons/discussion-icons.svg#menu"/></svg><span id="discussion-channels-unread" hidden></span></button><div class="discussion-heading"><h1>Discussion</h1><p id="discussion-channel-title">${scope}</p></div></header>
 <nav id="discussion-channels" class="discussion-channels" hidden><button id="discussion-channels-close" aria-label="Replier la liste des canaux"><svg><use href="/assets/icons/discussion-icons.svg#panel-collapse"/></svg></button><div id="discussion-channel-list">${rows()}</div><button id="discussion-channel-create" aria-label="Créer un canal" title="Créer un canal"><svg class="discussion-icon" aria-hidden="true"><use href="/assets/icons/discussion-icons.svg#plus"/></svg></button><p id="discussion-channels-error" hidden>Erreur</p></nav>
@@ -168,5 +168,24 @@ test('embedded replies retain the full workspace width without a channel drawer'
     await app.evaluate(()=>document.documentElement.classList.add('discussion-embedded'));
     assert.equal(await app.locator('#discussion-channels').isVisible(),false);
     assert.equal(await app.locator('.discussion-workspace').evaluate(n=>getComputedStyle(n).marginLeft),'0px');
+  } finally {await browser.close();}
+});
+
+
+test('channel drawer preference survives reloads and channel changes with matching accessibility and layout state', async () => {
+  const {browser, frame} = await setup();
+  try {
+    let app = frame();
+    await app.locator('#discussion-channels-close').click();
+    await app.goto('http://discussion.test/channels/projects/Main');
+    await app.locator('#discussion-channels-toggle').waitFor();
+    assert.equal(await app.locator('#discussion-channels').isVisible(), false);
+    assert.equal(await app.locator('#discussion-channels-toggle').getAttribute('aria-expanded'), 'false');
+    assert.equal(await app.locator('#discussion').evaluate(node => node.classList.contains('discussion-channels-open')), false);
+    await app.locator('#discussion-channels-toggle').click();
+    await app.goto('http://discussion.test/channels/main/Main');
+    await app.locator('#discussion-channels-toggle').waitFor();
+    assert.equal(await app.locator('#discussion-channels').isVisible(), true);
+    assert.equal(await app.locator('#discussion-channels-toggle').getAttribute('aria-expanded'), 'true');
   } finally {await browser.close();}
 });
