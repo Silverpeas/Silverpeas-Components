@@ -42,7 +42,15 @@ import org.silverpeas.core.i18n.I18NHelper;
 /** Native, private attachments owned by the message's UUID and component instance. */
 @Service
 public class DiscussionAttachmentService {
-  public record Cleanup(String instanceId, String messageId, boolean rollback) { }
+  private static final java.util.Set<String> IMAGE_TYPES = java.util.Set.of("image/jpeg", "image/png", "image/gif");
+
+  /** Empty imageIds denotes cleanup of all message attachments; otherwise only these images. */
+  public record Cleanup(String instanceId, String messageId, boolean rollback, List<String> imageIds) {
+    public Cleanup { imageIds = List.copyOf(imageIds); }
+    public Cleanup(String instanceId, String messageId, boolean rollback) {
+      this(instanceId, messageId, rollback, List.of());
+    }
+  }
   @Inject
   private AttachmentService attachments;
   @Inject
@@ -62,7 +70,7 @@ public class DiscussionAttachmentService {
 
   public List<DiscussionImage> list(String instanceId, String messageId) {
     return attachments.listDocumentsByForeignKey(new ResourceReference(messageId, instanceId), null).stream()
-        .filter(document -> java.util.Set.of("image/jpeg", "image/png", "image/gif").contains(document.getContentType()))
+        .filter(document -> IMAGE_TYPES.contains(document.getContentType()))
         .map(document -> new DiscussionImage(document.getId(), org.silverpeas.core.util.URLUtil.getApplicationURL() + document.getAttachmentURL(), document.getFilename())).toList();
   }
 
@@ -110,6 +118,10 @@ public class DiscussionAttachmentService {
     }
   }
 
+  public void removeImagesAfterCommit(String instanceId, String messageId, List<String> imageIds) {
+    if (!imageIds.isEmpty()) { cleanup.fire(new Cleanup(instanceId, messageId, false, imageIds)); }
+  }
+
   public void removeAfterCommit(String instanceId, String messageId) {
     cleanup.fire(new Cleanup(instanceId, messageId, false));
   }
@@ -124,7 +136,15 @@ public class DiscussionAttachmentService {
   @Transactional(Transactional.TxType.REQUIRES_NEW)
   public void committed(@Observes(during = TransactionPhase.AFTER_SUCCESS) Cleanup change) {
     if (!change.rollback()) {
-      attachments.deleteAllAttachments(change.messageId(), change.instanceId());
+      if (change.imageIds().isEmpty()) {
+        attachments.deleteAllAttachments(change.messageId(), change.instanceId());
+      } else {
+        attachments.listDocumentsByForeignKey(new ResourceReference(change.messageId(), change.instanceId()), null).stream()
+            .filter(document -> change.instanceId().equals(document.getInstanceId())
+                && change.messageId().equals(document.getForeignId()))
+            .filter(document -> IMAGE_TYPES.contains(document.getContentType()) && change.imageIds().contains(document.getId()))
+            .forEach(document -> attachments.deleteAttachment(document, false));
+      }
     }
   }
 }

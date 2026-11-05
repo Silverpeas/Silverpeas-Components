@@ -176,4 +176,45 @@ class DiscussionAttachmentServiceTest {
     }
   }
 
+  @Test
+  void imageRemovalIsDeferredUntilSuccessAndItsSelectionIsImmutable() {
+    var service = new DiscussionAttachmentService(attachments, cleanup);
+    var ids = new java.util.ArrayList<>(List.of("photo"));
+    service.removeImagesAfterCommit("discussion1", "message1", ids);
+    ids.clear();
+    var event = ArgumentCaptor.forClass(DiscussionAttachmentService.Cleanup.class);
+    verify(cleanup).fire(event.capture());
+    assertEquals(List.of("photo"), event.getValue().imageIds());
+    verifyNoInteractions(attachments);
+    service.rollback(event.getValue());
+    verifyNoInteractions(attachments);
+    service.removeImagesAfterCommit("discussion1", "message1", List.of());
+    verifyNoMoreInteractions(cleanup);
+  }
+
+  @Test
+  void committedImageRemovalDoesNotDeleteFilesOrAttachmentsFromOtherMessagesOrInstances() {
+    var selected = attachmentDocument("photo", "discussion1", "message1", "image/png");
+    var remaining = attachmentDocument("keep", "discussion1", "message1", "image/jpeg");
+    var file = attachmentDocument("file", "discussion1", "message1", "application/octet-stream");
+    var foreign = attachmentDocument("foreign", "discussion1", "other", "image/png");
+    var otherInstance = attachmentDocument("other-instance", "discussion2", "message1", "image/png");
+    when(attachments.listDocumentsByForeignKey(any(), isNull())).thenReturn(
+        new org.silverpeas.core.contribution.attachment.util.SimpleDocumentList<>(List.of(selected, remaining, file, foreign, otherInstance)));
+    service.committed(new DiscussionAttachmentService.Cleanup("discussion1", "message1", false,
+        List.of("photo", "file", "foreign", "other-instance", "missing")));
+    verify(attachments).listDocumentsByForeignKey(any(), isNull());
+    verify(attachments).deleteAttachment(selected, false);
+    verifyNoMoreInteractions(attachments);
+  }
+
+  private SimpleDocument attachmentDocument(String id, String instance, String message, String type) {
+    var document = mock(SimpleDocument.class);
+    when(document.getId()).thenReturn(id);
+    when(document.getInstanceId()).thenReturn(instance);
+    when(document.getForeignId()).thenReturn(message);
+    when(document.getContentType()).thenReturn(type);
+    return document;
+  }
+
 }

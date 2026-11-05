@@ -232,14 +232,26 @@ public class DefaultConversationService implements ConversationService {
 
   @Override
   public void edit(String instanceId, String messageId, long version, String body) {
+    edit(instanceId, messageId, version, body, List.of());
+  }
+
+  @Override
+  public void edit(String instanceId, String messageId, long version, String body, List<String> removedImageIds) {
     DiscussionMessage message = editable(instanceId, messageId, version);
+    var removed = java.util.Set.copyOf(removedImageIds);
+    var images = imageService.list(instanceId, messageId);
+    if (!images.stream().map(DiscussionImage::id).collect(java.util.stream.Collectors.toSet()).containsAll(removed)) {
+      throw new IllegalArgumentException("Only images attached to this message can be removed");
+    }
+    boolean remainingImages = images.stream().anyMatch(image -> !removed.contains(image.id()));
     String previousBody = message.getBody();
-    message.edit(mentions.normalize(instanceId, body), message.isFilesAttached() || !imageService.list(instanceId, messageId).isEmpty());
+    message.edit(mentions.normalize(instanceId, body), message.isFilesAttached() || remainingImages);
     message.updatedBy(User.getCurrentRequester());
     messages.save(message);
+    if (!removed.isEmpty()) { imageService.removeImagesAfterCommit(instanceId, messageId, List.copyOf(removed)); }
     messageIndex.schedule(instanceId, message.getId());
     mentions.notifyNewMentions(instanceId, message, previousBody);
-    if (!java.util.Objects.equals(previousBody, message.getBody())) {
+    if (!java.util.Objects.equals(previousBody, message.getBody()) || !removed.isEmpty()) {
       subscriptions.schedule(new org.silverpeas.components.discussion.notification.DiscussionSubscriptionEvent(
           instanceId, message, User.getCurrentRequester(),
           org.silverpeas.core.notification.user.client.constant.NotifAction.UPDATE));

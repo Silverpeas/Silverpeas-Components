@@ -601,3 +601,10 @@ html.discussion-embedded #discussion.discussion-channels-open .discussion-worksp
 #discussion .discussion-message-footer .discussion-readonly-likes { align-items:center; min-height:2rem; margin:0; }
 
 #discussion .discussion-composer .discussion-editor-tools > #discussion-add-visio[hidden] { display: none; }
+
+#discussion .discussion-edit-images { display:flex; flex-wrap:wrap; gap:.5rem; margin-top:.65rem; }
+#discussion .discussion-edit-image { position:relative; margin:0; border:1px solid var(--color-trait-separateur,#ddd); }
+#discussion .discussion-edit-image img { display:block; width:6rem; height:4.5rem; object-fit:cover; }
+#discussion .discussion-edit-image-remove { position:absolute; top:0; right:0; background:var(--bgColor-card,#fff); }
+#discussion .discussion-edit-image--removed img { opacity:.3; filter:grayscale(1); }
+#discussion .discussion-message-content:has(> .discussion-edit--inline) > .discussion-message-images { display:none; }

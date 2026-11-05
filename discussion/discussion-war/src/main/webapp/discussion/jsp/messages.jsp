@@ -121,9 +121,24 @@
               <div class="discussion-actions">
                 <details class="discussion-edit">
                   <summary class="discussion-icon-button" title="${fn:escapeXml(editLabel)}" aria-label="${fn:escapeXml(editLabel)}"><svg class="discussion-icon" aria-hidden="true"><use href="${discussionIcons}#edit"/></svg></summary>
-                  <form method="post" action="${messageActionBase}${message.id}/edit">
+                  <form method="post" action="${messageActionBase}${message.id}/edit" data-has-files="${not empty messageFiles[message.id]}">
                     <input type="hidden" name="version" value="${message.version}"/>
                     <textarea name="body" rows="4" maxlength="2000" data-allow-empty="${not empty messageImages[message.id] or not empty messageFiles[message.id]}" required aria-label="<fmt:message key='discussion.message'/>"><c:out value="${message.body}"/></textarea>
+                    <c:if test="${not empty messageImages[message.id]}">
+                      <div class="discussion-edit-images">
+                        <c:forEach items="${messageImages[message.id]}" var="image">
+                          <figure class="discussion-edit-image">
+                            <img src="<c:out value='${image.url}'/>" alt="<fmt:message key='discussion.attachedImage'/>" loading="lazy"/>
+                            <input type="hidden" name="removedImageIds" value="${fn:escapeXml(image.id)}" disabled/>
+                            <button class="discussion-icon-button discussion-edit-image-remove" type="button" aria-pressed="false"
+                                title="<fmt:message key='discussion.removeImage'/>" aria-label="<fmt:message key='discussion.removeImage'/>"
+                                data-remove-label="<fmt:message key='discussion.removeImage'/>" data-restore-label="<fmt:message key='discussion.restoreImage'/>">
+                              <svg class="discussion-icon" aria-hidden="true"><use href="${discussionIcons}#close"/></svg>
+                            </button>
+                          </figure>
+                        </c:forEach>
+                      </div>
+                    </c:if>
                     <div class="discussion-edit-buttons">
                       <button class="discussion-edit-cancel" type="button"><fmt:message key="GML.cancel"/></button>
                       <button class="sp_button discussion-button--primary" type="submit"><fmt:message key="discussion.save"/></button>

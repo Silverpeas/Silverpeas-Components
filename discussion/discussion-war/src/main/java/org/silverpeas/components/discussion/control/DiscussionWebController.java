@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.discussion.control;
 
+import java.util.List;
 import java.util.function.Supplier;
 import jakarta.persistence.OptimisticLockException;
 import jakarta.ws.rs.GET;
@@ -507,9 +508,14 @@ public class DiscussionWebController extends
   @LowestRoleAccess(SilverpeasRole.WRITER)
   @RedirectToInternal("Main")
   public void edit(DiscussionWebRequestContext context) {
-    webAction(() -> conversations().edit(context.getComponentInstanceId(),
-        context.getPathVariables().get("id"), number(context, "version", -1),
-        context.getRequest().getParameter("body")));
+    String[] removed = context.getRequest().getParameterValues("removedImageIds");
+    if (removed == null || removed.length == 0) {
+      webAction(() -> conversations().edit(context.getComponentInstanceId(),
+          context.getPathVariables().get("id"), number(context, "version", -1), context.getRequest().getParameter("body")));
+    } else {
+      webAction(() -> conversations().edit(context.getComponentInstanceId(),
+          context.getPathVariables().get("id"), number(context, "version", -1), context.getRequest().getParameter("body"), List.of(removed)));
+    }
   }
 
   @POST
