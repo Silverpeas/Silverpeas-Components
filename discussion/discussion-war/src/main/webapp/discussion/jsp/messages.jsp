@@ -73,7 +73,7 @@
       </div>
       <div class="discussion-message-content">
         <header class="discussion-message-header">
-          <span class="discussion-author"><c:out value="${message.creator.displayedName}"/></span>
+          <span class="discussion-author"><view:username user="${message.creator}"/></span>
           <c:if test="${not empty threadRoot and message.id eq threadRoot.id}"><span class="discussion-thread-origin-label"><fmt:message key="discussion.threadOrigin"/></span></c:if>
           <c:if test="${message.pinned}"><span class="discussion-pinned-badge"><svg class="discussion-icon" aria-hidden="true"><use href="${discussionIcons}#pin"/></svg> <fmt:message key="discussion.pinned"/></span></c:if>
           <time><fmt:formatDate value="${message.creationDate}" type="both" dateStyle="short" timeStyle="short"/></time>

@@ -37,7 +37,7 @@
       <li class="discussion-person" data-user-id="<c:out value='${participant.id}'/>">
         <img class="discussion-person-avatar" src="<c:out value='${participantAvatar}'/>" alt="" loading="lazy" width="30" height="30"/>
         <div class="discussion-person-info">
-          <span class="discussion-person-name"><c:out value="${participant.name}"/></span>
+          <span class="discussion-person-name"><view:username userId="${participant.id}"/></span>
           <span class="discussion-presence ${participant.connected ? 'is-connected' : ''}">
             <span class="discussion-presence-dot" aria-hidden="true"></span>
             <span class="discussion-presence-label"><c:choose><c:when test="${participant.connected}"><fmt:message key="discussion.connected"/></c:when><c:otherwise><fmt:message key="discussion.disconnected"/></c:otherwise></c:choose></span>

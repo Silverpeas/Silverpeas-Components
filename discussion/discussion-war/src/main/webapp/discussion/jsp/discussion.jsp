@@ -53,6 +53,8 @@
   <title><c:out value="${instanceInfo.title}"/></title>
   <view:looknfeel/>
   <view:includePlugin name="preview"/>
+  <view:includePlugin name="userZoom"/>
+  <script src="<c:url value='/discussion/jsp/javaScript/discussion-user-zoom.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-threads.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-channels.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-header.js'/>" defer></script>
