@@ -585,7 +585,7 @@ le rendu visuel. La longueur est contrôlée sur la source sérialisée, les col
 HTML sont limités au schéma de l'éditeur et les liens exécutables sont refusés.
 
 Le code de reconstruction, le lockfile npm et les notices des dépendances figurent
-dans `discussion-war/src/main/frontend`. Le bundle représente environ 181 Ko gzip
+dans `Silverpeas-Core/core-war/src/main/frontend/richEditor`. Le bundle représente environ 181 Ko gzip
 et ne demande aucun téléchargement externe à l'exécution. Maven utilise le bundle
 commité : Node/npm sont nécessaires uniquement pour sa reconstruction.
 Aucune migration SQL.
@@ -657,3 +657,17 @@ blocs de code et code en ligne restent intacts. Les smileys doivent être isolé
 pour ne pas modifier des identifiants ou chemins. Le texte déjà stocké n'est pas
 réécrit ; l'enregistrement d'une édition conserve le texte visible dans l'éditeur.
 Aucun SQL ni nouvelle dépendance.
+
+
+### Éditeur mutualisé avec les commentaires Core
+
+Discussion charge désormais le plugin natif `richEditor` de Core. Tiptap, le rendu
+Markdown sécurisé, les emoji et les mentions ont une implémentation commune avec
+les commentaires Silverpeas. Les scripts Discussion sont des adaptateurs : les
+pièces jointes, le collage d'images et les actions métier restent propres à Discussion.
+
+Construire et installer dans Maven le Core `feature-15552` avant de compiler
+Discussion. Les tests de navigateur extraient ses ressources du WAR Core ; les
+bundles ne sont plus dupliqués dans le composant. La migration Discussion reste 001.
+La nouvelle colonne de commentaires natifs relève de la migration Core, pas de
+Discussion. Documentation : `Silverpeas-Core/docs/rich-editor/README.md`.

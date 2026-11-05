@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+const sharedEditor = require('./shared-editor-assets.cjs');
 const test=require('node:test');
 const assert=require('node:assert/strict');
 const path=require('node:path');
@@ -41,8 +42,9 @@ async function setup({body='',draft=''}={}) {
     window.posts=[];document.addEventListener('submit',event=>{event.preventDefault();posts.push(new FormData(event.target));});
   },{body,draft,labels});
   await page.addStyleTag({path:path.join(assets,'css/discussion.css')});
+  await sharedEditor.load(page);
   for(const file of ['vendor/markdown-it-15.0.3.min.js','discussion-markdown.js','vendor/tiptap-3.32.2.min.js','discussion-rich-editor.js','discussion-editor.js','discussion-images.js','discussion-composer.js']) {
-    await page.addScriptTag({path:path.join(assets,'javaScript',file)});
+    await page.addScriptTag({path:(file.startsWith('vendor/') ? sharedEditor.asset(file) : path.join(assets,'javaScript',file))});
   }
   await page.evaluate(()=>document.dispatchEvent(new Event('DOMContentLoaded')));
   return {browser,page};

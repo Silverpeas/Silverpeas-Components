@@ -23,96 +23,18 @@
  */
 (function(root) {
   'use strict';
-  const TOKEN = /@\[([^\]\r\n]{1,300})\]\(([0-9]{1,40})\)|https?:\/\/[^\s<>]+/gi;
+  const sharedContent = typeof module !== 'undefined' && module.exports
+      ? require('../../../../../../target/core-editor-resources/util/javaScript/richEditor/silverpeas-rich-content.js')
+      : root.SilverpeasRichContent;
   const EMOJI = ['😀', '😊', '😂', '😍', '🤔', '😮', '😢', '👍', '👎', '👏', '🙌', '❤️', '🎉', '🚀', '✅', '🙏', '💡', '👀'];
-  const fold = text => text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-
-  function tokenize(text) {
-    const tokens = [];
-    let offset = 0;
-    for (const match of text.matchAll(TOKEN)) {
-      if (match.index > offset) {
-        tokens.push({type: 'text', text: text.slice(offset, match.index)});
-      }
-      if (match[1]) {
-        tokens.push({type: 'mention', text: '@' + match[1], id: match[2]});
-      } else {
-        let urlText = match[0].replace(/[.,!?;:]+$/, '');
-        while (urlText.endsWith(')') && urlText.split(')').length > urlText.split('(').length) {
-          urlText = urlText.slice(0, -1);
-        }
-        try {
-          const url = new URL(urlText);
-          if (url.protocol !== 'http:' && url.protocol !== 'https:') {
-            throw new Error('Unsupported URL');
-          }
-          tokens.push({type: 'link', text: urlText, href: url.href});
-          if (urlText.length < match[0].length) {
-            tokens.push({type: 'text', text: match[0].slice(urlText.length)});
-          }
-        } catch (failure) {
-          tokens.push({type: 'text', text: match[0]});
-        }
-      }
-      offset = match.index + match[0].length;
-    }
-    if (offset < text.length) {
-      tokens.push({type: 'text', text: text.slice(offset)});
-    }
-    return tokens;
-  }
-
-  function decodeMentions(value) {
-    const mentions = [];
-    let removed = 0;
-    const text = value.replace(/@\[([^\]\r\n]{1,300})\]\(([0-9]{1,40})\)/g, (match, name, id, offset) => {
-      const start = offset - removed;
-      const label = '@' + name;
-      removed += match.length - label.length;
-      mentions.push({start, end: start + label.length, name, id});
-      return label;
-    });
-    return {text, mentions};
-  }
-  function moveMentions(previous, value, mentions) {
-    let start = 0;
-    while (start < previous.length && start < value.length && previous[start] === value[start]) {
-      start++;
-    }
-    let end = previous.length;
-    let nextEnd = value.length;
-    while (end > start && nextEnd > start && previous[end - 1] === value[nextEnd - 1]) { end--; nextEnd--; }
-    const delta = nextEnd - end;
-    return mentions.flatMap(mention => {
-      if (mention.end <= start) {
-        return [mention];
-      }
-      if (mention.start >= end) {
-        return [{...mention, start: mention.start + delta, end: mention.end + delta}];
-      }
-      return [];
-    });
-  }
-  function encodeMentions(value, mentions) {
-    let result = value;
-    [...mentions].sort((a, b) => b.start - a.start).forEach(mention => {
-      if (value.slice(mention.start, mention.end) === '@' + mention.name) {
-        result = result.slice(0, mention.start) + '@[' + mention.name + '](' + mention.id + ')' + result.slice(mention.end);
-      }
-    });
-    return result;
-  }
-
+  const tokenize = text => sharedContent.tokenize(text);
+  const {decodeMentions, moveMentions, encodeMentions} = sharedContent;
   function mentionQuery(value, caret) {
     const match = value.slice(0, caret).match(/(?:^|\s)@([^\s@\[\]]*)$/u);
     return match ? {query: match[1], start: caret - match[1].length - 1, end: caret} : null;
   }
 
-  function filterPeople(people, query) {
-    const search = fold(query);
-    return people.filter(person => fold(person.name).includes(search)).slice(0, 8);
-  }
-
+  const filterPeople = (people, query) => sharedContent.filterPeople(people, query);
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = {tokenize, mentionQuery, filterPeople, decodeMentions, moveMentions, encodeMentions};
   }
@@ -273,29 +195,11 @@
   }
   function renderBody(body) {
     if (body.dataset.rendered) { return; }
-    const markdown = root.DiscussionMarkdown?.render(body.textContent);
-    const content = markdown || renderInlineText(body.textContent);
-    if (markdown) {
-      body.classList.add('discussion-body--markdown');
-      content.querySelectorAll('[data-discussion-mention]').forEach(mention => {
-        if (mention.closest('a')) { mention.replaceWith(document.createTextNode(mention.textContent)); return; }
-        const link = document.createElement('a');
-        link.href = discussion.dataset.profileBase + '?userId=' + encodeURIComponent(mention.dataset.discussionMention);
-        link.className = 'discussion-mention';
-        link.textContent = mention.textContent;
-        mention.replaceWith(link);
-      });
-      content.querySelectorAll('a:not(.discussion-mention)').forEach(link => decorateWebLink(link, link.textContent, false));
-      const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT);
-      const texts = [];
-      while (walker.nextNode()) {
-        if (!walker.currentNode.parentElement?.closest('a, pre, code') && /https?:\/\/|@\[/i.test(walker.currentNode.textContent)) {
-          texts.push(walker.currentNode);
-        }
-      }
-      texts.forEach(text => text.replaceWith(renderInlineText(text.textContent)));
-    }
-    body.replaceChildren(content);
+    body.classList.add('discussion-body--markdown');
+    body.replaceChildren(sharedContent.render(body.textContent, {
+      profileBase:discussion.dataset.profileBase, mentionClass:'discussion-mention',
+      decorateLink:decorateWebLink
+    }));
     body.dataset.rendered = 'true';
   }
   function insert(textarea, text, start = textarea.selectionStart, end = textarea.selectionEnd) {
