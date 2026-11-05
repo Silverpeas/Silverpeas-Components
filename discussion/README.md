@@ -620,3 +620,12 @@ L'annonce utilise le circuit normal des messages (indexation, non-lus, notificat
 et temps réel). La création et la publication participent à la même transaction ;
 la sélection du canal d'origine est restaurée même si la publication échoue.
 Aucune annonce supplémentaire lors d'un renommage ou d'un archivage. Aucun SQL.
+
+
+Les noms des auteurs de messages et des participants utilisent la balise native
+`view:username` et la bulle standard `userZoom` de Silverpeas, sans dupliquer le
+profil, les contacts ou les invitations. Les règles natives s'appliquent notamment
+à l'utilisateur courant et aux comptes système, supprimés ou désactivés.
+Les nouveaux noms insérés par l'historique, le temps réel et le rafraîchissement des
+participants activent le même plugin une seule fois. Les réponses en fil chargent
+la même vue et le même plugin. Aucun changement SQL.
