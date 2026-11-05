@@ -36,25 +36,26 @@
     const close = document.getElementById('discussion-channels-close');
     const showLabel = toggle.getAttribute('aria-label');
     const hideLabel = close.getAttribute('aria-label') || close.textContent;
-    const setOpen = open => {
+    const setOpen = (open, remember = false) => {
       nav.hidden = !open;
       discussion.classList.toggle('discussion-channels-open', open);
       toggle.setAttribute('aria-expanded', String(open));
       toggle.setAttribute('aria-label', open ? hideLabel : showLabel);
       toggle.title = open ? hideLabel : showLabel;
       discussion.querySelector('.discussion-workspace').inert = open && media.matches;
+      if (remember) { window.DiscussionViewState?.rememberChannels(open); }
       window.dispatchEvent(new Event('resize'));
     };
-    toggle.addEventListener('click', () => setOpen(nav.hidden));
-    close.addEventListener('click', () => { setOpen(false); toggle.focus(); });
+    toggle.addEventListener('click', () => setOpen(nav.hidden, true));
+    close.addEventListener('click', () => { setOpen(false, true); toggle.focus(); });
     document.addEventListener('keydown', event => {
       if (event.key === 'Escape' && !nav.hidden && !document.querySelector('dialog[open]')) {
-        setOpen(false); toggle.focus();
+        setOpen(false, true); toggle.focus();
       }
     });
     media.addEventListener('change', () => setOpen(!nav.hidden));
-    setOpen(true);
-    if (media.matches) { close.focus(); }
+    setOpen(window.DiscussionViewState?.channelsOpen(true) ?? true);
+    if (media.matches && !nav.hidden) { close.focus(); }
     const markCurrent = () => {
       let unread = 0;
       list.querySelectorAll('[data-channel-scope]').forEach(row => {

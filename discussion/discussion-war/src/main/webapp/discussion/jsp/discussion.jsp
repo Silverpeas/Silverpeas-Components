@@ -56,6 +56,7 @@
   <view:includePlugin name="userZoom"/>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-user-zoom.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-threads.js'/>" defer></script>
+  <script src="<c:url value='/discussion/jsp/javaScript/discussion-view-state.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-channels.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-header.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-search.js'/>" defer></script>
@@ -235,7 +236,7 @@
               <button id="discussion-search-more" type="button" class="button discussion-button--quiet" hidden><fmt:message key="discussion.searchMore"/></button>
             </div>
           </details>
-          <details class="discussion-sidebar-section" name="discussion-sidebar" open>
+          <details id="discussion-participants-section" class="discussion-sidebar-section" name="discussion-sidebar" open>
             <summary><h2 id="discussion-people-heading"><fmt:message key="discussion.participants"/> <span id="discussion-participant-count" class="discussion-people-count"><c:out value="${fn:length(participants)}"/></span></h2></summary>
             <div class="discussion-sidebar-content">
               <div id="discussion-participants"><jsp:include page="participants.jsp"/></div>
