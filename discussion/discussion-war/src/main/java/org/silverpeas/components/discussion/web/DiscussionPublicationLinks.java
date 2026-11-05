@@ -26,21 +26,44 @@ package org.silverpeas.components.discussion.web;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
+import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
+import org.commonmark.ext.gfm.strikethrough.StrikethroughExtension;
+import org.commonmark.node.AbstractVisitor;
+import org.commonmark.node.Link;
+import org.commonmark.node.Text;
+import org.commonmark.parser.Parser;
 
 /** Recognizes local Silverpeas publication links without following or requesting any URL. */
 final class DiscussionPublicationLinks {
   private static final Pattern LINKS = Pattern.compile("https?://[^\\s<>\"']+|(?<![\\w/:])/[\\w][^\\s<>\"']*", Pattern.CASE_INSENSITIVE);
+  private static final Parser MARKDOWN = Parser.builder()
+      .extensions(List.of(StrikethroughExtension.create())).build();
   private static final Pattern ID = Pattern.compile("[0-9]{1,18}");
 
   private DiscussionPublicationLinks() {
   }
 
   static List<String> ids(String body, URI application) {
-    return LINKS.matcher(body).results().map(match -> identify(match.group(), application))
+    var candidates = new ArrayList<String>();
+    MARKDOWN.parse(body).accept(new AbstractVisitor() {
+      @Override
+      public void visit(Link link) {
+        // A link label can itself look like a URL; only its destination is a reference.
+        candidates.add(link.getDestination());
+      }
+
+      @Override
+      public void visit(Text text) {
+        LINKS.matcher(text.getLiteral()).results().map(MatchResult::group)
+            .forEach(candidates::add);
+      }
+    });
+    return candidates.stream().map(candidate -> identify(candidate, application))
         .filter(id -> !id.isEmpty()).distinct().toList();
   }
 
