@@ -599,3 +599,5 @@ html.discussion-embedded #discussion.discussion-channels-open .discussion-worksp
 #discussion .discussion-message-footer :is(.discussion-icon-button, .discussion-quote, .discussion-thread-link) { box-sizing:border-box; min-height:2rem; margin:0; line-height:1.25; font-size:.9em; }
 #discussion .discussion-message-footer :is(.discussion-quote, .discussion-thread-link) { padding:.35rem 0; }
 #discussion .discussion-message-footer .discussion-readonly-likes { align-items:center; min-height:2rem; margin:0; }
+
+#discussion .discussion-composer .discussion-editor-tools > #discussion-add-visio[hidden] { display: none; }
