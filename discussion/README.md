@@ -629,3 +629,21 @@ profil, les contacts ou les invitations. Les règles natives s'appliquent notamm
 Les nouveaux noms insérés par l'historique, le temps réel et le rafraîchissement des
 participants activent le même plugin une seule fois. Les réponses en fil chargent
 la même vue et le même plugin. Aucun changement SQL.
+
+
+### Citer et créer un fil
+
+« Citer » ajoute dans le compositeur de la conversation courante une citation
+visuelle avec l'auteur, un extrait de 300 caractères au maximum et un lien vers
+le message original. Le brouillon et les pièces jointes sont conservés. Une
+nouvelle citation remplace la précédente ; la croix de la citation la retire sans
+effacer la réponse. Les messages contenant seulement une pièce jointe peuvent
+également être cités. Les identifiants techniques des mentions ne sont pas copiés,
+pour ne pas notifier à nouveau les personnes citées.
+
+La citation est un bloc Markdown avec un lien natif Silverpeas : aucun nouveau
+champ SQL, et les brouillons, éditions, recherches et publications conservent le
+même format. Elle constitue un instantané modifiable ; elle ne se réécrit pas si
+l'original est modifié ou supprimé. La limite de 2 000 caractères inclut la citation.
+« Créer un fil » remplace le libellé de l'ancienne action « Répondre » sur les
+messages sans fil. Les fils existants conservent leur compteur et leur panneau.

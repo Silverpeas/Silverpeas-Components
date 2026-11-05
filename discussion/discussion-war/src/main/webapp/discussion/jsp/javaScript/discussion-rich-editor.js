@@ -52,6 +52,12 @@
     renderHTML:({node}) => ['span', {'data-discussion-mention':node.attrs.id, class:'discussion-mention', contenteditable:'false'}, '@' + node.attrs.label],
     renderText:({node}) => '@' + node.attrs.label
   });
+  function hasQuotation(editor) {
+    const first = editor.state.doc.firstChild;
+    const link = first?.firstChild?.firstChild?.marks.find(mark => mark.type.name === 'link');
+    return first?.type.name === 'blockquote' && !!link
+        && /\/Rdiscussion\/discussion[0-9]+\/(?:channels\/[a-zA-Z0-9-]{1,40}\/)?messages\/[a-zA-Z0-9-]{1,40}$/.test(link.attrs.href);
+  }
   function button(label, text, className, action) {
     const node = document.createElement('button');
     node.type = 'button';
@@ -125,6 +131,12 @@
     editors.set(textarea, {editor, body});
     textarea.dataset.enhanced = 'true';
     const visual = editor.view.dom;
+    const removeQuote = button(labels.removeQuote, '×', 'discussion-remove-quote', () => {
+      if (hasQuotation(editor)) {
+        editor.chain().focus().deleteRange({from:0, to:editor.state.doc.firstChild.nodeSize}).run();
+      }
+    });
+    holder.append(removeQuote);
     const reset = value => {
       editor.commands.setContent(DiscussionMarkdown.renderHtml(value), {emitUpdate:false});
       synchronize();
@@ -239,6 +251,7 @@
       if (options[active]) { visual.setAttribute('aria-activedescendant', options[active].id); }
     };
     refresh = () => {
+      removeQuote.hidden = !hasQuotation(editor);
       states.forEach(({control, mark}) => control.setAttribute('aria-pressed', String(editor.isActive(mark))));
       link.setAttribute('aria-pressed', String(editor.isActive('link')));
       const {$from, empty} = editor.state.selection;
@@ -312,6 +325,19 @@
   });
   window.DiscussionRichEditor = {
     enhance,
+    quote:(textarea, quotation) => {
+      const editor = editors.get(textarea)?.editor;
+      if (!editor) { return false; }
+      const node = {type:'blockquote', content:[
+        {type:'paragraph', content:[{type:'text', text:quotation.author, marks:[{type:'link', attrs:{href:quotation.url}}]}]},
+        {type:'paragraph', content:[{type:'text', text:quotation.excerpt}]}
+      ]};
+      const before = editor.state.doc;
+      editor.commands.insertContentAt({from:0, to:hasQuotation(editor) ? before.firstChild.nodeSize : 0}, node);
+      if (editor.state.doc === before) { return false; }
+      editor.commands.focus('end');
+      return true;
+    },
     focus:textarea => editors.get(textarea)?.editor.commands.focus(),
     reset:(textarea, value) => {
       const state = editors.get(textarea);
