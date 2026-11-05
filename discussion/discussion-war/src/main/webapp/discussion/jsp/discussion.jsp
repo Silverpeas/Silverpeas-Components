@@ -70,6 +70,7 @@
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-rich-editor.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-editor.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-editing.js'/>" defer></script>
+  <script src="<c:url value='/discussion/jsp/javaScript/discussion-quoting.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-layout.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-live.js'/>" defer></script>
@@ -97,6 +98,7 @@
         data-files="${base}files" data-pins="${base}pins" data-instance-id="${discussionInstanceId}" data-read="${base}messages/read" data-typing="${base}typing" data-user-id="${currentUser.id}"
         data-typing-one="<fmt:message key='discussion.typingOne'/>" data-typing-many="<fmt:message key='discussion.typingMany'/>"
         data-message-id="<c:out value='${focusedMessageId}'/>"
+        data-remove-quote="<fmt:message key='discussion.removeQuote'/>"
         data-message-required="<fmt:message key='discussion.messageRequired'/>"
         data-link-text="<fmt:message key='discussion.linkText'/>" data-link-url="<fmt:message key='discussion.linkUrl'/>"
         data-link-apply="<fmt:message key='discussion.linkApply'/>" data-link-invalid="<fmt:message key='discussion.linkInvalid'/>"

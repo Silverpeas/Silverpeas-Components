@@ -100,12 +100,18 @@
               </ul>
             </c:if>
             <div class="discussion-message-footer">
+            <c:if test="${canWrite}">
+              <button class="discussion-quote" type="button" data-quote-author="${fn:escapeXml(message.creator.displayedName)}"
+                  data-quote-url="${base}messages/${message.id}" title="<fmt:message key='discussion.quote'/>">
+                <svg class="discussion-icon" aria-hidden="true"><use href="${discussionIcons}#quote"/></svg><fmt:message key="discussion.quote"/>
+              </button>
+            </c:if>
             <c:if test="${empty threadRoot and empty message.threadRootId}">
-              <a class="discussion-thread-link ${message.replyCount eq 0 ? 'discussion-thread-link--empty' : ''}" href="${base}threads/${message.id}">
+              <a class="discussion-thread-link ${message.replyCount eq 0 ? 'discussion-thread-link--empty' : ''}" href="${base}threads/${message.id}" title="<fmt:message key='${message.replyCount gt 0 ? "discussion.openThread" : "discussion.createThread"}'/>">
                 <svg class="discussion-icon" aria-hidden="true"><use href="${discussionIcons}#reply"/></svg>
                 <c:choose>
                   <c:when test="${message.replyCount gt 0}"><c:out value="${message.replyCount}"/> <fmt:message key="${message.replyCount eq 1 ? 'discussion.replyCountOne' : 'discussion.replies'}"/></c:when>
-                  <c:otherwise><fmt:message key="discussion.reply"/></c:otherwise>
+                  <c:otherwise><fmt:message key="discussion.createThread"/></c:otherwise>
                 </c:choose>
                 <c:if test="${message.unreadReplyCount gt 0}"><span class="discussion-thread-unread"><c:out value="${message.unreadReplyCount}"/> <fmt:message key="${message.unreadReplyCount eq 1 ? 'discussion.unreadRepliesOne' : 'discussion.unreadReplies'}"/></span></c:if>
               </a>
