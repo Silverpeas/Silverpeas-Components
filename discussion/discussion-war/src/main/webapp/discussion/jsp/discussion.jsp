@@ -84,6 +84,7 @@
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-events.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-ideas.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-votes.js'/>" defer></script>
+  <script src="<c:url value='/discussion/jsp/javaScript/discussion-visio.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-deletion.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-document-viewer.js'/>" defer></script>
   <script src="<c:url value='/discussion/jsp/javaScript/discussion-notification-settings.js'/>" defer></script>
@@ -214,6 +215,7 @@
               <button id="discussion-add-event" class="discussion-icon-button discussion-add-event" type="button" title="<fmt:message key='discussion.createEvent'/>" aria-label="<fmt:message key='discussion.createEvent'/>" hidden><svg class="discussion-icon" aria-hidden="true"><use href="<c:url value='/discussion/jsp/icons/discussion-icons.svg'/>#calendar-plus"/></svg></button>
               <button id="discussion-add-idea" class="discussion-icon-button" type="button" title="<fmt:message key='discussion.proposeIdea'/>" aria-label="<fmt:message key='discussion.proposeIdea'/>" hidden><svg class="discussion-icon" aria-hidden="true"><use href="<c:url value='/discussion/jsp/icons/discussion-icons.svg'/>#bulb"/></svg></button>
               <button id="discussion-add-vote" class="discussion-icon-button" type="button" title="<fmt:message key='discussion.createVote'/>" aria-label="<fmt:message key='discussion.createVote'/>" hidden><svg class="discussion-icon" aria-hidden="true"><use href="<c:url value='/discussion/jsp/icons/discussion-icons.svg'/>#vote"/></svg></button>
+              <button id="discussion-add-visio" class="discussion-icon-button" type="button" title="<fmt:message key='discussion.createVisio'/>" aria-label="<fmt:message key='discussion.createVisio'/>" hidden><svg class="discussion-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="12" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M15 9l6-3v12l-6-3z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
               <div class="discussion-composer-footer">
                 <span id="discussion-compose-hint" class="discussion-hint discussion-compose-label"><fmt:message key="discussion.hint"/></span>
                 <button class="discussion-send" type="submit" title="${fn:escapeXml(composeActionLabel)}" aria-label="${fn:escapeXml(composeActionLabel)}"><svg class="discussion-icon" aria-hidden="true"><use href="<c:url value='/discussion/jsp/icons/discussion-icons.svg'/>#send"/></svg></button>
@@ -295,7 +297,7 @@
           </section>
         </aside>
       </div>
-      <c:if test="${canWrite}"><jsp:include page="event-dialog.jsp"/><jsp:include page="idea-dialog.jsp"/><jsp:include page="vote-dialog.jsp"/></c:if>
+      <c:if test="${canWrite}"><jsp:include page="event-dialog.jsp"/><jsp:include page="idea-dialog.jsp"/><jsp:include page="vote-dialog.jsp"/><jsp:include page="visio-dialog.jsp"/></c:if>
       <jsp:include page="event-delete-dialog.jsp"/>
     </main>
   </view:frame>

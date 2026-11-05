@@ -816,6 +816,39 @@ public class DiscussionWebController extends
     webAction(() -> channels().notifications(context.getComponentInstanceId(), context.getRequest().getParameter("mode")));
   }
 
+  private final org.silverpeas.components.discussion.service.DiscussionVisioService visio =
+      ServiceProvider.getService(org.silverpeas.components.discussion.service.DiscussionVisioService.class);
+
+  @GET
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("visio-options")
+  @RedirectToInternalJsp("visio-options.jsp")
+  public void visioOptions(DiscussionWebRequestContext context) {
+    context.getRequest().setAttribute("visioOptions", webResult(() -> visio.options(context.getComponentInstanceId())));
+  }
+
+  @GET
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("channels/{channel}/visio-options")
+  @RedirectToInternalJsp("visio-options.jsp")
+  public void channelVisioOptions(DiscussionWebRequestContext context) { visioOptions(context); }
+
+  @POST
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("meetings")
+  @RedirectToInternalJsp("visio-created.jsp")
+  public void createVisio(DiscussionWebRequestContext context) {
+    var request = context.getRequest();
+    request.setAttribute("createdVisio", webResult(() -> visio.create(context.getComponentInstanceId(),
+        request.getParameter("threadRootId"), request.getParameter("title"))));
+  }
+
+  @POST
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("channels/{channel}/meetings")
+  @RedirectToInternalJsp("visio-created.jsp")
+  public void channelCreateVisio(DiscussionWebRequestContext context) { createVisio(context); }
+
   private org.silverpeas.components.discussion.service.DiscussionVoteService votes() {
     return ServiceProvider.getService(org.silverpeas.components.discussion.service.DiscussionVoteService.class);
   }

@@ -44,6 +44,7 @@ import static org.mockito.Mockito.*;
 
 @EnableSilverTestEnv(context = JEETestContext.class)
 class DiscussionWebControllerTest {
+  @TestManagedMock private org.silverpeas.components.discussion.service.DiscussionVisioService visio;
   @TestManagedMock
   private org.silverpeas.components.discussion.service.DiscussionUploadSettings uploadSettings;
   @TestManagedMock
@@ -99,6 +100,19 @@ class DiscussionWebControllerTest {
     var root = mock(org.silverpeas.components.discussion.model.DiscussionMessage.class);
     when(root.getId()).thenReturn("message");
     when(service.threadRoot("discussion1", "message")).thenReturn(root);
+  }
+
+  @Test
+  void videoRoutesUseTheCurrentInstanceAndPreserveTheThreadAndNativeAccessErrors() {
+    when(request.getParameter("title")).thenReturn("Review");
+    when(request.getParameter("threadRootId")).thenReturn("root");
+    controller.channelVisioOptions(context);
+    verify(visio).options("discussion1");
+    controller.channelCreateVisio(context);
+    verify(visio).create("discussion1", "root", "Review");
+    when(visio.create("discussion1", "root", "Review")).thenThrow(new SecurityException("Disabled"));
+    assertEquals(403, assertThrows(WebApplicationException.class,
+        () -> controller.createVisio(context)).getResponse().getStatus());
   }
 
   @Test
