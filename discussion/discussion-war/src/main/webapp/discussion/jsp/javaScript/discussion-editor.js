@@ -151,7 +151,10 @@
   }
 
   function decorateWebLink(link, original, autoLabel = true) {
-    link.href = new URL(link.getAttribute('href'), document.baseURI).href;
+    const originalHref = link.getAttribute('href');
+    link.href = new URL(originalHref, document.baseURI).href;
+    // Visual editors can serialize a raw URL as a Markdown link with the URL as its label.
+    autoLabel = autoLabel || original === originalHref || original === link.href;
     const label = contributionLabel(link.href);
     if (label && autoLabel) {
       link.textContent = label;
