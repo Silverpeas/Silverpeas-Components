@@ -765,4 +765,74 @@ class ConversationServiceTest {
     verifyNoInteractions(messages, imageService);
   }
 
+  @Test
+  void imageRemovalIsPartOfTheVersionedEditAndNotifiesEvenWhenTheTextIsUnchanged() {
+    var message = existingMessage("user");
+    when(message.getBody()).thenReturn("same");
+    when(imageService.list("discussion1", "message")).thenReturn(List.of(
+        new DiscussionImage("photo1", "/one", "one.png"), new DiscussionImage("photo2", "/two", "two.png")));
+    try (var current = mockStatic(User.class)) {
+      current.when(User::getCurrentRequester).thenReturn(user);
+      service.edit("discussion1", "message", 0, "same", List.of("photo1", "photo1"));
+      verify(message).edit("same", true);
+      verify(imageService).removeImagesAfterCommit("discussion1", "message", List.of("photo1"));
+      verify(messages).save(message);
+      verify(changes).changed("discussion1");
+      verify(subscriptions).schedule(argThat(event -> event.action() ==
+          org.silverpeas.core.notification.user.client.constant.NotifAction.UPDATE));
+    }
+  }
+
+  @Test
+  void removingTheLastImageCannotLeaveAnEmptyMessage() {
+    var message = existingMessage("user");
+    doCallRealMethod().when(message).edit(anyString(), anyBoolean());
+    when(imageService.list("discussion1", "message")).thenReturn(List.of(new DiscussionImage("photo", "/one", "one.png")));
+    try (var current = mockStatic(User.class)) {
+      current.when(User::getCurrentRequester).thenReturn(user);
+      assertThrows(IllegalArgumentException.class, () -> service.edit("discussion1", "message", 0, " ", List.of("photo")));
+      verify(messages, never()).save(any(DiscussionMessage.class));
+      verify(imageService, never()).removeImagesAfterCommit(anyString(), anyString(), anyList());
+    }
+  }
+
+  @Test
+  void ordinaryFilesCanKeepAMessageNonEmptyAfterRemovingItsLastImage() {
+    var message = existingMessage("user");
+    when(message.isFilesAttached()).thenReturn(true);
+    when(imageService.list("discussion1", "message")).thenReturn(List.of(new DiscussionImage("photo", "/one", "one.png")));
+    try (var current = mockStatic(User.class)) {
+      current.when(User::getCurrentRequester).thenReturn(user);
+      service.edit("discussion1", "message", 0, " ", List.of("photo"));
+      verify(message).edit(" ", true);
+      verify(imageService).removeImagesAfterCommit("discussion1", "message", List.of("photo"));
+    }
+  }
+
+  @Test
+  void anImageOutsideTheMessageCannotBeRemoved() {
+    var message = existingMessage("user");
+    when(imageService.list("discussion1", "message")).thenReturn(List.of(new DiscussionImage("photo", "/one", "one.png")));
+    try (var current = mockStatic(User.class)) {
+      current.when(User::getCurrentRequester).thenReturn(user);
+      assertThrows(IllegalArgumentException.class, () -> service.edit("discussion1", "message", 0, "body", List.of("foreign")));
+      verify(messages, never()).save(any(DiscussionMessage.class));
+      verify(message, never()).edit(anyString(), anyBoolean());
+      verify(imageService, never()).removeImagesAfterCommit(anyString(), anyString(), anyList());
+    }
+  }
+
+  @Test
+  void imageRemovalStillRequiresTheMessageAuthorAndCurrentVersion() {
+    var message = existingMessage("user");
+    try (var current = mockStatic(User.class)) {
+      current.when(User::getCurrentRequester).thenReturn(user);
+      assertThrows(OptimisticLockException.class, () -> service.edit("discussion1", "message", 1, "body", List.of("photo")));
+      when(message.getCreatorId()).thenReturn("other");
+      assertThrows(SecurityException.class, () -> service.edit("discussion1", "message", 0, "body", List.of("photo")));
+      verifyNoInteractions(imageService);
+      verify(messages, never()).save(any(DiscussionMessage.class));
+    }
+  }
+
 }

@@ -49,6 +49,7 @@ public interface ConversationService {
   List<DiscussionFile> sharedFiles(String instanceId);
   Map<String, List<DiscussionImage>> images(String instanceId, List<String> messageIds);
   void edit(String instanceId, String messageId, long version, String body);
+  void edit(String instanceId, String messageId, long version, String body, List<String> removedImageIds);
   void delete(String instanceId, String messageId, long version);
   void delete(String instanceId, String messageId, long version, boolean deleteEvent);
   void delete(String instanceId, String messageId, long version, boolean deleteEvent, boolean deleteIdea);

@@ -615,4 +615,13 @@ class DiscussionWebControllerTest {
     verifyNoInteractions(service);
   }
 
+  @Test
+  void imageRemovalUsesTheMessageRouteAndSessionInstance() {
+    when(request.getParameter("body")).thenReturn("body");
+    when(request.getParameter("version")).thenReturn("3");
+    when(request.getParameterValues("removedImageIds")).thenReturn(new String[]{"photo1", "photo2"});
+    controller.edit(context);
+    verify(service).edit("discussion1", "message", 3, "body", List.of("photo1", "photo2"));
+  }
+
 }

@@ -671,3 +671,18 @@ Discussion. Les tests de navigateur extraient ses ressources du WAR Core ; les
 bundles ne sont plus dupliqués dans le composant. La migration Discussion reste 001.
 La nouvelle colonne de commentaires natifs relève de la migration Core, pas de
 Discussion. Documentation : `Silverpeas-Core/docs/rich-editor/README.md`.
+
+### Retirer une image d’un message
+
+L’auteur du message ou un administrateur peut ouvrir « Modifier », puis utiliser
+la croix sur les images à retirer. Les images sélectionnées restent visibles en
+atténué et peuvent être conservées à nouveau avant l’enregistrement. « Annuler »
+ou Échap rétablit le texte et toutes les images sans suppression.
+
+Le retrait est enregistré avec le message et sa version. Le serveur vérifie les
+droits et l’appartenance des images, puis supprime uniquement les pièces jointes
+sélectionnées après validation de la transaction. Les fichiers ordinaires restent
+conservés. Le changement est propagé en temps réel et déclenche les notifications
+de modification habituelles. Si la dernière image est retirée, un texte ou un
+fichier doit rester dans le message ; sinon il faut supprimer le message entier.
+Aucune modification de schéma SQL n’est nécessaire.
