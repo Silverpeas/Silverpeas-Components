@@ -637,7 +637,7 @@ class ConversationServiceTest {
       verify(imageService).storeFiles(eq("discussion1"), any(), eq(List.of(upload)));
       assertThrows(IllegalArgumentException.class, () -> service.publish("discussion1", "text", List.of(), java.util.Collections.nCopies(5, upload)));
     }
-    var file = new DiscussionFile("file", "budget.pdf", "/silverpeas/attached_file/file", 1, "old-message");
+    var file = new DiscussionFile("file", "budget.pdf", "/silverpeas/attached_file/file", new DiscussionFile.Metadata(1, "old-message", null, new DiscussionFile.Capabilities(false, false)));
     when(messages.fileMessageIds("conversation")).thenReturn(List.of("old-message"));
     when(imageService.files("discussion1", "old-message")).thenReturn(List.of(file));
     assertEquals(List.of(file), service.sharedFiles("discussion1"));

@@ -39,6 +39,7 @@
         <a class="discussion-file-download" href="<c:out value='${file.url}'/>" download="<c:out value='${file.name}'/>"><c:out value="${file.name}"/></a>
         <c:if test="${file.viewable}"><button class="discussion-icon-button discussion-view-file" type="button" data-attachment-id="${file.id}" data-language="${fn:escapeXml(file.language)}"
             title="<fmt:message key='discussion.viewFile'/>" aria-label="<fmt:message key='discussion.viewFile'/> : ${fn:escapeXml(file.name)}"><svg class="discussion-icon" aria-hidden="true"><use href="${filesIcons}#view"/></svg></button></c:if>
+                    <c:set var="editableFile" value="${file}" scope="request"/><jsp:include page="file-editor.jsp"/><c:remove var="editableFile" scope="request"/>
         <span class="discussion-hint"><c:out value="${file.displaySize}"/></span>
         <a class="discussion-file-origin" href="${fileMessageBase}messages/${file.messageId}"><fmt:message key="discussion.fileOrigin"/></a>
       </li>

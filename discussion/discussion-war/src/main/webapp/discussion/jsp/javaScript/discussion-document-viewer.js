@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-/* Refresh derived pin content without replacing the native accordion. */
+/* Delegate file actions to the native viewer and browser editor. */
 (() => {
   'use strict';
   document.addEventListener('DOMContentLoaded', () => {
@@ -31,6 +31,13 @@
       return;
     }
     discussion.addEventListener('click', event => {
+      const edit = event.target.closest('.discussion-edit-file');
+      if (edit) {
+        event.preventDefault();
+        sp.formRequest(edit.dataset.editUrl).byPostMethod().withParam('language', edit.dataset.language)
+            .toTarget('_blank').submit();
+        return;
+      }
       const button = event.target.closest('.discussion-view-file');
       if (!button) {
         return;

@@ -816,6 +816,36 @@ public class DiscussionWebController extends
     webAction(() -> channels().notifications(context.getComponentInstanceId(), context.getRequest().getParameter("mode")));
   }
 
+  private transient org.silverpeas.components.discussion.service.DiscussionDocumentEditionService documentEdition;
+  private transient org.silverpeas.core.webapi.wbe.WbeFileEdition browserEdition;
+
+  @POST
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("files/{attachment}/edit")
+  @org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectTo("{editorPath}")
+  public void editDocument(DiscussionWebRequestContext context) {
+    if (documentEdition == null) {
+      documentEdition = ServiceProvider.getService(org.silverpeas.components.discussion.service.DiscussionDocumentEditionService.class);
+      browserEdition = ServiceProvider.getService(org.silverpeas.core.webapi.wbe.WbeFileEdition.class);
+    }
+    String destination = webResult(() -> {
+      var document = documentEdition.prepare(context.getComponentInstanceId(),
+          context.getPathVariables().get("attachment"), context.getRequest().getParameter("language"));
+      // The cached WBE file must retain the managed service proxy for later transactional saves.
+      var file = new org.silverpeas.components.discussion.service.DiscussionWbeFile(documentEdition,
+          document.getInstanceId(), document.getId(), document.getLanguage());
+      return browserEdition.initializeWith(context.getRequest(), file)
+          .orElseThrow(() -> new SecurityException("Browser edition unavailable"));
+    });
+    context.addRedirectVariable("editorPath", destination);
+  }
+
+  @POST
+  @LowestRoleAccess(SilverpeasRole.WRITER)
+  @Path("channels/{channel}/files/{attachment}/edit")
+  @org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectTo("{editorPath}")
+  public void channelEditDocument(DiscussionWebRequestContext context) { editDocument(context); }
+
   private final org.silverpeas.components.discussion.service.DiscussionVisioService visio =
       ServiceProvider.getService(org.silverpeas.components.discussion.service.DiscussionVisioService.class);
 
