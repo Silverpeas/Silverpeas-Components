@@ -30,7 +30,28 @@
 })(globalThis, (root, factory) => {
   'use strict';
   const md = factory?.('zero', {html:false, breaks:true, linkify:false, typographer:false, maxNesting:20});
+  const smileys = new Map([
+    [':)', '🙂'], [':-)', '🙂'], [';)', '😉'], [';-)', '😉'],
+    [':D', '😄'], [':-D', '😄'], [':(', '🙁'], [':-(', '🙁'],
+    [':p', '😛'], [':P', '😛'], [':-p', '😛'], [':-P', '😛'],
+    [':o', '😮'], [':O', '😮'], [':-o', '😮'], [':-O', '😮'],
+    [':/', '😕'], [':-/', '😕'], [":'(", '😢'], ['<3', '❤️']
+  ]);
+  const smileyPattern = /https?:\/\/[^\s<>]+|(^|[\s([{])(:-?[)(DPpOo/]|;-?\)|:'\(|<3)(?=$|[\s.,!?;:)\]}])/g;
   if (md) {
+    md.core.ruler.after('inline', 'discussion_smileys', state => {
+      state.tokens.filter(token => token.type === 'inline').forEach(inline => {
+        let links = 0;
+        inline.children.forEach(token => {
+          if (token.type === 'link_open') { links++; }
+          else if (token.type === 'link_close') { links--; }
+          else if (token.type === 'text' && links === 0) {
+            token.content = token.content.replace(smileyPattern, (match, prefix, face) =>
+                face ? prefix + smileys.get(face) : match);
+          }
+        });
+      });
+    });
     md.enable(['paragraph','text','newline','escape','emphasis','strikethrough','backticks','fence','code','blockquote','list','link','autolink']);
     md.validateLink = value => {
       if (!/^(https?:\/\/|\/)/i.test(value)) { return false; }

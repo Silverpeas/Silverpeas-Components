@@ -647,3 +647,13 @@ même format. Elle constitue un instantané modifiable ; elle ne se réécrit pa
 l'original est modifié ou supprimé. La limite de 2 000 caractères inclut la citation.
 « Créer un fil » remplace le libellé de l'ancienne action « Répondre » sur les
 messages sans fil. Les fils existants conservent leur compteur et leur panneau.
+
+
+Les smileys textuels courants (`:)`, `:-)`, `;)`, `:D`, `:(`, `:P`, `:O`,
+`:/`, `:'(`, `<3` et leurs variantes) sont rendus en emojis Unicode dans les
+messages, les fils et le chargement de l'historique. Le rendu Markdown partagé
+s'applique également à l'ouverture de l'éditeur visuel. Les liens, mentions,
+blocs de code et code en ligne restent intacts. Les smileys doivent être isolés
+pour ne pas modifier des identifiants ou chemins. Le texte déjà stocké n'est pas
+réécrit ; l'enregistrement d'une édition conserve le texte visible dans l'éditeur.
+Aucun SQL ni nouvelle dépendance.
