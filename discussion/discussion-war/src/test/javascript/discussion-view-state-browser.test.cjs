@@ -35,7 +35,7 @@ async function setup() {
   await page.route('http://discussion.test/**', route => {
     const url = new URL(route.request().url());
     if (url.pathname === '/state.js') {return route.fulfill({contentType: 'application/javascript', body: script});}
-    return route.fulfill({contentType: 'text/html', body: `<!doctype html><script>window.DiscussionContext={embedded:${url.searchParams.has('embedded')}};</script><script src="/state.js" defer></script><main id="discussion" data-user-id="${url.searchParams.get('user') || '1'}" data-instance-id="${url.searchParams.get('instance') || 'discussion1'}"><div id="discussion-sidebar-accordions"><details id="search" name="sidebar" hidden><summary>Search</summary></details>${ids.map((id, index) => `<details id="${id}" name="sidebar" ${index === 0 ? 'open' : ''}><summary>${id}</summary><p>Content</p></details>`).join('')}</div></main>`});
+    return route.fulfill({contentType: 'text/html', body: `<!doctype html><script>window.DiscussionContext={embedded:${url.searchParams.has('embedded')}};</script><script src="/state.js" defer></script><main id="discussion" data-user-id="${url.searchParams.get('user') || '1'}" data-instance-id="${url.searchParams.get('instance') || 'discussion1'}" data-channel-scope="${url.searchParams.get('scope') || (url.searchParams.has('entry') ? 'main' : '')}" data-restore-channel="${url.searchParams.has('entry')}"><nav id="discussion-channel-list"><div data-channel-scope="main"><a class="discussion-channel-link" href="/?scope=main">General</a></div><div data-channel-scope="projects"><a class="discussion-channel-link" href="/?scope=projects">Projects</a></div><div data-channel-scope="old" data-archived="true"><a class="discussion-channel-link" href="/?scope=old">Archived</a></div></nav><div id="discussion-sidebar-accordions"><details id="search" name="sidebar" hidden><summary>Search</summary></details>${ids.map((id, index) => `<details id="${id}" name="sidebar" ${index === 0 ? 'open' : ''}><summary>${id}</summary><p>Content</p></details>`).join('')}</div></main>`});
   });
   await page.goto('http://discussion.test/');
   return {browser, page};
@@ -121,5 +121,39 @@ test('malformed preferences and unavailable browser storage leave native control
     assert.equal(await openSection(page, ids[4]), true);
     assert.equal(await page.evaluate(() => {DiscussionViewState.rememberChannels(false); return DiscussionViewState.channelsOpen(true);}), true);
     assert.deepEqual(errors, []);
+  } finally {await browser.close();}
+});
+
+
+test('application entry restores the last active channel while direct message and explicit General links take priority', async () => {
+  const {browser, page} = await setup();
+  try {
+    await page.goto('http://discussion.test/?scope=projects');
+    assert.equal((await state(page)).selectedChannel, 'projects');
+    await page.goto('http://discussion.test/?entry=1');
+    await page.waitForURL('**/?scope=projects');
+    assert.equal((await state(page)).selectedChannel, 'projects');
+    await page.goto('http://discussion.test/?scope=main&message=notification');
+    assert.equal(new URL(page.url()).searchParams.get('message'), 'notification');
+    assert.equal((await state(page)).selectedChannel, 'main');
+    await page.goto('http://discussion.test/?entry=1');
+    assert.equal(new URL(page.url()).searchParams.get('entry'), '1');
+    await page.goto('http://discussion.test/?scope=projects');
+    await page.goto('http://discussion.test/?scope=main');
+    assert.equal((await state(page)).selectedChannel, 'main');
+  } finally {await browser.close();}
+});
+
+test('missing archived or malformed saved channels fall back to General and embedded threads cannot replace the selection', async () => {
+  const {browser, page} = await setup();
+  try {
+    for (const selectedChannel of ['missing', 'old', 'https://external.test/']) {
+      await page.evaluate(({storageKey, selectedChannel}) => localStorage.setItem(storageKey, JSON.stringify({selectedChannel})), {storageKey: key(), selectedChannel});
+      await page.goto('http://discussion.test/?entry=1');
+      assert.equal(new URL(page.url()).searchParams.get('entry'), '1');
+      assert.equal((await state(page)).selectedChannel, 'main');
+    }
+    await page.goto('http://discussion.test/?embedded=1&scope=projects');
+    assert.equal((await state(page)).selectedChannel, 'main');
   } finally {await browser.close();}
 });

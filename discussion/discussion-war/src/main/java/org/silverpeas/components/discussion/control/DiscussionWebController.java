@@ -95,6 +95,7 @@ public class DiscussionWebController extends
   @Homepage
   @RedirectToInternalJsp("discussion.jsp")
   public void home(DiscussionWebRequestContext context) {
+    context.getRequest().setAttribute("restoreSelectedChannel", !context.getPathVariables().containsKey("channel"));
     loadHistory(context, Long.MAX_VALUE);
     preparePage(context);
   }

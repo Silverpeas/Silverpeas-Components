@@ -96,7 +96,7 @@
 </view:operationPane>
 <view:window>
   <view:frame>
-    <main id="discussion" class="discussion-channels-open" data-channel-scope="${currentChannel.scopeKey}" data-channels="${instanceBase}channels" data-history="${historyUrl}" data-thread-root-id="${threadRoot.id}" data-initial-thread-url="${fn:escapeXml(initialThreadUrl)}" data-participants="${base}participants" data-publications="${base}publications" data-updates="${updatesUrl}"
+    <main id="discussion" class="discussion-channels-open" data-restore-channel="${restoreSelectedChannel}" data-channel-scope="${currentChannel.scopeKey}" data-channels="${instanceBase}channels" data-history="${historyUrl}" data-thread-root-id="${threadRoot.id}" data-initial-thread-url="${fn:escapeXml(initialThreadUrl)}" data-participants="${base}participants" data-publications="${base}publications" data-updates="${updatesUrl}"
         data-files="${base}files" data-pins="${base}pins" data-instance-id="${discussionInstanceId}" data-read="${base}messages/read" data-typing="${base}typing" data-user-id="${currentUser.id}"
         data-typing-one="<fmt:message key='discussion.typingOne'/>" data-typing-many="<fmt:message key='discussion.typingMany'/>"
         data-message-id="<c:out value='${focusedMessageId}'/>"
