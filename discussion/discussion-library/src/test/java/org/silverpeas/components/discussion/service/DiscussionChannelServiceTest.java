@@ -26,6 +26,10 @@ package org.silverpeas.components.discussion.service;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.Arguments;
+import java.util.stream.Stream;
 import org.silverpeas.components.discussion.model.Conversation;
 import org.silverpeas.components.discussion.model.DiscussionReadState;
 import org.silverpeas.components.discussion.repository.ConversationRepository;
@@ -139,8 +143,9 @@ class DiscussionChannelServiceTest {
       assertThrows(IllegalArgumentException.class, () -> service.notifications("discussion1", "invalid"));
     }
   }
-  @Test
-  void creatingAChannelAnnouncesItsLinkInGeneralAndRestoresTheSelectedChannel() {
+  @ParameterizedTest
+  @MethodSource("announcementNames")
+  void creatingAChannelAnnouncesItsLinkInGeneralAndRestoresTheSelectedChannel(String name, String markdownName) {
     var user = mock(User.class, RETURNS_DEEP_STUBS);
     when(user.getId()).thenReturn("manager");
     when(user.getUserPreferences().getLanguage()).thenReturn("fr");
@@ -149,7 +154,7 @@ class DiscussionChannelServiceTest {
          var urls = mockStatic(org.silverpeas.core.util.URLUtil.class)) {
       current.when(User::getCurrentRequester).thenReturn(user);
       urls.when(org.silverpeas.core.util.URLUtil::getApplicationURL).thenReturn("/silverpeas");
-      var channel = service.create("discussion1", "Projet [IA]", "Description");
+      var channel = service.create("discussion1", name, "Description");
       var order = inOrder(conversations, context, conversationService);
       order.verify(conversations).main("discussion1", true);
       order.verify(conversations).channels("discussion1");
@@ -157,9 +162,18 @@ class DiscussionChannelServiceTest {
       order.verify(context).getScope();
       order.verify(context).select("main");
       order.verify(conversationService).publish("discussion1", "Un nouveau canal a été créé : "
-          + "[Projet \\[IA\\]](/silverpeas/Rdiscussion/discussion1/channels/" + channel.getScopeKey() + "/Main)");
+          + "[" + markdownName + "](/silverpeas/Rdiscussion/discussion1/channels/" + channel.getScopeKey() + "/Main)");
       order.verify(context).select("projects");
     }
+  }
+
+  private static Stream<Arguments> announcementNames() {
+    return Stream.of(
+        Arguments.of("Projet [IA]", "Projet \\[IA\\]"),
+        Arguments.of("Entraide & ressources", "Entraide & ressources"),
+        Arguments.of("L'équipe \"R&D\"", "L'équipe \"R&D\""),
+        Arguments.of("<img src=x onerror=alert(1)>", "<img src=x onerror=alert(1)>"),
+        Arguments.of("Littéral &amp;", "Littéral &amp;"));
   }
 
   @Test

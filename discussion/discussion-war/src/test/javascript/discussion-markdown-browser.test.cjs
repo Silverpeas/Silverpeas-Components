@@ -185,3 +185,14 @@ test('channel creation announcements keep their readable label and use native if
     assert.equal(await link.evaluate(n=>n.classList.contains('sp-link')),true);
   } finally {await browser.close();}
 });
+
+for (const name of ['Entraide & ressources', 'L’équipe "R&D"', '<img src=x onerror=alert(1)>', 'Littéral &amp;']) {
+  test('channel announcement preserves the literal name safely: ' + name, async () => {
+    const {browser,page}=await setup({body:'Un nouveau canal a été créé : [' + name + '](/silverpeas/Rdiscussion/discussion1/channels/abc-123/Main)'});
+    try {
+      assert.equal(await page.locator('.discussion-body a').textContent(), name);
+      assert.equal(await page.locator('.discussion-body img, .discussion-body script').count(), 0);
+      assert.equal(await page.locator('.discussion-body a').getAttribute('target'), '_self');
+    } finally {await browser.close();}
+  });
+}
