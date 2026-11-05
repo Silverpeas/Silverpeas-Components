@@ -39,6 +39,7 @@ class PinnedMessageViewTest {
     assertEquals("m1", resolver.getValue(context, pin, "id"));
     assertEquals("Bernard", resolver.getValue(context, pin, "author"));
     assertEquals("Bonjour à tous", resolver.getValue(context, pin, "excerpt"));
+    assertEquals("Bonjour à tous", resolver.getValue(context, pin, "text"));
     var image = new org.silverpeas.components.discussion.service.DiscussionImage("photo", "/protected-image", "image.png");
     assertEquals("photo", resolver.getValue(context, image, "id"));
     assertEquals("/protected-image", resolver.getValue(context, image, "url"));

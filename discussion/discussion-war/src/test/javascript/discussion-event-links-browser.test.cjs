@@ -158,3 +158,44 @@ test('authorized publication titles replace raw URLs on initial rendering, histo
     assert.equal(await page.locator('#body a').first().textContent(),url);
   } finally {await browser.close();}
 });
+
+test('pinned previews resolve publication titles before truncating and update safely with permissions and refreshed pins', async () => {
+  const {browser, page} = await setup();
+  try {
+    const url = 'http://discussion.test/silverpeas/Publication/12';
+    await page.evaluate(url => {
+      const discussion = document.getElementById('discussion');
+      discussion.insertAdjacentHTML('beforeend', '<div class="discussion-publications-list"><a data-publication-id="12">Publication &lt;img src=x&gt;</a></div><a id="pin" class="discussion-pin-link" href="/Rdiscussion/discussion1/messages/message1"><span class="discussion-pin-excerpt"></span></a>');
+      document.querySelector('#pin .discussion-pin-excerpt').dataset.pinText = 'Réunion ici : ' + url;
+    }, url);
+    await initialize(page);
+    assert.equal(await page.locator('#pin span').textContent(), 'Réunion ici : Publication <img src=x>');
+    assert.equal(await page.locator('#pin img, #pin a').count(), 0);
+    assert.equal(await page.locator('#pin').getAttribute('href'), '/Rdiscussion/discussion1/messages/message1');
+    await page.evaluate(() => {
+      document.querySelector('.discussion-publications-list a').textContent = 'Nouveau titre';
+      document.dispatchEvent(new Event('discussion:publications-updated'));
+    });
+    assert.equal(await page.locator('#pin span').textContent(), 'Réunion ici : Nouveau titre');
+    await page.evaluate(url => {
+      const node = document.createElement('span');
+      node.id = 'new-pin';
+      node.className = 'discussion-pin-excerpt';
+      node.dataset.pinText = '🚀'.repeat(165) + ' ' + url;
+      document.getElementById('later').append(node);
+      DiscussionEditor.enhance(document.getElementById('later'));
+    }, url);
+    assert.equal(await page.locator('#new-pin').textContent(), '🚀'.repeat(165) + ' Nouveau titre');
+    await page.evaluate(() => {
+      document.querySelector('#pin .discussion-pin-excerpt').dataset.pinText = '🚀'.repeat(181);
+      DiscussionEditor.enhance(document.getElementById('discussion'));
+    });
+    assert.equal(await page.locator('#pin span').textContent(), '🚀'.repeat(180) + '…');
+    await page.evaluate(url => {
+      document.querySelector('#pin .discussion-pin-excerpt').dataset.pinText = url;
+      document.querySelector('.discussion-publications-list').replaceChildren();
+      document.dispatchEvent(new Event('discussion:publications-updated'));
+    }, url);
+    assert.equal(await page.locator('#pin span').textContent(), url);
+  } finally {await browser.close();}
+});

@@ -55,6 +55,7 @@
             throw new Error('Invalid pin response');
           }
           content.replaceChildren(document.importNode(list, true));
+          window.DiscussionEditor?.enhance(content);
           count.textContent = list.dataset.count;
           error.hidden = true;
         } while (dirty && !document.hidden);
