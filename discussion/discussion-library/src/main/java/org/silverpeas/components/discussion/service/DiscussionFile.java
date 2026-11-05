@@ -23,19 +23,21 @@
  */
 package org.silverpeas.components.discussion.service;
 
-/** A native attachment and the message it belongs to, exposed as JSP bean properties. */
-public record DiscussionFile(String id, String name, String url, long size, String messageId, String language, boolean viewable) {
-  public DiscussionFile(String id, String name, String url, long size, String messageId) {
-    this(id, name, url, size, messageId, null, false);
-  }
+/** A native attachment, with optional viewer and browser editor actions. */
+public record DiscussionFile(String id, String name, String url, Metadata metadata) {
+  public record Capabilities(boolean viewable, boolean editable) { }
+  public record Metadata(long size, String messageId, String language, Capabilities capabilities) { }
 
-  public String getLanguage() { return language; }
-  public boolean isViewable() { return viewable; }
-
+  public long size() { return metadata.size(); }
+  public String messageId() { return metadata.messageId(); }
+  public String language() { return metadata.language(); }
+  public String getLanguage() { return language(); }
+  public boolean isViewable() { return metadata.capabilities().viewable(); }
+  public boolean isEditable() { return metadata.capabilities().editable(); }
   public String getId() { return id; }
   public String getName() { return name; }
   public String getUrl() { return url; }
-  public long getSize() { return size; }
-  public String getDisplaySize() { return org.apache.commons.io.FileUtils.byteCountToDisplaySize(size); }
-  public String getMessageId() { return messageId; }
+  public long getSize() { return size(); }
+  public String getDisplaySize() { return org.apache.commons.io.FileUtils.byteCountToDisplaySize(size()); }
+  public String getMessageId() { return messageId(); }
 }

@@ -48,6 +48,9 @@ public class DiscussionAttachmentService {
   @Inject
   private Event<Cleanup> cleanup;
 
+  @Inject
+  private DiscussionDocumentEditionService edition;
+
   public DiscussionAttachmentService() {
     // CDI constructor.
   }
@@ -84,8 +87,11 @@ public class DiscussionAttachmentService {
     return attachments.listDocumentsByForeignKey(new ResourceReference(messageId, instanceId), null).stream()
         .filter(document -> "application/octet-stream".equals(document.getContentType()))
         .map(document -> new DiscussionFile(document.getId(), document.getFilename(),
-            org.silverpeas.core.util.URLUtil.getApplicationURL() + document.getAttachmentURL(), document.getSize(), messageId, document.getLanguage(),
-            document.getAttachmentPath() != null && org.silverpeas.core.viewer.service.ViewerProvider.isViewable(document.getAttachmentPath()))).toList();
+            org.silverpeas.core.util.URLUtil.getApplicationURL() + document.getAttachmentURL(),
+            new DiscussionFile.Metadata(document.getSize(), messageId, document.getLanguage(),
+                new DiscussionFile.Capabilities(document.getAttachmentPath() != null
+                    && org.silverpeas.core.viewer.service.ViewerProvider.isViewable(document.getAttachmentPath()),
+                    edition.isEditable(document))))).toList();
   }
 
   public void storeFiles(String instanceId, String messageId, List<DiscussionFileUpload> files) {

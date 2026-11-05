@@ -44,6 +44,8 @@ import static org.mockito.Mockito.*;
 
 @EnableSilverTestEnv(context = JEETestContext.class)
 class DiscussionWebControllerTest {
+  @TestManagedMock private org.silverpeas.components.discussion.service.DiscussionDocumentEditionService documentEdition;
+  @TestManagedMock private org.silverpeas.core.webapi.wbe.WbeFileEdition browserEdition;
   @TestManagedMock private org.silverpeas.components.discussion.service.DiscussionVisioService visio;
   @TestManagedMock
   private org.silverpeas.components.discussion.service.DiscussionUploadSettings uploadSettings;
@@ -100,6 +102,27 @@ class DiscussionWebControllerTest {
     var root = mock(org.silverpeas.components.discussion.model.DiscussionMessage.class);
     when(root.getId()).thenReturn("message");
     when(service.threadRoot("discussion1", "message")).thenReturn(root);
+  }
+
+  @Test
+  void fileEditionUsesTheNativeEditorAndNeverRoutesAttachmentIdsAsMessageIds() {
+    when(context.getPathVariables()).thenReturn(Map.of("attachment", "file1"));
+    when(request.getParameter("language")).thenReturn("fr");
+    var document = mock(org.silverpeas.core.contribution.attachment.model.SimpleDocument.class);
+    when(document.getInstanceId()).thenReturn("discussion1");
+    when(document.getId()).thenReturn("file1");
+    when(document.getLanguage()).thenReturn("fr");
+    when(documentEdition.prepare("discussion1", "file1", "fr")).thenReturn(document);
+    when(browserEdition.initializeWith(eq(request), any())).thenReturn(java.util.Optional.of("/wopi/editor"));
+    controller.channelEditDocument(context);
+    verify(context).addRedirectVariable("editorPath", "/wopi/editor");
+    verify(browserEdition).initializeWith(eq(request), argThat(file -> file.silverpeasId().equals("file1")));
+    when(browserEdition.initializeWith(eq(request), any())).thenReturn(java.util.Optional.empty());
+    assertEquals(403, assertThrows(WebApplicationException.class,
+        () -> controller.editDocument(context)).getResponse().getStatus());
+    when(documentEdition.prepare("discussion1", "file1", "fr")).thenThrow(new SecurityException("Denied"));
+    assertEquals(403, assertThrows(WebApplicationException.class,
+        () -> controller.editDocument(context)).getResponse().getStatus());
   }
 
   @Test

@@ -64,3 +64,37 @@ test('a missing viewer plugin gives feedback while the download stays available'
     assert.equal(await page.evaluate(()=>window.views.length),0);
   } finally {await browser.close();}
 });
+
+
+test('message and refreshed sidebar edit actions submit to native WBE in a new tab without reserving the file or altering the draft', async () => {
+  const browser = await launch();
+  try {
+    const page = await browser.newPage();
+    await setup(page);
+    await page.evaluate(() => {
+      window.editions = [];
+      window.sp = {formRequest: url => {
+        const request = {url, params: {}};
+        return {
+          byPostMethod() {request.method = 'POST'; return this;},
+          withParam(key, value) {request.params[key] = value; return this;},
+          toTarget(target) {request.target = target; return this;},
+          submit() {editions.push(request);}
+        };
+      }};
+      document.getElementById('messages').insertAdjacentHTML('beforeend', '<button id="message-edit" class="discussion-edit-file" data-edit-url="/silverpeas/Rdiscussion/discussion1/channels/main/files/file1/edit" data-language="fr"><svg width="20" height="20"><circle cx="10" cy="10" r="8"/></svg></button><textarea id="draft">Mon brouillon</textarea>');
+    });
+    await page.locator('#message-edit svg').click();
+    assert.deepEqual(await page.evaluate(() => editions[0]), {
+      url: '/silverpeas/Rdiscussion/discussion1/channels/main/files/file1/edit',
+      method: 'POST', params: {language: 'fr'}, target: '_blank'
+    });
+    await page.evaluate(() => {
+      document.getElementById('files').innerHTML = '<button id="sidebar-edit" class="discussion-edit-file" data-edit-url="/silverpeas/Rdiscussion/discussion1/files/file2/edit" data-language="en">Modifier</button>';
+    });
+    await page.locator('#sidebar-edit').click();
+    assert.equal(await page.evaluate(() => editions[1].params.language), 'en');
+    assert.equal(await page.locator('#draft').inputValue(), 'Mon brouillon');
+    assert.equal(await page.evaluate(() => views.length), 0);
+  } finally {await browser.close();}
+});

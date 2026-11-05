@@ -42,6 +42,7 @@ import static org.mockito.ArgumentMatchers.*;
 
 @EnableSilverTestEnv(context = JEETestContext.class)
 class DiscussionAttachmentServiceTest {
+  @TestManagedMock private DiscussionDocumentEditionService edition;
   @TestManagedMock
   private AttachmentService attachments;
   @TestManagedMock
@@ -72,6 +73,17 @@ class DiscussionAttachmentServiceTest {
       viewer.when(() -> org.silverpeas.core.viewer.service.ViewerProvider.isViewable("/native/attachment/budget.pdf")).thenReturn(false);
       assertFalse(service.files("discussion1", "message1").getFirst().isViewable());
     }
+  }
+
+  @Test
+  void browserEditionIsExposedOnlyWhenTheNativeServiceAllowsThisAttachment() {
+    var document = mock(SimpleDocument.class);
+    when(document.getContentType()).thenReturn("application/octet-stream");
+    when(attachments.listDocumentsByForeignKey(any(), isNull())).thenReturn(
+        new org.silverpeas.core.contribution.attachment.util.SimpleDocumentList<>(List.of(document)));
+    assertFalse(service.files("discussion1", "message1").getFirst().isEditable());
+    when(edition.isEditable(document)).thenReturn(true);
+    assertTrue(service.files("discussion1", "message1").getFirst().isEditable());
   }
 
   @org.junit.jupiter.api.BeforeEach
