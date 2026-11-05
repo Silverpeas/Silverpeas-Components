@@ -36,7 +36,7 @@
     <c:forEach items="${pinnedMessages}" var="pinned">
       <li><a href="${pinBase}messages/${pinned.id}" class="discussion-pin-link">
         <strong><c:out value="${pinned.author}"/></strong>
-        <span class="discussion-pin-excerpt"><c:out value="${pinned.excerpt}"/></span>
+        <span class="discussion-pin-excerpt" data-pin-text="${fn:escapeXml(pinned.text)}"><c:out value="${pinned.excerpt}"/></span>
       </a></li>
     </c:forEach>
   </ul>

@@ -574,6 +574,7 @@ class ConversationServiceTest {
     assertFalse(pin.excerpt().contains("(2)"));
     assertEquals(181, pin.excerpt().codePointCount(0, pin.excerpt().length()));
     assertTrue(pin.excerpt().endsWith("…"));
+    assertEquals("@Bernard " + "🚀".repeat(180), pin.getText());
     when(message.getCreator()).thenReturn(null);
     assertEquals("", service.pinnedMessages("discussion1").getFirst().author());
     var actual = new DiscussionMessage("conversation", 1, "Message");

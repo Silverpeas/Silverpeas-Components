@@ -26,7 +26,13 @@ package org.silverpeas.components.discussion.service;
 import org.silverpeas.components.discussion.model.DiscussionMessage;
 
 /** Sidebar snapshot with readable mentions and a Unicode-safe excerpt. */
-public record PinnedMessage(String id, String author, String excerpt) {
+public record PinnedMessage(String id, String author, String excerpt, String text) {
+  public PinnedMessage(String id, String author, String excerpt) {
+    this(id, author, excerpt, excerpt);
+  }
+
+  public String getText() { return text; }
+
   // JSP EL resolves JavaBean properties rather than record component methods.
   public String getId() { return id; }
   public String getAuthor() { return author; }
@@ -37,6 +43,6 @@ public record PinnedMessage(String id, String author, String excerpt) {
     int length = text.codePointCount(0, text.length());
     String excerpt = length > 180 ? text.substring(0, text.offsetByCodePoints(0, 180)) + "…" : text;
     var creator = message.getCreator();
-    return new PinnedMessage(message.getId(), creator == null ? "" : creator.getDisplayedName(), excerpt);
+    return new PinnedMessage(message.getId(), creator == null ? "" : creator.getDisplayedName(), excerpt, text);
   }
 }

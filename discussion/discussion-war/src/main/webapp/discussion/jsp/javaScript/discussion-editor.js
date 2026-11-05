@@ -202,6 +202,20 @@
     discussion.querySelectorAll('.discussion-body a[data-publication-id]').forEach(link => {
       link.textContent = publicationTitles.get(link.dataset.publicationId) || link.dataset.publicationOriginal;
     });
+    renderPinExcerpts(discussion);
+  }
+
+  function renderPinExcerpts(container) {
+    container.querySelectorAll('.discussion-pin-excerpt[data-pin-text]').forEach(excerpt => {
+      // Resolve authorized publication labels before applying the sidebar limit.
+      // Only plain text is inserted: the outer link still opens the original message.
+      const preview = document.createElement('div');
+      preview.textContent = excerpt.dataset.pinText;
+      renderBody(preview);
+      const characters = Array.from(preview.textContent);
+      const text = characters.slice(0, 180).join('') + (characters.length > 180 ? '…' : '');
+      if (excerpt.textContent !== text) { excerpt.textContent = text; }
+    });
   }
 
   function discussionLink(href) {
@@ -459,6 +473,7 @@
     });
     container.querySelectorAll('.discussion-body').forEach(renderBody);
     container.querySelectorAll('textarea[name="body"]').forEach(enhanceEditor);
+    renderPinExcerpts(container);
   }
   root.DiscussionEditor = {enhance,
     focus:textarea => root.DiscussionRichEditor ? root.DiscussionRichEditor.focus(textarea) : textarea.focus(),
