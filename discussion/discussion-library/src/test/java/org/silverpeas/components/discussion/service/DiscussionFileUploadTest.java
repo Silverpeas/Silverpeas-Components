@@ -57,4 +57,14 @@ class DiscussionFileUploadTest {
     assertThrows(IllegalArgumentException.class, () -> DiscussionFileUpload.read(huge));
     verify(huge, never()).getInputStream();
   }
+  @Test
+  void configuredLimitsCanBeRaisedAndActualBytesStillHaveToFit() throws Exception {
+    var file = file("large.zip", new byte[MAX_TEST_BYTES]);
+    assertThrows(IllegalArgumentException.class, () -> DiscussionFileUpload.read(file));
+    assertEquals(MAX_TEST_BYTES, DiscussionFileUpload.read(file, MAX_TEST_BYTES).size());
+    when(file.getSize()).thenReturn(1L);
+    assertThrows(IllegalArgumentException.class, () -> DiscussionFileUpload.read(file, MAX_TEST_BYTES - 1));
+  }
+  private static final int MAX_TEST_BYTES = DiscussionFileUpload.MAX_BYTES + 1;
+
 }

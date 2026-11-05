@@ -74,6 +74,12 @@ class DiscussionAttachmentServiceTest {
     }
   }
 
+  @org.junit.jupiter.api.BeforeEach
+  void prepare() {
+    when(attachments.listDocumentsByForeignKey(any(), isNull())).thenReturn(
+        new org.silverpeas.core.contribution.attachment.util.SimpleDocumentList<>(List.of()));
+  }
+
   @Test
   void ordinaryFilesArePrivateDownloadsAndKeepTheirOriginalSafeName() throws Exception {
     var user = mock(User.class);
@@ -141,4 +147,21 @@ class DiscussionAttachmentServiceTest {
     assertEquals(TransactionPhase.AFTER_SUCCESS, DiscussionAttachmentService.class.getMethod("committed", DiscussionAttachmentService.Cleanup.class)
         .getParameters()[0].getAnnotation(Observes.class).during());
   }
+  @Test
+  void filesAreOrderedAfterAllImagesWhenTheConfiguredImageCountExceedsFour() throws Exception {
+    when(attachments.listDocumentsByForeignKey(any(), isNull())).thenReturn(
+        new org.silverpeas.core.contribution.attachment.util.SimpleDocumentList<>(
+            java.util.Collections.nCopies(6, mock(SimpleDocument.class))));
+    var user = mock(User.class);
+    when(user.getId()).thenReturn("writer");
+    try (var current = mockStatic(User.class)) {
+      current.when(User::getCurrentRequester).thenReturn(user);
+      var file = DiscussionFileUpload.read(DiscussionFileUploadTest.file("budget.pdf", new byte[]{1}));
+      service.storeFiles("discussion1", "message1", List.of(file));
+      var stored = ArgumentCaptor.forClass(SimpleDocument.class);
+      verify(attachments).createAttachment(stored.capture(), any(java.io.InputStream.class), eq(false), eq(false));
+      assertEquals(6, stored.getValue().getOrder());
+    }
+  }
+
 }

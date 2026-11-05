@@ -65,6 +65,8 @@ public class DefaultConversationService implements ConversationService {
   @Inject
   private DiscussionAttachmentService imageService;
   @Inject
+  private DiscussionUploadSettings uploadSettings;
+  @Inject
   private DiscussionMentionService mentions;
   @Inject
   private org.silverpeas.components.discussion.search.DiscussionMessageIndex messageIndex;
@@ -167,12 +169,7 @@ public class DefaultConversationService implements ConversationService {
   private void post(String instanceId, String rootId, String body, List<DiscussionImageUpload> images,
       List<DiscussionFileUpload> files) {
     access.require(instanceId, SilverpeasRole.WRITER);
-    if (images == null || images.size() > DiscussionImageUpload.MAX_IMAGES || images.stream().anyMatch(java.util.Objects::isNull)) {
-      throw new IllegalArgumentException("Too many images");
-    }
-    if (files == null || files.size() > DiscussionFileUpload.MAX_FILES || files.stream().anyMatch(java.util.Objects::isNull)) {
-      throw new IllegalArgumentException("Too many attachments");
-    }
+    uploadSettings.forInstance(instanceId).validate(images, files);
     Conversation conversation = conversations.current(instanceId, true);
     if (conversation.isArchived()) {
       throw new IllegalArgumentException("This channel is archived");

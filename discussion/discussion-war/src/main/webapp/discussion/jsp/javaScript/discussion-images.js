@@ -61,6 +61,8 @@
       dialog.setAttribute('aria-label', link.getAttribute('aria-label'));
       dialog.showModal();
     });
+    const maxCount = Number(input.dataset.maxCount || 4);
+    const maxBytes = Number(input.dataset.maxBytes || 5 * 1024 * 1024);
     let files = [];
     let urls = [];
     const release = () => { urls.forEach(url => URL.revokeObjectURL(url)); urls = []; };
@@ -95,7 +97,7 @@
     };
     const addFiles = incoming => {
       const next = [...files, ...incoming];
-      if (next.length > 4 || next.some(file => file.size <= 0 || file.size > 5 * 1024 * 1024
+      if (next.length > maxCount || next.some(file => file.size <= 0 || file.size > maxBytes
           || !['image/jpeg', 'image/png', 'image/gif'].includes(file.type))) {
         error.textContent = input.dataset.error;
         error.hidden = false;

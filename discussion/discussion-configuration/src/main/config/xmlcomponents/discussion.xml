@@ -75,4 +75,63 @@
       </spaceMapping>
     </profile>
   </profiles>
+  <parameters>
+    <parameter>
+      <name>maxImagesPerMessage</name>
+      <label>
+        <message lang="fr">Nombre maximal d’images par message</message>
+        <message lang="en">Maximum images per message</message>
+        <message lang="de">Maximale Bilderanzahl pro Nachricht</message>
+      </label>
+      <order>1</order>
+      <mandatory>false</mandatory>
+      <value>4</value>
+      <type>text</type>
+      <size>10</size>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Entier strictement positif. Par défaut : 4.</message>
+        <message lang="en">Positive integer. Default: 4.</message>
+        <message lang="de">Positive ganze Zahl. Standard: 4.</message>
+      </help>
+    </parameter>
+    <parameter>
+      <name>maxImageSizeMb</name>
+      <label>
+        <message lang="fr">Taille maximale d’une image (Mo)</message>
+        <message lang="en">Maximum image size (MB)</message>
+        <message lang="de">Maximale Bildgröße (MB)</message>
+      </label>
+      <order>2</order>
+      <mandatory>false</mandatory>
+      <value>5</value>
+      <type>text</type>
+      <size>10</size>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">De 1 à 2047 Mo par image. Par défaut : 5 Mo.</message>
+        <message lang="en">From 1 to 2047 MB per image. Default: 5 MB.</message>
+        <message lang="de">1 bis 2047 MB pro Bild. Standard: 5 MB.</message>
+      </help>
+    </parameter>
+    <parameter>
+      <name>maxFileSizeMb</name>
+      <label>
+        <message lang="fr">Taille maximale d’un fichier (Mo)</message>
+        <message lang="en">Maximum file size (MB)</message>
+        <message lang="de">Maximale Dateigröße (MB)</message>
+      </label>
+      <order>3</order>
+      <mandatory>false</mandatory>
+      <value>20</value>
+      <type>text</type>
+      <size>10</size>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">De 1 à 2047 Mo par fichier. Par défaut : 20 Mo.</message>
+        <message lang="en">From 1 to 2047 MB per file. Default: 20 MB.</message>
+        <message lang="de">1 bis 2047 MB pro Datei. Standard: 20 MB.</message>
+      </help>
+    </parameter>
+  </parameters>
 </WAComponent>

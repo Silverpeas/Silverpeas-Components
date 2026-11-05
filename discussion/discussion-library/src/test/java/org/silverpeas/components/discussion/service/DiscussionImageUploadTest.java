@@ -75,4 +75,14 @@ class DiscussionImageUploadTest {
     byte[] truncated = {(byte)0x89, 'P', 'N', 'G', 13, 10, 26, 10};
     assertThrows(IllegalArgumentException.class, () -> DiscussionImageUpload.read(file(truncated)));
   }
+  @Test
+  void configuredByteLimitIsCheckedAgainstBothMetadataAndActualStream() throws Exception {
+    var file = image("png");
+    int length = (int) file.getSize();
+    assertEquals(length, DiscussionImageUpload.read(file, length).size());
+    assertThrows(IllegalArgumentException.class, () -> DiscussionImageUpload.read(file, length - 1));
+    when(file.getSize()).thenReturn(1L);
+    assertThrows(IllegalArgumentException.class, () -> DiscussionImageUpload.read(file, length - 1));
+  }
+
 }

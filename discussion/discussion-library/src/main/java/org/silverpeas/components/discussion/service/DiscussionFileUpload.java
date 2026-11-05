@@ -42,7 +42,14 @@ public final class DiscussionFileUpload {
   }
 
   public static DiscussionFileUpload read(FileItem file) {
-    if (file.getSize() <= 0 || file.getSize() > MAX_BYTES) {
+    return read(file, MAX_BYTES);
+  }
+
+  public static DiscussionFileUpload read(FileItem file, int maxBytes) {
+    if (maxBytes <= 0 || maxBytes == Integer.MAX_VALUE) {
+      throw new IllegalArgumentException("Invalid upload size limit");
+    }
+    if (file.getSize() <= 0 || file.getSize() > maxBytes) {
       throw new IllegalArgumentException("Invalid attachment size");
     }
     String original = file.getFileName();
@@ -55,8 +62,8 @@ public final class DiscussionFileUpload {
       throw new IllegalArgumentException("Invalid attachment name");
     }
     try (var input = file.getInputStream()) {
-      byte[] bytes = input.readNBytes(MAX_BYTES + 1);
-      if (bytes.length == 0 || bytes.length > MAX_BYTES) {
+      byte[] bytes = input.readNBytes(maxBytes + 1);
+      if (bytes.length == 0 || bytes.length > maxBytes) {
         throw new IllegalArgumentException("Invalid attachment size");
       }
       return new DiscussionFileUpload(bytes, name);
