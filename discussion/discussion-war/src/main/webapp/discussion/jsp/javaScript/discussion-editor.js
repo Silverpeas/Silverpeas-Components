@@ -204,6 +204,16 @@
     });
   }
 
+  function channelLink(href) {
+    if (!discussion.dataset.contributionBase) { return false; }
+    const url = new URL(href, document.baseURI);
+    const base = new URL(discussion.dataset.contributionBase, document.baseURI);
+    const context = base.pathname.replace(/\/Contribution\/$/, '');
+    return url.origin === base.origin && !url.username && !url.password
+        && url.pathname.startsWith(context + '/')
+        && /^\/Rdiscussion\/discussion[0-9]+\/channels\/[a-zA-Z0-9-]{1,40}\/Main$/.test(url.pathname.slice(context.length));
+  }
+
   function decorateWebLink(link, original, autoLabel = true) {
     link.href = new URL(link.getAttribute('href'), document.baseURI).href;
     const label = contributionLabel(link.href);
@@ -219,7 +229,7 @@
       link.textContent = publicationTitles.get(publication) || original;
       link.title = original;
     }
-    if (label || publication) {
+    if (label || publication || channelLink(link.href)) {
       link.classList.add('sp-link');
       link.target = '_self';
     } else {

@@ -606,3 +606,17 @@ Après rechargement de Discussion, le sélecteur, le collage d'images, les infob
 et les erreurs reflètent les valeurs de l'instance. Les pièces déjà publiées restent
 accessibles. Les limites globales de requêtes et d'upload de la plateforme continuent
 de s'appliquer. Aucun changement SQL.
+
+
+La liste des canaux est affichée dès l'ouverture de Discussion. Son bouton de repli
+utilise une flèche vers une barre ; le menu de l'entête permet de la rouvrir et
+expose l'état courant aux technologies d'assistance. Sur petit écran, la liste
+ouverte reste un volet superposé, refermable avec Échap. Elle reste masquée dans
+les réponses embarquées.
+
+La création d'un canal publie une annonce dans Général, au nom de son créateur,
+avec un lien nommé vers le nouveau canal utilisant la navigation native Silverpeas.
+L'annonce utilise le circuit normal des messages (indexation, non-lus, notifications
+et temps réel). La création et la publication participent à la même transaction ;
+la sélection du canal d'origine est restaurée même si la publication échoue.
+Aucune annonce supplémentaire lors d'un renommage ou d'un archivage. Aucun SQL.

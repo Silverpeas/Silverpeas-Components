@@ -58,6 +58,8 @@ public class DiscussionChannelService {
   private DiscussionChannelContext context;
   @Inject
   private DiscussionChangeDispatcher changes;
+  @Inject
+  private ConversationService conversationService;
 
   public Conversation select(String instanceId, String scope) {
     access.require(instanceId, SilverpeasRole.WRITER);
@@ -116,8 +118,27 @@ public class DiscussionChannelService {
     requireUniqueName(instanceId, channel);
     channel.createdBy(User.getCurrentRequester());
     conversations.save(channel);
+    announce(instanceId, channel);
     changes.changed(instanceId);
     return channel;
+  }
+
+  private void announce(String instanceId, Conversation channel) {
+    String previous = context.getScope();
+    var user = User.getCurrentRequester();
+    var bundle = org.silverpeas.kernel.bundle.ResourceLocator.getLocalizationBundle(
+        "org.silverpeas.components.discussion.multilang.DiscussionBundle", user.getUserPreferences().getLanguage());
+    String name = channel.getChannelName().replace("\\", "\\\\").replace("[", "\\[").replace("]", "\\]")
+        .replace("*", "\\*").replace("_", "\\_").replace("`", "\\`").replace("~", "\\~");
+    String url = org.silverpeas.core.util.URLUtil.getApplicationURL() + "/Rdiscussion/" + instanceId
+        + "/channels/" + channel.getScopeKey() + "/Main";
+    String body = bundle.getStringWithParams("discussion.channelCreatedMessage", "[" + name + "](" + url + ")");
+    try {
+      context.select("main");
+      conversationService.publish(instanceId, body);
+    } finally {
+      context.select(previous);
+    }
   }
 
   public void update(String instanceId, String scope, String name, String description, boolean archived) {
