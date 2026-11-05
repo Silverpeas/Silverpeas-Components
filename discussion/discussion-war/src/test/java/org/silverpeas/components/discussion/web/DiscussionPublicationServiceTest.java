@@ -93,6 +93,31 @@ class DiscussionPublicationServiceTest {
   }
 
   @Test
+  void visualEditorPermalinkIsListedOnlyWhenThePublicationIsAuthorized() {
+    var conversation = mock(Conversation.class);
+    when(conversation.getId()).thenReturn("conversation");
+    when(conversations.current("discussion1", false)).thenReturn(conversation);
+    String url = "http://localhost:8000/silverpeas/Publication/44";
+    when(messages.publicationLinkBodies("conversation")).thenAnswer(call -> Stream.of(
+        "Pour organiser nos échanges, consultez [" + url + "](" + url + ")."));
+    var user = mock(User.class);
+    when(user.getId()).thenReturn("user");
+    when(users.getCurrentRequester()).thenReturn(user);
+    var publication = publication("44", "Trame de visite");
+    when(publications.getByIds(List.of("44"))).thenReturn(List.of(publication));
+    when(publicationAccess.isUserAuthorized("user", publication)).thenReturn(true);
+    try (var urls = mockStatic(URLUtil.class)) {
+      urls.when(URLUtil::getAbsoluteApplicationURL).thenReturn("http://localhost:8000/silverpeas");
+      urls.when(() -> URLUtil.getSimpleURL(anyInt(), anyString())).thenReturn("/silverpeas/Publication/44");
+      var result = service.list("discussion1", "fr");
+      assertEquals(1, result.size());
+      assertEquals("Trame de visite", result.getFirst().title());
+      when(publicationAccess.isUserAuthorized("user", publication)).thenReturn(false);
+      assertTrue(service.list("discussion1", "fr").isEmpty());
+    }
+  }
+
+  @Test
   void deniedConversationAccessNeverQueriesReferencesOrPublicationMetadata() {
     when(access.require("discussion1", SilverpeasRole.WRITER)).thenThrow(SecurityException.class);
     assertThrows(SecurityException.class, () -> service.list("discussion1", "fr"));

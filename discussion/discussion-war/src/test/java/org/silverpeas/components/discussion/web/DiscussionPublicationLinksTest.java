@@ -26,8 +26,13 @@ package org.silverpeas.components.discussion.web;
 import java.net.URI;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 import static org.junit.jupiter.api.Assertions.*;
 
+@EnableSilverTestEnv(context = JEETestContext.class)
 class DiscussionPublicationLinksTest {
   private static final URI APP = URI.create("https://silverpeas.test/silverpeas");
 
@@ -55,6 +60,25 @@ class DiscussionPublicationLinksTest {
     String event = java.util.Base64.getEncoder().encodeToString("almanach2:CalendarEvent:12".getBytes(java.nio.charset.StandardCharsets.UTF_8));
     assertTrue(DiscussionPublicationLinks.ids(base + event, APP).isEmpty());
     assertTrue(DiscussionPublicationLinks.ids(base + "%invalid", APP).isEmpty());
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {
+      "[%1$s](%1$s)", "[**%1$s**](%1$s)", "[Trame de visite](%1$s)", "<%1$s>",
+      "**%1$s**", "~~%1$s~~", "[Trame de visite](%1$s \"Titre\")",
+      "[Trame de visite][ref]\n\n[ref]: %1$s"
+  })
+  void recognizesPublicationDestinationsInVisualEditorMarkdown(String template) {
+    var application = URI.create("http://localhost:8000/silverpeas");
+    String url = "http://localhost:8000/silverpeas/Publication/44";
+    assertEquals(List.of("44"), DiscussionPublicationLinks.ids(template.formatted(url), application));
+  }
+
+  @Test
+  void linkLabelsAreNotMistakenForDestinationsAndCodeIsNotAReference() {
+    var local = "https://silverpeas.test/silverpeas/Publication/44";
+    assertTrue(DiscussionPublicationLinks.ids("[" + local + "](https://external.test/)", APP).isEmpty());
+    assertTrue(DiscussionPublicationLinks.ids("`" + local + "`\n\n```\n" + local + "\n```", APP).isEmpty());
   }
 
   @Test
