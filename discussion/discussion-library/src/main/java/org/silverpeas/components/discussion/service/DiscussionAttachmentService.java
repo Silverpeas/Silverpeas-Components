@@ -93,7 +93,7 @@ public class DiscussionAttachmentService {
       return;
     }
     cleanup.fire(new Cleanup(instanceId, messageId, true));
-    int order = DiscussionImageUpload.MAX_IMAGES;
+    int order = attachments.listDocumentsByForeignKey(new ResourceReference(messageId, instanceId), null).size();
     for (var upload : files) {
       var file = SimpleAttachment.builder(I18NHelper.getDefaultLanguage()).setFilename(upload.filename()).setTitle(upload.filename())
           .setSize(upload.size()).setContentType("application/octet-stream")

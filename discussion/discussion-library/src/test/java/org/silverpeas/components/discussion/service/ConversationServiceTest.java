@@ -45,6 +45,8 @@ import static org.mockito.Mockito.*;
 @EnableSilverTestEnv(context = JEETestContext.class)
 class ConversationServiceTest {
   @TestManagedMock
+  private org.silverpeas.components.discussion.service.DiscussionUploadSettings uploadSettings;
+  @TestManagedMock
   private ConversationRepository conversations;
   @TestManagedMock
   private DiscussionMessageRepository messages;
@@ -82,6 +84,8 @@ class ConversationServiceTest {
 
   @BeforeEach
   void prepare() {
+    when(uploadSettings.forInstance(anyString())).thenReturn(
+        org.silverpeas.components.discussion.service.DiscussionUploadSettings.Limits.defaults());
     when(mentions.normalize(anyString(), any())).thenAnswer(call -> call.getArgument(1));
     conversation = mock(Conversation.class);
     when(conversation.getId()).thenReturn("conversation");
@@ -750,4 +754,14 @@ class ConversationServiceTest {
     when(message.getVersion()).thenReturn(0L);
     return message;
   }
+  @Test
+  void publishingAndReplyingEnforceTheCurrentInstanceUploadPolicyBeforePersisting() throws Exception {
+    when(uploadSettings.forInstance("discussion1")).thenReturn(new DiscussionUploadSettings.Limits(1, 1, 1));
+    var image = DiscussionImageUpload.read(DiscussionImageUploadTest.image("png"));
+    var images = List.of(image, image);
+    assertThrows(IllegalArgumentException.class, () -> service.publish("discussion1", "", images));
+    assertThrows(IllegalArgumentException.class, () -> service.reply("discussion1", "root", "", images, List.of()));
+    verifyNoInteractions(messages, imageService);
+  }
+
 }

@@ -257,7 +257,17 @@ public class DiscussionWebController extends
 
   private transient org.silverpeas.components.discussion.service.DiscussionNotificationSettings notificationSettings;
 
+  private transient org.silverpeas.components.discussion.service.DiscussionUploadSettings uploadSettings;
+
+  private org.silverpeas.components.discussion.service.DiscussionUploadSettings uploadSettings() {
+    if (uploadSettings == null) {
+      uploadSettings = ServiceProvider.getService(org.silverpeas.components.discussion.service.DiscussionUploadSettings.class);
+    }
+    return uploadSettings;
+  }
+
   private void preparePage(DiscussionWebRequestContext context) {
+    context.getRequest().setAttribute("uploadLimits", uploadSettings().forInstance(context.getComponentInstanceId()));
     context.getRequest().setAttribute("discussionInstanceId", context.getComponentInstanceId());
     if (instanceInfo == null) {
       instanceInfo = ServiceProvider.getService(DiscussionInstanceInfoService.class);
@@ -482,13 +492,13 @@ public class DiscussionWebController extends
         : java.util.List.<org.silverpeas.core.util.file.FileItem>of();
     var images = items.stream().filter(file -> "images".equals(file.getFieldName())).toList();
     var files = items.stream().filter(file -> "files".equals(file.getFieldName())).toList();
-    if (images.size() > org.silverpeas.components.discussion.service.DiscussionImageUpload.MAX_IMAGES
-        || files.size() > org.silverpeas.components.discussion.service.DiscussionFileUpload.MAX_FILES) {
+    var limits = uploadSettings().forInstance(context.getComponentInstanceId());
+    if (images.size() > limits.getMaxImages() || files.size() > limits.getMaxFiles()) {
       throw new IllegalArgumentException("Too many attachments");
     }
     return new MessageUploads(
-        images.stream().map(org.silverpeas.components.discussion.service.DiscussionImageUpload::read).toList(),
-        files.stream().map(org.silverpeas.components.discussion.service.DiscussionFileUpload::read).toList());
+        images.stream().map(file -> org.silverpeas.components.discussion.service.DiscussionImageUpload.read(file, limits.getImageBytes())).toList(),
+        files.stream().map(file -> org.silverpeas.components.discussion.service.DiscussionFileUpload.read(file, limits.getFileBytes())).toList());
   }
 
   @POST

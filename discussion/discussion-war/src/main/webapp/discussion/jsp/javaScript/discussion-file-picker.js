@@ -36,6 +36,8 @@
     }
     add.addEventListener('click', () => input.click());
     document.querySelector('.discussion-composer .discussion-editor-tools')?.append(add);
+    const maxCount = Number(input.dataset.maxCount || 4);
+    const maxBytes = Number(input.dataset.maxBytes || 20 * 1024 * 1024);
     let files = [];
     const render = () => {
       preview.replaceChildren();
@@ -60,7 +62,7 @@
     };
     input.addEventListener('change', () => {
       const selected = [...files, ...input.files];
-      if (selected.length > 4 || selected.some(file => file.size <= 0 || file.size > 20 * 1024 * 1024)) {
+      if (selected.length > maxCount || selected.some(file => file.size <= 0 || file.size > maxBytes)) {
         error.textContent = input.dataset.error;
         error.hidden = false;
       } else {

@@ -43,12 +43,19 @@ public final class DiscussionImageUpload {
   }
 
   public static DiscussionImageUpload read(FileItem file) {
-    if (file.getSize() <= 0 || file.getSize() > MAX_BYTES) {
+    return read(file, MAX_BYTES);
+  }
+
+  public static DiscussionImageUpload read(FileItem file, int maxBytes) {
+    if (maxBytes <= 0 || maxBytes == Integer.MAX_VALUE) {
+      throw new IllegalArgumentException("Invalid upload size limit");
+    }
+    if (file.getSize() <= 0 || file.getSize() > maxBytes) {
       throw new IllegalArgumentException("Invalid image size");
     }
     try (var input = file.getInputStream()) {
-      byte[] content = input.readNBytes(MAX_BYTES + 1);
-      if (content.length == 0 || content.length > MAX_BYTES) {
+      byte[] content = input.readNBytes(maxBytes + 1);
+      if (content.length == 0 || content.length > maxBytes) {
         throw new IllegalArgumentException("Invalid image size");
       }
       try (var imageInput = ImageIO.createImageInputStream(new ByteArrayInputStream(content))) {

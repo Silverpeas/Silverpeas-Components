@@ -589,3 +589,20 @@ dans `discussion-war/src/main/frontend`. Le bundle représente environ 181 Ko gz
 et ne demande aucun téléchargement externe à l'exécution. Maven utilise le bundle
 commité : Node/npm sont nécessaires uniquement pour sa reconstruction.
 Aucune migration SQL.
+
+
+### Limites des pièces jointes par instance
+
+Les paramètres natifs de l'application exposent `maxImagesPerMessage` (4 par défaut),
+`maxImageSizeMb` (5 Mo par image) et `maxFileSizeMb` (20 Mo par fichier).
+Les valeurs sont des entiers strictement positifs ; les tailles vont de 1 à 2047 Mo
+(1 Mo = 1 048 576 octets). Une valeur absente, vide ou invalide reprend uniquement
+la valeur par défaut du paramètre concerné. Le nombre de fichiers reste limité à 4.
+
+La politique est relue côté serveur à chaque envoi et s'applique à tous les canaux
+et fils de l'instance. Les flux sont bornés sur leur contenu réel, indépendamment de
+la taille annoncée, et le service métier revérifie les objets reçus avant stockage.
+Après rechargement de Discussion, le sélecteur, le collage d'images, les infobulles
+et les erreurs reflètent les valeurs de l'instance. Les pièces déjà publiées restent
+accessibles. Les limites globales de requêtes et d'upload de la plateforme continuent
+de s'appliquer. Aucun changement SQL.

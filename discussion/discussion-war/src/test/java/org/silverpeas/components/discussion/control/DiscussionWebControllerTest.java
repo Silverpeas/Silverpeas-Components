@@ -45,6 +45,8 @@ import static org.mockito.Mockito.*;
 @EnableSilverTestEnv(context = JEETestContext.class)
 class DiscussionWebControllerTest {
   @TestManagedMock
+  private org.silverpeas.components.discussion.service.DiscussionUploadSettings uploadSettings;
+  @TestManagedMock
   private org.silverpeas.components.discussion.search.DiscussionSearchService search;
   @TestManagedMock
   private ConversationService service;
@@ -74,6 +76,8 @@ class DiscussionWebControllerTest {
 
   @BeforeEach
   void prepare() {
+    when(uploadSettings.forInstance(anyString())).thenReturn(
+        org.silverpeas.components.discussion.service.DiscussionUploadSettings.Limits.defaults());
     var main = mock(MainSessionController.class);
     when(main.getFavoriteLanguage()).thenReturn("fr");
     var component = mock(ComponentContext.class);
@@ -540,6 +544,27 @@ class DiscussionWebControllerTest {
             ? SilverpeasRole.ADMIN : SilverpeasRole.WRITER, restriction.value(), method.getName());
       }
     }
+  }
+
+  @Test
+  void multipartValidationUsesTheInstanceLimitsForCountsAndSizes() throws Exception {
+    when(uploadSettings.forInstance("discussion1")).thenReturn(
+        new org.silverpeas.components.discussion.service.DiscussionUploadSettings.Limits(1, 1, 1));
+    when(request.getMethod()).thenReturn("POST");
+    when(request.getContentType()).thenReturn("multipart/form-data; boundary=example");
+    var file = mock(org.silverpeas.core.util.file.FileItem.class);
+    when(file.getFileName()).thenReturn("photo.png");
+    when(file.getFieldName()).thenReturn("images");
+    when(file.getSize()).thenReturn(1L);
+    when(request.getFileItems()).thenReturn(List.of(file, file));
+    assertEquals(400, assertThrows(WebApplicationException.class, () -> controller.publish(context)).getResponse().getStatus());
+    verify(file, never()).getInputStream();
+    when(request.getFileItems()).thenReturn(List.of(file));
+    when(file.getFieldName()).thenReturn("files");
+    when(file.getSize()).thenReturn(1024 * 1024 + 1L);
+    assertEquals(400, assertThrows(WebApplicationException.class, () -> controller.publish(context)).getResponse().getStatus());
+    verify(file, never()).getInputStream();
+    verifyNoInteractions(service);
   }
 
 }

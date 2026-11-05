@@ -187,19 +187,23 @@
               <div class="discussion-compose-box">
               <textarea rows="1" id="discussion-body" name="body" maxlength="2000" required aria-describedby="discussion-compose-hint"
                   placeholder="${fn:escapeXml(composePlaceholder)}"></textarea>
+              <fmt:message key="discussion.imagesHint" var="imagesHint"><fmt:param value="${uploadLimits.maxImages}"/><fmt:param value="${uploadLimits.imageSizeMb}"/></fmt:message>
+              <fmt:message key="discussion.imagesError" var="imagesError"><fmt:param value="${uploadLimits.maxImages}"/><fmt:param value="${uploadLimits.imageSizeMb}"/></fmt:message>
+              <fmt:message key="discussion.filesHint" var="filesHint"><fmt:param value="${uploadLimits.maxFiles}"/><fmt:param value="${uploadLimits.fileSizeMb}"/></fmt:message>
+              <fmt:message key="discussion.filesError" var="filesError"><fmt:param value="${uploadLimits.maxFiles}"/><fmt:param value="${uploadLimits.fileSizeMb}"/></fmt:message>
               <div class="discussion-image-picker">
                 <button class="discussion-icon-button discussion-add-image" type="button" aria-label="<fmt:message key='discussion.addImages'/>"
-                    title="<fmt:message key='discussion.addImages'/> — <fmt:message key='discussion.imagesHint'/>"><svg class="discussion-icon" aria-hidden="true"><use href="<c:url value='/discussion/jsp/icons/discussion-icons.svg'/>#image"/></svg></button>
+                    title="<fmt:message key='discussion.addImages'/> — ${fn:escapeXml(imagesHint)}"><svg class="discussion-icon" aria-hidden="true"><use href="<c:url value='/discussion/jsp/icons/discussion-icons.svg'/>#image"/></svg></button>
                 <input id="discussion-images" type="file" tabindex="-1" aria-label="<fmt:message key='discussion.addImages'/>" name="images" accept="image/jpeg,image/png,image/gif" multiple
-                    data-error="<fmt:message key='discussion.imagesError'/>" data-remove="<fmt:message key='discussion.removeImage'/>"/>
+                    data-max-count="${uploadLimits.maxImages}" data-max-bytes="${uploadLimits.imageBytes}" data-error="${fn:escapeXml(imagesError)}" data-remove="<fmt:message key='discussion.removeImage'/>"/>
                 <div id="discussion-image-preview" class="discussion-image-preview"></div>
                 <p id="discussion-image-error" class="discussion-presence-error" role="status" hidden></p>
               </div>
               <div class="discussion-file-picker">
                 <button class="discussion-icon-button discussion-add-file" type="button" aria-label="<fmt:message key='discussion.addFiles'/>"
-                    title="<fmt:message key='discussion.addFiles'/> — <fmt:message key='discussion.filesHint'/>"><svg class="discussion-icon" aria-hidden="true"><use href="<c:url value='/discussion/jsp/icons/discussion-icons.svg'/>#paperclip"/></svg></button>
+                    title="<fmt:message key='discussion.addFiles'/> — ${fn:escapeXml(filesHint)}"><svg class="discussion-icon" aria-hidden="true"><use href="<c:url value='/discussion/jsp/icons/discussion-icons.svg'/>#paperclip"/></svg></button>
                 <input id="discussion-files" type="file" name="files" multiple tabindex="-1" aria-label="<fmt:message key='discussion.addFiles'/>"
-                    data-error="<fmt:message key='discussion.filesError'/>" data-remove="<fmt:message key='discussion.removeFile'/>"/>
+                    data-max-count="${uploadLimits.maxFiles}" data-max-bytes="${uploadLimits.fileBytes}" data-error="${fn:escapeXml(filesError)}" data-remove="<fmt:message key='discussion.removeFile'/>"/>
                 <div id="discussion-file-preview" class="discussion-file-preview"></div>
                 <p id="discussion-file-error" class="discussion-presence-error" role="status" hidden></p>
               </div>
