@@ -624,4 +624,25 @@ class DiscussionWebControllerTest {
     verify(service).edit("discussion1", "message", 3, "body", List.of("photo1", "photo2"));
   }
 
+  @Test
+  void fileAndImageSelectionsAreSubmittedTogetherWithTheSessionInstanceAndMessageVersion() {
+    when(request.getParameter("body")).thenReturn("body");
+    when(request.getParameter("version")).thenReturn("3");
+    when(request.getParameterValues("removedImageIds")).thenReturn(new String[]{"photo"});
+    when(request.getParameterValues("removedFileIds")).thenReturn(new String[]{"file1", "file2"});
+    controller.edit(context);
+    verify(service).edit("discussion1", "message", 3, "body",
+        new org.silverpeas.components.discussion.service.DiscussionAttachmentRemoval(List.of("photo"), List.of("file1", "file2")));
+  }
+
+  @Test
+  void aFileCanBeRemovedWithoutAnImageSelection() {
+    when(request.getParameter("body")).thenReturn("body");
+    when(request.getParameter("version")).thenReturn("3");
+    when(request.getParameterValues("removedFileIds")).thenReturn(new String[]{"file"});
+    controller.edit(context);
+    verify(service).edit("discussion1", "message", 3, "body",
+        new org.silverpeas.components.discussion.service.DiscussionAttachmentRemoval(List.of(), List.of("file")));
+  }
+
 }

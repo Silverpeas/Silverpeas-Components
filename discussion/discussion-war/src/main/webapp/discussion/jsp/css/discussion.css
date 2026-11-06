@@ -607,4 +607,10 @@ html.discussion-embedded #discussion.discussion-channels-open .discussion-worksp
 #discussion .discussion-edit-image img { display:block; width:6rem; height:4.5rem; object-fit:cover; }
 #discussion .discussion-edit-image-remove { position:absolute; top:0; right:0; background:var(--bgColor-card,#fff); }
 #discussion .discussion-edit-image--removed img { opacity:.3; filter:grayscale(1); }
-#discussion .discussion-message-content:has(> .discussion-edit--inline) > .discussion-message-images { display:none; }
+#discussion .discussion-message-content:has(> .discussion-edit--inline) > :is(.discussion-message-images, .discussion-message-files) { display:none; }
+
+#discussion .discussion-edit-files { list-style:none; padding:0; margin:.65rem 0 0; display:grid; gap:.4rem; }
+#discussion .discussion-edit-file { display:flex; align-items:center; gap:.5rem; min-width:0; padding:.25rem .5rem; border:1px solid var(--color-trait-separateur,#ddd); }
+#discussion .discussion-edit-file-name { flex:1; min-width:0; overflow-wrap:anywhere; }
+#discussion .discussion-edit-file > .discussion-icon, #discussion .discussion-edit-file-remove { flex:none; }
+#discussion .discussion-edit-file.discussion-edit-attachment--removed .discussion-edit-file-name { opacity:.5; text-decoration:line-through; }

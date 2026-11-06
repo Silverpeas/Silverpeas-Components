@@ -139,6 +139,22 @@
                         </c:forEach>
                       </div>
                     </c:if>
+                    <c:if test="${not empty messageFiles[message.id]}">
+                      <ul class="discussion-edit-files">
+                        <c:forEach items="${messageFiles[message.id]}" var="file">
+                          <li class="discussion-edit-file">
+                            <svg class="discussion-icon" aria-hidden="true"><use href="${discussionIcons}#paperclip"/></svg>
+                            <span class="discussion-edit-file-name"><c:out value="${file.name}"/></span>
+                            <input type="hidden" name="removedFileIds" value="${fn:escapeXml(file.id)}" disabled/>
+                            <button class="discussion-icon-button discussion-edit-file-remove" type="button" aria-pressed="false"
+                                title="<fmt:message key='discussion.removeFile'/> : ${fn:escapeXml(file.name)}" aria-label="<fmt:message key='discussion.removeFile'/> : ${fn:escapeXml(file.name)}"
+                                data-remove-label="<fmt:message key='discussion.removeFile'/> : ${fn:escapeXml(file.name)}" data-restore-label="<fmt:message key='discussion.restoreFile'/> : ${fn:escapeXml(file.name)}">
+                              <svg class="discussion-icon" aria-hidden="true"><use href="${discussionIcons}#close"/></svg>
+                            </button>
+                          </li>
+                        </c:forEach>
+                      </ul>
+                    </c:if>
                     <div class="discussion-edit-buttons">
                       <button class="discussion-edit-cancel" type="button"><fmt:message key="GML.cancel"/></button>
                       <button class="sp_button discussion-button--primary" type="submit"><fmt:message key="discussion.save"/></button>

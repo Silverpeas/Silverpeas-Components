@@ -237,21 +237,39 @@ public class DefaultConversationService implements ConversationService {
 
   @Override
   public void edit(String instanceId, String messageId, long version, String body, List<String> removedImageIds) {
+    edit(instanceId, messageId, version, body, new DiscussionAttachmentRemoval(removedImageIds, List.of()));
+  }
+
+  @Override
+  public void edit(String instanceId, String messageId, long version, String body, DiscussionAttachmentRemoval removal) {
     DiscussionMessage message = editable(instanceId, messageId, version);
-    var removed = java.util.Set.copyOf(removedImageIds);
+    var removed = java.util.Set.copyOf(removal.imageIds());
+    var removedFiles = java.util.Set.copyOf(removal.fileIds());
     var images = imageService.list(instanceId, messageId);
     if (!images.stream().map(DiscussionImage::id).collect(java.util.stream.Collectors.toSet()).containsAll(removed)) {
       throw new IllegalArgumentException("Only images attached to this message can be removed");
     }
     boolean remainingImages = images.stream().anyMatch(image -> !removed.contains(image.id()));
+    boolean remainingFiles = message.isFilesAttached();
+    if (!removedFiles.isEmpty()) {
+      var files = imageService.fileIds(instanceId, messageId);
+      if (!files.containsAll(removedFiles)) {
+        throw new IllegalArgumentException("Only files attached to this message can be removed");
+      }
+      remainingFiles = files.stream().anyMatch(id -> !removedFiles.contains(id));
+    }
     String previousBody = message.getBody();
-    message.edit(mentions.normalize(instanceId, body), message.isFilesAttached() || remainingImages);
+    message.edit(mentions.normalize(instanceId, body), remainingFiles || remainingImages);
+    if (!removedFiles.isEmpty()) { message.setFilesAttached(remainingFiles); }
     message.updatedBy(User.getCurrentRequester());
     messages.save(message);
-    if (!removed.isEmpty()) { imageService.removeImagesAfterCommit(instanceId, messageId, List.copyOf(removed)); }
+    if (!removal.isEmpty()) {
+      imageService.removeAttachmentsAfterCommit(instanceId, messageId,
+          new DiscussionAttachmentRemoval(List.copyOf(removed), List.copyOf(removedFiles)));
+    }
     messageIndex.schedule(instanceId, message.getId());
     mentions.notifyNewMentions(instanceId, message, previousBody);
-    if (!java.util.Objects.equals(previousBody, message.getBody()) || !removed.isEmpty()) {
+    if (!java.util.Objects.equals(previousBody, message.getBody()) || !removal.isEmpty()) {
       subscriptions.schedule(new org.silverpeas.components.discussion.notification.DiscussionSubscriptionEvent(
           instanceId, message, User.getCurrentRequester(),
           org.silverpeas.core.notification.user.client.constant.NotifAction.UPDATE));

@@ -775,7 +775,7 @@ class ConversationServiceTest {
       current.when(User::getCurrentRequester).thenReturn(user);
       service.edit("discussion1", "message", 0, "same", List.of("photo1", "photo1"));
       verify(message).edit("same", true);
-      verify(imageService).removeImagesAfterCommit("discussion1", "message", List.of("photo1"));
+      verify(imageService).removeAttachmentsAfterCommit("discussion1", "message", new DiscussionAttachmentRemoval(List.of("photo1"), List.of()));
       verify(messages).save(message);
       verify(changes).changed("discussion1");
       verify(subscriptions).schedule(argThat(event -> event.action() ==
@@ -792,7 +792,7 @@ class ConversationServiceTest {
       current.when(User::getCurrentRequester).thenReturn(user);
       assertThrows(IllegalArgumentException.class, () -> service.edit("discussion1", "message", 0, " ", List.of("photo")));
       verify(messages, never()).save(any(DiscussionMessage.class));
-      verify(imageService, never()).removeImagesAfterCommit(anyString(), anyString(), anyList());
+      verify(imageService, never()).removeAttachmentsAfterCommit(anyString(), anyString(), any());
     }
   }
 
@@ -805,7 +805,7 @@ class ConversationServiceTest {
       current.when(User::getCurrentRequester).thenReturn(user);
       service.edit("discussion1", "message", 0, " ", List.of("photo"));
       verify(message).edit(" ", true);
-      verify(imageService).removeImagesAfterCommit("discussion1", "message", List.of("photo"));
+      verify(imageService).removeAttachmentsAfterCommit("discussion1", "message", new DiscussionAttachmentRemoval(List.of("photo"), List.of()));
     }
   }
 
@@ -818,7 +818,7 @@ class ConversationServiceTest {
       assertThrows(IllegalArgumentException.class, () -> service.edit("discussion1", "message", 0, "body", List.of("foreign")));
       verify(messages, never()).save(any(DiscussionMessage.class));
       verify(message, never()).edit(anyString(), anyBoolean());
-      verify(imageService, never()).removeImagesAfterCommit(anyString(), anyString(), anyList());
+      verify(imageService, never()).removeAttachmentsAfterCommit(anyString(), anyString(), any());
     }
   }
 
@@ -832,6 +832,96 @@ class ConversationServiceTest {
       assertThrows(SecurityException.class, () -> service.edit("discussion1", "message", 0, "body", List.of("photo")));
       verifyNoInteractions(imageService);
       verify(messages, never()).save(any(DiscussionMessage.class));
+    }
+  }
+
+  @Test
+  void removingAFileUpdatesItsFlagAndSchedulesTypedCleanupAfterTheVersionedSave() {
+    var message = existingMessage("user");
+    when(message.getBody()).thenReturn("same");
+    when(message.isFilesAttached()).thenReturn(true);
+    when(imageService.fileIds("discussion1", "message")).thenReturn(List.of("file1", "file2"));
+    var removal = new DiscussionAttachmentRemoval(List.of(), List.of("file1"));
+    try (var current = mockStatic(User.class)) {
+      current.when(User::getCurrentRequester).thenReturn(user);
+      service.edit("discussion1", "message", 0, "same", removal);
+      verify(message).edit("same", true);
+      verify(message).setFilesAttached(true);
+      var order = inOrder(messages, imageService, changes);
+      order.verify(messages).save(message);
+      order.verify(imageService).removeAttachmentsAfterCommit("discussion1", "message", removal);
+      order.verify(changes).changed("discussion1");
+      verify(subscriptions).schedule(argThat(event -> event.action() ==
+          org.silverpeas.core.notification.user.client.constant.NotifAction.UPDATE));
+    }
+  }
+
+  @Test
+  void removingTheLastFileClearsTheSharedFileFlagWhileKeepingAnImage() {
+    var message = existingMessage("user");
+    when(message.isFilesAttached()).thenReturn(true);
+    when(imageService.fileIds("discussion1", "message")).thenReturn(List.of("file"));
+    when(imageService.list("discussion1", "message")).thenReturn(List.of(new DiscussionImage("photo", "/photo", "photo.png")));
+    var removal = new DiscussionAttachmentRemoval(List.of(), List.of("file"));
+    try (var current = mockStatic(User.class)) {
+      current.when(User::getCurrentRequester).thenReturn(user);
+      service.edit("discussion1", "message", 0, " ", removal);
+      verify(message).edit(" ", true);
+      verify(message).setFilesAttached(false);
+      verify(imageService).removeAttachmentsAfterCommit("discussion1", "message", removal);
+    }
+  }
+
+  @Test
+  void filesAndImagesCanBeRemovedInTheSameEdit() {
+    var message = existingMessage("user");
+    when(message.isFilesAttached()).thenReturn(true);
+    when(imageService.fileIds("discussion1", "message")).thenReturn(List.of("file"));
+    when(imageService.list("discussion1", "message")).thenReturn(List.of(new DiscussionImage("photo", "/photo", "photo.png")));
+    var removal = new DiscussionAttachmentRemoval(List.of("photo"), List.of("file"));
+    try (var current = mockStatic(User.class)) {
+      current.when(User::getCurrentRequester).thenReturn(user);
+      service.edit("discussion1", "message", 0, "Keep text", removal);
+      verify(message).edit("Keep text", false);
+      verify(message).setFilesAttached(false);
+      verify(imageService).removeAttachmentsAfterCommit("discussion1", "message", removal);
+    }
+  }
+
+  @Test
+  void aFileOutsideTheMessageOrAnImageSubmittedAsAFileIsRejected() {
+    var message = existingMessage("user");
+    when(imageService.fileIds("discussion1", "message")).thenReturn(List.of("file"));
+    when(imageService.list("discussion1", "message")).thenReturn(List.of(new DiscussionImage("photo", "/photo", "photo.png")));
+    try (var current = mockStatic(User.class)) {
+      current.when(User::getCurrentRequester).thenReturn(user);
+      for (var id : List.of("foreign", "photo")) {
+        var removal = new DiscussionAttachmentRemoval(List.of(), List.of(id));
+        assertThrows(IllegalArgumentException.class, () -> service.edit("discussion1", "message", 0, "body", removal));
+      }
+      verify(message, never()).edit(anyString(), anyBoolean());
+      verify(messages, never()).save(any(DiscussionMessage.class));
+      verify(imageService, never()).removeAttachmentsAfterCommit(anyString(), anyString(), any());
+    }
+  }
+
+  @Test
+  void theLastFileCannotLeaveAnEmptyMessageAndAManagerCannotSubmitAStaleVersion() {
+    var message = existingMessage("user");
+    when(message.isFilesAttached()).thenReturn(true);
+    doCallRealMethod().when(message).edit(anyString(), anyBoolean());
+    when(imageService.fileIds("discussion1", "message")).thenReturn(List.of("file"));
+    var removal = new DiscussionAttachmentRemoval(List.of(), List.of("file"));
+    try (var current = mockStatic(User.class)) {
+      current.when(User::getCurrentRequester).thenReturn(user);
+      assertThrows(IllegalArgumentException.class, () -> service.edit("discussion1", "message", 0, " ", removal));
+      assertThrows(OptimisticLockException.class, () -> service.edit("discussion1", "message", 1, "body", removal));
+      when(message.getCreatorId()).thenReturn("other-user");
+      assertThrows(SecurityException.class, () -> service.edit("discussion1", "message", 0, "body", removal));
+      when(access.require("discussion1", SilverpeasRole.WRITER)).thenReturn(SilverpeasRole.ADMIN);
+      service.edit("discussion1", "message", 0, "Keep text", removal);
+      verify(message).setFilesAttached(false);
+      verify(imageService).removeAttachmentsAfterCommit("discussion1", "message", removal);
     }
   }
 
