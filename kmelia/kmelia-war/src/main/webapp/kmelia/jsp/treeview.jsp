@@ -377,7 +377,6 @@
       clearSearchQuery();
     }
 
-    let displayPublicationPromise;
     if (isSpecialFolder(id) || id === "1") {
       muteDragAndDrop(); //mute dropzone
       $("#footer").css({'visibility':'hidden'}); //hide footer
@@ -402,12 +401,12 @@
      displayPublications(id);
     } else {
       displayPath(id);
-      displayOperations(id);
       $("#searchZone").css({'display':'block'});
       if (searchInProgress) {
         doPagination(<%=currentPageIndex%>);
+        displayOperations(id);
       } else {
-       displayPublications(id);
+        displayPublicationsAndOperations(id);
       }
     }
 

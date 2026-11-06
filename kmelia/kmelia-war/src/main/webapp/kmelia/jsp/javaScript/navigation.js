@@ -223,6 +223,20 @@ function displayPublications(id) {
         __updateDataAndUIWithError(request.responseText);
       });
 }
+
+/**
+ * Displays the publications of the given folder and then its operations. Some operations depend
+ * on the publications of the folder, which are put in the user session by their loading, so the
+ * operations are requested only once the publications are loaded.
+ * @param id the identifier of the folder.
+ * @returns {Promise} a promise resolved once the operations are requested.
+ */
+function displayPublicationsAndOperations(id) {
+  return displayPublications(id).then(function() {
+    displayOperations(id);
+  });
+}
+
 function displayOperations(id) {
   const ieFix = new Date().getTime();
   const componentId = getComponentId();
