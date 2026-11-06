@@ -688,3 +688,16 @@ en temps réel, actualise l’accordéon « Fichiers partagés » et déclenche 
 notifications de modification habituelles. Le message doit conserver du texte,
 une image ou un fichier ; sinon il faut supprimer le message entier.
 Aucune modification de schéma SQL n’est nécessaire.
+
+### Vérification des libellés
+
+Les textes de l’interface (y compris infobulles, accessibilité et validation)
+proviennent des bundles `DiscussionBundle` ; les notifications utilisent les
+bundles et les modèles StringTemplate localisés. Les textes métier saisis par
+les utilisateurs restent inchangés. Les messages techniques des exceptions et
+les identifiants internes ne sont pas des libellés d’interface.
+
+Le test `discussion-i18n.test.cjs` contrôle que les clés utilisées par les sources
+Java/JSP/JavaScript existent dans les bundles par défaut, français, anglais et
+allemand. L’éditeur partagé Core fournit également ses valeurs par défaut depuis
+son bundle natif, sans texte anglais en dur dans le JavaScript.

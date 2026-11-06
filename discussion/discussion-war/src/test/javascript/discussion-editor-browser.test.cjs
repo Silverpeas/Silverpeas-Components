@@ -80,7 +80,7 @@ test('editing saved mentions hides identifiers while preserving the submitted re
   const browser=await chromium.launch({executablePath:process.env.CHROME_PATH || undefined,args:['--no-sandbox']});
   try {
     const page=await browser.newPage();
-    await page.setContent('<main id="discussion" data-icons="/icons.svg" data-emoji-label="Emoji" data-mention-label="Mention"><form><textarea name="body" maxlength="2000">@[Bernard Lemoine](2) et @[Bernard Lemoine](3)</textarea></form></main>');
+    await page.setContent('<main id="discussion" data-icons="/icons.svg" data-emoji-label="Emoji" data-mention-label="Mention" data-length-error="Le message est trop long."><form><textarea name="body" maxlength="2000">@[Bernard Lemoine](2) et @[Bernard Lemoine](3)</textarea></form></main>');
     await sharedEditor.load(page);
     await page.addScriptTag({path:path.join(__dirname,'../../main/webapp/discussion/jsp/javaScript/discussion-editor.js')});
     await page.evaluate(()=>document.dispatchEvent(new Event('DOMContentLoaded')));
@@ -92,6 +92,7 @@ test('editing saved mentions hides identifiers while preserving the submitted re
     const visible='Salut '+display;
     await editor.fill(visible+'x'.repeat(2000-visible.length));
     assert.equal(await editor.evaluate(node=>node.checkValidity()),false);
+    assert.equal(await editor.evaluate(node=>node.validationMessage),'Le message est trop long.');
     assert.equal((await editor.inputValue()).includes('(2)'),false);
   } finally {await browser.close();}
 });
