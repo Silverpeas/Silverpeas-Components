@@ -645,4 +645,20 @@ class DiscussionWebControllerTest {
         new org.silverpeas.components.discussion.service.DiscussionAttachmentRemoval(List.of(), List.of("file")));
   }
 
+  @Test
+  void pageSizeOverrideAndValidatedBrowserSettingsAreTakenFromTheNativeConfiguration() {
+    var bundle = mock(org.silverpeas.kernel.bundle.SettingBundle.class);
+    when(bundle.getInteger(anyString(), anyInt())).thenAnswer(call ->
+        "history.pageSize".equals(call.getArgument(0)) ? 7 : call.getArgument(1));
+    try (var configuration = mockStatic(org.silverpeas.kernel.bundle.ResourceLocator.class, CALLS_REAL_METHODS)) {
+      configuration.when(() -> org.silverpeas.kernel.bundle.ResourceLocator.getSettingBundle(
+          org.silverpeas.components.discussion.DiscussionSettings.BUNDLE)).thenReturn(bundle);
+      controller.home(context);
+      verify(service).history("discussion1", Long.MAX_VALUE, 7);
+      verify(request).setAttribute(eq("discussionSettings"), argThat(value -> value instanceof Map<?, ?> values
+          && Integer.valueOf(7).equals(values.get("history.pageSize"))
+          && Integer.valueOf(30000).equals(values.get("presence.refreshMs"))));
+    }
+  }
+
 }

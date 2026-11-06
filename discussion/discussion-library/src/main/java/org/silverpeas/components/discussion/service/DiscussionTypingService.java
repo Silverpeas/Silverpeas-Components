@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.discussion.service;
 
+import org.silverpeas.components.discussion.DiscussionSettings;
 import java.util.HashMap;
 import java.util.Map;
 import jakarta.inject.Inject;
@@ -77,8 +78,8 @@ public class DiscussionTypingService {
     var previous = states.get(key);
     if (active) {
       long lastSent = previous == null ? 0 : previous.sentAt();
-      boolean send = now - lastSent >= 2000;
-      states.put(key, new State(now + 8000, send ? now : lastSent));
+      boolean send = now - lastSent >= DiscussionSettings.TYPING_THROTTLE_MS.value();
+      states.put(key, new State(now + DiscussionSettings.typingTtlMs(), send ? now : lastSent));
       if (!send) {
         return;
       }
@@ -88,7 +89,7 @@ public class DiscussionTypingService {
         return;
       }
     }
-    if (states.size() > 10000) {
+    if (states.size() > DiscussionSettings.TYPING_MAX_STATES.value()) {
       states.keySet().stream().findFirst().ifPresent(states::remove);
     }
     long expiry = states.entrySet().stream()

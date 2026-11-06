@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.discussion.search;
 
+import org.silverpeas.components.discussion.DiscussionSettings;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import java.util.Objects;
@@ -43,7 +44,6 @@ import org.silverpeas.core.index.search.model.QueryDescription;
 @Service
 @Transactional
 public class DiscussionSearchService {
-  private static final int PAGE_SIZE = 20;
   @Inject
   private DiscussionAccess access;
   @Inject
@@ -85,7 +85,7 @@ public class DiscussionSearchService {
       }
       var ordered = ids.stream().map(existing::get).filter(Objects::nonNull).toList();
       int from = Math.min(offset, ordered.size());
-      return new DiscussionSearchPage(ordered.subList(from, Math.min(from + PAGE_SIZE, ordered.size())),
+      return new DiscussionSearchPage(ordered.subList(from, Math.min(from + DiscussionSettings.SEARCH_PAGE_SIZE.value(), ordered.size())),
           ordered.size(), from);
     } catch (ParseException e) {
       throw new IllegalArgumentException("Invalid search expression", e);

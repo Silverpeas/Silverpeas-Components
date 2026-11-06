@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.discussion.control;
 
+import org.silverpeas.components.discussion.DiscussionSettings;
 import java.util.List;
 import java.util.function.Supplier;
 import jakarta.persistence.OptimisticLockException;
@@ -136,7 +137,7 @@ public class DiscussionWebController extends
       context.getRequest().setAttribute("focusedMessageId", target);
     } else {
       prepareHistory(context, webResult(() -> conversations().threadHistory(
-          context.getComponentInstanceId(), rootId, Long.MAX_VALUE, 30)));
+          context.getComponentInstanceId(), rootId, Long.MAX_VALUE, DiscussionSettings.HISTORY_PAGE_SIZE.value())));
     }
     preparePage(context);
   }
@@ -158,7 +159,7 @@ public class DiscussionWebController extends
   public void threadHistory(DiscussionWebRequestContext context) {
     String rootId = prepareThread(context);
     prepareHistory(context, webResult(() -> conversations().threadHistory(
-        context.getComponentInstanceId(), rootId, number(context, "before", Long.MAX_VALUE), 30)));
+        context.getComponentInstanceId(), rootId, number(context, "before", Long.MAX_VALUE), DiscussionSettings.HISTORY_PAGE_SIZE.value())));
   }
 
   @GET
@@ -269,6 +270,7 @@ public class DiscussionWebController extends
   }
 
   private void preparePage(DiscussionWebRequestContext context) {
+    context.getRequest().setAttribute("discussionSettings", DiscussionSettings.forClient());
     context.getRequest().setAttribute("uploadLimits", uploadSettings().forInstance(context.getComponentInstanceId()));
     context.getRequest().setAttribute("discussionInstanceId", context.getComponentInstanceId());
     if (instanceInfo == null) {
@@ -444,7 +446,7 @@ public class DiscussionWebController extends
 
   private void loadHistory(DiscussionWebRequestContext context, long before) {
     prepareHistory(context,
-        webResult(() -> conversations().history(context.getComponentInstanceId(), before, 30)));
+        webResult(() -> conversations().history(context.getComponentInstanceId(), before, DiscussionSettings.HISTORY_PAGE_SIZE.value())));
   }
 
   private void prepareHistory(DiscussionWebRequestContext context,

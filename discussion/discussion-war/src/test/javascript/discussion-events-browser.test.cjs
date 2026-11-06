@@ -168,3 +168,15 @@ test('late option responses cannot overwrite a reopened dialog and date defaults
     }
   } finally {await browser.close();}
 });
+
+test('changing the start uses the configured event duration without altering server-provided defaults', async () => {
+  const {browser,page} = await setup();
+  try {
+    await page.evaluate(() => {document.getElementById('discussion').dataset.eventDurationMinutes = '90';});
+    await open(page);
+    assert.equal(await page.locator('#discussion-event-end').inputValue(), '2026-11-04T11:00');
+    await page.locator('#discussion-event-start').fill('2026-11-05T13:00');
+    await page.locator('#discussion-event-start').dispatchEvent('change');
+    assert.equal(await page.locator('#discussion-event-end').inputValue(), '2026-11-05T14:30');
+  } finally {await browser.close();}
+});

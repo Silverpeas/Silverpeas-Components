@@ -82,18 +82,33 @@ class DiscussionUploadSettingsTest {
     assertThrows(IllegalArgumentException.class, () -> limits.validate(List.of(), null));
   }
   @Test
-  void nativeDescriptorDeclaresTheThreeEditableInstanceParameters() throws Exception {
+  void nativeDescriptorDeclaresTheFourEditableInstanceParameters() throws Exception {
     var descriptor = java.nio.file.Path.of(System.getProperty("basedir"), "..", "discussion-configuration",
         "src", "main", "config", "xmlcomponents", "discussion.xml");
     var component = jakarta.xml.bind.JAXBContext.newInstance(org.silverpeas.core.admin.component.model.WAComponent.class)
         .createUnmarshaller().unmarshal(new javax.xml.transform.stream.StreamSource(descriptor.toFile()),
             org.silverpeas.core.admin.component.model.WAComponent.class).getValue();
     var parameters = component.getParameters();
-    assertEquals(3, parameters.size());
+    assertEquals(4, parameters.size());
     assertEquals(List.of(DiscussionUploadSettings.MAX_IMAGES, DiscussionUploadSettings.IMAGE_SIZE,
-        DiscussionUploadSettings.FILE_SIZE), parameters.stream().map(org.silverpeas.core.admin.component.model.Parameter::getName).toList());
-    assertEquals(List.of("4", "5", "20"), parameters.stream().map(org.silverpeas.core.admin.component.model.Parameter::getValue).toList());
+        DiscussionUploadSettings.FILE_SIZE, DiscussionUploadSettings.MAX_FILES), parameters.stream().map(org.silverpeas.core.admin.component.model.Parameter::getName).toList());
+    assertEquals(List.of("4", "5", "20", "4"), parameters.stream().map(org.silverpeas.core.admin.component.model.Parameter::getValue).toList());
     assertTrue(parameters.stream().allMatch(parameter -> "always".equals(parameter.getUpdatable())));
+  }
+
+  @Test
+  void fileCountIsIsolatedPerInstanceAndValidatedAlongsideImagesAndSizes() throws Exception {
+    when(organization.getComponentParameterValue("discussion1", DiscussionUploadSettings.MAX_FILES)).thenReturn("6");
+    var file = DiscussionFileUpload.read(DiscussionFileUploadTest.file("test.txt", new byte[]{42}));
+    var files = java.util.Collections.nCopies(6, file);
+    assertEquals(6, settings.forInstance("discussion1").getMaxFiles());
+    settings.forInstance("discussion1").validate(List.of(), files);
+    assertThrows(IllegalArgumentException.class, () -> settings.forInstance("discussion2").validate(List.of(), files));
+    for (String invalid : List.of("", "0", "-2", "abc", "2147483648")) {
+      when(organization.getComponentParameterValue("discussion1", DiscussionUploadSettings.MAX_FILES)).thenReturn(invalid);
+      assertEquals(4, settings.forInstance("discussion1").getMaxFiles());
+    }
+    assertThrows(IllegalArgumentException.class, () -> new DiscussionUploadSettings.Limits(1, 1, 1, 0));
   }
 
 }

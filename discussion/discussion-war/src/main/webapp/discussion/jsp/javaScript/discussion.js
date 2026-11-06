@@ -59,7 +59,7 @@
       }
     };
     if (participants) {
-      const presenceTimer = window.setInterval(refreshPresence, 30000);
+      const presenceTimer = window.setInterval(refreshPresence, Number(discussion.dataset.presenceRefreshMs) || 30000);
       window.addEventListener('pagehide', () => window.clearInterval(presenceTimer), { once: true });
       document.addEventListener('visibilitychange', refreshPresence);
       document.addEventListener('discussion:changed', refreshPresence);

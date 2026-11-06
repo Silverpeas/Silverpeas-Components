@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.discussion.service;
 
+import org.silverpeas.components.discussion.DiscussionSettings;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import java.time.ZoneId;
@@ -77,9 +78,9 @@ public class DiscussionEventService {
     requireWritableChannel(instanceId, false);
     var choices = targets(instanceId, language).stream()
         .map(target -> new DiscussionEventOptions.CalendarChoice(target.calendar().getId(), target.label())).toList();
-    var start = ZonedDateTime.now(zone).plusMinutes(15).withSecond(0).withNano(0);
+    var start = ZonedDateTime.now(zone).plusMinutes(DiscussionSettings.EVENT_LEAD_MINUTES.value()).withSecond(0).withNano(0);
     var defaults = new DiscussionEventOptions.Defaults(zone.getId(),
-        start.toLocalDateTime().toString(), start.plusHours(1).toLocalDateTime().toString());
+        start.toLocalDateTime().toString(), start.plusMinutes(DiscussionSettings.EVENT_DURATION_MINUTES.value()).toLocalDateTime().toString());
     return new DiscussionEventOptions(choices, invitees(instanceId).size(), defaults);
   }
 

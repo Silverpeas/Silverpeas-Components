@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.discussion.service;
 
+import org.silverpeas.components.discussion.DiscussionSettings;
 import java.util.List;
 import java.util.Map;
 import org.silverpeas.components.discussion.model.DiscussionLike;
@@ -385,8 +386,8 @@ public class DefaultConversationService implements ConversationService {
     Conversation conversation = conversations.current(instanceId, false);
     DiscussionMessage message = messageIn(conversation, messageId);
     return message.getThreadRootId() == null
-        ? history(instanceId, message.getSequenceNumber() + 1, 30)
-        : threadHistory(instanceId, message.getThreadRootId(), message.getSequenceNumber() + 1, 30);
+        ? history(instanceId, message.getSequenceNumber() + 1, DiscussionSettings.HISTORY_PAGE_SIZE.value())
+        : threadHistory(instanceId, message.getThreadRootId(), message.getSequenceNumber() + 1, DiscussionSettings.HISTORY_PAGE_SIZE.value());
   }
 
   @Override

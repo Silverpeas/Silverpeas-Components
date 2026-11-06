@@ -30,9 +30,9 @@ const css = path.join(__dirname, '../../main/webapp/discussion/jsp/css/discussio
 const row = (id, body = 'Message ' + id, unread = false) => `<article id="message-${id}" class="discussion-message ${unread ? 'discussion-message--unread' : ''}" data-sequence="${id}"><p class="discussion-body">${body}</p><details><summary>Edit</summary><textarea name="body">${body}</textarea></details><button class="discussion-like-button">0</button></article>`;
 const fragment = rows => `<div class="discussion-page" data-unread-count="1">${rows}<div class="discussion-unread-divider">Unread</div></div>`;
 const launch = () => chromium.launch({executablePath: process.env.CHROME_PATH || undefined, args: ['--no-sandbox']});
-async function open(browser, count = 30, focus = '') {
+async function open(browser, count = 30, focus = '', retryMs = 1000) {
   const page = await browser.newPage();
-  await page.setContent(`<main id="discussion" data-updates="/updates" data-instance-id="discussion1" data-message-id="${focus}"><span class="discussion-unread-count">0</span><form class="discussion-read-form" hidden><input name="sequence" value="${count}"></form><div id="discussion-scroll" class="discussion-scroll"><section id="discussion-history"><div class="discussion-page" data-before="1" data-more="false">${Array.from({length: count}, (_, i) => row(i+1)).join('')}</div></section></div><p id="discussion-live-error">Error</p><textarea id="draft">Draft</textarea></main>`);
+  await page.setContent(`<main id="discussion" data-updates="/updates" data-live-retry-initial-ms="${retryMs}" data-live-retry-max-ms="${retryMs}" data-instance-id="discussion1" data-message-id="${focus}"><span class="discussion-unread-count">0</span><form class="discussion-read-form" hidden><input name="sequence" value="${count}"></form><div id="discussion-scroll" class="discussion-scroll"><section id="discussion-history"><div class="discussion-page" data-before="1" data-more="false">${Array.from({length: count}, (_, i) => row(i+1)).join('')}</div></section></div><p id="discussion-live-error">Error</p><textarea id="draft">Draft</textarea></main>`);
   await page.addStyleTag({path: css});
   await page.addStyleTag({content: '#discussion #discussion-scroll{height:250px;min-height:0}.discussion-message{min-height:100px}'});
   await page.evaluate(() => {
@@ -301,4 +301,19 @@ test('scope synchronization advances across messages in other threads without lo
     await refresh(page, '<div class="discussion-page" data-last-sequence="501" data-sync-sequence="501" data-unread-count="3"></div>');
     assert.equal(await page.evaluate(() => calls.at(-1).after),500);
   } finally { await browser.close(); }
+});
+
+test('failed event-driven refreshes use the configured retry delay', async () => {
+  const browser = await launch();
+  try {
+    const page = await open(browser, 1, '', 700);
+    await page.evaluate(() => {
+      window.retryDelays = [];
+      window.setTimeout = (callback, delay) => {retryDelays.push(delay); return 1;};
+      window.tick();
+      window.fail(new Error('offline'));
+    });
+    await page.waitForFunction(() => retryDelays.length > 0);
+    assert.equal(await page.evaluate(() => retryDelays[0]), 700);
+  } finally {await browser.close();}
 });

@@ -243,4 +243,16 @@ class DiscussionEventServiceTest {
     when(component.getLabel("fr")).thenReturn(id);
     return component;
   }
+  @Test
+  void eventDefaultsUseTheConfiguredDurationInTheUsersTimeZone() {
+    try (var settings = org.silverpeas.components.discussion.DiscussionSettingsTestSupport.configured(
+        java.util.Map.of("event.durationMinutes", "90")); var current = mockStatic(User.class)) {
+      current.when(User::getCurrentRequester).thenReturn(actor);
+      var defaults = service.options("discussion1", ZONE, "fr").defaults();
+      assertEquals(90, java.time.Duration.between(java.time.LocalDateTime.parse(defaults.start()),
+          java.time.LocalDateTime.parse(defaults.end())).toMinutes());
+      assertEquals("Europe/Paris", defaults.zone());
+    }
+  }
+
 }

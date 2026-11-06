@@ -53,7 +53,9 @@
     let stopped = false;
     let dirty = false;
     let retryTimer;
-    let retryDelay = 1000;
+    const initialRetryMs = Number(discussion.dataset.liveRetryInitialMs) || 1000;
+    const maximumRetryMs = Math.max(initialRetryMs, Number(discussion.dataset.liveRetryMaxMs) || 30000);
+    let retryDelay = initialRetryMs;
     let source;
     const deferred = new Set();
     let selectionPending = false;
@@ -147,13 +149,13 @@
           await synchronize();
         } while (dirty && !inactive() && !stopped);
         failure.hidden = Boolean(source?.isEnabled());
-        retryDelay = 1000;
+        retryDelay = initialRetryMs;
       } catch (error) {
         dirty = true;
         failure.hidden = false;
         // Retry a failed synchronization only, never poll an unchanged conversation.
         retryTimer = window.setTimeout(refresh, retryDelay);
-        retryDelay = Math.min(retryDelay * 2, 30000);
+        retryDelay = Math.min(retryDelay * 2, maximumRetryMs);
       } finally {
         loading = false;
       }

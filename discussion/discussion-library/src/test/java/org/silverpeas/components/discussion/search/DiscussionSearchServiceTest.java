@@ -171,4 +171,22 @@ class DiscussionSearchServiceTest {
   private MatchingIndexEntry hit(String instance, String type, String id) {
     return new MatchingIndexEntry(new IndexEntryKey(instance, type, id));
   }
+  @Test
+  void pageSizeOverrideControlsTheReturnedSliceAndNextOffset() throws Exception {
+    when(engine.search(any())).thenReturn(new PlainSearchResult(List.of(), List.of(
+        hit("discussion1", "DiscussionMessage", "first"), hit("discussion1", "DiscussionMessage", "second"))));
+    var selected = List.of(message("first"), message("second"));
+    when(messages.selected(eq("conversation1"), anyList())).thenReturn(selected);
+    try (var configuration = org.silverpeas.components.discussion.DiscussionSettingsTestSupport.configured(
+        java.util.Map.of("search.pageSize", "1")); var users = mockStatic(User.class)) {
+      var user = mock(User.class);
+      when(user.getId()).thenReturn("42");
+      users.when(User::getCurrentRequester).thenReturn(user);
+      var page = service.search("discussion1", "projet", 0);
+      assertEquals(List.of("first"), page.messages().stream().map(DiscussionMessage::getId).toList());
+      assertTrue(page.isHasMore());
+      assertEquals(List.of("second"), service.search("discussion1", "projet", 1).messages().stream().map(DiscussionMessage::getId).toList());
+    }
+  }
+
 }

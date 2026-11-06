@@ -72,13 +72,13 @@
         return;
       }
       const now = Date.now();
-      if (!typing || now - lastSent >= 2500) {
+      if (!typing || now - lastSent >= (Number(discussion.dataset.typingIntervalMs) || 2500)) {
         signal(true);
         lastSent = now;
       }
       typing = true;
       window.clearTimeout(stopTimer);
-      stopTimer = window.setTimeout(stop, 5000);
+      stopTimer = window.setTimeout(stop, Number(discussion.dataset.typingIdleMs) || 5000);
     };
     const render = () => {
       window.clearTimeout(expiryTimer);
@@ -112,7 +112,7 @@
         }
         revisions.set(data.userId, data.revision);
         if (data.ttl > 0) {
-          typers.set(data.userId, {name:data.name, expires:Date.now() + Math.min(data.ttl, 8000)});
+          typers.set(data.userId, {name:data.name, expires:Date.now() + Math.min(data.ttl, Number(discussion.dataset.typingTtlMs) || 8000)});
         } else {
           typers.delete(data.userId);
         }
