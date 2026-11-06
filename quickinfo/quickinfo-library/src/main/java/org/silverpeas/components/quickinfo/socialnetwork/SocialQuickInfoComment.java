@@ -25,7 +25,7 @@
 package org.silverpeas.components.quickinfo.socialnetwork;
 
 import org.silverpeas.components.quickinfo.model.News;
-import org.silverpeas.components.quickinfo.model.QuickInfoServiceProvider;
+import org.silverpeas.components.quickinfo.model.QuickInfoService;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.annotation.Provider;
@@ -36,6 +36,7 @@ import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.socialnetwork.provider.SocialNewsCommentProvider;
 import org.silverpeas.core.util.URLUtil;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -43,6 +44,9 @@ import java.util.List;
 
 @Provider
 public class SocialQuickInfoComment implements SocialNewsCommentProvider {
+
+  @Inject
+  private QuickInfoService quickInfoService;
 
   private List<String> getListResourceType() {
     List<String> listResourceType = new ArrayList<>();
@@ -53,9 +57,8 @@ public class SocialQuickInfoComment implements SocialNewsCommentProvider {
   @SuppressWarnings("unchecked")
   private List<SocialInformation> decorate(List<SocialInformationComment> listSocialInformation) {
     for (SocialInformationComment socialInformation : listSocialInformation) {
-      String resourceId = socialInformation.getComment().getResourceReference().getLocalId();
-
-      News news = QuickInfoServiceProvider.getQuickInfoService().getNews(resourceId);
+      var newsRef = socialInformation.getComment().getResourceReference();
+      News news = quickInfoService.getNews(newsRef);
 
       //set URL, title and description of the news
       socialInformation.setUrl(URLUtil
@@ -81,8 +84,8 @@ public class SocialQuickInfoComment implements SocialNewsCommentProvider {
   public List<SocialInformation> getSocialInformationListOfMyContacts(String myId,
       List<String> myContactsIds, Date begin, Date end) {
     OrganizationController oc = OrganizationControllerProvider.getOrganisationController();
-    List<String> instanceIds = new ArrayList<>();
-    instanceIds.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "quickinfo")));
+    List<String> instanceIds = new ArrayList<>(
+        Arrays.asList(oc.getComponentIdsForUser(myId, "quickinfo")));
 
     List<SocialInformationComment> listSocialInformation =
         CommentServiceProvider.getCommentService()

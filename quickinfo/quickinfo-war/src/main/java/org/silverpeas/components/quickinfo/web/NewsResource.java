@@ -1,9 +1,11 @@
 package org.silverpeas.components.quickinfo.web;
 
 import org.silverpeas.components.quickinfo.model.News;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.web.rs.annotation.Authorized;
+import org.silverpeas.kernel.exception.NotFoundException;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -49,6 +51,8 @@ public class NewsResource extends AbstractNewsResource {
     try {
       News news = getNewsById(onNewsId);
       return asWebEntity(news, true);
+    } catch (WebApplicationException ex) {
+      throw ex;
     } catch (Exception ex) {
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }
@@ -58,7 +62,8 @@ public class NewsResource extends AbstractNewsResource {
   @Path("{newsId}/acknowledge")
   public void acknowledge(@PathParam("newsId") String onNewsId) {
     try {
-      getService().acknowledgeNews(onNewsId, getUser().getId());
+      getService().acknowledgeNews(new ResourceReference(onNewsId, getComponentId()),
+          getUser().getId());
     } catch (Exception ex) {
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }
@@ -71,15 +76,19 @@ public class NewsResource extends AbstractNewsResource {
       if (!isContributor()) {
         throw new WebApplicationException(Status.UNAUTHORIZED);
       }
-      getService().removeNews(onNewsId);
+      getService().removeNews(new ResourceReference(onNewsId, getComponentId()));
       return Response.ok().build();
+    } catch (WebApplicationException ex) {
+      throw ex;
+    } catch (NotFoundException ex) {
+      throw new WebApplicationException(ex, Status.NOT_FOUND);
     } catch (Exception ex) {
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }
   }
 
   private News getNewsById(String id) {
-    News news = getService().getNews(id);
+    News news = getService().getNews(new ResourceReference(id, getComponentId()));
     if (news == null) {
       throw new WebApplicationException(Status.NOT_FOUND);
     }

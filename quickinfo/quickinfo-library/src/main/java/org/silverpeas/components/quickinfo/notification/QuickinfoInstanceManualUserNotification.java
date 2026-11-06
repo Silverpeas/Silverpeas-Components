@@ -26,10 +26,12 @@ package org.silverpeas.components.quickinfo.notification;
 
 import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.components.quickinfo.model.QuickInfoService;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.notification.user.AbstractComponentInstanceManualUserNotification;
 import org.silverpeas.core.notification.user.NotificationContext;
 import org.silverpeas.core.notification.user.UserNotification;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 
 /**
@@ -41,12 +43,16 @@ public class QuickinfoInstanceManualUserNotification  extends
 
   private static final String NEWS_KEY = "NewsKey";
 
+  @Inject
+  private QuickInfoService quickInfoService;
+
   @Override
   protected boolean check(final NotificationContext context) {
     final String newsId = context.getContributionId();
-    final News news = QuickInfoService.get().getNews(newsId);
+    final News news = quickInfoService.getNews(new ResourceReference(newsId,
+        context.getComponentId()));
     context.put(NEWS_KEY, news);
-    return news.canBeAccessedBy(context.getSender());
+    return news != null && news.canBeAccessedBy(context.getSender());
   }
 
   @Override

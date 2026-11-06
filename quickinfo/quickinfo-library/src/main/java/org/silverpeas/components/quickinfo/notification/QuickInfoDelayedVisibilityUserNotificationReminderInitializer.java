@@ -27,12 +27,14 @@ package org.silverpeas.components.quickinfo.notification;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.components.quickinfo.model.QuickInfoService;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.kernel.util.Pair;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -42,34 +44,40 @@ import java.time.ZoneId;
 import java.util.List;
 
 /**
- * In charge of initializing the reminder about news with a publish visibility set into the future.
+ * In charge of initializing the reminder about news with a publishing visibility set into the
+ * future.
  * @author silveryocha
  */
 @Service
 public class QuickInfoDelayedVisibilityUserNotificationReminderInitializer
     implements Initialization {
 
-  private File dataFile = new File(FileRepositoryManager.getInitDataDirPath(),
+  private final File dataFile = new File(FileRepositoryManager.getInitDataDirPath(),
       "quickInfoDelayedVisibilityReminderInitialization");
 
   @Inject
   private QuickInfoDelayedVisibilityUserNotificationReminder delayedVisibilityUserNotificationReminder;
 
+  @Inject
+  private QuickInfoService quickInfoService;
+
   @Override
   public void init() throws Exception {
     if (!dataFile.exists()) {
-      final List<String> potentialNewsIds = JdbcSqlQuery.select("n.id")
-          .from("sc_quickinfo_news n, sb_publication_publi p")
-          .where("CAST(n.foreignid AS INT) = p.pubid")
-          .and("p.pubbegindate >= ?", DateUtil.today2SQLDate())
-          .execute(r -> r.getString(1));
+      final List<Pair<String, String>> potentialNewsIds =
+          JdbcSqlQuery.select("n.id, n.instanceId")
+              .from("sc_quickinfo_news n, sb_publication_publi p")
+              .where("CAST(n.foreignid AS INT) = p.pubid")
+              .and("p.pubbegindate >= ?", DateUtil.today2SQLDate())
+              .execute(r -> Pair.of(r.getString(1), r.getString(2)));
       final StringBuilder report = new StringBuilder((potentialNewsIds.size() + 1) * 180);
       try {
         if (potentialNewsIds.isEmpty()) {
           report.append("No reminder has been set about delayed visibility.");
         } else {
           potentialNewsIds.forEach(i -> {
-            final News potentialNews = QuickInfoService.get().getNews(i);
+            final ResourceReference newsId = new ResourceReference(i.getFirst(), i.getSecond());
+            final News potentialNews = quickInfoService.getNews(newsId);
             if (delayedVisibilityUserNotificationReminder.setAbout(potentialNews)) {
               report.append(MessageFormat.format(
                   "Reminder set for news with id {0}, located into instance {1}, linked to " +

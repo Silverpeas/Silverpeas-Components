@@ -66,6 +66,19 @@ public class NewsRepositoryIT {
   }
 
   @Test
+  public void loadANewsOfTheGivenInstance() {
+    News news = newsRepository.getByIdAndInstanceId("news_3", "quickinfo2");
+    assertThat(news, Matchers.notNullValue());
+    assertThat(news.getPublicationId(), Matchers.is("256"));
+  }
+
+  @Test
+  public void loadANewsOfAnotherInstanceFindsNothing() {
+    News news = newsRepository.getByIdAndInstanceId("news_3", "quickinfo1");
+    assertThat(news, Matchers.nullValue());
+  }
+
+  @Test
   public void testLoadingFromComponentId() {
     List<News> allNews = newsRepository.getByComponentId("quickinfo1");
     assertThat(allNews, hasSize(2));
