@@ -92,10 +92,12 @@
             <c:if test="${not empty messageFiles[message.id]}">
               <ul class="discussion-message-files">
                 <c:forEach items="${messageFiles[message.id]}" var="file">
-                  <li><a href="<c:out value='${file.url}'/>" download="<c:out value='${file.name}'/>"><svg class="discussion-icon" aria-hidden="true"><use href="${discussionIcons}#paperclip"/></svg> <c:out value="${file.name}"/></a>
-                    <c:if test="${file.viewable}"><button class="discussion-icon-button discussion-view-file" type="button" data-attachment-id="${file.id}" data-language="${fn:escapeXml(file.language)}"
-                        title="<fmt:message key='discussion.viewFile'/>" aria-label="<fmt:message key='discussion.viewFile'/> : ${fn:escapeXml(file.name)}"><svg class="discussion-icon" aria-hidden="true"><use href="${discussionIcons}#view"/></svg></button></c:if>
-                    <c:set var="editableFile" value="${file}" scope="request"/><jsp:include page="file-editor.jsp"/><c:remove var="editableFile" scope="request"/>
+                  <li><a href="<c:out value='${file.url}'/>" download="<c:out value='${file.name}'/>"><svg class="discussion-icon" aria-hidden="true"><use href="${discussionIcons}#paperclip"/></svg> <span class="discussion-file-name"><c:out value="${file.name}"/></span></a>
+                    <span class="discussion-file-actions">
+                      <c:if test="${file.viewable}"><button class="discussion-icon-button discussion-view-file" type="button" data-attachment-id="${file.id}" data-language="${fn:escapeXml(file.language)}"
+                          title="<fmt:message key='discussion.viewFile'/>" aria-label="<fmt:message key='discussion.viewFile'/> : ${fn:escapeXml(file.name)}"><svg class="discussion-icon" aria-hidden="true"><use href="${discussionIcons}#view"/></svg></button></c:if>
+                      <c:set var="editableFile" value="${file}" scope="request"/><jsp:include page="file-editor.jsp"/><c:remove var="editableFile" scope="request"/>
+                    </span>
                   </li>
                 </c:forEach>
               </ul>
