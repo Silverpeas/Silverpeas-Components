@@ -32,13 +32,9 @@ import org.silverpeas.components.questionreply.model.Reply;
 import org.silverpeas.components.questionreply.service.QuestionManagerProvider;
 import org.silverpeas.components.questionreply.service.notification.QuestionNotifier;
 import org.silverpeas.components.questionreply.service.notification.ReplyNotifier;
-import org.silverpeas.components.whitepages.control.CardManager;
-import org.silverpeas.components.whitepages.model.Card;
 import org.silverpeas.core.WAPrimaryKey;
-import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.model.Attachments;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngine;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
@@ -52,8 +48,6 @@ import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
-import org.silverpeas.core.pdc.pdc.model.SearchContext;
-import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.persistence.jdbc.bean.IdPK;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.kernel.bundle.ResourceLocator;
@@ -142,7 +136,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    * destinataires met la question en session
    */
   public Question getQuestion(long questionId) throws QuestionReplyException {
-    Question question = QuestionManagerProvider.getQuestionManager().getQuestion(questionId);
+    Question question = getQuestionOfThisFAQ(questionId);
     setCurrentQuestion(question);
     question.writeRecipients(
         QuestionManagerProvider.getQuestionManager().getQuestionRecipients(questionId));
@@ -180,10 +174,47 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   public Reply getReply(long replyId) throws QuestionReplyException {
     Reply reply = QuestionManagerProvider.getQuestionManager().getReply(replyId);
     if (reply == null) {
-      throw new NotFoundException("No reply found with id " + replyId);
+      throw new NotFoundException("No such reply " + replyId + " in " + getComponentId());
     }
+    getQuestionOfThisFAQ(reply.getQuestionId());
     setCurrentReply(reply);
     return reply;
+  }
+
+  /**
+   * Gets the specified question of this FAQ. The user is authorized on this FAQ only, so a question
+   * of another FAQ is never served.
+   * @param questionId the unique identifier of the question.
+   * @return the question.
+   * @throws NotFoundException if this FAQ has no such question.
+   * @throws QuestionReplyException if an error occurs while fetching the question.
+   */
+  private Question getQuestionOfThisFAQ(long questionId) throws QuestionReplyException {
+    Question question = QuestionManagerProvider.getQuestionManager().getQuestion(questionId);
+    if (question == null || !getComponentId().equals(question.getInstanceId())) {
+      throw new NotFoundException(
+          "No such question " + questionId + " in " + getComponentId());
+    }
+    return question;
+  }
+
+  private void requireQuestionsOfThisFAQ(Collection<Long> questionIds)
+      throws QuestionReplyException {
+    for (Long questionId : questionIds) {
+      getQuestionOfThisFAQ(questionId);
+    }
+  }
+
+  private void requireRepliesOfCurrentQuestion(Collection<Long> replyIds)
+      throws QuestionReplyException {
+    long questionId = ((IdPK) getCurrentQuestion().getPK()).getIdAsLong();
+    for (Long replyId : replyIds) {
+      Reply reply = QuestionManagerProvider.getQuestionManager().getReply(replyId);
+      if (reply == null || reply.getQuestionId() != questionId) {
+        throw new NotFoundException(
+            "No such reply " + replyId + " to the question " + questionId);
+      }
+    }
   }
 
   /*
@@ -323,6 +354,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    * toutes les réponses publiques ou privées des questions
    */
   public void deleteQuestions(Collection<Long> questionsIds) throws QuestionReplyException {
+    requireQuestionsOfThisFAQ(questionsIds);
     try {
       QuestionManagerProvider.getQuestionManager().deleteQuestionAndReplies(questionsIds);
     } catch (QuestionReplyException e) {
@@ -331,6 +363,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   }
 
   public void deleteR(Collection<Long> replyIds) throws QuestionReplyException {
+    requireRepliesOfCurrentQuestion(replyIds);
     try {
       deletePrivateReplies(replyIds);
       int rest = deletePublicReplies(replyIds);
@@ -353,6 +386,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    * Clos une liste de questions
    */
   public void closeQuestions(Collection<Long> questionIds) throws QuestionReplyException {
+    requireQuestionsOfThisFAQ(questionIds);
     QuestionManagerProvider.getQuestionManager().closeQuestions(questionIds);
   }
 
@@ -361,15 +395,13 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    * met en session la question
    */
   public void closeQuestion(long questionId) throws QuestionReplyException {
-    Collection<Long> questionIds = new ArrayList<>();
-    questionIds.add(questionId);
-    QuestionManagerProvider.getQuestionManager().closeQuestions(questionIds);
+    getQuestionOfThisFAQ(questionId);
+    QuestionManagerProvider.getQuestionManager().closeQuestions(singletonList(questionId));
   }
 
   public void openQuestion(long questionId) throws QuestionReplyException {
-    Collection<Long> questionIds = new ArrayList<>();
-    questionIds.add(questionId);
-    QuestionManagerProvider.getQuestionManager().openQuestions(questionIds);
+    getQuestionOfThisFAQ(questionId);
+    QuestionManagerProvider.getQuestionManager().openQuestions(singletonList(questionId));
   }
 
   /*
@@ -382,14 +414,11 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   }
 
   /*
-   * Supprime les réponses privées =>
-   * QuestionManagerProvider.getQuestionManager().updateRepliesPrivateStatus() retourne le nombre de
-   * réponses privées restantes
+   * Supprime les réponses privées
    */
-  private int deletePrivateReplies(Collection<Long> replyIds) throws QuestionReplyException {
+  private void deletePrivateReplies(Collection<Long> replyIds) throws QuestionReplyException {
     QuestionManagerProvider.getQuestionManager()
         .updateRepliesPrivateStatus(replyIds, getCurrentQuestion());
-    return getCurrentQuestion().getPrivateReplyNumber();
   }
 
   /*
@@ -480,84 +509,6 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   public boolean isUserExpert() {
     Collection<SilverpeasRole> userRoles = getSilverpeasUserRoles();
     return userRoles.contains(SilverpeasRole.WRITER) || userRoles.contains(SilverpeasRole.ADMIN);
-  }
-
-  /*
-   * Retourne true si la liste contient deja le user
-   */
-  private boolean exist(UserDetail user, Collection<UserDetail> listUser) {
-    if (user != null) {
-      String idUser = user.getId();
-      for (UserDetail currentUser : listUser) {
-        if (currentUser.getId().equals(idUser)) {
-          return true;
-        }
-      }
-      return false;
-    }
-    return true;
-  }
-
-  /*
-   * Récupère la liste des positions d'une question
-   */
-  public SearchContext getSilverContentIdPosition() throws QuestionReplyException {
-    try {
-      return PdcManager.get()
-          .getSilverContentIdSearchContext(Integer.parseInt(getCurrentQuestionContentId()),
-              getComponentId());
-    } catch (Exception e) {
-      throw new QuestionReplyException(e);
-    }
-  }
-
-  public String genericWriters() {
-    // This method is no more used at the moment (Silverpeas 6.0)
-    return "";
-  }
-
-  /*
-   * Récupère la liste des experts du domaine de la question
-   */
-  public Collection<UserDetail> getCurrentQuestionWriters() throws QuestionReplyException {
-    OrganizationController orga = getOrganisationController();
-    List<UserDetail> arrayUsers = new ArrayList<>();
-
-    try {
-      ContentManagementEngine contentMgtEngine = ContentManagementEngineProvider.getContentManagementEngine();
-      // recupere la liste de toutes les instances d'annuaire
-      String[] instances = orga.getCompoId("whitePages");
-      List<String> listeInstanceId = Arrays.stream(instances)
-          .map(id -> "whitePages" + id)
-          .toList();
-
-      // recupere la liste de tous les experts du domaine de classement de la
-      // question
-      SearchContext position = getSilverContentIdPosition();
-      if (position != null && !position.isEmpty()) {
-        PdcManager pdc = PdcManager.get();
-        List<Integer> liste = pdc.findSilverContentIdByPosition(position, listeInstanceId);
-
-        CardManager cardManager = CardManager.getInstance();
-        for (Integer silverContentId : liste) {
-          String internalContentId = contentMgtEngine.getInternalContentId(silverContentId);
-          long userCardId = Long.parseLong(internalContentId);
-          Card card = cardManager.getCard(userCardId);
-          if (card != null) {
-            String idUser = card.getUserId();
-            UserDetail user = orga.getUserDetail(idUser);
-            if (!exist(user, arrayUsers)) {
-              arrayUsers.add(user);
-            }
-          }
-        }
-      }
-    } catch (Exception e) {
-      throw new QuestionReplyException(e);
-    }
-
-    return arrayUsers;
-
   }
 
   /**

@@ -550,9 +550,11 @@ public class SilverpeasQuestionManager implements QuestionManager {
 
   @Override
   public List<Question> getQuestionsByIds(List<String> ids) throws QuestionReplyException {
-    BeanCriteria criteria = ids.isEmpty() ? BeanCriteria.emptyCriteria() :
-        BeanCriteria.addCriterion("id",
-            ids.stream().map(Integer::parseInt).collect(Collectors.toSet()));
+    if (ids.isEmpty()) {
+      return new ArrayList<>();
+    }
+    BeanCriteria criteria = BeanCriteria.addCriterion("id",
+        ids.stream().map(Integer::parseInt).collect(Collectors.toSet()));
     try {
       return new ArrayList<>(questionDao.findBy(criteria));
     } catch (PersistenceException e) {

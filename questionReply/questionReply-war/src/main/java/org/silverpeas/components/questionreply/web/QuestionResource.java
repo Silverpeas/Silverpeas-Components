@@ -29,12 +29,10 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
-import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response.Status;
 import org.silverpeas.components.questionreply.model.Question;
-import org.silverpeas.components.questionreply.service.QuestionManager;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.web.rs.annotation.Authorized;
@@ -59,17 +57,14 @@ public class QuestionResource extends QuestionReplyBaseWebService {
   @PathParam("componentId")
   protected String componentId;
 
-  @Inject
-  private QuestionManager questionManager;
-
   @Override
   public String getComponentId() {
     return this.componentId;
   }
 
   /**
-   * Gets the JSON representation of the specified existing question. If the question doesn't exist,
-   * a 404 HTTP code is returned. If the user isn't authentified, a 401 HTTP code is returned. If
+   * Gets the JSON representation of the specified existing question. If the question doesn't exist
+   * in the FAQ, a 404 HTTP code is returned. If the user isn't authentified, a 401 HTTP code is returned. If
    * the user isn't authorized to access the question, a 403 is returned. If a problem occurs when
    * processing the request, a 503 HTTP code is returned.
    *
@@ -86,20 +81,19 @@ public class QuestionResource extends QuestionReplyBaseWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public QuestionEntity getQuestion(@PathParam("questionId") String onQuestionId) {
     try {
-      Question theQuestion = questionManager.getQuestion(Long.parseLong(
-          onQuestionId));
-      URI questionURI = getUri().getRequestUri();
+      Question theQuestion = getQuestionInComponent(onQuestionId);
       if (extractVisibleQuestions(Collections.singletonList(theQuestion)).isEmpty()) {
         throw new WebApplicationException(Status.FORBIDDEN);
       }
-      return asWebEntity(theQuestion, identifiedBy(questionURI));
+      return asWebEntity(theQuestion, identifiedBy(getUri().getRequestUri()));
     } catch (Exception ex) {
       throw encapsulateException(ex);
     }
   }
 
   /**
-   * Gets the questions whose the unique identifier is among the specified ones.
+   * Gets the questions of the FAQ whose the unique identifier is among the specified ones. The
+   * questions of other FAQs are ignored.
    *
    * @param ids the unique identifiers of the questions to get.
    * @return a list with the asked questions the user can see.
@@ -113,7 +107,10 @@ public class QuestionResource extends QuestionReplyBaseWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public List<QuestionEntity> getQuestions(@QueryParam("ids") Set<String> ids) {
     try {
-      List<Question> questions = questionManager.getQuestionsByIds(new ArrayList<>(ids));
+      List<Question> questions = getQuestionManager().getQuestionsByIds(new ArrayList<>(ids))
+          .stream()
+          .filter(q -> componentId.equals(q.getInstanceId()))
+          .collect(Collectors.toList());
       return asWebEntities(extractVisibleQuestions(questions));
     } catch (Exception ex) {
       throw encapsulateException(ex);
@@ -135,7 +132,7 @@ public class QuestionResource extends QuestionReplyBaseWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public List<QuestionEntity> getAllQuestions() {
     try {
-      List<Question> questions = questionManager.getAllQuestions(componentId);
+      List<Question> questions = getQuestionManager().getAllQuestions(componentId);
       return asWebEntities(extractVisibleQuestions(questions));
     } catch (Exception ex) {
       throw encapsulateException(ex);
@@ -158,7 +155,8 @@ public class QuestionResource extends QuestionReplyBaseWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public List<QuestionEntity> getAllQuestionsByCategory(@PathParam("categoryId") String categoryId) {
     try {
-      List<Question> questions = questionManager.getAllQuestionsByCategory(componentId, categoryId);
+      List<Question> questions =
+          getQuestionManager().getAllQuestionsByCategory(componentId, categoryId);
       return asWebEntities(extractVisibleQuestions(questions));
     } catch (Exception ex) {
       throw encapsulateException(ex);

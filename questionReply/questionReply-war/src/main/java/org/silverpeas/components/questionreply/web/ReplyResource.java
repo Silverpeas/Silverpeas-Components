@@ -32,10 +32,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response.Status;
-import org.silverpeas.components.questionreply.QuestionReplyException;
+import org.silverpeas.components.questionreply.model.Question;
 import org.silverpeas.components.questionreply.model.Reply;
-import org.silverpeas.components.questionreply.service.QuestionManager;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
@@ -62,9 +60,6 @@ public class ReplyResource extends QuestionReplyBaseWebService {
   protected String componentId;
 
   @Inject
-  private QuestionManager questionManager;
-
-  @Inject
   private AttachmentService attachmentService;
 
   @Override
@@ -73,10 +68,10 @@ public class ReplyResource extends QuestionReplyBaseWebService {
   }
 
   /**
-   * Gets the JSON representation of the specified existing question. If the reply doesn't exist, a
-   * 404 HTTP code is returned. If the user isn't authentified, a 401 HTTP code is returned. If the
-   * user isn't authorized to access the question, a 403 is returned. If a problem occurs when
-   * processing the request, a 503 HTTP code is returned.
+   * Gets the JSON representation of the replies to the specified question. If the question doesn't
+   * exist in the FAQ, a 404 HTTP code is returned. If the user isn't authentified, a 401 HTTP code
+   * is returned. If the user isn't authorized to access the question, a 403 is returned. If a
+   * problem occurs when processing the request, a 503 HTTP code is returned.
    *
    * @param onQuestionId the unique identifier of the question.
    * @return the response to the HTTP GET request with the JSON representation of the asked question
@@ -94,12 +89,12 @@ public class ReplyResource extends QuestionReplyBaseWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public List<ReplyEntity> getAllRepliesForQuestion(@PathParam("questionId") String onQuestionId) {
     try {
-      long questionId = Long.parseLong(onQuestionId);
-      List<Reply> replies = questionManager.getAllReplies(questionId,
-          componentId);
-      return asWebEntities(extractVisibleReplies(questionId, replies), getUserProfile());
+      Question question = getQuestionInComponent(onQuestionId);
+      List<Reply> replies =
+          getQuestionManager().getAllReplies(Long.parseLong(onQuestionId), componentId);
+      return asWebEntities(extractVisibleReplies(question, replies), getUserProfile());
     } catch (Exception ex) {
-      throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
+      throw encapsulateException(ex);
     }
   }
 
@@ -112,16 +107,18 @@ public class ReplyResource extends QuestionReplyBaseWebService {
   @Operation(summary = "Gets only the public replies to the given question.")
   @ApiResponse(responseCode = "200", description = "The public replies to the question.",
       content = @Content(array = @ArraySchema(schema = @Schema(implementation = ReplyEntity.class))))
+  @NotFound
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   @Path("public/question/{questionId}")
   public List<ReplyEntity> getPublicRepliesForQuestion(@PathParam("questionId") String onQuestionId) {
     try {
-      List<Reply> replies = questionManager.getQuestionPublicReplies(
+      getQuestionInComponent(onQuestionId);
+      List<Reply> replies = getQuestionManager().getQuestionPublicReplies(
           Long.parseLong(onQuestionId), componentId);
       return asWebEntities(replies, getUserProfile());
     } catch (Exception ex) {
-      throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
+      throw encapsulateException(ex);
     }
   }
 
@@ -165,6 +162,15 @@ public class ReplyResource extends QuestionReplyBaseWebService {
     return entity;
   }
 
+  /**
+   * Private replies should be visible to writers or publishers that have asked the question.
+   *
+   * @param questionAuthor the unique identifier of the question's author
+   * @param reply the reply to the question
+   * @param role the role the requester plays
+   * @param userId the unique identifier of the requester
+   * @return true if the reply is visible to the requester (the current user).
+   */
   boolean isReplyVisible(String questionAuthor, Reply reply, SilverpeasRole role,
       String userId) {
     boolean isPrivate = reply.getPublicReply() <= 0;
@@ -175,18 +181,12 @@ public class ReplyResource extends QuestionReplyBaseWebService {
     return true;
   }
 
-  List<Reply> extractVisibleReplies(long questionId, List<Reply> replies) throws
-      QuestionReplyException {
-    List<Reply> visibleReplies = new ArrayList<>(replies.size());
-    String authorId = questionManager.getQuestion(questionId).
-        getCreatorId();
+  List<Reply> extractVisibleReplies(Question question, List<Reply> replies) {
+    String authorId = question.getCreatorId();
     SilverpeasRole profile = getUserProfile();
     String userid = getUser().getId();
-    for (Reply reply : replies) {
-      if (isReplyVisible(authorId, reply, profile, userid)) {
-        visibleReplies.add(reply);
-      }
-    }
-    return visibleReplies;
+    return replies.stream()
+        .filter(reply -> isReplyVisible(authorId, reply, profile, userid))
+        .collect(Collectors.toCollection(() -> new ArrayList<>(replies.size())));
   }
 }
