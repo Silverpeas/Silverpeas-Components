@@ -425,12 +425,12 @@
       displayPublications(id);
     } else {
       displayPath(id);
-      displayOperations(id);
       $("#searchZone").css({'display':'block'});
       if (searchInProgress) {
         doPagination(${currentPageIndex});
+        displayOperations(id);
       } else {
-        displayPublications(id);
+        displayPublicationsAndOperations(id);
       }
     }
 
