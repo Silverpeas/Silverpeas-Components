@@ -63,11 +63,6 @@ public class QuestionReplyRequestRouter
     return "questionReply";
   }
 
-  /**
-   * @param mainSessionCtrl
-   * @param componentContext
-   * @return
-   */
   @Override
   public QuestionReplySessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
@@ -341,7 +336,7 @@ public class QuestionReplyRequestRouter
           request.setAttribute(PARAM_QUESTION_ID, Long.toString(questionId));
         } else if (type.startsWith("Publication")) {
           // traitement des fichiers joints
-          Reply reply = scc.getReply(Long.valueOf(id));
+          Reply reply = scc.getReply(Long.parseLong(id));
           long questionId = reply.getQuestionId();
           request.setAttribute(PARAM_QUESTION_ID, Long.toString(questionId));
         } else if ("Node".equalsIgnoreCase(type)) {

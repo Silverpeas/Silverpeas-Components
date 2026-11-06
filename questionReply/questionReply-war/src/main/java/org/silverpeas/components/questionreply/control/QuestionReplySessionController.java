@@ -32,13 +32,9 @@ import org.silverpeas.components.questionreply.model.Reply;
 import org.silverpeas.components.questionreply.service.QuestionManagerProvider;
 import org.silverpeas.components.questionreply.service.notification.QuestionNotifier;
 import org.silverpeas.components.questionreply.service.notification.ReplyNotifier;
-import org.silverpeas.components.whitepages.control.CardManager;
-import org.silverpeas.components.whitepages.model.Card;
 import org.silverpeas.core.WAPrimaryKey;
-import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.model.Attachments;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngine;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
@@ -52,9 +48,8 @@ import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
-import org.silverpeas.core.pdc.pdc.model.SearchContext;
-import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.persistence.jdbc.bean.IdPK;
+import org.silverpeas.kernel.exception.NotFoundException;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
@@ -127,7 +122,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    * destinataires met la question en session
    */
   public Question getQuestion(long questionId) throws QuestionReplyException {
-    Question question = QuestionManagerProvider.getQuestionManager().getQuestion(questionId);
+    Question question = getQuestionOfThisFAQ(questionId);
     setCurrentQuestion(question);
     question.writeRecipients(
         QuestionManagerProvider.getQuestionManager().getQuestionRecipients(questionId));
@@ -170,8 +165,48 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    */
   public Reply getReply(long replyId) throws QuestionReplyException {
     Reply reply = QuestionManagerProvider.getQuestionManager().getReply(replyId);
+    if (reply == null) {
+      throw new NotFoundException("No such reply " + replyId + " in " + getComponentId());
+    }
+    getQuestionOfThisFAQ(reply.getQuestionId());
     setCurrentReply(reply);
     return reply;
+  }
+
+  /**
+   * Gets the specified question of this FAQ. The user is authorized on this FAQ only, so a question
+   * of another FAQ is never served.
+   * @param questionId the unique identifier of the question.
+   * @return the question.
+   * @throws NotFoundException if this FAQ has no such question.
+   * @throws QuestionReplyException if an error occurs while fetching the question.
+   */
+  private Question getQuestionOfThisFAQ(long questionId) throws QuestionReplyException {
+    Question question = QuestionManagerProvider.getQuestionManager().getQuestion(questionId);
+    if (question == null || !getComponentId().equals(question.getInstanceId())) {
+      throw new NotFoundException(
+          "No such question " + questionId + " in " + getComponentId());
+    }
+    return question;
+  }
+
+  private void requireQuestionsOfThisFAQ(Collection<Long> questionIds)
+      throws QuestionReplyException {
+    for (Long questionId : questionIds) {
+      getQuestionOfThisFAQ(questionId);
+    }
+  }
+
+  private void requireRepliesOfCurrentQuestion(Collection<Long> replyIds)
+      throws QuestionReplyException {
+    long questionId = ((IdPK) getCurrentQuestion().getPK()).getIdAsLong();
+    for (Long replyId : replyIds) {
+      Reply reply = QuestionManagerProvider.getQuestionManager().getReply(replyId);
+      if (reply == null || reply.getQuestionId() != questionId) {
+        throw new NotFoundException(
+            "No such reply " + replyId + " to the question " + questionId);
+      }
+    }
   }
 
   /*
@@ -242,7 +277,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   /**
    * Persist new FAQ inside database and add positions
    * @return question identifier
-   * @throws QuestionReplyException
+   * @throws QuestionReplyException if the question cannot be saved
    */
   public long saveNewFAQ(Collection<UploadedFile> uploadedFiles) throws QuestionReplyException {
     newQuestion.setStatus(Question.CLOSED); // close
@@ -306,6 +341,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    * toutes les réponses publiques ou privées des questions
    */
   public void deleteQuestions(Collection<Long> questionsIds) throws QuestionReplyException {
+    requireQuestionsOfThisFAQ(questionsIds);
     try {
       QuestionManagerProvider.getQuestionManager().deleteQuestionAndReplies(questionsIds);
     } catch (QuestionReplyException e) {
@@ -314,6 +350,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   }
 
   public void deleteR(Collection<Long> replyIds) throws QuestionReplyException {
+    requireRepliesOfCurrentQuestion(replyIds);
     try {
       deletePrivateReplies(replyIds);
       int rest = deletePublicReplies(replyIds);
@@ -336,6 +373,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    * Clos une liste de questions
    */
   public void closeQuestions(Collection<Long> questionIds) throws QuestionReplyException {
+    requireQuestionsOfThisFAQ(questionIds);
     QuestionManagerProvider.getQuestionManager().closeQuestions(questionIds);
   }
 
@@ -344,15 +382,13 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    * met en session la question
    */
   public void closeQuestion(long questionId) throws QuestionReplyException {
-    Collection<Long> questionIds = new ArrayList<>();
-    questionIds.add(questionId);
-    QuestionManagerProvider.getQuestionManager().closeQuestions(questionIds);
+    getQuestionOfThisFAQ(questionId);
+    QuestionManagerProvider.getQuestionManager().closeQuestions(singletonList(questionId));
   }
 
   public void openQuestion(long questionId) throws QuestionReplyException {
-    Collection<Long> questionIds = new ArrayList<>();
-    questionIds.add(questionId);
-    QuestionManagerProvider.getQuestionManager().openQuestions(questionIds);
+    getQuestionOfThisFAQ(questionId);
+    QuestionManagerProvider.getQuestionManager().openQuestions(singletonList(questionId));
   }
 
   /*
@@ -365,14 +401,11 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   }
 
   /*
-   * Supprime les réponses privées =>
-   * QuestionManagerProvider.getQuestionManager().updateRepliesPrivateStatus() retourne le nombre de
-   * réponses privées restantes
+   * Supprime les réponses privées
    */
-  private int deletePrivateReplies(Collection<Long> replyIds) throws QuestionReplyException {
+  private void deletePrivateReplies(Collection<Long> replyIds) throws QuestionReplyException {
     QuestionManagerProvider.getQuestionManager()
         .updateRepliesPrivateStatus(replyIds, getCurrentQuestion());
-    return getCurrentQuestion().getPrivateReplyNumber();
   }
 
   /*
@@ -465,85 +498,6 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     return userRoles.contains(SilverpeasRole.WRITER) || userRoles.contains(SilverpeasRole.ADMIN);
   }
 
-  /*
-   * Retourne true si la liste contient deja le user
-   */
-  private boolean exist(UserDetail user, Collection<UserDetail> listUser) {
-    if (user != null) {
-      String idUser = user.getId();
-      for (UserDetail currentUser : listUser) {
-        if (currentUser.getId().equals(idUser)) {
-          return true;
-        }
-      }
-      return false;
-    }
-    return true;
-  }
-
-  /*
-   * Récupère la liste des positions d'une question
-   */
-  public SearchContext getSilverContentIdPosition() throws QuestionReplyException {
-    try {
-      return PdcManager.get()
-          .getSilverContentIdSearchContext(Integer.parseInt(getCurrentQuestionContentId()),
-              getComponentId());
-    } catch (Exception e) {
-      throw new QuestionReplyException(e);
-    }
-  }
-
-  public String genericWriters() throws QuestionReplyException {
-    // This method is no more used at the moment (Silverpeas 6.0)
-    return "";
-  }
-
-  /*
-   * Récupère la liste des experts du domaine de la question
-   */
-  public Collection<UserDetail> getCurrentQuestionWriters() throws QuestionReplyException {
-    OrganizationController orga = getOrganisationController();
-    List<UserDetail> arrayUsers = new ArrayList<>();
-
-    try {
-      ContentManagementEngine contentMgtEngine = ContentManagementEngineProvider.getContentManagementEngine();
-      // recupere la liste de toutes les instances d'annuaire
-      String[] instances = orga.getCompoId("whitePages");
-      List<String> listeInstanceId = new ArrayList<>();
-      for(String id : instances) {
-        listeInstanceId.add("whitePages" + id);
-      }
-
-      // recupere la liste de tous les experts du domaine de classement de la
-      // question
-      SearchContext position = getSilverContentIdPosition();
-      if (position != null && !position.isEmpty()) {
-        PdcManager pdc = PdcManager.get();
-        List<Integer> liste = pdc.findSilverContentIdByPosition(position, listeInstanceId);
-
-        CardManager cardManager = CardManager.getInstance();
-        for (Integer silverContentId : liste) {
-          String internalContentId = contentMgtEngine.getInternalContentId(silverContentId);
-          long userCardId = Long.parseLong(internalContentId);
-          Card card = cardManager.getCard(userCardId);
-          if (card != null) {
-            String idUser = card.getUserId();
-            UserDetail user = orga.getUserDetail(idUser);
-            if (!exist(user, arrayUsers)) {
-              arrayUsers.add(user);
-            }
-          }
-        }
-      }
-    } catch (Exception e) {
-      throw new QuestionReplyException(e);
-    }
-
-    return arrayUsers;
-
-  }
-
   /**
    * @param question the current question-reply question
    * @param recipientIds list of users to notify
@@ -553,26 +507,17 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     buildAndSend(new QuestionNotifier(sender, question, recipientIds));
   }
 
-  /**
-   * @param question
-   */
   private void notifyQuestion(Question question) {
     notifyTemplateQuestion(question,
         question.readRecipients().stream().map(Recipient::getUserId).collect(Collectors.toSet()));
   }
 
-  /**
-   * @param question
-   */
   private void notifyQuestionFromExpert(Question question) {
     final List<String> profiles = singletonList(SilverpeasRole.WRITER.getName());
     String[] usersIds = getOrganisationController().getUsersIdsByRoleNames(getComponentId(), profiles);
     notifyTemplateQuestion(question, Stream.of(usersIds).collect(Collectors.toSet()));
   }
 
-  /**
-   * @param reply
-   */
   private void notifyReply(final Reply reply) {
     final User sender = getUserDetail(getUserId());
     final String recipientId = getCurrentQuestion().getCreatorId();
@@ -595,7 +540,6 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
             .getSilverContentId(currentQuestion.getPK().getId(), currentQuestion.getInstanceId()));
       } catch (ContentManagerException ignored) {
         SilverLogger.getLogger(this).error(ignored);
-        contentId = null;
       }
     }
 
@@ -746,57 +690,48 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   private String toHTML(File file, MultiSilverpeasBundle resource)
       throws QuestionReplyException, ParseException {
     String fileName = file.getName();
-    StringBuilder sb = new StringBuilder();
 
-    sb.append("<HTML>\n");
-    sb.append("<HEAD>\n");
-
-    sb.append("<TITLE>").append(fileName).append("</TITLE>\n");
-    sb.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n");
-    sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"files/ExportFAQ.css\">\n");
-    sb.append("\n");
-    sb.append(addFunction());
-    sb.append("\n");
-    sb.append("</HEAD>\n");
-
-    sb.append("<BODY>\n");
-    sb.append("\n");
-    sb.append(addBody(resource, file));
-    sb.append("\n");
-    sb.append("</BODY>\n");
-    sb.append("</HTML>\n");
-
-    return sb.toString();
+    return "<HTML>\n" +
+        "<HEAD>\n" +
+        "<TITLE>" + fileName + "</TITLE>\n" +
+        "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n" +
+        "<link rel=\"stylesheet\" type=\"text/css\" href=\"files/ExportFAQ.css\">\n" +
+        "\n" +
+        addFunction() +
+        "\n" +
+        "</HEAD>\n" +
+        "<BODY>\n" +
+        "\n" +
+        addBody(resource, file) +
+        "\n" +
+        "</BODY>\n" +
+        "</HTML>\n";
   }
 
   private String addFunction() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("<script language=\"javascript\">\n");
-    sb.append("function showHideAnswer() { \n");
-    sb.append("  var numericID = this.id.replace(/[^\\d]/g,'');\n");
-    sb.append("  var obj = document.getElementById('a' + numericID);\n");
-    sb.append("  if(obj.style.display=='block'){\n");
-    sb.append("    obj.style.display='none';\n");
-    sb.append("  }else{\n");
-    sb.append("    obj.style.display='block';\n");
-    sb.append("  }   \n");
-    sb.append("}\n");
-
-    sb.append("function initShowHideContent()\n");
-    sb.append("{\n");
-    sb.append("  var divs = document.getElementsByTagName('div');\n");
-    sb.append("  for(var no=0;no<divs.length;no++)\n");
-    sb.append("  {\n");
-    sb.append("    if(divs[no].className=='question')\n");
-    sb.append("    {\n");
-    sb.append("      divs[no].onclick = showHideAnswer;\n");
-    sb.append("    }\n");
-    sb.append("  }\n");
-    sb.append("}\n");
-
-    sb.append("window.onload = initShowHideContent;\n");
-    sb.append("</script>\n");
-    return sb.toString();
+    return "<script language=\"javascript\">\n" +
+        "function showHideAnswer() { \n" +
+        "  var numericID = this.id.replace(/[^\\d]/g,'');\n" +
+        "  var obj = document.getElementById('a' + numericID);\n" +
+        "  if(obj.style.display=='block'){\n" +
+        "    obj.style.display='none';\n" +
+        "  }else{\n" +
+        "    obj.style.display='block';\n" +
+        "  }   \n" +
+        "}\n" +
+        "function initShowHideContent()\n" +
+        "{\n" +
+        "  var divs = document.getElementsByTagName('div');\n" +
+        "  for(var no=0;no<divs.length;no++)\n" +
+        "  {\n" +
+        "    if(divs[no].className=='question')\n" +
+        "    {\n" +
+        "      divs[no].onclick = showHideAnswer;\n" +
+        "    }\n" +
+        "  }\n" +
+        "}\n" +
+        "window.onload = initShowHideContent;\n" +
+        "</script>\n";
   }
 
   private String addBody(MultiSilverpeasBundle resource, File file)

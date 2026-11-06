@@ -23,9 +23,8 @@
  */
 package org.silverpeas.components.questionreply.web;
 
-import org.silverpeas.components.questionreply.QuestionReplyException;
+import org.silverpeas.components.questionreply.model.Question;
 import org.silverpeas.components.questionreply.model.Reply;
-import org.silverpeas.components.questionreply.service.QuestionManagerProvider;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
@@ -36,21 +35,18 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.Status;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
+ * A REST Web resource representing a given reply to a question. It is a web service that provides
+ * access to a reply referenced by its URL.
  *
  * @author emmanuel.hugonnet@silverpeas.org
- */
-/**
- * A REST Web resource representing a given reply to a question. It is a web service that provides
- * an access to a reply referenced by its URL.
  */
 @WebService
 @Path(QuestionReplyBaseWebService.PATH + "/{componentId}/replies")
@@ -66,10 +62,10 @@ public class ReplyResource extends QuestionReplyBaseWebService {
   }
 
   /**
-   * Gets the JSON representation of the specified existing question. If the reply doesn't exist, a
-   * 404 HTTP code is returned. If the user isn't authentified, a 401 HTTP code is returned. If the
-   * user isn't authorized to access the question, a 403 is returned. If a problem occurs when
-   * processing the request, a 503 HTTP code is returned.
+   * Gets the JSON representation of the replies to the specified question. If the question doesn't
+   * exist in the FAQ, a 404 HTTP code is returned. If the user isn't authentified, a 401 HTTP code
+   * is returned. If the user isn't authorized to access the question, a 403 is returned. If a
+   * problem occurs when processing the request, a 503 HTTP code is returned.
    *
    * @param onQuestionId the unique identifier of the question.
    * @return the response to the HTTP GET request with the JSON representation of the asked question
@@ -80,12 +76,12 @@ public class ReplyResource extends QuestionReplyBaseWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public ReplyEntity[] getAllRepliesForQuestion(@PathParam("questionId") String onQuestionId) {
     try {
-      long questionId = Long.parseLong(onQuestionId);
-      List<Reply> replies = QuestionManagerProvider.getQuestionManager().getAllReplies(questionId,
-          componentId);
-      return asWebEntities(extractVisibleReplies(questionId, replies), getUserProfile());
+      Question question = getQuestionInComponent(onQuestionId);
+      List<Reply> replies =
+          getQuestionManager().getAllReplies(Long.parseLong(onQuestionId), componentId);
+      return asWebEntities(extractVisibleReplies(question, replies), getUserProfile());
     } catch (Exception ex) {
-      throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
+      throw encapsulateException(ex);
     }
   }
 
@@ -94,11 +90,12 @@ public class ReplyResource extends QuestionReplyBaseWebService {
   @Path("public/question/{questionId}")
   public ReplyEntity[] getPublicRepliesForQuestion(@PathParam("questionId") String onQuestionId) {
     try {
-      List<Reply> replies = QuestionManagerProvider.getQuestionManager().getQuestionPublicReplies(
+      getQuestionInComponent(onQuestionId);
+      List<Reply> replies = getQuestionManager().getQuestionPublicReplies(
           Long.parseLong(onQuestionId), componentId);
       return asWebEntities(replies, getUserProfile());
     } catch (Exception ex) {
-      throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
+      throw encapsulateException(ex);
     }
   }
 
@@ -145,36 +142,28 @@ public class ReplyResource extends QuestionReplyBaseWebService {
   /**
    * Private replies should be visible to writers or publishers that have asked the question.
    *
-   * @param questionAuthor
-   * @param reply
-   * @param role
-   * @param userId
-   * @return
+   * @param questionAuthor the unique identifier of the question's author
+   * @param reply the reply to the question
+   * @param role the role the requester plays
+   * @param userId the unique identifier of the requester
+   * @return true if the reply is visible to the requester (the current user).
    */
   boolean isReplyVisible(String questionAuthor, Reply reply, SilverpeasRole role,
       String userId) {
     boolean isPrivate = reply.getPublicReply() <= 0;
     if (isPrivate) {
       boolean isAuthor = questionAuthor.equals(userId);
-      if (SilverpeasRole.USER == role || (SilverpeasRole.PUBLISHER == role && !isAuthor)) {
-        return false;
-      }
+      return SilverpeasRole.USER != role && (SilverpeasRole.PUBLISHER != role || isAuthor);
     }
     return true;
   }
 
-  List<Reply> extractVisibleReplies(long questionId, List<Reply> replies) throws
-      QuestionReplyException {
-    List<Reply> visibleReplies = new ArrayList<>(replies.size());
-    String authorId = QuestionManagerProvider.getQuestionManager().getQuestion(questionId).
-        getCreatorId();
+  List<Reply> extractVisibleReplies(Question question, List<Reply> replies) {
+    String authorId = question.getCreatorId();
     SilverpeasRole profile = getUserProfile();
     String userid = getUser().getId();
-    for (Reply reply : replies) {
-      if (isReplyVisible(authorId, reply, profile, userid)) {
-        visibleReplies.add(reply);
-      }
-    }
-    return visibleReplies;
+    return replies.stream()
+        .filter(reply -> isReplyVisible(authorId, reply, profile, userid))
+        .collect(Collectors.toCollection(() -> new ArrayList<>(replies.size())));
   }
 }

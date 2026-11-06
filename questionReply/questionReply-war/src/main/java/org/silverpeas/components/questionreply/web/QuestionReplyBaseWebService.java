@@ -23,9 +23,13 @@
  */
 package org.silverpeas.components.questionreply.web;
 
+import org.silverpeas.components.questionreply.QuestionReplyException;
+import org.silverpeas.components.questionreply.model.Question;
+import org.silverpeas.components.questionreply.service.QuestionManager;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.web.rs.RESTWebService;
 
+import javax.inject.Inject;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 
@@ -38,9 +42,32 @@ public abstract class QuestionReplyBaseWebService extends RESTWebService {
 
   static final String PATH = "questionreply";
 
+  @Inject
+  private QuestionManager questionManager;
+
   @Override
   protected String getResourceBasePath() {
     return PATH;
+  }
+
+  QuestionManager getQuestionManager() {
+    return questionManager;
+  }
+
+  /**
+   * Gets the specified question of the FAQ targeted by the request. The user is authorized on this
+   * FAQ only, so a question of another FAQ is never served.
+   * @param questionId the unique identifier of the question.
+   * @return the question.
+   * @throws WebApplicationException with a 404 HTTP code if the FAQ has no such question.
+   * @throws QuestionReplyException if an error occurs while fetching the question.
+   */
+  Question getQuestionInComponent(String questionId) throws QuestionReplyException {
+    Question question = questionManager.getQuestion(Long.parseLong(questionId));
+    if (question == null || !getComponentId().equals(question.getInstanceId())) {
+      throw new WebApplicationException(Status.NOT_FOUND);
+    }
+    return question;
   }
 
   SilverpeasRole getUserProfile() {

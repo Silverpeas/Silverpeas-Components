@@ -109,6 +109,12 @@ public interface QuestionManager {
 
   Question getQuestionAndReplies(long questionId) throws QuestionReplyException;
 
+  /**
+   * Gets the questions with the specified identifiers, whatever the FAQ they belong to.
+   * @param ids the unique identifiers of the questions to get.
+   * @return the questions found, or an empty list if no identifiers are given.
+   * @throws QuestionReplyException if an error occurs while fetching the questions.
+   */
   List<Question> getQuestionsByIds(List<String> ids) throws QuestionReplyException;
 
   /*
