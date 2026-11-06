@@ -41,11 +41,19 @@ function form(images, body, files) {
   template = template.replace(block, '<div class="discussion-edit-images">' + images.map(id => figure
     .replace(/<c:out value='\$\{image.url}'\/>/g, pixel)
     .replace(/\$\{fn:escapeXml\(image.id\)}/g, id)).join('') + '</div>');
+  const fileRows = Array.isArray(files) ? files : files ? [{id:'file1', name:'budget.pdf'}] : [];
+  const fileBlock = /<c:if test="\$\{not empty messageFiles\[message.id\]}">[\s\S]*?<\/c:if>/;
+  const fileItem = template.match(/<li class="discussion-edit-file">[\s\S]*?<\/li>/)[0];
+  const escape = value => value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
+  template = template.replace(fileBlock, '<ul class="discussion-edit-files">' + fileRows.map(file => fileItem
+    .replace(/<c:out value="\$\{file.name}"\/>/g, escape(file.name))
+    .replace(/\$\{fn:escapeXml\(file.name\)}/g, escape(file.name))
+    .replace(/\$\{fn:escapeXml\(file.id\)}/g, file.id)).join('') + '</ul>');
   return template.replace(/<fmt:message key=['"]([^'"]+)['"]\s*\/>/g, (_, key) => labels[key])
     .replace(/<c:out value="\$\{message.body}"\s*\/>/g, body)
     .replace(/\$\{([^}]+)}/g, (_, key) => {
-      if (key === 'not empty messageFiles[message.id]') { return String(files); }
-      if (key.includes('not empty messageImages')) { return String(images.length > 0 || files); }
+      if (key === 'not empty messageFiles[message.id]') { return String(fileRows.length > 0); }
+      if (key.includes('not empty messageImages')) { return String(images.length > 0 || fileRows.length > 0); }
       return {'message.version':'3', 'message.id':'m1', 'messageActionBase':'/messages/', 'discussionIcons':'/icons.svg'}[key] || 'Modifier';
     });
 }
@@ -59,7 +67,7 @@ async function setup({images = ['photo1', 'photo2'], body = 'Message', files = f
       document.addEventListener('submit', event => {
         event.preventDefault();
         const values = new FormData(event.target);
-        posts.push({removed:values.getAll('removedImageIds'), version:values.get('version'), body:values.get('body')});
+        posts.push({removed:values.getAll('removedImageIds'), removedFiles:values.getAll('removedFileIds'), version:values.get('version'), body:values.get('body')});
       });
       for (const [key,value] of Object.entries(labels)) {
         if (key.startsWith('discussion.format')) { document.getElementById('discussion').dataset[key.slice(11)] = value; }
@@ -91,7 +99,7 @@ test('image removal is reversible and only selected IDs are submitted when savin
     assert.deepEqual(await page.locator('.discussion-edit form').evaluate(form => new FormData(form).getAll('removedImageIds')), []);
     await remove.last().click();
     await page.getByRole('button', {name:labels['discussion.save'], exact:true}).click();
-    assert.deepEqual(await page.evaluate(() => posts), [{removed:['photo2'], version:'3', body:'Message'}]);
+    assert.deepEqual(await page.evaluate(() => posts), [{removed:['photo2'], removedFiles:[], version:'3', body:'Message'}]);
   } finally {await browser.close();}
 });
 
@@ -126,4 +134,63 @@ test('the last image cannot leave an empty message but remaining files allow rem
       }
     } finally {await browser.close();}
   }
+});
+
+test('named files can be removed and restored independently from images and submitted together', async () => {
+  const {browser, page} = await setup({files:[{id:'file1', name:'budget.pdf'}, {id:'file2', name:'notes.docx'}]});
+  try {
+    const remove = page.getByRole('button', {name:'Retirer ce fichier : budget.pdf', exact:true});
+    await remove.click();
+    assert.deepEqual(await page.locator('.discussion-edit form').evaluate(form => new FormData(form).getAll('removedFileIds')), ['file1']);
+    await page.getByRole('button', {name:'Conserver ce fichier : budget.pdf', exact:true}).click();
+    assert.deepEqual(await page.locator('.discussion-edit form').evaluate(form => new FormData(form).getAll('removedFileIds')), []);
+    await remove.click();
+    await page.getByRole('button', {name:'Retirer cette image', exact:true}).first().click();
+    await page.getByRole('button', {name:labels['discussion.save'], exact:true}).click();
+    assert.deepEqual(await page.evaluate(() => posts), [{removed:['photo1'], removedFiles:['file1'], version:'3', body:'Message'}]);
+  } finally {await browser.close();}
+});
+
+test('Escape restores both file and image selections and their draft without sending a request', async () => {
+  const {browser, page} = await setup({files:[{id:'file1', name:'budget.pdf'}]});
+  try {
+    await page.getByRole('button', {name:'Retirer ce fichier : budget.pdf', exact:true}).click();
+    await page.getByRole('button', {name:'Retirer cette image', exact:true}).first().click();
+    await page.locator('.tiptap').fill('Changed');
+    await page.locator('.tiptap').press('Escape');
+    await page.locator('.discussion-edit summary').waitFor({state:'visible'});
+    await page.locator('.discussion-edit summary').click();
+    assert.equal(await page.locator('.tiptap').textContent(), 'Message');
+    assert.equal(await page.locator('.discussion-edit-attachment--removed').count(), 0);
+    assert.deepEqual(await page.locator('.discussion-edit form').evaluate(form => [
+      new FormData(form).getAll('removedImageIds'), new FormData(form).getAll('removedFileIds')]), [[],[]]);
+    assert.deepEqual(await page.evaluate(() => posts), []);
+  } finally {await browser.close();}
+});
+
+test('the last file cannot leave a blank message unless an image remains', async () => {
+  for (const images of [[], ['photo1']]) {
+    const {browser, page} = await setup({images, body:' ', files:[{id:'file1', name:'budget.pdf'}]});
+    try {
+      await page.getByRole('button', {name:'Retirer ce fichier : budget.pdf', exact:true}).click();
+      await page.getByRole('button', {name:labels['discussion.save'], exact:true}).click();
+      assert.equal(await page.evaluate(() => posts.length), images.length ? 1 : 0);
+      if (!images.length) {
+        await page.getByRole('button', {name:'Conserver ce fichier : budget.pdf', exact:true}).click();
+        await page.getByRole('button', {name:labels['discussion.save'], exact:true}).click();
+        assert.equal(await page.evaluate(() => posts.length), 1);
+      }
+    } finally {await browser.close();}
+  }
+});
+
+test('file names stay plain text and fit narrow edit forms', async () => {
+  const name = '<img src=x onerror=alert(1)> ' + 'long filename '.repeat(12) + '.pdf';
+  const {browser, page} = await setup({images:[], files:[{id:'file1', name}]});
+  try {
+    await page.setViewportSize({width:320, height:850});
+    assert.equal(await page.locator('.discussion-edit-file-name').textContent(), name);
+    assert.equal(await page.locator('.discussion-edit-files img, .discussion-edit-files script').count(), 0);
+    assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+  } finally {await browser.close();}
 });

@@ -509,6 +509,14 @@ public class DiscussionWebController extends
   @RedirectToInternal("Main")
   public void edit(DiscussionWebRequestContext context) {
     String[] removed = context.getRequest().getParameterValues("removedImageIds");
+    String[] removedFiles = context.getRequest().getParameterValues("removedFileIds");
+    if (removedFiles != null && removedFiles.length > 0) {
+      var removal = new org.silverpeas.components.discussion.service.DiscussionAttachmentRemoval(
+          removed == null ? List.of() : List.of(removed), List.of(removedFiles));
+      webAction(() -> conversations().edit(context.getComponentInstanceId(),
+          context.getPathVariables().get("id"), number(context, "version", -1), context.getRequest().getParameter("body"), removal));
+      return;
+    }
     if (removed == null || removed.length == 0) {
       webAction(() -> conversations().edit(context.getComponentInstanceId(),
           context.getPathVariables().get("id"), number(context, "version", -1), context.getRequest().getParameter("body")));

@@ -44,12 +44,18 @@ import org.silverpeas.core.i18n.I18NHelper;
 public class DiscussionAttachmentService {
   private static final java.util.Set<String> IMAGE_TYPES = java.util.Set.of("image/jpeg", "image/png", "image/gif");
 
-  /** Empty imageIds denotes cleanup of all message attachments; otherwise only these images. */
-  public record Cleanup(String instanceId, String messageId, boolean rollback, List<String> imageIds) {
-    public Cleanup { imageIds = List.copyOf(imageIds); }
+  private static final String FILE_TYPE = "application/octet-stream";
+
+  /** An empty removal denotes cleanup of all message attachments. */
+  public record Cleanup(String instanceId, String messageId, boolean rollback, DiscussionAttachmentRemoval removal) {
+    public Cleanup { java.util.Objects.requireNonNull(removal); }
     public Cleanup(String instanceId, String messageId, boolean rollback) {
-      this(instanceId, messageId, rollback, List.of());
+      this(instanceId, messageId, rollback, DiscussionAttachmentRemoval.none());
     }
+    public Cleanup(String instanceId, String messageId, boolean rollback, List<String> imageIds) {
+      this(instanceId, messageId, rollback, new DiscussionAttachmentRemoval(imageIds, List.of()));
+    }
+    public List<String> imageIds() { return removal.imageIds(); }
   }
   @Inject
   private AttachmentService attachments;
@@ -93,13 +99,18 @@ public class DiscussionAttachmentService {
 
   public List<DiscussionFile> files(String instanceId, String messageId) {
     return attachments.listDocumentsByForeignKey(new ResourceReference(messageId, instanceId), null).stream()
-        .filter(document -> "application/octet-stream".equals(document.getContentType()))
+        .filter(document -> FILE_TYPE.equals(document.getContentType()))
         .map(document -> new DiscussionFile(document.getId(), document.getFilename(),
             org.silverpeas.core.util.URLUtil.getApplicationURL() + document.getAttachmentURL(),
             new DiscussionFile.Metadata(document.getSize(), messageId, document.getLanguage(),
                 new DiscussionFile.Capabilities(document.getAttachmentPath() != null
                     && org.silverpeas.core.viewer.service.ViewerProvider.isViewable(document.getAttachmentPath()),
                     edition.isEditable(document))))).toList();
+  }
+
+  public List<String> fileIds(String instanceId, String messageId) {
+    return attachments.listDocumentsByForeignKey(new ResourceReference(messageId, instanceId), null).stream()
+        .filter(document -> FILE_TYPE.equals(document.getContentType())).map(SimpleDocument::getId).toList();
   }
 
   public void storeFiles(String instanceId, String messageId, List<DiscussionFileUpload> files) {
@@ -110,7 +121,7 @@ public class DiscussionAttachmentService {
     int order = attachments.listDocumentsByForeignKey(new ResourceReference(messageId, instanceId), null).size();
     for (var upload : files) {
       var file = SimpleAttachment.builder(I18NHelper.getDefaultLanguage()).setFilename(upload.filename()).setTitle(upload.filename())
-          .setSize(upload.size()).setContentType("application/octet-stream")
+          .setSize(upload.size()).setContentType(FILE_TYPE)
           .setCreationData(User.getCurrentRequester().getId(), new Date()).build();
       var document = new SimpleDocument(new SimpleDocumentPK(null, instanceId), messageId, order++, false, file);
       document.setPublicDocument(false);
@@ -119,7 +130,11 @@ public class DiscussionAttachmentService {
   }
 
   public void removeImagesAfterCommit(String instanceId, String messageId, List<String> imageIds) {
-    if (!imageIds.isEmpty()) { cleanup.fire(new Cleanup(instanceId, messageId, false, imageIds)); }
+    removeAttachmentsAfterCommit(instanceId, messageId, new DiscussionAttachmentRemoval(imageIds, List.of()));
+  }
+
+  public void removeAttachmentsAfterCommit(String instanceId, String messageId, DiscussionAttachmentRemoval removal) {
+    if (!removal.isEmpty()) { cleanup.fire(new Cleanup(instanceId, messageId, false, removal)); }
   }
 
   public void removeAfterCommit(String instanceId, String messageId) {
@@ -136,13 +151,14 @@ public class DiscussionAttachmentService {
   @Transactional(Transactional.TxType.REQUIRES_NEW)
   public void committed(@Observes(during = TransactionPhase.AFTER_SUCCESS) Cleanup change) {
     if (!change.rollback()) {
-      if (change.imageIds().isEmpty()) {
+      if (change.removal().isEmpty()) {
         attachments.deleteAllAttachments(change.messageId(), change.instanceId());
       } else {
         attachments.listDocumentsByForeignKey(new ResourceReference(change.messageId(), change.instanceId()), null).stream()
             .filter(document -> change.instanceId().equals(document.getInstanceId())
                 && change.messageId().equals(document.getForeignId()))
-            .filter(document -> IMAGE_TYPES.contains(document.getContentType()) && change.imageIds().contains(document.getId()))
+            .filter(document -> IMAGE_TYPES.contains(document.getContentType()) && change.removal().imageIds().contains(document.getId())
+                || FILE_TYPE.equals(document.getContentType()) && change.removal().fileIds().contains(document.getId()))
             .forEach(document -> attachments.deleteAttachment(document, false));
       }
     }

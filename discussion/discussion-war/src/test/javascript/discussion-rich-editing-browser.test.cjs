@@ -34,6 +34,7 @@ labels['GML.cancel']='Annuler';
 const source=fs.readFileSync(path.join(assets,'messages.jsp'),'utf8');
 const details=source.match(/<details class="discussion-edit">[\s\S]*?<\/details>/)[0]
     .replace(/<c:if test="\$\{not empty messageImages\[message.id\]}">[\s\S]*?<\/c:if>/g, '')
+    .replace(/<c:if test="\$\{not empty messageFiles\[message.id\]}">[\s\S]*?<\/c:if>/g, '')
     .replace(/<fmt:message key=['"]([^'"]+)['"]\s*\/>/g,(_,key)=>labels[key])
     .replace(/<c:out value="\$\{message.body}"\s*\/>/g,'Bonjour @[Alice](2)')
     .replace(/\$\{([^}]+)}/g,(_,key)=>key==='message.version'?'1':key.includes('editLabel')?'Modifier':key==='messageActionBase'?'/messages/':key==='message.id'?'m1':key==='discussionIcons'?'/icons.svg':'false');

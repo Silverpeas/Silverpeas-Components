@@ -28,23 +28,26 @@
     const discussion = document.getElementById('discussion');
     if (!discussion) { return; }
     const states = new WeakMap();
-    const updateImages = details => {
-      const inputs = [...details.querySelectorAll('input[name="removedImageIds"]')];
-      if (!inputs.length) { return; }
+    const updateAttachments = details => {
+      const images = [...details.querySelectorAll('input[name="removedImageIds"]')];
+      const files = [...details.querySelectorAll('input[name="removedFileIds"]')];
+      if (!images.length && !files.length) { return; }
       const form = details.querySelector('form');
-      form.querySelector('textarea').dataset.allowEmpty = String(form.dataset.hasFiles === 'true' || inputs.some(input => input.disabled));
+      const remainingFiles = files.length ? files.some(input => input.disabled) : form.dataset.hasFiles === 'true';
+      form.querySelector('textarea').dataset.allowEmpty = String(remainingFiles || images.some(input => input.disabled));
     };
     const setRemoved = (figure, removed) => {
       figure.querySelector('input').disabled = !removed;
-      figure.classList.toggle('discussion-edit-image--removed', removed);
+      figure.classList.toggle('discussion-edit-attachment--removed', removed);
+      figure.classList.toggle('discussion-edit-image--removed', removed && figure.matches('.discussion-edit-image'));
       const button = figure.querySelector('button');
       button.setAttribute('aria-pressed', String(removed));
       button.title = removed ? button.dataset.restoreLabel : button.dataset.removeLabel;
       button.setAttribute('aria-label', button.title);
     };
-    const resetImages = details => {
-      details.querySelectorAll('.discussion-edit-image').forEach(figure => setRemoved(figure, false));
-      updateImages(details);
+    const resetAttachments = details => {
+      details.querySelectorAll('.discussion-edit-image, .discussion-edit-file').forEach(figure => setRemoved(figure, false));
+      updateAttachments(details);
     };
     discussion.addEventListener('toggle', event => {
       const details = event.target;
@@ -64,7 +67,7 @@
         else { textarea.focus(); }
       } else if (!details.open && states.has(details)) {
         const {placeholder} = states.get(details);
-        resetImages(details);
+        resetAttachments(details);
         placeholder.replaceWith(details);
         states.delete(details);
         details.classList.remove('discussion-edit--inline');
@@ -74,7 +77,7 @@
     const cancel = details => {
       const state = states.get(details);
       if (!state) { return; }
-      resetImages(details);
+      resetAttachments(details);
       const textarea = details.querySelector('textarea');
       if (window.DiscussionEditor?.reset) { window.DiscussionEditor.reset(textarea, state.body); }
       else { textarea.value = state.body; textarea.dispatchEvent(new Event('input', {bubbles:true})); }
@@ -85,11 +88,11 @@
       if (details) { cancel(details); }
     });
     discussion.addEventListener('click', event => {
-      const remove = event.target.closest('.discussion-edit-image-remove');
+      const remove = event.target.closest('.discussion-edit-image-remove, .discussion-edit-file-remove');
       if (remove) {
         const details = remove.closest('.discussion-edit');
-        setRemoved(remove.closest('.discussion-edit-image'), remove.getAttribute('aria-pressed') !== 'true');
-        updateImages(details);
+        setRemoved(remove.closest('.discussion-edit-image, .discussion-edit-file'), remove.getAttribute('aria-pressed') !== 'true');
+        updateAttachments(details);
         return;
       }
       const button = event.target.closest('.discussion-edit-cancel');

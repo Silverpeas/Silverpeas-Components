@@ -217,4 +217,46 @@ class DiscussionAttachmentServiceTest {
     return document;
   }
 
+  @Test
+  void fileIdsCanBeReadWithoutLoadingViewerOrBrowserEditionCapabilities() {
+    var image = attachmentDocument("photo", "discussion1", "message1", "image/png");
+    var file = attachmentDocument("file", "discussion1", "message1", "application/octet-stream");
+    when(attachments.listDocumentsByForeignKey(any(), isNull())).thenReturn(
+        new org.silverpeas.core.contribution.attachment.util.SimpleDocumentList<>(List.of(image, file)));
+    assertEquals(List.of("file"), service.fileIds("discussion1", "message1"));
+    verifyNoInteractions(edition);
+  }
+
+  @Test
+  void fileCleanupIsDeferredAndNeverRunsOnARolledBackEdit() {
+    var service = new DiscussionAttachmentService(attachments, cleanup);
+    var files = new java.util.ArrayList<>(List.of("file"));
+    var removal = new DiscussionAttachmentRemoval(List.of("photo"), files);
+    files.clear();
+    service.removeAttachmentsAfterCommit("discussion1", "message1", removal);
+    var event = ArgumentCaptor.forClass(DiscussionAttachmentService.Cleanup.class);
+    verify(cleanup).fire(event.capture());
+    assertEquals(List.of("file"), event.getValue().removal().fileIds());
+    service.rollback(event.getValue());
+    verifyNoInteractions(attachments);
+    service.removeAttachmentsAfterCommit("discussion1", "message1", DiscussionAttachmentRemoval.none());
+    verifyNoMoreInteractions(cleanup);
+  }
+
+  @Test
+  void committedCleanupRespectsTheAttachmentOwnerAndItsSelectedCategory() {
+    var selected = attachmentDocument("file", "discussion1", "message1", "application/octet-stream");
+    var image = attachmentDocument("photo", "discussion1", "message1", "image/png");
+    var remaining = attachmentDocument("keep", "discussion1", "message1", "application/octet-stream");
+    var foreign = attachmentDocument("foreign", "discussion1", "other", "application/octet-stream");
+    var otherInstance = attachmentDocument("other-instance", "discussion2", "message1", "application/octet-stream");
+    when(attachments.listDocumentsByForeignKey(any(), isNull())).thenReturn(
+        new org.silverpeas.core.contribution.attachment.util.SimpleDocumentList<>(List.of(selected, image, remaining, foreign, otherInstance)));
+    var removal = new DiscussionAttachmentRemoval(List.of(), List.of("file", "photo", "foreign", "other-instance"));
+    service.committed(new DiscussionAttachmentService.Cleanup("discussion1", "message1", false, removal));
+    verify(attachments).listDocumentsByForeignKey(any(), isNull());
+    verify(attachments).deleteAttachment(selected, false);
+    verifyNoMoreInteractions(attachments);
+  }
+
 }
