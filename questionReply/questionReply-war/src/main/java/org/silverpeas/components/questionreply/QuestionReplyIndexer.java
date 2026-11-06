@@ -55,7 +55,7 @@ public class QuestionReplyIndexer implements ComponentIndexation {
     Collection<Question> questions = questionManager.getAllQuestions(componentInst.getId());
     for (Question question : questions) {
       Collection<Reply> replies = questionManager
-          .getAllReplies(Long.parseLong(question.getPK().getId()), question.getInstanceId());
+          .getAllReplies(question.getIdAsLong(), question.getInstanceId());
       questionIndexer.updateIndex(question, replies);
     }
   }

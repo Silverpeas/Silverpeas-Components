@@ -28,7 +28,6 @@ import org.junit.jupiter.api.Test;
 import org.silverpeas.components.questionreply.model.Question;
 import org.silverpeas.components.questionreply.model.Reply;
 import org.silverpeas.components.questionreply.service.QuestionManager;
-import org.silverpeas.core.persistence.jdbc.bean.IdPK;
 import org.silverpeas.kernel.exception.NotFoundException;
 import org.silverpeas.core.test.unit.extention.JEETestContext;
 import org.silverpeas.kernel.test.annotations.TestManagedMock;
@@ -73,10 +72,13 @@ class QuestionReplySessionControllerTest {
     doCallRealMethod().when(controller).deleteR(anyCollection());
     doCallRealMethod().when(controller).setCurrentQuestion(any());
     doCallRealMethod().when(controller).getCurrentQuestion();
-    when(questionManager.getQuestion(1)).thenReturn(aQuestion(1, FAQ_ID));
-    when(questionManager.getQuestion(2)).thenReturn(aQuestion(2, OTHER_FAQ_ID));
-    when(questionManager.getReply(10)).thenReturn(aReply(10, 1));
-    when(questionManager.getReply(20)).thenReturn(aReply(20, 2));
+    // the question 2 and its reply 20 belong to another FAQ: they aren't found in this FAQ
+    Question question = aQuestion(1, FAQ_ID);
+    Question otherQuestion = aQuestion(2, OTHER_FAQ_ID);
+    when(questionManager.getQuestion(1, FAQ_ID)).thenReturn(question);
+    when(questionManager.getQuestion(2, OTHER_FAQ_ID)).thenReturn(otherQuestion);
+    when(questionManager.getReply(10, FAQ_ID)).thenReturn(aReply(10, question));
+    when(questionManager.getReply(20, OTHER_FAQ_ID)).thenReturn(aReply(20, otherQuestion));
   }
 
   @Test
@@ -119,33 +121,33 @@ class QuestionReplySessionControllerTest {
   void deleteQuestionsOfTheFAQ() throws Exception {
     controller.deleteQuestions(List.of(1L));
 
-    verify(questionManager).deleteQuestionAndReplies(List.of(1L));
+    verify(questionManager).deleteQuestionAndReplies(List.of(1L), FAQ_ID);
   }
 
   @Test
   void deleteQuestionsAmongWhichOneOfAnotherFAQIsNotFound() throws Exception {
     assertThrows(NotFoundException.class,
         () -> controller.deleteQuestions(List.of(1L, 2L)));
-    verify(questionManager, never()).deleteQuestionAndReplies(anyCollection());
+    verify(questionManager, never()).deleteQuestionAndReplies(anyCollection(), any());
   }
 
   @Test
   void closeQuestionsAmongWhichOneOfAnotherFAQIsNotFound() throws Exception {
     assertThrows(NotFoundException.class,
         () -> controller.closeQuestions(List.of(1L, 2L)));
-    verify(questionManager, never()).closeQuestions(anyCollection());
+    verify(questionManager, never()).closeQuestions(anyCollection(), any());
   }
 
   @Test
   void closeAQuestionOfAnotherFAQIsNotFound() throws Exception {
     assertThrows(NotFoundException.class, () -> controller.closeQuestion(2));
-    verify(questionManager, never()).closeQuestions(anyCollection());
+    verify(questionManager, never()).closeQuestions(anyCollection(), any());
   }
 
   @Test
   void openAQuestionOfAnotherFAQIsNotFound() throws Exception {
     assertThrows(NotFoundException.class, () -> controller.openQuestion(2));
-    verify(questionManager, never()).openQuestions(anyCollection());
+    verify(questionManager, never()).openQuestions(anyCollection(), any());
   }
 
   @Test
@@ -169,13 +171,13 @@ class QuestionReplySessionControllerTest {
 
   private static Question aQuestion(int id, String instanceId) {
     Question question = new Question("0", instanceId);
-    question.setPK(new IdPK(id));
+    question.setId(String.valueOf(id));
     return question;
   }
 
-  private static Reply aReply(int id, long questionId) {
-    Reply reply = new Reply(questionId, "0");
-    reply.setPK(new IdPK(id));
+  private static Reply aReply(int id, Question question) {
+    Reply reply = new Reply(question, "0");
+    reply.setId(String.valueOf(id));
     return reply;
   }
 }

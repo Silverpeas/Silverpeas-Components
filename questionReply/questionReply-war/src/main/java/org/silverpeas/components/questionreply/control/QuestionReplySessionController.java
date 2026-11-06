@@ -32,7 +32,6 @@ import org.silverpeas.components.questionreply.model.Reply;
 import org.silverpeas.components.questionreply.service.QuestionManagerProvider;
 import org.silverpeas.components.questionreply.service.notification.QuestionNotifier;
 import org.silverpeas.components.questionreply.service.notification.ReplyNotifier;
-import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.attachment.model.Attachments;
@@ -48,7 +47,6 @@ import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
-import org.silverpeas.core.persistence.jdbc.bean.IdPK;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
@@ -172,11 +170,10 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    * Récupère une réponse met la réponse en session
    */
   public Reply getReply(long replyId) throws QuestionReplyException {
-    Reply reply = QuestionManagerProvider.getQuestionManager().getReply(replyId);
+    Reply reply = QuestionManagerProvider.getQuestionManager().getReply(replyId, getComponentId());
     if (reply == null) {
       throw new NotFoundException("No such reply " + replyId + " in " + getComponentId());
     }
-    getQuestionOfThisFAQ(reply.getQuestionId());
     setCurrentReply(reply);
     return reply;
   }
@@ -190,8 +187,9 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    * @throws QuestionReplyException if an error occurs while fetching the question.
    */
   private Question getQuestionOfThisFAQ(long questionId) throws QuestionReplyException {
-    Question question = QuestionManagerProvider.getQuestionManager().getQuestion(questionId);
-    if (question == null || !getComponentId().equals(question.getInstanceId())) {
+    Question question =
+        QuestionManagerProvider.getQuestionManager().getQuestion(questionId, getComponentId());
+    if (question == null) {
       throw new NotFoundException(
           "No such question " + questionId + " in " + getComponentId());
     }
@@ -207,9 +205,9 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
 
   private void requireRepliesOfCurrentQuestion(Collection<Long> replyIds)
       throws QuestionReplyException {
-    long questionId = ((IdPK) getCurrentQuestion().getPK()).getIdAsLong();
+    long questionId = getCurrentQuestion().getIdAsLong();
     for (Long replyId : replyIds) {
-      Reply reply = QuestionManagerProvider.getQuestionManager().getReply(replyId);
+      Reply reply = QuestionManagerProvider.getQuestionManager().getReply(replyId, getComponentId());
       if (reply == null || reply.getQuestionId() != questionId) {
         throw new NotFoundException(
             "No such reply " + replyId + " to the question " + questionId);
@@ -225,9 +223,6 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   }
 
   public void setCurrentReply(Reply reply) {
-    WAPrimaryKey pk = reply.getPK();
-    pk.setComponentName(getComponentId());
-    reply.setPK(pk);
     this.currentReply = reply;
   }
 
@@ -251,7 +246,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    */
   public long saveNewQuestion() throws QuestionReplyException {
     long questionId = QuestionManagerProvider.getQuestionManager().createQuestion(newQuestion);
-    newQuestion.getPK().setId(String.valueOf(questionId));
+    newQuestion.setId(String.valueOf(questionId));
     notifyQuestion(newQuestion);
     notifyQuestionFromExpert(newQuestion);
     return questionId;
@@ -263,8 +258,8 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    */
   public Reply getNewReply() {
     Reply reply;
-    if ((getCurrentQuestion() != null) && (getCurrentQuestion().getPK() != null)) {
-      reply = new Reply(((IdPK) getCurrentQuestion().getPK()).getIdAsLong(), getUserId());
+    if ((getCurrentQuestion() != null) && (getCurrentQuestion().getId() != null)) {
+      reply = new Reply(getCurrentQuestion(), getUserId());
     } else {
       reply = new Reply(getUserId());
     }
@@ -299,9 +294,6 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     newQuestion.setPrivateReplyNumber(0);
     newReply.setPublicReply(1);
     newReply.setPrivateReply(0);
-    WAPrimaryKey pk = newReply.getPK();
-    pk.setComponentName(getComponentId());
-    newReply.setPK(pk);
 
     long questionId = QuestionManagerProvider.getQuestionManager()
         .createQuestionReply(newQuestion, newReply, decodePositions(positions));
@@ -319,14 +311,11 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    * enregistre la nouvelle réponse de la question courante met en session la question modifiée
    */
   public void saveNewReply(Collection<UploadedFile> uploadedFiles) throws QuestionReplyException {
-    WAPrimaryKey pk = newReply.getPK();
-    pk.setComponentName(getComponentId());
-    newReply.setPK(pk);
     QuestionManagerProvider.getQuestionManager().createReply(newReply, getCurrentQuestion());
 
     addFilesToReply(uploadedFiles, newReply);
 
-    getQuestion(((IdPK) getCurrentQuestion().getPK()).getIdAsLong());
+    getQuestion(getCurrentQuestion().getIdAsLong());
     notifyReply(newReply);
   }
 
@@ -342,11 +331,8 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     Reply reply = getCurrentReply();
     reply.setTitle(title);
     reply.writeWysiwygContent(content);
-    WAPrimaryKey pk = reply.getPK();
-    pk.setComponentName(getComponentId());
-    reply.setPK(pk);
     QuestionManagerProvider.getQuestionManager().updateReply(reply);
-    getQuestion(((IdPK) getCurrentQuestion().getPK()).getIdAsLong());
+    getQuestion(getCurrentQuestion().getIdAsLong());
   }
 
   /*
@@ -356,7 +342,8 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   public void deleteQuestions(Collection<Long> questionsIds) throws QuestionReplyException {
     requireQuestionsOfThisFAQ(questionsIds);
     try {
-      QuestionManagerProvider.getQuestionManager().deleteQuestionAndReplies(questionsIds);
+      QuestionManagerProvider.getQuestionManager()
+          .deleteQuestionAndReplies(questionsIds, getComponentId());
     } catch (QuestionReplyException e) {
       throw new QuestionReplyException(e);
     }
@@ -370,7 +357,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       if (isQuestionClosedWithoutAnyReply(rest)) {
         reSetCurrentQuestion();
       } else {
-        getQuestion(((IdPK) getCurrentQuestion().getPK()).getIdAsLong());
+        getQuestion(getCurrentQuestion().getIdAsLong());
       }
     } catch (QuestionReplyException e) {
       throw new QuestionReplyException(e);
@@ -387,7 +374,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    */
   public void closeQuestions(Collection<Long> questionIds) throws QuestionReplyException {
     requireQuestionsOfThisFAQ(questionIds);
-    QuestionManagerProvider.getQuestionManager().closeQuestions(questionIds);
+    QuestionManagerProvider.getQuestionManager().closeQuestions(questionIds, getComponentId());
   }
 
   /*
@@ -396,12 +383,14 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    */
   public void closeQuestion(long questionId) throws QuestionReplyException {
     getQuestionOfThisFAQ(questionId);
-    QuestionManagerProvider.getQuestionManager().closeQuestions(singletonList(questionId));
+    QuestionManagerProvider.getQuestionManager()
+        .closeQuestions(singletonList(questionId), getComponentId());
   }
 
   public void openQuestion(long questionId) throws QuestionReplyException {
     getQuestionOfThisFAQ(questionId);
-    QuestionManagerProvider.getQuestionManager().openQuestions(singletonList(questionId));
+    QuestionManagerProvider.getQuestionManager()
+        .openQuestions(singletonList(questionId), getComponentId());
   }
 
   /*
@@ -463,7 +452,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    */
   private Collection<Reply> getPublicRepliesForQuestion(long id) throws QuestionReplyException {
     return QuestionManagerProvider.getQuestionManager()
-        .getQuestionPublicReplies(id, getComponentName());
+        .getQuestionPublicReplies(id, getComponentId());
   }
 
   /*
@@ -471,14 +460,14 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    */
   private Collection<Reply> getPrivateRepliesForQuestion(long id) throws QuestionReplyException {
     return QuestionManagerProvider.getQuestionManager()
-        .getQuestionPrivateReplies(id, getComponentName());
+        .getQuestionPrivateReplies(id, getComponentId());
   }
 
   /*
    * liste les réponses à une question
    */
   private Collection<Reply> getAllRepliesForQuestion(long id) throws QuestionReplyException {
-    return QuestionManagerProvider.getQuestionManager().getQuestionReplies(id, getComponentName());
+    return QuestionManagerProvider.getQuestionManager().getQuestionReplies(id, getComponentId());
   }
 
   public final void setUserProfil() {
@@ -550,7 +539,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       try {
         ContentManagementEngine contentMgtEngine = ContentManagementEngineProvider.getContentManagementEngine();
         contentId = String.valueOf(contentMgtEngine
-            .getSilverContentId(currentQuestion.getPK().getId(), currentQuestion.getInstanceId()));
+            .getSilverContentId(currentQuestion.getId(), currentQuestion.getInstanceId()));
       } catch (ContentManagerException e) {
         SilverLogger.getLogger(this).error(e);
       }

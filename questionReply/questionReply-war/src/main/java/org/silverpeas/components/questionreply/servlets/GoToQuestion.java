@@ -31,6 +31,7 @@ import org.silverpeas.components.questionreply.service.QuestionManager;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.util.servlet.GoTo;
+import org.silverpeas.kernel.exception.NotFoundException;
 
 import java.net.URLEncoder;
 
@@ -44,8 +45,10 @@ public class GoToQuestion extends GoTo {
   @Override
   public String getDestination(String objectId, HttpServletRequest req, HttpServletResponse res)
       throws Exception {
-    Question question = questionManager.getQuestion(Long.parseLong(objectId));
-    String componentId = question.getInstanceId();
+    long questionId = Long.parseLong(objectId);
+    String componentId = questionManager.getInstanceIdOfQuestion(questionId)
+        .orElseThrow(() -> new NotFoundException("No such question " + objectId));
+    Question question = questionManager.getQuestion(questionId, componentId);
 
     String gotoURL = URLUtil.getURL(null, componentId) + question.getURL();
     return "goto=" + URLEncoder.encode(gotoURL, Charsets.UTF_8);

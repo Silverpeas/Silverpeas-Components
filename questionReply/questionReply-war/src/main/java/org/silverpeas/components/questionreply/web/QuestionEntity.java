@@ -27,7 +27,6 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.silverpeas.components.questionreply.model.Question;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.persistence.jdbc.bean.IdPK;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.web.rs.WebEntity;
@@ -95,7 +94,7 @@ public class QuestionEntity implements WebEntity {
   }
 
   private QuestionEntity(Question question, String lang) {
-    this.id = question.getPK().getId();
+    this.id = question.getId();
     this.instanceId = question.getInstanceId();
     this.categoryId = question.getCategoryId();
     this.title = question.getTitle();
@@ -251,30 +250,6 @@ public class QuestionEntity implements WebEntity {
       entities.add(fromQuestion(question, lang));
     }
     return entities;
-  }
-
-  /**
-   * Gets the reply business objet this entity represent.
-   * @return a reply instance.
-   */
-  public Question toQuestion() {
-    Question question = new Question();
-    question.setPK(new IdPK(id));
-    question.setCategoryId(categoryId);
-    question.setContent(content);
-    try {
-      question.setCreationDate(DateUtil.getInputDate(this.creationDate, language));
-    } catch (ParseException ex) {
-      question.setCreationDate(this.creationDate);
-    }
-    question.setCreatorId(creatorId);
-    question.setInstanceId(instanceId);
-    question.setPrivateReplyNumber(privateReplyNumber);
-    question.setPublicReplyNumber(publicReplyNumber);
-    question.setReplyNumber(replyNumber);
-    question.setStatus(status);
-    question.setTitle(title);
-    return question;
   }
 
   public QuestionEntity withUser(User user, SilverpeasRole profile) {

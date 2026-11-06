@@ -207,7 +207,7 @@ class SubscriptionNotifierTest {
 
   private static SubscriptionNotifier aNotificationOfAReply() {
     final Question question = new Question("10", COMPONENT_ID);
-    question.getPK().setId(QUESTION_ID);
+    question.setId(QUESTION_ID);
     question.setTitle("A question");
     question.setContent("The content of a question");
     final Reply reply = mock(Reply.class);

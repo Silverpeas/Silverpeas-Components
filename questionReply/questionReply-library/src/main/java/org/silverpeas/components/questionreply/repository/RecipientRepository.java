@@ -21,29 +21,38 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.silverpeas.components.questionreply.service;
+package org.silverpeas.components.questionreply.repository;
 
-import org.junit.jupiter.api.Test;
-import org.silverpeas.core.test.unit.extention.JEETestContext;
-import org.silverpeas.kernel.test.annotations.TestedBean;
-import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.components.questionreply.model.Recipient;
+import org.silverpeas.core.annotation.Repository;
+import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
 
 import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.empty;
-
 /**
- * Unit tests on the fetching of questions by their identifiers.
+ * Repository of the users to whom the questions of the FAQs are addressed.
  */
-@EnableSilverTestEnv(context = JEETestContext.class)
-class SilverpeasQuestionManagerTest {
+@Repository
+public class RecipientRepository extends BasicJpaEntityRepository<Recipient> {
 
-  @TestedBean
-  private SilverpeasQuestionManager manager;
+  private static final String QUESTION_ID = "questionId";
 
-  @Test
-  void getQuestionsByNoIdsReturnsNoQuestion() throws Exception {
-    assertThat(manager.getQuestionsByIds(List.of()), empty());
+  /**
+   * Finds the users to whom the specified question is addressed.
+   * @param questionId the unique identifier of the question.
+   * @return the recipients of the question.
+   */
+  public List<Recipient> findByQuestion(long questionId) {
+    return listFromNamedQuery("Recipient.findByQuestion",
+        newNamedParameters().add(QUESTION_ID, questionId));
+  }
+
+  /**
+   * Deletes all the recipients of the specified question.
+   * @param questionId the unique identifier of the question.
+   */
+  public void deleteByQuestion(long questionId) {
+    deleteFromNamedQuery("Recipient.deleteByQuestion",
+        newNamedParameters().add(QUESTION_ID, questionId));
   }
 }

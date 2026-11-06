@@ -136,7 +136,7 @@ public class ReplyResource extends QuestionReplyBaseWebService {
   protected List<ReplyEntity> asWebEntities(List<Reply> replies, SilverpeasRole profile) {
     return replies.stream()
         .map(r -> {
-          URI commentURI = getUri().getRequestUriBuilder().path(r.getPK().getId()).build();
+          URI commentURI = getUri().getRequestUriBuilder().path(r.getId()).build();
           return asWebEntity(r, identifiedBy(commentURI), profile);
         })
         .collect(Collectors.toList());
@@ -154,7 +154,7 @@ public class ReplyResource extends QuestionReplyBaseWebService {
     ReplyEntity entity = ReplyEntity.fromReply(reply, getUserPreferences().getLanguage()).withURI(
         replyURI).withProfile(profile);
     Collection<SimpleDocument> attachments =
-        attachmentService.listDocumentsByForeignKey(reply.getPK().toResourceReference(),
+        attachmentService.listDocumentsByForeignKey(reply.toResourceReference(),
             entity.getLanguage());
     entity.withAttachments(attachments);
     AuthorEntity author = AuthorEntity.fromUser(reply.readAuthor());

@@ -23,46 +23,110 @@
  */
 package org.silverpeas.components.questionreply.model;
 
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.persistence.datasource.model.identifier.UniqueIntegerIdentifier;
+import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.kernel.annotation.NonNull;
+import org.silverpeas.core.util.URLUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-@SuppressWarnings("deprecation")
-public class Question extends SilverpeasBean {
+/**
+ * A question asked in a FAQ, that is to say in an instance of the QuestionReply application.
+ */
+@Entity
+@Table(name = "SC_QuestionReply_Question")
+@NamedQuery(name = "Question.findInstanceId",
+    query = "SELECT q.instanceId FROM Question q WHERE q.id.id = :id")
+@NamedQuery(name = "Question.findById",
+    query = "SELECT q FROM Question q WHERE q.id.id = :id AND q.instanceId = :instanceId")
+@NamedQuery(name = "Question.findByIds",
+    query = "SELECT q FROM Question q WHERE q.id.id IN :ids AND q.instanceId = :instanceId " +
+        "ORDER BY q.id.id")
+@NamedQuery(name = "Question.findNotClosedOrWithPublicReplies",
+    query = "SELECT q FROM Question q WHERE q.instanceId = :instanceId " +
+        "AND (q.status <> :closed OR q.publicReplyNumber > 0) " +
+        "ORDER BY q.creationDate DESC, q.id.id DESC")
+@NamedQuery(name = "Question.findWithPublicReplies",
+    query = "SELECT q FROM Question q WHERE q.instanceId = :instanceId " +
+        "AND q.publicReplyNumber > 0 ORDER BY q.id.id")
+@NamedQuery(name = "Question.findSentBy",
+    query = "SELECT q FROM Question q WHERE q.instanceId = :instanceId " +
+        "AND q.creatorId = :userId AND (q.status <> :closed OR q.privateReplyNumber > 0) " +
+        "ORDER BY q.id.id")
+@NamedQuery(name = "Question.findReceivedBy",
+    query = "SELECT q FROM Question q WHERE q.instanceId = :instanceId AND q.status <> :closed " +
+        "AND q.id.id IN (SELECT r.questionId FROM Recipient r WHERE r.userId = :userId) " +
+        "ORDER BY q.id.id")
+public class Question extends BasicJpaEntity<Question, UniqueIntegerIdentifier> {
 
   public static final int CLOSED = 2;
   public static final int NEW = 0;
   public static final int WAITING = 1;
   private static final long serialVersionUID = 8690405914141003827L;
+
+  @Column(nullable = false)
   private String title;
+  @Column
   private String content;
+  @Column(nullable = false)
   private String creatorId;
+  @Column(nullable = false)
   private String creationDate;
-  private int status = 0;
+  @Column(nullable = false)
+  private int status = NEW;
+  @Column(nullable = false)
   private int publicReplyNumber = 0;
+  @Column(nullable = false)
   private int privateReplyNumber = 0;
+  @Column(nullable = false)
   private int replyNumber = 0;
+  @Column(nullable = false)
   private String instanceId;
+  @Column
   private String categoryId;
+  @Transient
   private List<Reply> replies = new ArrayList<>();
+  @Transient
   private List<Recipient> recipients = new ArrayList<>();
 
   public Question() {
+    // required by JPA
   }
 
   public Question(String creatorId, String instanceId) {
     this.creatorId = creatorId;
     this.instanceId = instanceId;
     setCreationDate();
+  }
+
+  /**
+   * Sets the unique identifier of this question. It is for web entities representing an existing
+   * question.
+   * @param id the unique identifier of the question.
+   * @return itself.
+   */
+  @Override
+  public Question setId(String id) {
+    return super.setId(id);
+  }
+
+  /**
+   * Gets the unique identifier of this question as a long value.
+   * @return the unique identifier of this question.
+   */
+  public long getIdAsLong() {
+    return getNativeId().getId();
   }
 
   public String getTitle() {
@@ -158,11 +222,11 @@ public class Question extends SilverpeasBean {
   }
 
   public String getPermalink() {
-    return URLUtil.getSimpleURL(URLUtil.URL_QUESTION, getPK().getId(), false);
+    return URLUtil.getSimpleURL(URLUtil.URL_QUESTION, getId(), false);
   }
 
   public String getURL() {
-    return "searchResult?Type=Question&Id=" + getPK().getId();
+    return "searchResult?Type=Question&Id=" + getId();
   }
 
   public String readCreatorName() {
@@ -180,15 +244,8 @@ public class Question extends SilverpeasBean {
     return creatorName;
   }
 
-
   public UserDetail readAuthor(OrganizationController organizationController) {
     return organizationController.getUserDetail(getCreatorId());
-  }
-
-  @Override
-  @NonNull
-  protected String getTableName() {
-    return "SC_QuestionReply_Question";
   }
 
   public String getCategoryId() {
@@ -222,10 +279,10 @@ public class Question extends SilverpeasBean {
 
   @Override
   public String toString() {
-    return "Question{" + "title=" + title + ", content=" + content + ", creatorId=" + creatorId +
-        ", creationDate=" + creationDate + ", status=" + status + ", publicReplyNumber=" +
-        publicReplyNumber + ", privateReplyNumber=" + privateReplyNumber + ", replyNumber=" +
-        replyNumber + ", instanceId=" + instanceId + ", categoryId=" + categoryId + ", replies=" +
-        replies + ", recipients=" + recipients + '}';
+    return "Question{" + "id=" + getId() + ", title=" + title + ", content=" + content +
+        ", creatorId=" + creatorId + ", creationDate=" + creationDate + ", status=" + status +
+        ", publicReplyNumber=" + publicReplyNumber + ", privateReplyNumber=" +
+        privateReplyNumber + ", replyNumber=" + replyNumber + ", instanceId=" + instanceId +
+        ", categoryId=" + categoryId + ", replies=" + replies + ", recipients=" + recipients + '}';
   }
 }

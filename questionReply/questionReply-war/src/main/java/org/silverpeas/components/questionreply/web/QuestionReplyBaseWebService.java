@@ -63,8 +63,8 @@ public abstract class QuestionReplyBaseWebService extends RESTWebService {
    * @throws QuestionReplyException if an error occurs while fetching the question.
    */
   Question getQuestionInComponent(String questionId) throws QuestionReplyException {
-    Question question = questionManager.getQuestion(Long.parseLong(questionId));
-    if (question == null || !getComponentId().equals(question.getInstanceId())) {
+    Question question = questionManager.getQuestion(Long.parseLong(questionId), getComponentId());
+    if (question == null) {
       throw new WebApplicationException(Status.NOT_FOUND);
     }
     return question;

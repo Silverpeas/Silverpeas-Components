@@ -66,7 +66,7 @@ public class QuestionDetail implements SilverpeasContent {
 
   @Override
   public String getId() {
-    return question.getPK().getId();
+    return question.getId();
   }
 
   @Override

@@ -29,7 +29,6 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.LocalizedContribution;
 import org.silverpeas.core.i18n.AbstractBean;
-import org.silverpeas.core.persistence.jdbc.bean.IdPK;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.kernel.util.StringUtil;
 
@@ -50,7 +49,7 @@ public final class QuestionHeader extends AbstractBean implements LocalizedContr
   private String creatorId;
 
   public void init(Question question) {
-    this.id = ((IdPK) question.getPK()).getIdAsLong();
+    this.id = question.getIdAsLong();
     setName(question.getTitle());
     setDescription(question.getContent());
     this.title = question.getTitle();

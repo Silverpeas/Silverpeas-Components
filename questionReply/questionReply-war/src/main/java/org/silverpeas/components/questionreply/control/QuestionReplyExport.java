@@ -53,7 +53,7 @@ public class QuestionReplyExport {
 
   public void exportQuestion(Question question, StringBuilder sb,
       QuestionReplySessionController scc) throws QuestionReplyException, ParseException {
-    String questionId = question.getPK().getId();
+    String questionId = question.getId();
     String qId = "q" + questionId;
     sb.append(
         "<table class=\"question\" width=\"98%\" align=\"center\" border=\"0\" cellpadding=\"0\" " +
@@ -108,7 +108,6 @@ public class QuestionReplyExport {
     while (itR.hasNext()) {
       Reply reply = itR.next();
       if (isReplyVisible(question, reply, scc)) {
-        reply.getPK().setComponentName(question.getInstanceId());
         exportReply(scc, reply, sb);
       }
     }
@@ -151,7 +150,7 @@ public class QuestionReplyExport {
     try {
       String filePath = file.getParentFile().getPath() + File.separator + "files";
       String relativeFilePath = file.getParentFile().getPath();
-      attachments = attachmentIE.getAttachments(reply.getPK().toResourceReference(), filePath,
+      attachments = attachmentIE.getAttachments(reply.toResourceReference(), filePath,
           relativeFilePath, null);
     } catch (Exception ex) {
       // En cas d"objet non trouvé: pas d'exception gérée par le système

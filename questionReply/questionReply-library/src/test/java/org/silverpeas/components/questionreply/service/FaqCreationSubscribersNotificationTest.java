@@ -33,26 +33,27 @@ import org.silverpeas.components.questionreply.index.QuestionIndexer;
 import org.silverpeas.components.questionreply.model.Question;
 import org.silverpeas.components.questionreply.model.QuestionDetail;
 import org.silverpeas.components.questionreply.model.Reply;
+import org.silverpeas.components.questionreply.repository.QuestionRepository;
+import org.silverpeas.components.questionreply.repository.ReplyRepository;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.contribution.model.Contribution;
-import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.notification.user.builder.UserNotificationBuilder;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.persistence.jdbc.bean.IdPK;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 import org.silverpeas.core.subscription.ResourceSubscriptionService;
 import org.silverpeas.core.subscription.SubscriberDirective;
 import org.silverpeas.core.subscription.service.ResourceSubscriptionProvider;
 import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
 import org.silverpeas.core.test.unit.extention.JEETestContext;
 import org.silverpeas.kernel.test.annotations.TestManagedMock;
+import org.silverpeas.kernel.test.annotations.TestedBean;
 import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 
 import java.sql.Connection;
@@ -68,11 +69,9 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -97,39 +96,35 @@ class FaqCreationSubscribersNotificationTest {
   PdcClassificationService pdcClassificationService;
   @TestManagedMock
   ResourceSubscriptionService subscriptionService;
+  @TestManagedMock
+  OrganizationController organizationController;
+  @TestManagedMock
+  QuestionRepository questionRepository;
+  @TestManagedMock
+  ReplyRepository replyRepository;
+  @TestManagedMock
+  QuestionIndexer questionIndexer;
+  @TestManagedMock
+  QuestionReplyContentManager contentManager;
+  @TestedBean
+  SilverpeasQuestionManager manager;
 
-  private SilverpeasQuestionManager manager;
   private final Question question = new Question("10", COMPONENT_ID);
   private final List<String> events = new ArrayList<>();
 
-  @SuppressWarnings("unchecked")
   @BeforeEach
-  void setUpTheQuestionManager() throws Exception {
-    final SilverpeasBeanDAO<Question> questionDao = mock(SilverpeasBeanDAO.class);
-    when(questionDao.add(any(Connection.class), any(Question.class))).thenReturn(
-        new IdPK(String.valueOf(QUESTION_ID)));
-    final SilverpeasBeanDAO<Reply> replyDao = mock(SilverpeasBeanDAO.class);
-    when(replyDao.add(any(Connection.class), any(Reply.class))).thenReturn(new IdPK("31"));
-
-    // the question is got back from the data source once created: the manager is spied to
-    // provide the one of the tests
-    manager = spy(new SilverpeasQuestionManager());
-    FieldUtils.writeField(manager, "questionDao", questionDao, true);
-    FieldUtils.writeField(manager, "replyDao", replyDao, true);
-    FieldUtils.writeField(manager, "questionIndexer", mock(QuestionIndexer.class), true);
-    FieldUtils.writeField(manager, "contentManager", mock(QuestionReplyContentManager.class),
-        true);
-    FieldUtils.writeField(manager, "i18n", mock(I18n.class), true);
-    question.getPK().setId(String.valueOf(QUESTION_ID));
-    doReturn(question).when(manager).getQuestion(QUESTION_ID);
+  void setUpTheQuestionManager() {
+    // the question gets its identifier once saved
+    when(questionRepository.save(question)).thenAnswer(
+        invocation -> question.setId(String.valueOf(QUESTION_ID)));
+    when(replyRepository.save(any(Reply.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
     doAnswer(invocation -> events.add(CLASSIFICATION)).when(pdcClassificationService)
         .classifyContent(any(Contribution.class), any(PdcClassification.class), anyBoolean());
   }
 
   @BeforeEach
-  void setUpTheSubscriptionsOfTheApplication(
-      @TestManagedMock OrganizationController organizationController) throws Exception {
+  void setUpTheSubscriptionsOfTheApplication() throws Exception {
     final ComponentInstLight componentInstance = new ComponentInstLight();
     componentInstance.setLocalId(7);
     componentInstance.setName(COMPONENT_NAME);
@@ -203,7 +198,7 @@ class FaqCreationSubscribersNotificationTest {
 
   private static Reply aReply(final int publicReply) {
     final Reply reply = mock(Reply.class);
-    when(reply.getPK()).thenReturn(new IdPK());
+    when(reply.toResourceReference()).thenReturn(new ResourceReference("31", COMPONENT_ID));
     when(reply.getPublicReply()).thenReturn(publicReply);
     when(reply.readAuthor()).thenReturn(mock(UserDetail.class));
     return reply;

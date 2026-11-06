@@ -32,7 +32,6 @@ import org.silverpeas.components.questionreply.service.QuestionManager;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.persistence.jdbc.bean.IdPK;
 import org.silverpeas.core.test.unit.extention.JEETestContext;
 import org.silverpeas.core.web.rs.RESTRequestContext;
 import org.silverpeas.kernel.test.annotations.TestManagedMock;
@@ -86,9 +85,10 @@ class ReplyResourceTest {
 
   @Test
   void getAllTheRepliesToAQuestionOfTheFAQ() throws Exception {
-    when(questionManager.getQuestion(1)).thenReturn(aQuestion(1, FAQ_ID));
-    Reply privateReply = aReply(1, 0);
-    Reply publicReply = aReply(1, 1);
+    when(questionManager.getQuestion(1, FAQ_ID)).thenReturn(aQuestion(1, FAQ_ID));
+    Question question = aQuestion(1, FAQ_ID);
+    Reply privateReply = aReply(question, 0);
+    Reply publicReply = aReply(question, 1);
     when(questionManager.getAllReplies(1, FAQ_ID)).thenReturn(List.of(privateReply, publicReply));
 
     rest.getAllRepliesForQuestion("1");
@@ -98,7 +98,7 @@ class ReplyResourceTest {
 
   @Test
   void getAllTheRepliesToAQuestionOfAnotherFAQIsNotFound() throws Exception {
-    when(questionManager.getQuestion(2)).thenReturn(aQuestion(2, OTHER_FAQ_ID));
+    when(questionManager.getQuestion(2, OTHER_FAQ_ID)).thenReturn(aQuestion(2, OTHER_FAQ_ID));
 
     WebApplicationException ex =
         assertThrows(WebApplicationException.class, () -> rest.getAllRepliesForQuestion("2"));
@@ -109,7 +109,7 @@ class ReplyResourceTest {
 
   @Test
   void getAllTheRepliesToAnUnknownQuestionIsNotFound() throws Exception {
-    when(questionManager.getQuestion(2)).thenReturn(null);
+    when(questionManager.getQuestion(2, FAQ_ID)).thenReturn(null);
 
     WebApplicationException ex =
         assertThrows(WebApplicationException.class, () -> rest.getAllRepliesForQuestion("2"));
@@ -119,8 +119,8 @@ class ReplyResourceTest {
 
   @Test
   void getThePublicRepliesToAQuestionOfTheFAQ() throws Exception {
-    when(questionManager.getQuestion(1)).thenReturn(aQuestion(1, FAQ_ID));
-    Reply publicReply = aReply(1, 1);
+    when(questionManager.getQuestion(1, FAQ_ID)).thenReturn(aQuestion(1, FAQ_ID));
+    Reply publicReply = aReply(aQuestion(1, FAQ_ID), 1);
     when(questionManager.getQuestionPublicReplies(1, FAQ_ID)).thenReturn(List.of(publicReply));
 
     rest.getPublicRepliesForQuestion("1");
@@ -130,7 +130,7 @@ class ReplyResourceTest {
 
   @Test
   void getThePublicRepliesToAQuestionOfAnotherFAQIsNotFound() throws Exception {
-    when(questionManager.getQuestion(2)).thenReturn(aQuestion(2, OTHER_FAQ_ID));
+    when(questionManager.getQuestion(2, OTHER_FAQ_ID)).thenReturn(aQuestion(2, OTHER_FAQ_ID));
 
     WebApplicationException ex =
         assertThrows(WebApplicationException.class, () -> rest.getPublicRepliesForQuestion("2"));
@@ -148,12 +148,12 @@ class ReplyResourceTest {
 
   private static Question aQuestion(int id, String instanceId) {
     Question question = new Question("0", instanceId);
-    question.setPK(new IdPK(id));
+    question.setId(String.valueOf(id));
     return question;
   }
 
-  private static Reply aReply(long questionId, int publicReply) {
-    Reply reply = new Reply(questionId, "0");
+  private static Reply aReply(Question question, int publicReply) {
+    Reply reply = new Reply(question, "0");
     reply.setPublicReply(publicReply);
     reply.setPrivateReply(1 - publicReply);
     return reply;

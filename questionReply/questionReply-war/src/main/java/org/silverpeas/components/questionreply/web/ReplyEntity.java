@@ -26,7 +26,6 @@ package org.silverpeas.components.questionreply.web;
 import org.silverpeas.components.questionreply.model.Reply;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.persistence.jdbc.bean.IdPK;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.webapi.attachment.AttachmentEntity;
@@ -84,7 +83,7 @@ public class ReplyEntity implements WebEntity {
   }
 
   private ReplyEntity(Reply reply, String lang) {
-    this.id = reply.getPK().getId();
+    this.id = reply.getId();
     this.questionId = reply.getQuestionId();
     this.content = reply.readCurrentWysiwygContent();
     this.title = reply.getTitle();
@@ -217,23 +216,6 @@ public class ReplyEntity implements WebEntity {
       entities.add(fromReply(reply, lang));
     }
     return entities;
-  }
-
-  /**
-   * Gets the reply business objet this entity represent.
-   * @return a reply instance.
-   */
-  public Reply toReply() {
-    Reply reply = new Reply();
-    reply.setPK(new IdPK(id));
-    reply.setQuestionId(questionId);
-    reply.setContent(content);
-    reply.setCreationDate(creationDate);
-    reply.setCreatorId(creatorId);
-    reply.setPrivateReply(privateReply ? 1 : 0);
-    reply.setPublicReply(publicReply ? 1 : 0);
-    reply.setTitle(title);
-    return reply;
   }
 
   /**

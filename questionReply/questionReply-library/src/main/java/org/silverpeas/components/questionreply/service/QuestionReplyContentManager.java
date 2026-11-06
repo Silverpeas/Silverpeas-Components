@@ -31,12 +31,13 @@ import org.silverpeas.core.contribution.contentcontainer.content.AbstractSilverp
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
 import org.silverpeas.core.contribution.model.Contribution;
-import org.silverpeas.core.persistence.jdbc.bean.IdPK;
 import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -71,12 +72,20 @@ public class QuestionReplyContentManager extends AbstractSilverpeasContentManage
   protected List<Contribution> getAccessibleContributions(
       final List<ResourceReference> resourceReferences, final String currentUserId) {
     try {
-      final List<String> resourceIds = resourceReferences.stream()
-          .map(ResourceReference::getLocalId)
-          .collect(Collectors.toList());
-      return QuestionManagerProvider.getQuestionManager().getQuestionsByIds(resourceIds).stream()
-          .map(q -> new QuestionHeader(q, q.getInstanceId(), q.getCreationDate(), q.getCreatorId()))
-          .collect(Collectors.toList());
+      final Map<String, List<String>> questionIdsByFaq = resourceReferences.stream()
+          .filter(r -> r.getComponentInstanceId() != null)
+          .collect(Collectors.groupingBy(ResourceReference::getComponentInstanceId,
+              Collectors.mapping(ResourceReference::getLocalId, Collectors.toList())));
+      final List<Contribution> contributions = new ArrayList<>(resourceReferences.size());
+      for (Map.Entry<String, List<String>> questionIdsInFaq : questionIdsByFaq.entrySet()) {
+        QuestionManagerProvider.getQuestionManager()
+            .getQuestionsByIds(questionIdsInFaq.getValue(), questionIdsInFaq.getKey())
+            .stream()
+            .map(q -> new QuestionHeader(q, q.getInstanceId(), q.getCreationDate(),
+                q.getCreatorId()))
+            .forEach(contributions::add);
+      }
+      return contributions;
     } catch (QuestionReplyException e) {
       // skip unknown and ill formed id.
       SilverLogger.getLogger(this).error(e);
@@ -90,7 +99,7 @@ public class QuestionReplyContentManager extends AbstractSilverpeasContentManage
    */
   protected void createSilverContent(Connection con, Question question) throws ContentManagerException {
     SilverContentVisibility scv = new SilverContentVisibility(isVisible(question));
-    getContentManager().addSilverContent(con, question.getPK().getId(), question.getInstanceId(),
+    getContentManager().addSilverContent(con, question.getId(), question.getInstanceId(),
         question.getCreatorId(), scv);
   }
 
@@ -101,7 +110,7 @@ public class QuestionReplyContentManager extends AbstractSilverpeasContentManage
    */
   protected void updateSilverContentVisibility(Question question) throws ContentManagerException {
     int silverContentId = getContentManager()
-        .getSilverContentId(question.getPK().getId(), question.getPK().getComponentName());
+        .getSilverContentId(question.getId(), question.getInstanceId());
     SilverContentVisibility scv = new SilverContentVisibility(isVisible(question));
     getContentManager().updateSilverContentVisibilityAttributes(scv, silverContentId);
   }
@@ -109,11 +118,12 @@ public class QuestionReplyContentManager extends AbstractSilverpeasContentManage
   /**
    * delete a content. It is registered to contentManager service
    * @param con a Connection
-   * @param pk the identity of the content to unregister
+   * @param question the question to unregister
    * @throws ContentManagerException on technical error.
    */
-  protected void deleteSilverContent(Connection con, IdPK pk) throws ContentManagerException {
-    deleteSilverContent(con, pk.getId(), pk.getComponentName());
+  protected void deleteSilverContent(Connection con, Question question)
+      throws ContentManagerException {
+    deleteSilverContent(con, question.getId(), question.getInstanceId());
   }
 
   private boolean isVisible(Question question) {

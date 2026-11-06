@@ -107,10 +107,8 @@ public class QuestionResource extends QuestionReplyBaseWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public List<QuestionEntity> getQuestions(@QueryParam("ids") Set<String> ids) {
     try {
-      List<Question> questions = getQuestionManager().getQuestionsByIds(new ArrayList<>(ids))
-          .stream()
-          .filter(q -> componentId.equals(q.getInstanceId()))
-          .collect(Collectors.toList());
+      List<Question> questions =
+          getQuestionManager().getQuestionsByIds(new ArrayList<>(ids), componentId);
       return asWebEntities(extractVisibleQuestions(questions));
     } catch (Exception ex) {
       throw encapsulateException(ex);
@@ -192,7 +190,7 @@ public class QuestionResource extends QuestionReplyBaseWebService {
   protected List<QuestionEntity> asWebEntities(List<Question> questions) {
     return questions.stream()
         .map(q -> {
-          URI questionURI = getUri().getRequestUriBuilder().path(q.getPK().getId()).
+          URI questionURI = getUri().getRequestUriBuilder().path(q.getId()).
               build();
           return asWebEntity(q, identifiedBy(questionURI));
         })

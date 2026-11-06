@@ -102,7 +102,7 @@ public class QuestionReplyRequestRouter
           if (!StringUtil.isDefined(categoryId)) {
             categoryId = "null";
           }
-          questionId = question.getPK().getId();
+          questionId = question.getId();
         }
         destination = "/questionReply/jsp/listQuestionsDHTML.jsp" + "?categoryId=" + categoryId +
             "&questionId=" + questionId;
@@ -165,7 +165,7 @@ public class QuestionReplyRequestRouter
           questionId = (String) request.getAttribute("questionId");
         }
         if (questionId == null) {
-          questionId = scc.getCurrentQuestion().getPK().getId();
+          questionId = scc.getCurrentQuestion().getId();
         }
 
         Question question = scc.getQuestion(Long.parseLong(questionId));
@@ -225,7 +225,7 @@ public class QuestionReplyRequestRouter
         scc.saveNewReply(request.getUploadedFiles());
 
         if (scc.getCurrentQuestion() != null) {
-          request.setAttribute(PARAM_QUESTION_ID, scc.getCurrentQuestion().getPK().getId());
+          request.setAttribute(PARAM_QUESTION_ID, scc.getCurrentQuestion().getId());
         }
 
         destination = getDestination("Main", scc, request);
@@ -244,7 +244,7 @@ public class QuestionReplyRequestRouter
       } else if ("EffectiveUpdateR".equals(function)) {
         scc.updateCurrentReply(request.getParameter("title"), request.getParameter("content"));
         if (scc.getCurrentQuestion() != null) {
-          request.setAttribute(PARAM_QUESTION_ID, scc.getCurrentQuestion().getPK().getId());
+          request.setAttribute(PARAM_QUESTION_ID, scc.getCurrentQuestion().getId());
         }
 
         destination = getDestination("Main", scc, request);

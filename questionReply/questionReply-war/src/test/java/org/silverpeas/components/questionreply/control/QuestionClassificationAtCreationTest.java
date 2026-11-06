@@ -102,8 +102,8 @@ class QuestionClassificationAtCreationTest {
     controller = new QuestionReplySessionController(mainController, context, BUNDLE, null);
 
     final Question question = new Question(AUTHOR, COMPONENT_ID);
-    question.getPK().setId(String.valueOf(QUESTION_ID));
-    when(questionManager.getQuestion(QUESTION_ID)).thenReturn(question);
+    question.setId(String.valueOf(QUESTION_ID));
+    when(questionManager.getQuestion(QUESTION_ID, COMPONENT_ID)).thenReturn(question);
     when(questionManager.createQuestionReply(any(Question.class), any(Reply.class), any()))
         .thenReturn(QUESTION_ID);
   }

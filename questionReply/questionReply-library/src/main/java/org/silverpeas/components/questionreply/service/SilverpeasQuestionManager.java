@@ -24,15 +24,17 @@
 package org.silverpeas.components.questionreply.service;
 
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import org.silverpeas.components.questionreply.QuestionReplyException;
 import org.silverpeas.components.questionreply.index.QuestionIndexer;
 import org.silverpeas.components.questionreply.model.Question;
 import org.silverpeas.components.questionreply.model.QuestionDetail;
 import org.silverpeas.components.questionreply.model.Recipient;
 import org.silverpeas.components.questionreply.model.Reply;
+import org.silverpeas.components.questionreply.repository.QuestionRepository;
+import org.silverpeas.components.questionreply.repository.RecipientRepository;
+import org.silverpeas.components.questionreply.repository.ReplyRepository;
 import org.silverpeas.components.questionreply.service.notification.SubscriptionNotifier;
-import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Service;
@@ -41,51 +43,36 @@ import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerE
 import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.persistence.jdbc.bean.*;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.StringUtil;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper.buildAndSend;
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
-import static org.silverpeas.core.persistence.jdbc.bean.BeanCriteria.OPERATOR.GREATER;
-import static org.silverpeas.core.persistence.jdbc.bean.BeanCriteria.OPERATOR.NOT_EQUALS;
 
 @Service
-@SuppressWarnings("deprecation")
 public class SilverpeasQuestionManager implements QuestionManager {
 
-  private static final String STATUS = "status";
-  private static final String INSTANCE_ID = "instanceId";
-  private static final String QUESTION_ID = "questionId";
+  @Inject
+  private QuestionRepository questionRepository;
+  @Inject
+  private ReplyRepository replyRepository;
+  @Inject
+  private RecipientRepository recipientRepository;
   @Inject
   private QuestionIndexer questionIndexer;
-  private SilverpeasBeanDAO<Question> questionDao = null;
-  private SilverpeasBeanDAO<Reply> replyDao = null;
-  private SilverpeasBeanDAO<Recipient> recipientDao = null;
   @Inject
   private QuestionReplyContentManager contentManager;
   @Inject
   private OrganizationController controller;
   @Inject
   private I18n i18n;
-
-  SilverpeasQuestionManager() {
-    try {
-      questionDao = SilverpeasBeanDAOFactory.getDAO(Question.class);
-      replyDao = SilverpeasBeanDAOFactory.getDAO(Reply.class);
-      recipientDao = SilverpeasBeanDAOFactory.getDAO(Recipient.class);
-    } catch (PersistenceException ex) {
-      SilverLogger.getLogger(this).error(ex);
-    }
-  }
 
   /**
    * Create and persist a question with targeted recipient (be careful recipient doesn't have
@@ -95,25 +82,22 @@ public class SilverpeasQuestionManager implements QuestionManager {
    * @throws QuestionReplyException if an error occurs
    */
   @Override
+  @Transactional
   public long createQuestion(Question question) throws QuestionReplyException {
+    Collection<Recipient> recipients = question.readRecipients();
+    questionRepository.save(question);
+    long questionId = question.getIdAsLong();
+    questionIndexer.createIndex(question, List.of());
+    for (Recipient recipient : recipients) {
+      recipient.setQuestionId(questionId);
+      recipientRepository.save(recipient);
+    }
     try (Connection con = DBUtil.openConnection()) {
-      Collection<Recipient> recipients = question.readRecipients();
-      IdPK pkQ = (IdPK) questionDao.add(con, question);
-      question.setPK(pkQ);
-      questionIndexer.createIndex(question, Collections.emptyList());
-      long idQ = pkQ.getIdAsLong();
-      if (recipients != null) {
-        for (Recipient recipient : recipients) {
-          recipient.setQuestionId(idQ);
-          createRecipient(con, recipient);
-        }
-      }
-      question.setPK(pkQ);
       contentManager.createSilverContent(con, question);
-      return idQ;
-    } catch (SQLException | ContentManagerException | PersistenceException e) {
+    } catch (SQLException | ContentManagerException e) {
       throw new QuestionReplyException(e);
     }
+    return questionId;
   }
 
   /*
@@ -121,160 +105,38 @@ public class SilverpeasQuestionManager implements QuestionManager {
    * et replyNumber de la question ainsi que le status à 1.
    */
   @Override
+  @Transactional
   public long createReply(Reply reply, Question question) throws QuestionReplyException {
-    try (Connection con = DBUtil.openConnection()) {
-      IdPK pkR = (IdPK) replyDao.add(con, reply);
-      WysiwygController.createFileAndAttachment(reply.readCurrentWysiwygContent(),
-          new ResourceReference(pkR), reply.getCreatorId(), i18n.getDefaultLanguage());
-      long idR = pkR.getIdAsLong();
-      if (question.hasNewStatus()) {
-        question.waitForAnswer();
-      }
-      updateQuestion(con, question);
-      questionIndexer.updateIndex(question, getAllReplies(reply.getQuestionId(), question.
-          getInstanceId()));
-      notifySubscribers(question, reply);
-      return idR;
-    } catch (SQLException | PersistenceException e) {
-      throw new QuestionReplyException(e);
+    reply.setQuestion(question);
+    replyRepository.save(reply);
+    WysiwygController.createFileAndAttachment(reply.readCurrentWysiwygContent(),
+        reply.toResourceReference(), reply.getCreatorId(), i18n.getDefaultLanguage());
+    if (question.hasNewStatus()) {
+      question.waitForAnswer();
     }
-  }
-
-  /*
-   * enregistre un destinataire
-   */
-  private void createRecipient(Connection con, Recipient recipient) throws QuestionReplyException {
-    try {
-      recipientDao.add(con, recipient);
-    } catch (PersistenceException e) {
-      throw new QuestionReplyException(e);
-    }
-  }
-
-  /*
-   * supprime tous les destinataires d'une question
-   */
-  private void deleteRecipients(Connection con, long questionId) throws QuestionReplyException {
-    try {
-      BeanCriteria criteria = BeanCriteria.addCriterion(QUESTION_ID, questionId);
-      recipientDao.removeBy(con, criteria);
-    } catch (PersistenceException e) {
-      throw new QuestionReplyException(e);
-    }
-  }
-
-  /*
-   * Clos une liste de questions : updateQuestion
-   */
-  @Override
-  public void closeQuestions(Collection<Long> questionIds) throws QuestionReplyException {
-    if (questionIds != null) {
-      try (Connection con = DBUtil.openConnection()) {
-        for (Long idQ : questionIds) {
-          Question question = getQuestion(idQ);
-          question.close();
-          updateQuestion(con, question);
-        }
-      } catch (SQLException e) {
-        throw new QuestionReplyException(e);
-      }
-    }
+    updateQuestion(question);
+    notifySubscribers(question, reply);
+    return reply.getIdAsLong();
   }
 
   @Override
-  public void openQuestions(Collection<Long> questionIds) throws QuestionReplyException {
-    if (questionIds != null) {
-      try (Connection con = DBUtil.openConnection()) {
-        for (Long idQ : questionIds) {
-          Question question = getQuestion(idQ);
-          question.waitForAnswer();
-          updateQuestion(con, question);
-        }
-      } catch (SQLException e) {
-        throw new QuestionReplyException(e);
-      }
-    }
-  }
-
-  /*
-   * Modifie les destinataires d'une question : deleteRecipients, createRecipient
-   */
-  @Override
-  public void updateQuestionRecipients(Question question) throws QuestionReplyException {
-    try (Connection con = DBUtil.openConnection()) {
-      Collection<Recipient> recipients = question.readRecipients();
-      deleteRecipients(con, ((IdPK) question.getPK()).getIdAsLong());
-      if (recipients != null) {
-        for (Recipient recipient : recipients) {
-          recipient.setQuestionId(((IdPK) question.getPK()).getIdAsLong());
-          createRecipient(con, recipient);
-        }
-      }
-    } catch (SQLException | QuestionReplyException e) {
-      throw new QuestionReplyException(e);
-    }
-  }
-
-  /*
-   * Affecte le status public à 0 de toutes les réponses d'une liste de questions : updateReply
-   * Affecte le nombre de réponses publiques de la question à 0 : updateQuestion si question en
-   * attente, on a demandé à la supprimer : deleteQuestion
-   */
-  @Override
-  public void updateQuestionRepliesPublicStatus(Collection<Long> questionIds)
+  @Transactional
+  public void closeQuestions(Collection<Long> questionIds, String instanceId)
       throws QuestionReplyException {
-    try (Connection con = DBUtil.openConnection()) {
-      if (questionIds != null) {
-        for (Long idQ : questionIds) {
-          Question question = getQuestion(idQ);
-          Collection<Reply> replies = getQuestionPublicReplies(idQ, question.getInstanceId());
-          if (replies != null) {
-            for (Reply reply : replies) {
-              reply.setPublicReply(0);
-              addComponentId(reply, question.getPK().getInstanceId());
-              updateReply(con, reply);
-            }
-            updateQuestion(con, question);
-          }
-          if (question.hasNewStatus()) {
-            deleteQuestion(con, idQ);
-          }
-        }
-      }
-    } catch (SQLException | QuestionReplyException e) {
-      throw new QuestionReplyException(e);
+    for (Question question : getQuestionsOfFaq(questionIds, instanceId)) {
+      question.close();
+      updateQuestion(question);
     }
   }
 
-  /*
-   * Affecte le status private à 0 de toutes les réponses d'une liste de questions : updateReply
-   * Affecte le nombre de réponses privées de la question à 0 : updateQuestion
-   */
   @Override
-  public void updateQuestionRepliesPrivateStatus(Collection<Long> questionIds)
+  @Transactional
+  public void openQuestions(Collection<Long> questionIds, String instanceId)
       throws QuestionReplyException {
-    try (Connection con = DBUtil.openConnection()) {
-      if (questionIds != null) {
-        for (Long idQ : questionIds) {
-          Question question = getQuestion(idQ);
-          Collection<Reply> replies = getQuestionPrivateReplies(idQ, question.getInstanceId());
-          if (replies != null) {
-            for (Reply reply : replies) {
-              reply.setPrivateReply(0);
-              addComponentId(reply, question.getPK().getInstanceId());
-              updateReply(con, reply);
-            }
-            updateQuestion(con, question);
-          }
-        }
-      }
-    } catch (SQLException | QuestionReplyException e) {
-      throw new QuestionReplyException(e);
+    for (Question question : getQuestionsOfFaq(questionIds, instanceId)) {
+      question.waitForAnswer();
+      updateQuestion(question);
     }
-  }
-
-  private void addComponentId(Reply reply, String componentId) {
-    reply.getPK().setComponentName(componentId);
   }
 
   /*
@@ -282,22 +144,15 @@ public class SilverpeasQuestionManager implements QuestionManager {
    * réponses publiques de la question d'autant : updateQuestion
    */
   @Override
+  @Transactional
   public void updateRepliesPublicStatus(Collection<Long> replyIds, Question question)
       throws QuestionReplyException {
-    try (Connection con = DBUtil.openConnection()) {
-      if (replyIds != null) {
-        for (Long idR : replyIds) {
-          Reply reply = getReply(idR);
-          if (reply != null) {
-            reply.setPublicReply(0);
-            addComponentId(reply, question.getPK().getInstanceId());
-            updateReply(con, reply);
-          }
-        }
-        updateQuestion(con, question);
+    if (replyIds != null) {
+      for (Reply reply : getReplies(replyIds, question)) {
+        reply.setPublicReply(0);
+        updateReplyStatus(reply);
       }
-    } catch (SQLException | QuestionReplyException e) {
-      throw new QuestionReplyException(e);
+      updateQuestion(question);
     }
   }
 
@@ -306,46 +161,15 @@ public class SilverpeasQuestionManager implements QuestionManager {
    * réponses privées de la question d'autant : updateQuestion
    */
   @Override
+  @Transactional
   public void updateRepliesPrivateStatus(Collection<Long> replyIds, Question question)
       throws QuestionReplyException {
-    try (Connection con = DBUtil.openConnection()) {
-      if (replyIds != null) {
-        for (Long idR : replyIds) {
-          Reply reply = getReply(idR);
-          if (reply != null) {
-            reply.setPrivateReply(0);
-            addComponentId(reply, question.getPK().getInstanceId());
-            updateReply(con, reply);
-          }
-        }
-        updateQuestion(con, question);
+    if (replyIds != null) {
+      for (Reply reply : getReplies(replyIds, question)) {
+        reply.setPrivateReply(0);
+        updateReplyStatus(reply);
       }
-    } catch (SQLException | QuestionReplyException e) {
-      throw new QuestionReplyException(e);
-    }
-  }
-
-  /*
-   * Modifie une question. La question est supprimée si publicReplyNumber et privateReplyNumber
-   * sont à 0 et que la question est fermée. Met à jour publicReplyNumber et/ou privateReplyNumber
-   * et replyNumber de la question
-   */
-  private void updateQuestion(Connection con, Question question) throws QuestionReplyException {
-    try {
-      long idQ = ((IdPK) question.getPK()).getIdAsLong();
-      question.setReplyNumber(getQuestionRepliesNumber(idQ));
-      question.setPublicReplyNumber(getQuestionPublicRepliesNumber(idQ));
-      question.setPrivateReplyNumber(getQuestionPrivateRepliesNumber(idQ));
-      if ((question.getReplyNumber() == 0) && question.hasClosedStatus()) {
-        deleteQuestion(con, idQ);
-      } else {
-        questionDao.update(con, question);
-        questionIndexer.updateIndex(question, getAllReplies(idQ, question.getInstanceId()));
-        question.getPK().setComponentName(question.getInstanceId());
-        contentManager.updateSilverContentVisibility(question);
-      }
-    } catch (Exception e) {
-      throw new QuestionReplyException(e);
+      updateQuestion(question);
     }
   }
 
@@ -355,42 +179,21 @@ public class SilverpeasQuestionManager implements QuestionManager {
    * et replyNumber de la question
    */
   @Override
+  @Transactional
   public void updateQuestion(Question question) throws QuestionReplyException {
     try {
-      long idQ = ((IdPK) question.getPK()).getIdAsLong();
-      question.setReplyNumber(getQuestionRepliesNumber(idQ));
-      question.setPublicReplyNumber(getQuestionPublicRepliesNumber(idQ));
-      question.setPrivateReplyNumber(getQuestionPrivateRepliesNumber(idQ));
+      long questionId = question.getIdAsLong();
+      question.setReplyNumber(replyRepository.countByQuestion(questionId));
+      question.setPublicReplyNumber(replyRepository.countPublicByQuestion(questionId));
+      question.setPrivateReplyNumber(replyRepository.countPrivateByQuestion(questionId));
       if ((question.getReplyNumber() == 0) && question.hasClosedStatus()) {
-        deleteQuestion(idQ);
+        deleteQuestion(question);
       } else {
-        questionDao.update(question);
-        questionIndexer.updateIndex(question, getAllReplies(idQ, question.getInstanceId()));
-        question.getPK().setComponentName(question.getInstanceId());
+        questionRepository.save(question);
+        questionIndexer.updateIndex(question, getAllReplies(questionId, question.getInstanceId()));
         contentManager.updateSilverContentVisibility(question);
       }
-    } catch (Exception e) {
-      throw new QuestionReplyException(e);
-    }
-  }
-
-  /*
-   * Modifie une réponse : la réponse est supprimée si le status public et le status private sont à
-   * 0.
-   */
-  private void updateReply(Connection con, Reply reply) throws QuestionReplyException {
-    try {
-      Question question = getQuestion(reply.getQuestionId());
-      reply.getPK().setComponentName(question.getInstanceId());
-      if ((reply.getPublicReply() == 0) && (reply.getPrivateReply() == 0)) {
-        deleteReply(con, reply.getPK());
-      } else {
-        replyDao.update(con, reply);
-        updateWysiwygContent(reply);
-      }
-      questionIndexer.updateIndex(question, getAllReplies(reply.getQuestionId(), question.
-          getInstanceId()));
-    } catch (PersistenceException e) {
+    } catch (ContentManagerException e) {
       throw new QuestionReplyException(e);
     }
   }
@@ -400,257 +203,99 @@ public class SilverpeasQuestionManager implements QuestionManager {
    * 0.
    */
   @Override
+  @Transactional
   public void updateReply(Reply reply) throws QuestionReplyException {
-    try {
-      Question question = getQuestion(reply.getQuestionId());
-      if ((reply.getPublicReply() == 0) && (reply.getPrivateReply() == 0)) {
-        deleteReply(((IdPK) reply.getPK()).getIdAsLong());
-      } else {
-        replyDao.update(reply);
-        updateReplyWysiwygContent(reply);
-      }
-      questionIndexer.updateIndex(question, getAllReplies(reply.getQuestionId(), question.
-          getInstanceId()));
-    } catch (PersistenceException e) {
-      throw new QuestionReplyException(e);
+    Question question = reply.getQuestion();
+    if ((reply.getPublicReply() == 0) && (reply.getPrivateReply() == 0)) {
+      replyRepository.delete(List.of(reply));
+    } else {
+      replyRepository.save(reply);
+      updateWysiwygContent(reply);
     }
-  }
-
-  private void updateReplyWysiwygContent(final Reply reply) {
-    updateWysiwygContent(reply);
-  }
-
-  private void deleteQuestion(Connection con, long questionId) throws QuestionReplyException {
-    try {
-      deleteRecipients(con, questionId);
-      IdPK pk = new IdPK();
-      pk.setIdAsLong(questionId);
-      Question question = getQuestion(questionId);
-      String peasId = question.getInstanceId();
-      questionDao.remove(con, pk);
-      questionIndexer.deleteIndex(question);
-      pk.setComponentName(peasId);
-      contentManager.deleteSilverContent(con, pk);
-    } catch (Exception e) {
-      throw new QuestionReplyException(e);
-    }
-  }
-
-  private void deleteQuestion(long questionId) throws QuestionReplyException {
-    try(Connection connection = DBUtil.openConnection()) {
-      deleteQuestion(connection, questionId);
-    } catch (SQLException e) {
-      throw new QuestionReplyException(e);
-    }
+    questionIndexer.updateIndex(question,
+        getAllReplies(question.getIdAsLong(), question.getInstanceId()));
   }
 
   @Override
-  public void deleteQuestionAndReplies(Collection<Long> questionIds) throws QuestionReplyException {
-    // pour chaque question
-    for (Long questionId : questionIds) {
-      Connection con = null;
-      try {
-        con = DBUtil.openConnection();
-        deleteRecipients(con, questionId);
-        IdPK pk = new IdPK();
-        pk.setIdAsLong(questionId);
-        Question question = getQuestion(questionId);
-        String peasId = question.getInstanceId();
-        // rechercher les réponses
-        Collection<Reply> replies = getAllReplies(questionId, peasId);
-        for (Reply reply : replies) {
-          long replyId = Long.parseLong(reply.getPK().getId());
-          addComponentId(reply, question.getInstanceId());
-          // supprimer la réponse et son index
-          deleteReply(replyId);
-        }
-        questionIndexer.deleteIndex(question);
-        // supprimer la question
-        questionDao.remove(con, pk);
-        pk.setComponentName(peasId);
-        contentManager.deleteSilverContent(con, pk);
-      } catch (Exception e) {
-        throw new QuestionReplyException(e);
-      } finally {
-        DBUtil.close(con);
-      }
-
+  @Transactional
+  public void deleteQuestionAndReplies(Collection<Long> questionIds, String instanceId)
+      throws QuestionReplyException {
+    for (Question question : getQuestionsOfFaq(questionIds, instanceId)) {
+      long questionId = question.getIdAsLong();
+      recipientRepository.deleteByQuestion(questionId);
+      replyRepository.delete(getAllReplies(questionId, instanceId));
+      questionIndexer.deleteIndex(question);
+      questionRepository.delete(List.of(question));
+      deleteSilverContent(question);
     }
   }
 
   @Override
   public List<Reply> getAllReplies(long questionId, String instanceId)
       throws QuestionReplyException {
-    List<Reply> allReplies = new ArrayList<>();
-    try {
-      Collection<Reply> privateReplies = getQuestionPrivateReplies(questionId, instanceId);
-      allReplies.addAll(privateReplies);
-      Collection<Reply> publicReplies = getQuestionPublicReplies(questionId, instanceId);
-      allReplies.addAll(publicReplies);
-      return allReplies;
-    } catch (Exception e) {
-      throw new QuestionReplyException(e);
-    }
-  }
-
-  /*
-   * supprime une réponse
-   */
-  private void deleteReply(long replyId) throws QuestionReplyException {
-    try (Connection con = DBUtil.openConnection()) {
-      IdPK pk = new IdPK();
-      pk.setIdAsLong(replyId);
-      replyDao.remove(con, pk);
-    } catch (SQLException | PersistenceException e) {
-      throw new QuestionReplyException(e);
-    }
-  }
-
-  /*
-   * supprime une réponse
-   */
-  private void deleteReply(Connection con, WAPrimaryKey replyId) throws QuestionReplyException {
-    try {
-      replyDao.remove(con, replyId);
-      WysiwygController
-          .deleteFile(replyId.getInstanceId(), replyId.getId(), i18n.getDefaultLanguage());
-    } catch (PersistenceException e) {
-
-      throw new QuestionReplyException(e);
-    }
-  }
-
-  /*
-   * récupère une question
-   */
-  @Override
-  public Question getQuestion(long questionId) throws QuestionReplyException {
-    try {
-      IdPK pk = new IdPK();
-      pk.setIdAsLong(questionId);
-      return questionDao.findByPrimaryKey(pk);
-    } catch (PersistenceException e) {
-      throw new QuestionReplyException(e);
-    }
+    List<Reply> allReplies = new ArrayList<>(getQuestionPrivateReplies(questionId, instanceId));
+    allReplies.addAll(getQuestionPublicReplies(questionId, instanceId));
+    return allReplies;
   }
 
   @Override
-  public Question getQuestionAndReplies(long questionId) throws QuestionReplyException {
-    try {
-      IdPK pk = new IdPK();
-      pk.setIdAsLong(questionId);
-      Question question = questionDao.findByPrimaryKey(pk);
-      Collection<Reply> replies = getQuestionReplies(questionId, question.getInstanceId());
-      question.writeReplies(replies);
-      return question;
-    } catch (PersistenceException e) {
-      throw new QuestionReplyException(e);
-    }
+  public Optional<String> getInstanceIdOfQuestion(long questionId) {
+    return questionRepository.getInstanceIdOf(questionId);
   }
 
   @Override
-  public List<Question> getQuestionsByIds(List<String> ids) throws QuestionReplyException {
-    if (ids.isEmpty()) {
-      return new ArrayList<>();
-    }
-    BeanCriteria criteria = BeanCriteria.addCriterion("id",
-        ids.stream().map(Integer::parseInt).collect(Collectors.toSet()));
-    try {
-      return new ArrayList<>(questionDao.findBy(criteria));
-    } catch (PersistenceException e) {
-      throw new QuestionReplyException(e);
-    }
+  public Question getQuestion(long questionId, String instanceId) {
+    return questionRepository.getById(questionId, instanceId);
+  }
+
+  @Override
+  public List<Question> getQuestionsByIds(List<String> ids, String instanceId) {
+    return questionRepository.getById(
+        ids.stream().map(Integer::parseInt).collect(Collectors.toSet()), instanceId);
   }
 
   /*
    * récupère la liste des réponses d'une question
    */
   @Override
-  public List<Reply> getQuestionReplies(long questionId, String instanceId)
-      throws QuestionReplyException {
-    try {
-      BeanCriteria criteria = BeanCriteria.addCriterion(QUESTION_ID, questionId);
-      List<Reply> replies = new ArrayList<>(
-          replyDao.findBy(criteria));
-      for (Reply reply : replies) {
-        reply.getPK().setComponentName(instanceId);
-        reply.loadWysiwygContent();
-      }
-      return replies;
-    } catch (PersistenceException e) {
-      throw new QuestionReplyException(e);
-    }
+  public List<Reply> getQuestionReplies(long questionId, String instanceId) {
+    return withWysiwygContent(replyRepository.findByQuestion(questionId, instanceId));
   }
 
   /*
    * récupère la liste des réponses publiques d'une question
    */
   @Override
-  public List<Reply> getQuestionPublicReplies(long questionId, String instanceId)
-      throws QuestionReplyException {
-    try {
-      BeanCriteria criteria = BeanCriteria.addCriterion("publicReply", 1)
-          .and(QUESTION_ID, questionId);
-      List<Reply> replies = new ArrayList<>(replyDao.findBy(criteria));
-      for (Reply reply : replies) {
-        reply.getPK().setComponentName(instanceId);
-        reply.loadWysiwygContent();
-      }
-      return replies;
-    } catch (PersistenceException e) {
-      throw new QuestionReplyException(e);
-    }
+  public List<Reply> getQuestionPublicReplies(long questionId, String instanceId) {
+    return withWysiwygContent(replyRepository.findPublicByQuestion(questionId, instanceId));
   }
 
   /*
    * récupère la liste des réponses privées d'une question
    */
   @Override
-  public List<Reply> getQuestionPrivateReplies(long questionId, String instanceId)
-      throws QuestionReplyException {
-    try {
-      BeanCriteria criteria = BeanCriteria.addCriterion("privateReply", 1)
-          .and(QUESTION_ID, questionId);
-      List<Reply> replies = new ArrayList<>(replyDao.findBy(criteria));
-      for (Reply reply : replies) {
-        reply.getPK().setComponentName(instanceId);
-        reply.loadWysiwygContent();
-      }
-      return replies;
-    } catch (PersistenceException e) {
-      throw new QuestionReplyException(e);
-    }
+  public List<Reply> getQuestionPrivateReplies(long questionId, String instanceId) {
+    return withWysiwygContent(replyRepository.findPrivateByQuestion(questionId, instanceId));
   }
 
   /*
    * récupère la liste des destinataires d'une question
    */
   @Override
-  public List<Recipient> getQuestionRecipients(long questionId) throws QuestionReplyException {
-    try {
-      BeanCriteria criteria = BeanCriteria.addCriterion(QUESTION_ID, questionId);
-      return new ArrayList<>(recipientDao.findBy(criteria));
-    } catch (PersistenceException e) {
-      throw new QuestionReplyException(e);
-    }
+  public List<Recipient> getQuestionRecipients(long questionId) {
+    return recipientRepository.findByQuestion(questionId);
   }
 
   /*
    * récupère une réponse
    */
   @Override
-  public Reply getReply(long replyId) throws QuestionReplyException {
-    try {
-      IdPK pk = new IdPK();
-      pk.setIdAsLong(replyId);
-      Reply reply = replyDao.findByPrimaryKey(pk);
-      if (reply != null) {
-        reply.loadWysiwygContent();
-      }
-      return reply;
-    } catch (PersistenceException e) {
-      throw new QuestionReplyException(e);
+  public Reply getReply(long replyId, String instanceId) {
+    Reply reply = replyRepository.getById(replyId, instanceId);
+    if (reply != null) {
+      reply.loadWysiwygContent();
     }
+    return reply;
   }
 
   /*
@@ -658,64 +303,34 @@ public class SilverpeasQuestionManager implements QuestionManager {
    * fermées avec réponses privées
    */
   @Override
-  public List<Question> getSendQuestions(String userId, String instanceId)
-      throws QuestionReplyException {
-    try {
-      BeanCriteria criteria = BeanCriteria.addCriterion(INSTANCE_ID, instanceId)
-          .and("creatorId", Integer.parseInt(userId))
-          .and(BeanCriteria.addCriterion(STATUS, NOT_EQUALS,  Question.CLOSED)
-              .or("privateReplyNumber", GREATER, 0));
-      return new ArrayList<>(questionDao.findBy(criteria));
-    } catch (PersistenceException e) {
-      throw new QuestionReplyException(e);
-    }
+  public List<Question> getSendQuestions(String userId, String instanceId) {
+    return questionRepository.findSentBy(userId, instanceId);
   }
 
   /*
    * Récupère la liste des questions recues par un utilisateur, et qui ne sont pas fermées
    */
   @Override
-  public List<Question> getReceiveQuestions(String userId, String instanceId)
-      throws QuestionReplyException {
-    try {
-      BeanCriteria criteria = BeanCriteria.addCriterion(INSTANCE_ID, instanceId)
-          .and(STATUS, NOT_EQUALS, Question.CLOSED)
-          .andSubQuery("id", BeanCriteria.OPERATOR.IN,
-              "questionId from SC_QuestionReply_Recipient",
-              BeanCriteria.addCriterion("userId", Integer.parseInt(userId)));
-      return new ArrayList<>(questionDao.findBy(criteria));
-    } catch (PersistenceException e) {
-      throw new QuestionReplyException(e);
-    }
+  public List<Question> getReceiveQuestions(String userId, String instanceId) {
+    return questionRepository.findReceivedBy(userId, instanceId);
   }
 
   /*
    * Récupère la liste des questions qui ne sont pas closes ou closes avec réponses publiques
    */
   @Override
-  public List<Question> getQuestions(String instanceId) throws QuestionReplyException {
-    try {
-      BeanCriteria criteria = BeanCriteria.addCriterion(INSTANCE_ID, instanceId)
-          .and(BeanCriteria.addCriterion(STATUS, NOT_EQUALS,  Question.CLOSED)
-              .or("publicReplyNumber", GREATER, 0));
-      criteria.setDescOrderBy("creationDate", "id");
-      return new ArrayList<>(questionDao.findBy(criteria));
-    } catch (PersistenceException e) {
-      throw new QuestionReplyException(e);
-    }
+  public List<Question> getQuestions(String instanceId) {
+    return questionRepository.findNotClosedOrWithPublicReplies(instanceId);
   }
 
   /*
    * Récupère la liste de toutes les questions avec toutes ses réponses
    */
   @Override
-  public List<Question> getAllQuestions(String instanceId) throws QuestionReplyException {
-    List<Question> allQuestions = getQuestions(instanceId);
-    List<Question> questions = new ArrayList<>(allQuestions.size());
-    for (Question question : allQuestions) {
-      Question fullQuestion = getQuestionAndReplies(Long.parseLong(question.getPK().getId()));
-      questions.add(fullQuestion);
-    }
+  public List<Question> getAllQuestions(String instanceId) {
+    List<Question> questions = getQuestions(instanceId).stream()
+        .map(this::withReplies)
+        .collect(Collectors.toList());
     if (isSortable(instanceId)) {
       questions.sort(QuestionRegexpComparator.getInstance());
     }
@@ -723,20 +338,11 @@ public class SilverpeasQuestionManager implements QuestionManager {
   }
 
   @Override
-  public List<Question> getAllQuestionsByCategory(String instanceId, String categoryId)
-      throws QuestionReplyException {
-    List<Question> allQuestions = getQuestions(instanceId);
-    List<Question> questions = new ArrayList<>(allQuestions.size());
-    for (Question question : allQuestions) {
-      if ((StringUtil.isNotDefined(question.getCategoryId()) &&
-          StringUtil.isNotDefined(categoryId)) ||
-          (StringUtil.isDefined(categoryId) && StringUtil.isDefined(question.getCategoryId()) &&
-              question.getCategoryId().equals(categoryId))) {
-        // la question est sans catégorie
-        Question fullQuestion = getQuestionAndReplies(Long.parseLong(question.getPK().getId()));
-        questions.add(fullQuestion);
-      }
-    }
+  public List<Question> getAllQuestionsByCategory(String instanceId, String categoryId) {
+    List<Question> questions = getQuestions(instanceId).stream()
+        .filter(question -> isInCategory(question, categoryId))
+        .map(this::withReplies)
+        .collect(Collectors.toList());
     if (isSortable(instanceId)) {
       questions.sort(QuestionRegexpComparator.getInstance());
     }
@@ -747,15 +353,8 @@ public class SilverpeasQuestionManager implements QuestionManager {
    * Récupère la liste des questions publiques avec réponses
    */
   @Override
-  public List<Question> getPublicQuestions(String instanceId) throws QuestionReplyException {
-    try {
-      BeanCriteria criteria = BeanCriteria.addCriterion(INSTANCE_ID, instanceId)
-          .and("publicReplyNumber", GREATER, 0);
-      criteria.setAscOrderBy("id");
-      return new ArrayList<>(questionDao.findBy(criteria));
-    } catch (PersistenceException e) {
-      throw new QuestionReplyException(e);
-    }
+  public List<Question> getPublicQuestions(String instanceId) {
+    return questionRepository.findWithPublicReplies(instanceId);
   }
 
   /**
@@ -771,90 +370,102 @@ public class SilverpeasQuestionManager implements QuestionManager {
   }
 
   @Override
+  @Transactional
   public long createQuestionReply(Question question, Reply reply, List<PdcPosition> positions)
       throws QuestionReplyException {
-    Connection con = null;
-    long idQ;
-    try {
-      con = DBUtil.openConnection();
-      IdPK pkQ = (IdPK) questionDao.add(con, question);
-      idQ = pkQ.getIdAsLong();
-      reply.setQuestionId(idQ);
-      WAPrimaryKey pkR = replyDao.add(con, reply);
-      reply.getPK().setId(pkR.getId());
-      WysiwygController.createFileAndAttachment(reply.readCurrentWysiwygContent(),
-          new ResourceReference(pkR), reply.getCreatorId(), i18n.getDefaultLanguage());
-      questionIndexer.createIndex(question, Collections.singletonList(reply));
-      Question updatedQuestion = getQuestion(idQ);
-      contentManager.createSilverContent(con, updatedQuestion);
-      classify(updatedQuestion, positions);
-      notifySubscribers(question, reply);
-    } catch (Exception e) {
-      throw new QuestionReplyException(e);
-    } finally {
-      DBUtil.close(con);
-    }
-    return idQ;
-  }
-
-  /*
-   * récupère le nombre de réponses d'une question
-   */
-  private int getQuestionRepliesNumber(long questionId) throws QuestionReplyException {
-    try {
-      BeanCriteria criteria = BeanCriteria.addCriterion(QUESTION_ID, questionId);
-      Collection<Reply> replies = replyDao.findBy(criteria);
-      return replies.size();
-    } catch (PersistenceException e) {
+    questionRepository.save(question);
+    reply.setQuestion(question);
+    replyRepository.save(reply);
+    WysiwygController.createFileAndAttachment(reply.readCurrentWysiwygContent(),
+        reply.toResourceReference(), reply.getCreatorId(), i18n.getDefaultLanguage());
+    questionIndexer.createIndex(question, List.of(reply));
+    try (Connection con = DBUtil.openConnection()) {
+      contentManager.createSilverContent(con, question);
+    } catch (SQLException | ContentManagerException e) {
       throw new QuestionReplyException(e);
     }
-  }
-
-  /*
-   * récupère le nombre de réponses publiques d'une question
-   */
-  private int getQuestionPublicRepliesNumber(long questionId) throws QuestionReplyException {
-    try {
-      BeanCriteria criteria = BeanCriteria.addCriterion("publicReply", 1)
-          .and(QUESTION_ID, questionId);
-      Collection<Reply> replies =
-          replyDao.findBy(criteria);
-      return replies.size();
-    } catch (PersistenceException e) {
-      throw new QuestionReplyException(e);
-    }
-  }
-
-  /*
-   * récupère le nombre de réponses privées d'une question
-   */
-  private int getQuestionPrivateRepliesNumber(long questionId) throws QuestionReplyException {
-    try {
-      BeanCriteria criteria = BeanCriteria.addCriterion("privateReply", 1)
-          .and(QUESTION_ID, questionId);
-      Collection<Reply> replies = replyDao.findBy(criteria);
-      return replies.size();
-    } catch (PersistenceException e) {
-      throw new QuestionReplyException(e);
-    }
+    classify(question, positions);
+    notifySubscribers(question, reply);
+    return question.getIdAsLong();
   }
 
   protected void updateWysiwygContent(Reply reply) {
-    if (WysiwygController.haveGotWysiwyg(reply.getPK().getInstanceId(), reply.getPK().getId(),
+    if (WysiwygController.haveGotWysiwyg(reply.getInstanceId(), reply.getId(),
         i18n.getDefaultLanguage())) {
-      WysiwygController
-          .updateFileAndAttachment(reply.readCurrentWysiwygContent(), reply.getPK().getInstanceId(),
-              reply.getPK().getId(), reply.getCreatorId(), i18n.getDefaultLanguage());
+      WysiwygController.updateFileAndAttachment(reply.readCurrentWysiwygContent(),
+          reply.getInstanceId(), reply.getId(), reply.getCreatorId(), i18n.getDefaultLanguage());
     } else {
       WysiwygController.createUnindexedFileAndAttachment(reply.readCurrentWysiwygContent(),
-          new ResourceReference(reply.getPK()),
-              reply.getCreatorId(), i18n.getDefaultLanguage());
+          reply.toResourceReference(), reply.getCreatorId(), i18n.getDefaultLanguage());
     }
   }
 
   protected boolean isSortable(String instanceId) {
     return StringUtil
         .getBooleanValue(controller.getComponentParameterValue(instanceId, "sortable"));
+  }
+
+  private List<Question> getQuestionsOfFaq(Collection<Long> questionIds, String instanceId) {
+    if (questionIds == null) {
+      return List.of();
+    }
+    return questionRepository.getById(
+        questionIds.stream().map(Long::intValue).collect(Collectors.toSet()), instanceId);
+  }
+
+  private List<Reply> getReplies(Collection<Long> replyIds, Question question) {
+    return replyRepository.getById(
+        replyIds.stream().map(Long::intValue).collect(Collectors.toSet()),
+        question.getIdAsLong());
+  }
+
+  private List<Reply> withWysiwygContent(List<Reply> replies) {
+    replies.forEach(Reply::loadWysiwygContent);
+    return replies;
+  }
+
+  private Question withReplies(Question question) {
+    question.writeReplies(getQuestionReplies(question.getIdAsLong(), question.getInstanceId()));
+    return question;
+  }
+
+  private static boolean isInCategory(Question question, String categoryId) {
+    return (StringUtil.isNotDefined(question.getCategoryId()) &&
+        StringUtil.isNotDefined(categoryId)) ||
+        (StringUtil.isDefined(categoryId) && categoryId.equals(question.getCategoryId()));
+  }
+
+  /*
+   * Modifie le statut d'une réponse : la réponse est supprimée si le status public et le status
+   * private sont à 0.
+   */
+  private void updateReplyStatus(Reply reply) throws QuestionReplyException {
+    Question question = reply.getQuestion();
+    if ((reply.getPublicReply() == 0) && (reply.getPrivateReply() == 0)) {
+      replyRepository.delete(List.of(reply));
+      WysiwygController.deleteFile(reply.getInstanceId(), reply.getId(),
+          i18n.getDefaultLanguage());
+    } else {
+      replyRepository.save(reply);
+      updateWysiwygContent(reply);
+    }
+    questionIndexer.updateIndex(question,
+        getAllReplies(question.getIdAsLong(), question.getInstanceId()));
+  }
+
+  private void deleteQuestion(Question question) throws QuestionReplyException {
+    recipientRepository.deleteByQuestion(question.getIdAsLong());
+    questionRepository.delete(List.of(question));
+    questionIndexer.deleteIndex(question);
+    deleteSilverContent(question);
+  }
+
+  private void deleteSilverContent(Question question) throws QuestionReplyException {
+    try (Connection con = DBUtil.openConnection()) {
+      contentManager.deleteSilverContent(con, question);
+    } catch (SQLException | ContentManagerException e) {
+      throw new QuestionReplyException(e);
+    }
   }
 
   /**

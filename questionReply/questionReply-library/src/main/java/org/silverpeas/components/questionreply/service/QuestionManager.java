@@ -31,149 +31,194 @@ import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
+/**
+ * The service managing the questions and the replies of the FAQs, that is to say of the
+ * QuestionReply application instances. Except for finding out the FAQ of a question, the
+ * questions and the replies are always accessed within a given FAQ: those of other FAQs are
+ * ignored.
+ */
 public interface QuestionManager {
+
   /*
-  * enregistre une question et ses destinataires (attention les destinataires n'ont pas de
-  * questionId)
-  */
+   * enregistre une question et ses destinataires (attention les destinataires n'ont pas de
+   * questionId)
+   */
   long createQuestion(Question question) throws QuestionReplyException;
 
   /*
-  * enregistre une réponse à une question => met à jour publicReplyNumber et/ou privateReplyNumber
-  * et replyNumber de la question ainsi que le status à 1
-  */
+   * enregistre une réponse à une question => met à jour publicReplyNumber et/ou privateReplyNumber
+   * et replyNumber de la question ainsi que le status à 1
+   */
   long createReply(Reply reply, Question question) throws QuestionReplyException;
 
-  /*
-  * Clos une liste de questions : updateQuestion
-  */
-  void closeQuestions(Collection<Long> questionIds) throws QuestionReplyException;
+  /**
+   * Closes the specified questions of the given FAQ. The questions of other FAQs are ignored.
+   * @param questionIds the unique identifiers of the questions.
+   * @param instanceId the unique identifier of the FAQ.
+   * @throws QuestionReplyException if an error occurs.
+   */
+  void closeQuestions(Collection<Long> questionIds, String instanceId)
+      throws QuestionReplyException;
 
-  void openQuestions(Collection<Long> questionIds) throws QuestionReplyException;
-
-  /*
-  * Modifie les destinataires d'une question : deleteRecipients, createRecipient
-  */
-  void updateQuestionRecipients(Question question) throws QuestionReplyException;
-
-  /*
-  * Affecte le status public à 0 de toutes les réponses d'une liste de questions : updateReply
-  * Affecte le nombre de réponses publiques de la question à 0 : updateQuestion si question en
-  * attente, on a demandé à la supprimer : deleteQuestion
-  */
-  void updateQuestionRepliesPublicStatus(Collection<Long> questionIds)
+  /**
+   * Opens again the specified questions of the given FAQ. The questions of other FAQs are ignored.
+   * @param questionIds the unique identifiers of the questions.
+   * @param instanceId the unique identifier of the FAQ.
+   * @throws QuestionReplyException if an error occurs.
+   */
+  void openQuestions(Collection<Long> questionIds, String instanceId)
       throws QuestionReplyException;
 
   /*
-  * Affecte le status private à 0 de toutes les réponses d'une liste de questions : updateReply
-  * Affecte le nombre de réponses privées de la question à 0 : updateQuestion
-  */
-  void updateQuestionRepliesPrivateStatus(Collection<Long> questionIds)
-      throws QuestionReplyException;
-
-  /*
-  * Affecte le status public à 0 d'une liste de réponses : updateReply
-  * Décremente le nombre de réponses publiques de la question d'autant : updateQuestion
-  */
+   * Affecte le status public à 0 d'une liste de réponses à la question : updateReply
+   * Décremente le nombre de réponses publiques de la question d'autant : updateQuestion
+   * Les réponses à d'autres questions sont ignorées.
+   */
   void updateRepliesPublicStatus(Collection<Long> replyIds, Question question)
       throws QuestionReplyException;
 
   /*
-  * Affecte le status private à 0 d'une liste de réponses : updateReply Décremente le nombre de
-  * réponses privées de la question d'autant : updateQuestion
-  */
+   * Affecte le status private à 0 d'une liste de réponses à la question : updateReply
+   * Décremente le nombre de réponses privées de la question d'autant : updateQuestion
+   * Les réponses à d'autres questions sont ignorées.
+   */
   void updateRepliesPrivateStatus(Collection<Long> replyIds, Question question)
       throws QuestionReplyException;
 
   /*
-  * Modifie une question => la question est supprimée si publicReplyNumber et privateReplyNumber
-  * sont à 0 et que la question est close => met à jour publicReplyNumber et/ou privateReplyNumber
-  * et replyNumber de la question
-  */
+   * Modifie une question => la question est supprimée si publicReplyNumber et privateReplyNumber
+   * sont à 0 et que la question est close => met à jour publicReplyNumber et/ou privateReplyNumber
+   * et replyNumber de la question
+   */
   void updateQuestion(Question question) throws QuestionReplyException;
 
   /*
-  * Modifie une réponse => La réponse est supprimée si le status public et le status private sont à
-  * 0
-  */
+   * Modifie une réponse => La réponse est supprimée si le status public et le status private sont à
+   * 0
+   */
   void updateReply(Reply reply) throws QuestionReplyException;
 
-  void deleteQuestionAndReplies(Collection<Long> questionIds) throws QuestionReplyException;
-
-  List<Reply> getAllReplies(long questionId, String instanceId) throws QuestionReplyException;
-
-  /*
-  * recupère une question
-  */
-  Question getQuestion(long questionId) throws QuestionReplyException;
-
-  Question getQuestionAndReplies(long questionId) throws QuestionReplyException;
+  /**
+   * Deletes the specified questions of the given FAQ with their replies. The questions of other
+   * FAQs are ignored.
+   * @param questionIds the unique identifiers of the questions.
+   * @param instanceId the unique identifier of the FAQ.
+   * @throws QuestionReplyException if an error occurs.
+   */
+  void deleteQuestionAndReplies(Collection<Long> questionIds, String instanceId)
+      throws QuestionReplyException;
 
   /**
-   * Gets the questions with the specified identifiers, whatever the FAQ they belong to.
+   * Gets the private then the public replies to the specified question of the given FAQ.
+   * @param questionId the unique identifier of the question.
+   * @param instanceId the unique identifier of the FAQ.
+   * @return the replies, or an empty list if the FAQ has no such question.
+   * @throws QuestionReplyException if an error occurs.
+   */
+  List<Reply> getAllReplies(long questionId, String instanceId) throws QuestionReplyException;
+
+  /**
+   * Gets the unique identifier of the FAQ in which the specified question is asked. It is for the
+   * permalinks of the questions, that don't refer the FAQ.
+   * @param questionId the unique identifier of the question.
+   * @return the unique identifier of the FAQ, or nothing if there is no such question.
+   * @throws QuestionReplyException if an error occurs.
+   */
+  Optional<String> getInstanceIdOfQuestion(long questionId) throws QuestionReplyException;
+
+  /**
+   * Gets the specified question of the given FAQ.
+   * @param questionId the unique identifier of the question.
+   * @param instanceId the unique identifier of the FAQ.
+   * @return the question, or null if the FAQ has no such question.
+   * @throws QuestionReplyException if an error occurs.
+   */
+  Question getQuestion(long questionId, String instanceId) throws QuestionReplyException;
+
+  /**
+   * Gets the specified questions of the given FAQ. The questions of other FAQs are ignored.
    * @param ids the unique identifiers of the questions to get.
+   * @param instanceId the unique identifier of the FAQ.
    * @return the questions found, or an empty list if no identifiers are given.
    * @throws QuestionReplyException if an error occurs while fetching the questions.
    */
-  List<Question> getQuestionsByIds(List<String> ids) throws QuestionReplyException;
+  List<Question> getQuestionsByIds(List<String> ids, String instanceId)
+      throws QuestionReplyException;
 
-  /*
-  * recupère la liste des réponses d'une question
-  */
+  /**
+   * Gets all the replies to the specified question of the given FAQ.
+   * @param questionId the unique identifier of the question.
+   * @param instanceId the unique identifier of the FAQ.
+   * @return the replies, or an empty list if the FAQ has no such question.
+   * @throws QuestionReplyException if an error occurs.
+   */
   List<Reply> getQuestionReplies(long questionId, String instanceId) throws QuestionReplyException;
 
-  /*
-  * recupère la liste des réponses publiques d'une question
-  */
+  /**
+   * Gets the public replies to the specified question of the given FAQ.
+   * @param questionId the unique identifier of the question.
+   * @param instanceId the unique identifier of the FAQ.
+   * @return the public replies, or an empty list if the FAQ has no such question.
+   * @throws QuestionReplyException if an error occurs.
+   */
   List<Reply> getQuestionPublicReplies(long questionId, String instanceId)
       throws QuestionReplyException;
 
-  /*
-  * recupère la liste des réponses privées d'une question
-  */
+  /**
+   * Gets the private replies to the specified question of the given FAQ.
+   * @param questionId the unique identifier of the question.
+   * @param instanceId the unique identifier of the FAQ.
+   * @return the private replies, or an empty list if the FAQ has no such question.
+   * @throws QuestionReplyException if an error occurs.
+   */
   List<Reply> getQuestionPrivateReplies(long questionId, String instanceId)
       throws QuestionReplyException;
 
   /*
-  * recupère la liste des destinataires d'une question
-  */
+   * recupère la liste des destinataires d'une question
+   */
   List<Recipient> getQuestionRecipients(long questionId) throws QuestionReplyException;
 
-  /*
-  * recupère une réponse
-  */
-  Reply getReply(long replyId) throws QuestionReplyException;
+  /**
+   * Gets the specified reply to a question of the given FAQ.
+   * @param replyId the unique identifier of the reply.
+   * @param instanceId the unique identifier of the FAQ.
+   * @return the reply, or null if no question of the FAQ has such a reply.
+   * @throws QuestionReplyException if an error occurs.
+   */
+  Reply getReply(long replyId, String instanceId) throws QuestionReplyException;
 
   /*
-  * Recupère la liste des questions emises par un utilisateur => Q dont il est l'auteur qui ne sont
-  * pas closes ou closes avec réponses privées
-  */
+   * Recupère la liste des questions emises par un utilisateur => Q dont il est l'auteur qui ne sont
+   * pas closes ou closes avec réponses privées
+   */
   List<Question> getSendQuestions(String userId, String instanceId) throws QuestionReplyException;
 
   /*
-  * Recupère la liste des questions recues par un utilisateur => Q dont il est le destinataire et
-  * qui ne sont pas closes
-  */
+   * Recupère la liste des questions recues par un utilisateur => Q dont il est le destinataire et
+   * qui ne sont pas closes
+   */
   List<Question> getReceiveQuestions(String userId, String instanceId)
       throws QuestionReplyException;
 
   /*
-  * Recupère la liste des questions qui ne sont pas closes ou closes avec réponses publiques
-  */
+   * Recupère la liste des questions qui ne sont pas closes ou closes avec réponses publiques
+   */
   List<Question> getQuestions(String instanceId) throws QuestionReplyException;
 
   /*
-  * Recupère la liste de toutes les questions avec toutes ses réponses
-  */
+   * Recupère la liste de toutes les questions avec toutes ses réponses
+   */
   List<Question> getAllQuestions(String instanceId) throws QuestionReplyException;
 
   List<Question> getAllQuestionsByCategory(String instanceId, String categoryId)
       throws QuestionReplyException;
 
   /*
-  * Recupère la liste des questions publiques avec réponses
-  */
+   * Recupère la liste des questions publiques avec réponses
+   */
   List<Question> getPublicQuestions(String instanceId) throws QuestionReplyException;
 
   /**

@@ -21,21 +21,35 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-
 package org.silverpeas.components.questionreply.model;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.Table;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
-import org.silverpeas.kernel.annotation.NonNull;
+import org.silverpeas.core.persistence.datasource.model.identifier.UniqueIntegerIdentifier;
+import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 
-@SuppressWarnings({"deprecation", "unused"})
-public class Recipient extends SilverpeasBean {
+/**
+ * A user to whom a question of a FAQ is addressed.
+ */
+@Entity
+@Table(name = "SC_QuestionReply_Recipient")
+@NamedQuery(name = "Recipient.findByQuestion",
+    query = "SELECT r FROM Recipient r WHERE r.questionId = :questionId ORDER BY r.id.id")
+@NamedQuery(name = "Recipient.deleteByQuestion",
+    query = "DELETE FROM Recipient r WHERE r.questionId = :questionId")
+@SuppressWarnings("unused")
+public class Recipient extends BasicJpaEntity<Recipient, UniqueIntegerIdentifier> {
   private static final long serialVersionUID = 909658183117075174L;
+  @Column(nullable = false)
   private long questionId;
+  @Column(nullable = false)
   private String userId;
 
   public Recipient() {
-    // required by the org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO
+    // required by JPA
   }
 
   public Recipient(String userId) {
@@ -71,11 +85,4 @@ public class Recipient extends SilverpeasBean {
     }
     return name;
   }
-
-  @Override
-  @NonNull
-  protected String getTableName() {
-    return "SC_QuestionReply_Recipient";
-  }
-
 }

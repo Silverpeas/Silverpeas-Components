@@ -45,7 +45,7 @@
 	String categoryId = question.getCategoryId();
 
 	String title = WebEncodeHelper.javaStringToHtmlString(question.getTitle());
-	String id = question.getPK().getId();
+	String id = question.getId();
 %>
 <c:set var="question" value="${requestScope['question']}"/>
 

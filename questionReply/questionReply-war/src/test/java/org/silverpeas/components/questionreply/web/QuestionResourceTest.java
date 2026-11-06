@@ -30,7 +30,6 @@ import org.silverpeas.components.questionreply.model.Question;
 import org.silverpeas.components.questionreply.service.QuestionManager;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.persistence.jdbc.bean.IdPK;
 import org.silverpeas.core.test.unit.extention.JEETestContext;
 import org.silverpeas.core.web.WebResourceUri;
 import org.silverpeas.kernel.test.annotations.TestManagedMock;
@@ -81,7 +80,7 @@ class QuestionResourceTest {
   @Test
   void getAQuestionOfTheFAQ() throws Exception {
     Question question = aQuestion(1, FAQ_ID);
-    when(questionManager.getQuestion(1)).thenReturn(question);
+    when(questionManager.getQuestion(1, FAQ_ID)).thenReturn(question);
     QuestionEntity expected = mock(QuestionEntity.class);
     doReturn(expected).when(rest).asWebEntity(any(Question.class), any());
 
@@ -93,7 +92,8 @@ class QuestionResourceTest {
 
   @Test
   void getAQuestionOfAnotherFAQIsNotFound() throws Exception {
-    when(questionManager.getQuestion(1)).thenReturn(aQuestion(1, OTHER_FAQ_ID));
+    // the question 1 of the other FAQ isn't found in the FAQ of the request
+    when(questionManager.getQuestion(1, OTHER_FAQ_ID)).thenReturn(aQuestion(1, OTHER_FAQ_ID));
 
     WebApplicationException ex =
         assertThrows(WebApplicationException.class, () -> rest.getQuestion("1"));
@@ -104,7 +104,7 @@ class QuestionResourceTest {
 
   @Test
   void getAnUnknownQuestionIsNotFound() throws Exception {
-    when(questionManager.getQuestion(1)).thenReturn(null);
+    when(questionManager.getQuestion(1, FAQ_ID)).thenReturn(null);
 
     WebApplicationException ex =
         assertThrows(WebApplicationException.class, () -> rest.getQuestion("1"));
@@ -115,8 +115,8 @@ class QuestionResourceTest {
   @Test
   void getQuestionsByIdsServesOnlyTheQuestionsOfTheFAQ() throws Exception {
     Question ownQuestion = aQuestion(3, FAQ_ID);
-    when(questionManager.getQuestionsByIds(anyList())).thenReturn(
-        List.of(aQuestion(1, OTHER_FAQ_ID), ownQuestion, aQuestion(2, OTHER_FAQ_ID)));
+    when(questionManager.getQuestionsByIds(anyList(), eq(FAQ_ID))).thenReturn(
+        List.of(ownQuestion));
 
     rest.getQuestions(Set.of("1", "2", "3"));
 
@@ -132,7 +132,7 @@ class QuestionResourceTest {
 
   private static Question aQuestion(int id, String instanceId) {
     Question question = new Question("0", instanceId);
-    question.setPK(new IdPK(id));
+    question.setId(String.valueOf(id));
     return question;
   }
 }

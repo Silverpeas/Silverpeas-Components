@@ -36,7 +36,7 @@
 Reply reply 		= (Reply) request.getAttribute("CurrentReply");
 String	currentLang = (String) request.getAttribute("Language");
 
-String replyId = reply.getPK().getId();
+String replyId = reply.getId();
 String	pIndexIt	= "1";
 String url = scc.getComponentUrl()+"ViewAttachments";
 boolean openUrl = false;

@@ -46,7 +46,7 @@ public class QuestionIndexer {
   public void createIndex(Question question, Collection<Reply> replies) {
     FullIndexEntry indexEntry =
         new FullIndexEntry(new IndexEntryKey(question.getInstanceId(), "Question",
-            question.getPK().getId()));
+            question.getId()));
     indexEntry.setTitle(question.getTitle());
     indexEntry.setPreview(question.getContent());
     try {
@@ -77,7 +77,7 @@ public class QuestionIndexer {
    */
   public void deleteIndex(Question question) {
     IndexEntryKey indexEntry =
-        new IndexEntryKey(question.getInstanceId(), "Question", question.getPK().getId());
+        new IndexEntryKey(question.getInstanceId(), "Question", question.getId());
     IndexEngineProxy.removeIndexEntry(indexEntry);
   }
 }
