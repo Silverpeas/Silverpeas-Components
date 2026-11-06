@@ -30,10 +30,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 import org.silverpeas.components.quickinfo.model.News;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.web.rs.annotation.Authorized;
 import org.silverpeas.core.rs.doc.NotFound;
+import org.silverpeas.kernel.exception.NotFoundException;
 
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -120,7 +122,8 @@ public class NewsResource extends AbstractNewsResource {
   @Path("{newsId}/acknowledge")
   public void acknowledge(@PathParam("newsId") String onNewsId) {
     try {
-      getService().acknowledgeNews(onNewsId, getUser().getId());
+      getService().acknowledgeNews(new ResourceReference(onNewsId, getComponentId()),
+          getUser().getId());
     } catch (Exception ex) {
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }
@@ -135,6 +138,7 @@ public class NewsResource extends AbstractNewsResource {
   @Operation(summary = "Deletes the given news.",
       description = "Only a contributor of the application can delete a news.")
   @ApiResponse(responseCode = "200", description = "The news has been deleted.")
+  @NotFound
   @DELETE
   @Path("{newsId}")
   public Response deleteNews(@PathParam("newsId") String onNewsId) {
@@ -142,17 +146,19 @@ public class NewsResource extends AbstractNewsResource {
       if (!isContributor()) {
         throw new WebApplicationException(Status.FORBIDDEN);
       }
-      getService().removeNews(onNewsId);
+      getService().removeNews(new ResourceReference(onNewsId, getComponentId()));
       return Response.ok().build();
     } catch (final WebApplicationException ex) {
       throw ex;
+    } catch (final NotFoundException ex) {
+      throw new WebApplicationException(ex, Status.NOT_FOUND);
     } catch (Exception ex) {
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }
   }
 
   private News getNewsById(String id) {
-    News news = getService().getNews(id);
+    News news = getService().getNews(new ResourceReference(id, getComponentId()));
     if (news == null) {
       throw new WebApplicationException(Status.NOT_FOUND);
     }

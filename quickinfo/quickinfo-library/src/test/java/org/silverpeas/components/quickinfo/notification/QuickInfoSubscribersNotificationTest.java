@@ -29,6 +29,7 @@ import org.mockito.MockedStatic;
 import org.silverpeas.components.quickinfo.model.DefaultQuickInfoService;
 import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.components.quickinfo.repository.NewsRepository;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.notification.user.builder.UserNotificationBuilder;
@@ -70,6 +71,7 @@ class QuickInfoSubscribersNotificationTest {
 
   private static final String COMPONENT_ID = "quickinfo15";
   private static final String NEWS_ID = "news-1";
+  private static final ResourceReference NEWS_REF = new ResourceReference(NEWS_ID, COMPONENT_ID);
   private static final String PUBLICATION_ID = "42";
   private static final String PUBLISHER = "1";
   private static final ContributionIdentifier PUBLICATION =
@@ -89,7 +91,7 @@ class QuickInfoSubscribersNotificationTest {
     final News news = aNews(Status.PUBLISHED_AND_VISIBLE);
 
     final List<UserNotificationBuilder> notifications =
-        notificationsSentBy(() -> service.publish(NEWS_ID, PUBLISHER));
+        notificationsSentBy(() -> service.publish(NEWS_REF, PUBLISHER));
 
     assertThat(notifications, hasSize(1));
     assertThat(notifications.get(0), instanceOf(QuickInfoSubscriptionUserNotification.class));
@@ -108,7 +110,7 @@ class QuickInfoSubscribersNotificationTest {
     aNews(Status.PUBLISHED_AND_VISIBLE);
 
     final List<UserNotificationBuilder> notifications =
-        notificationsSentBy(() -> service.publish(NEWS_ID, PUBLISHER));
+        notificationsSentBy(() -> service.publish(NEWS_REF, PUBLISHER));
 
     final QuickInfoSubscriptionUserNotification notification =
         (QuickInfoSubscriptionUserNotification) notifications.get(0);
@@ -123,7 +125,7 @@ class QuickInfoSubscribersNotificationTest {
   void theServiceDoesNotAskThePdcForNotifyingItsSubscribers() throws Exception {
     aNews(Status.PUBLISHED_AND_VISIBLE);
 
-    notificationsSentBy(() -> service.publish(NEWS_ID, PUBLISHER));
+    notificationsSentBy(() -> service.publish(NEWS_REF, PUBLISHER));
 
     verify(pdcManager, never()).getPositions(anyInt(), anyString());
   }
@@ -155,7 +157,7 @@ class QuickInfoSubscribersNotificationTest {
     final News news = aNews(Status.PUBLISHED_BUT_NOT_YET_VISIBLE);
 
     final List<UserNotificationBuilder> notifications =
-        notificationsSentBy(() -> service.publish(NEWS_ID, PUBLISHER));
+        notificationsSentBy(() -> service.publish(NEWS_REF, PUBLISHER));
 
     assertThat(notifications, is(empty()));
     verify(reminder).setAbout(news);
@@ -176,7 +178,7 @@ class QuickInfoSubscribersNotificationTest {
     when(news.getPublication()).thenReturn(publication);
     when(news.isDraft()).thenReturn(status == Status.DRAFT);
     when(news.isVisible()).thenReturn(status == Status.PUBLISHED_AND_VISIBLE);
-    when(newsRepository.getById(NEWS_ID)).thenReturn(news);
+    when(newsRepository.getByIdAndInstanceId(NEWS_ID, COMPONENT_ID)).thenReturn(news);
     return news;
   }
 

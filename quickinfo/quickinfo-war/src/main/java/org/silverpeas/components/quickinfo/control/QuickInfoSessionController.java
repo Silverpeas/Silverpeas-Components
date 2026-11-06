@@ -26,8 +26,10 @@ import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.components.quickinfo.model.NewsSelection;
 import org.silverpeas.components.quickinfo.model.QuickInfoService;
 import org.silverpeas.components.quickinfo.model.QuickInfoServiceProvider;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.kernel.SilverpeasException;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
+import org.silverpeas.kernel.exception.NotFoundException;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.PasteDetail;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
@@ -120,8 +122,19 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
     noMoreVisibleList = newsByStatus.getNoMoreVisibles();
   }
 
+  /**
+   * Gets the specified news of this QuickInfo instance. The user is authorized on this instance
+   * only, so a news of another instance is never served.
+   * @param id the unique identifier of the news.
+   * @param statVisit true to count the access to the news as a visit.
+   * @return the news.
+   * @throws NotFoundException if this instance has no such news.
+   */
   public News getNews(String id, boolean statVisit) {
-    News news = getQuickInfoService().getNews(id);
+    News news = getQuickInfoService().getNews(new ResourceReference(id, getComponentId()));
+    if (news == null) {
+      throw new NotFoundException("No such news " + id + " in " + getComponentId());
+    }
     if (statVisit) {
       addVisit(news);
     }
@@ -129,8 +142,19 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
     return news;
   }
 
+  /**
+   * Gets the news of this QuickInfo instance backed by the specified publication. The user is
+   * authorized on this instance only, so a news of another instance is never served.
+   * @param foreignId the unique identifier of the publication backing the news.
+   * @return the news.
+   * @throws NotFoundException if this instance has no such news.
+   */
   public News getNewsByForeignId(String foreignId) {
     News news = getQuickInfoService().getNewsByForeignId(foreignId);
+    if (news == null || !getComponentId().equals(news.getComponentInstanceId())) {
+      throw new NotFoundException(
+          "No such news with publication " + foreignId + " in " + getComponentId());
+    }
     addVisit(news);
     processIndex(news);
     return news;
@@ -141,7 +165,7 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
    * @param id the identifier of the news that must be published.
    */
   public void publish(String id) {
-    getQuickInfoService().publish(id, getUserId());
+    getQuickInfoService().publish(new ResourceReference(id, getComponentId()), getUserId());
     loadNewsLists(true);
   }
 
@@ -238,7 +262,8 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
   }
 
   public void submitNewsOnHomepage(String id) {
-    getQuickInfoService().submitNewsOnHomepage(id, getUserId());
+    getQuickInfoService().submitNewsOnHomepage(new ResourceReference(id, getComponentId()),
+        getUserId());
   }
 
   public void addNewsToBeCopied(String newsId) throws ClipboardException {

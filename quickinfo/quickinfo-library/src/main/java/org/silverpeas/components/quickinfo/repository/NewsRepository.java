@@ -26,6 +26,7 @@ package org.silverpeas.components.quickinfo.repository;
 
 import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.core.annotation.Repository;
+import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
 import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityRepository;
 
@@ -35,6 +36,19 @@ import static java.util.Collections.singletonList;
 
 @Repository
 public class NewsRepository extends SilverpeasJpaEntityRepository<News> {
+
+  /**
+   * Gets the news with the given identifier in the specified QuickInfo instance.
+   * @param id the unique identifier of the news.
+   * @param instanceId the unique identifier of the QuickInfo instance.
+   * @return the news or null if the instance has no such news.
+   */
+  public News getByIdAndInstanceId(String id, String instanceId) {
+    NamedParameters parameters = newNamedParameters()
+        .add("id", UuidIdentifier.from(id))
+        .add("instanceId", instanceId);
+    return findFirstByNamedQuery("newsById", parameters);
+  }
 
   public List<News> getByComponentId(String componentId) {
     return getByComponentIds(singletonList(componentId));

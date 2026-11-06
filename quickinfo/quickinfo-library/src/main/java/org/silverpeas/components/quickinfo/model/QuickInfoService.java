@@ -26,6 +26,7 @@ package org.silverpeas.components.quickinfo.model;
 
 import org.silverpeas.components.quickinfo.NewsByStatus;
 import org.silverpeas.core.ApplicationService;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.component.model.PasteDetail;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.io.upload.UploadedFile;
@@ -51,18 +52,29 @@ public interface QuickInfoService extends ApplicationService {
 
   /**
    * Creating new news from an existing one.
+   *
    * @param newsToCopy news to copy.
    * @param pasteDetail the details about the copy (user identifier and component destination).
-   * @return a {@link News} instance representing the created news.
    */
-  News copyNews(News newsToCopy, PasteDetail pasteDetail);
+  void copyNews(News newsToCopy, PasteDetail pasteDetail);
 
-  void publish(String id, String userId);
+  /**
+   * Publishes the specified news of a QuickInfo instance.
+   * @param newsRef the reference of the news (its identifier and its QuickInfo instance).
+   * @param userId the unique identifier of the user publishing the news.
+   * @throws org.silverpeas.kernel.exception.NotFoundException if the instance has no such news.
+   */
+  void publish(ResourceReference newsRef, String userId);
 
   void update(final News news, List<PdcPosition> positions, Collection<UploadedFile> uploadedFiles,
       final boolean forcePublishing);
 
-  void removeNews(String id);
+  /**
+   * Removes the specified news from the QuickInfo instance it belongs to.
+   * @param newsRef the reference of the news (its identifier and its QuickInfo instance).
+   * @throws org.silverpeas.kernel.exception.NotFoundException if the instance has no such news.
+   */
+  void removeNews(ResourceReference newsRef);
 
   List<News> getAllNews(String componentId);
 
@@ -76,13 +88,24 @@ public interface QuickInfoService extends ApplicationService {
 
   List<News> getUnreadBlockingNews(String userId);
 
-  void acknowledgeNews(String id, String userId);
+  void acknowledgeNews(ResourceReference newsRef, String userId);
 
-  News getNews(String id);
+  /**
+   * Gets the specified news in the QuickInfo instance it belongs to.
+   * @param newsRef the reference of the news (its identifier and its QuickInfo instance).
+   * @return the news or null if the instance has no such news.
+   */
+  News getNews(ResourceReference newsRef);
 
   News getNewsByForeignId(String id);
 
-  void submitNewsOnHomepage(String id, String userId);
+  /**
+   * Submits the specified news of a QuickInfo instance to the news of the main page.
+   * @param newsRef the reference of the news (its identifier and its QuickInfo instance).
+   * @param userId the unique identifier of the user submitting the news.
+   * @throws org.silverpeas.kernel.exception.NotFoundException if the instance has no such news.
+   */
+  void submitNewsOnHomepage(ResourceReference newsRef, String userId);
 
   /**
    * Performs processes about news linked to given reminder.<br/>

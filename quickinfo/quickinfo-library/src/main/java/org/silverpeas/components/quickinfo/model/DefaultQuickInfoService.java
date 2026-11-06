@@ -70,6 +70,7 @@ import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.exception.NotFoundException;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.StringUtil;
 
@@ -114,7 +115,7 @@ public class DefaultQuickInfoService implements QuickInfoService {
 
   @Override
   public Optional<News> getContributionById(ContributionIdentifier contributionId) {
-    return Optional.of(getNews(contributionId.getLocalId()));
+    return Optional.ofNullable(getNews(new ResourceReference(contributionId)));
   }
 
   @Override
@@ -143,9 +144,25 @@ public class DefaultQuickInfoService implements QuickInfoService {
   }
 
   @Override
-  public News getNews(String id) {
-    final News news = newsRepository.getById(id);
+  public News getNews(ResourceReference newsRef) {
+    final News news = newsRepository.getByIdAndInstanceId(newsRef.getLocalId(),
+        newsRef.getInstanceId());
     decorateNews(singletonList(news), true);
+    return news;
+  }
+
+  /**
+   * Gets the specified news that must exist in the QuickInfo instance it belongs to.
+   * @param newsRef the reference of the news (its identifier and its QuickInfo instance).
+   * @return the news.
+   * @throws NotFoundException if the instance has no such news.
+   */
+  private News getExistingNews(ResourceReference newsRef) {
+    final News news = getNews(newsRef);
+    if (news == null) {
+      throw new NotFoundException("No such news " + newsRef.getLocalId() + " in " +
+          newsRef.getInstanceId());
+    }
     return news;
   }
 
@@ -157,8 +174,8 @@ public class DefaultQuickInfoService implements QuickInfoService {
   }
 
   @Override
-  public void acknowledgeNews(String id, String userId) {
-    News news = newsRepository.getById(id);
+  public void acknowledgeNews(ResourceReference newsRef, String userId) {
+    News news = newsRepository.getByIdAndInstanceId(newsRef.getLocalId(), newsRef.getInstanceId());
     if (news != null) {
       getStatisticService().addStat(userId, news);
     }
@@ -222,7 +239,7 @@ public class DefaultQuickInfoService implements QuickInfoService {
 
   @Override
   @Transactional
-  public News copyNews(final News newsToCopy, final PasteDetail pasteDetail) {
+  public void copyNews(final News newsToCopy, final PasteDetail pasteDetail) {
 
     // Initializing the news instance
     final News news = News.builder(newsToCopy).build();
@@ -256,7 +273,6 @@ public class DefaultQuickInfoService implements QuickInfoService {
     // - thumbnail
     ThumbnailController.copyThumbnail(pubSourceRef, pubDestRef);
 
-    return savedNews;
   }
 
   private void copyPdcPositions(final News sourceNews, final News destNews) {
@@ -276,8 +292,8 @@ public class DefaultQuickInfoService implements QuickInfoService {
 
   @Override
   @Transactional
-  public void publish(String id, String userId) {
-    News news = getNews(id);
+  public void publish(ResourceReference newsRef, String userId) {
+    News news = getExistingNews(newsRef);
     news.setPublishedBy(userId);
     news.setPublished();
     news.setPublishDate(new Date());
@@ -299,7 +315,8 @@ public class DefaultQuickInfoService implements QuickInfoService {
   @Transactional
   public void update(final News news, List<PdcPosition> positions,
       Collection<UploadedFile> uploadedFiles, final boolean forcePublishing) {
-    final News before = Transaction.performInNew(() -> getNews(news.getId()));
+    final News before =
+        Transaction.performInNew(() -> getNews(new ResourceReference(news.getIdentifier())));
 
     final PublicationDetail publication = news.getPublication();
 
@@ -345,8 +362,8 @@ public class DefaultQuickInfoService implements QuickInfoService {
 
   @Override
   @Transactional
-  public void removeNews(final String id) {
-    final News news = getNews(id);
+  public void removeNews(ResourceReference newsRef) {
+    final News news = getExistingNews(newsRef);
 
     final PublicationPK foreignPK = news.getForeignPK();
 
@@ -366,7 +383,7 @@ public class DefaultQuickInfoService implements QuickInfoService {
     getStatisticService().deleteStats(news);
 
     // deleting news itself
-    newsRepository.deleteById(id);
+    newsRepository.delete(news);
 
     notifier.notifyEventOn(ResourceEvent.Type.DELETION, news);
   }
@@ -440,8 +457,8 @@ public class DefaultQuickInfoService implements QuickInfoService {
   }
 
   @Override
-  public void submitNewsOnHomepage(String id, String userId) {
-    News news = getNews(id);
+  public void submitNewsOnHomepage(ResourceReference newsRef, String userId) {
+    News news = getExistingNews(newsRef);
     news.setId(news.getPublicationId());
     getDelegatedNewsService().submitNews(news,
         news.getVisibility().getSpecificPeriod().orElse(null), userId);

@@ -28,6 +28,7 @@ import jakarta.inject.Inject;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.components.quickinfo.model.QuickInfoService;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
@@ -61,17 +62,20 @@ public class QuickInfoDelayedVisibilityUserNotificationReminderInitializer
   @Inject
   private QuickInfoDelayedVisibilityUserNotificationReminder reminder;
 
+  @Inject
+  private QuickInfoService quickInfoService;
+
   @Override
   public void init() throws PersistenceException {
     if (!dataFile.exists()) {
-      final List<String> potentialNewsIds = getNewsIds();
+      final List<ResourceReference> potentialNewsIds = getNewsReferences();
       final StringBuilder report = new StringBuilder((potentialNewsIds.size() + 1) * 180);
       try {
         if (potentialNewsIds.isEmpty()) {
           report.append("No reminder has been set about delayed visibility.");
         } else {
           potentialNewsIds.forEach(i -> {
-            final News potentialNews = QuickInfoService.get().getNews(i);
+            final News potentialNews = quickInfoService.getNews(i);
             if (reminder.setAbout(potentialNews)) {
               report.append(MessageFormat.format(
                   "Reminder set for news with id {0}, located into instance {1}, linked to " +
@@ -97,14 +101,14 @@ public class QuickInfoDelayedVisibilityUserNotificationReminderInitializer
     }
   }
 
-  private static List<String> getNewsIds() throws PersistenceException {
-    final List<String> potentialNewsIds;
+  private static List<ResourceReference> getNewsReferences() throws PersistenceException {
+    final List<ResourceReference> potentialNewsIds;
     try {
-      potentialNewsIds = JdbcSqlQuery.select("n.id")
+      potentialNewsIds = JdbcSqlQuery.select("n.id, n.instanceId")
           .from("sc_quickinfo_news n, sb_publication_publi p")
           .where("CAST(n.foreignid AS INT) = p.pubid")
           .and("p.pubbegindate >= ?", DateUtil.today2SQLDate())
-          .execute(r -> r.getString(1));
+          .execute(r -> new ResourceReference(r.getString(1), r.getString(2)));
     } catch (SQLException e) {
       throw new PersistenceException(e.getMessage(), e);
     }

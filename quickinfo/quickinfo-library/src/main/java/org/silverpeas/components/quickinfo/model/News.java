@@ -76,6 +76,8 @@ import static org.silverpeas.core.date.TemporalConverter.asOffsetDateTime;
 
 @Entity
 @Table(name = "sc_quickinfo_news")
+@NamedQuery(name = "newsById", query = "select n from News n where n.id = :id and " +
+    "n.componentInstanceId = :instanceId")
 @NamedQuery(name = "newsFromComponentInstances", query = "select n from News n where n" +
     ".componentInstanceId in :componentInstanceIds order by n.publishDate DESC" +
     ", n.lastUpdateDate DESC")

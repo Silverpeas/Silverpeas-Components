@@ -26,7 +26,7 @@ package org.silverpeas.components.quickinfo.socialnetwork;
 
 import jakarta.inject.Inject;
 import org.silverpeas.components.quickinfo.model.News;
-import org.silverpeas.components.quickinfo.model.QuickInfoServiceProvider;
+import org.silverpeas.components.quickinfo.model.QuickInfoService;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.comment.service.CommentService;
@@ -49,6 +49,9 @@ public class SocialQuickInfoComment implements SocialNewsCommentProvider<SocialI
   @Inject
   private OrganizationController organizationController;
 
+  @Inject
+  private QuickInfoService quickInfoService;
+
   private List<String> getListResourceType() {
     List<String> listResourceType = new ArrayList<>();
     listResourceType.add(News.getResourceType()); //quickinfo components
@@ -57,9 +60,8 @@ public class SocialQuickInfoComment implements SocialNewsCommentProvider<SocialI
 
   private List<SocialInformationComment> decorate(List<SocialInformationComment> listSocialInformation) {
     for (SocialInformationComment socialInformation : listSocialInformation) {
-      String resourceId = socialInformation.getComment().getResourceReference().getLocalId();
-
-      News news = QuickInfoServiceProvider.getQuickInfoService().getNews(resourceId);
+      var newsRef = socialInformation.getComment().getResourceReference();
+      News news = quickInfoService.getNews(newsRef);
 
       //set URL, title and description of the news
       socialInformation.setUrl(URLUtil
