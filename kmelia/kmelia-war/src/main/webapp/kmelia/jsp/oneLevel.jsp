@@ -281,11 +281,11 @@
           } else {
             if (searchInProgress) {
               doPagination(<%=currentPageIndex%>);
+              displayOperations(id);
             } else {
-              displayPublications(id);
+              displayPublicationsAndOperations(id);
             }
             displayPath(id);
-            displayOperations(id);
             $("#searchZone").css({'display':'block'});
             displaySubTopics(id);
           }
