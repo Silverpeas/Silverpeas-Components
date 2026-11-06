@@ -33,12 +33,12 @@ import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.annotation.Authorized;
-import org.silverpeas.core.webapi.node.NodeAttrEntity;
 import org.silverpeas.core.webapi.node.NodeEntity;
 import org.silverpeas.core.webapi.node.NodeType;
 import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.annotation.Nonnull;
+import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -67,6 +67,9 @@ import java.util.List;
 public class FolderResource extends RESTWebService {
 
   static final String PATH = "folders";
+
+  @Inject
+  private KmeliaService kmeliaService;
 
   @PathParam("componentId")
   private String componentId;
@@ -186,47 +189,59 @@ public class FolderResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
   public Response createNode(@PathParam("path") String path, final NodeEntity nodeEntity) {
-    String parentNodeId = getNodeIdFromURI(path);
-    NodePK nodePK = getNodePK(parentNodeId);
+    NodePK parentPK = getNodePK(getNodeIdFromURI(path));
+    NodeDetail node = createFolderInto(parentPK, nodeEntity);
+    URI uri = getUri().getRequestUri();
+    NodeEntity newNodeEntity = NodeEntity.fromNodeDetail(getHighestUserRoleIfAny(), node, uri);
+    return Response.created(uri).entity(newNodeEntity).build();
+  }
 
-    String nodeName = nodeEntity.getText();
-    if (StringUtils.isEmpty(nodeName)) {
+  /**
+   * Creates a new folder as a child of the specified parent folder, on behalf of the user behind
+   * the current request.
+   * <p>
+   * Only a folder administrator is allowed to create a sub-folder, as it is already required for
+   * the creation through the web navigation (see the <code>ToAddTopic</code> function of the
+   * request router). The creator of the folder is always the requester: any creator identifier
+   * carried by the given entity is ignored so that a user cannot usurp the identity of another
+   * one.
+   * </p>
+   * @param parentPK the identifier of the parent folder into which the folder has to be created.
+   * @param nodeEntity the description of the folder to create.
+   * @return the detail of the newly created folder.
+   */
+  protected NodeDetail createFolderInto(final NodePK parentPK, final NodeEntity nodeEntity) {
+    final String requesterId = getUser().getId();
+    if (!SilverpeasRole.ADMIN.isInRole(
+        getKmeliaService().getUserTopicProfile(parentPK, requesterId))) {
+      throw new WebApplicationException(Status.FORBIDDEN);
+    }
+    final String folderName = nodeEntity.getText();
+    if (StringUtils.isEmpty(folderName)) {
       throw new WebApplicationException(Status.NO_CONTENT);
     }
-
-    Collection<NodeDetail> children;
+    if (isNameAlreadyUsedBySibling(parentPK, requesterId, folderName)) {
+      throw new WebApplicationException(Status.NOT_ACCEPTABLE);
+    }
     try {
-      children = getKmeliaService().getFolderChildren(nodePK, getUser().getId());
+      return getKmeliaService().createTopic(getComponentId(), parentPK.getId(), null, requesterId,
+          folderName, nodeEntity.getAttr().getDescription());
+    } catch (WebApplicationException e) {
+      throw e;
+    } catch (Exception e) {
+      throw new WebApplicationException(e, Status.SERVICE_UNAVAILABLE);
+    }
+  }
+
+  private boolean isNameAlreadyUsedBySibling(final NodePK parentPK, final String requesterId,
+      final String folderName) {
+    final Collection<NodeDetail> siblings;
+    try {
+      siblings = getKmeliaService().getFolderChildren(parentPK, requesterId);
     } catch (Exception e) {
       throw new WebApplicationException(e, Status.INTERNAL_SERVER_ERROR);
     }
-
-    if (children != null) {
-      for (NodeDetail node : children) {
-        if (nodeName.equals(node.getName())) {
-          throw new WebApplicationException(Status.NOT_ACCEPTABLE);
-        }
-      }
-    }
-
-    NodeAttrEntity nodeAttr = nodeEntity.getAttr();
-    String userId = nodeAttr.getCreatorId();
-    if (StringUtils.isEmpty(userId) && nodeAttr.getCreator() != null) {
-      userId = nodeAttr.getCreator().getId();
-    }
-    String description = nodeAttr.getDescription();
-
-    try {
-      NodeDetail node = getKmeliaService().createTopic(
-          componentId, parentNodeId, null, userId, nodeName, description);
-
-      URI uri = getUri().getRequestUri();
-      NodeEntity newNodeEntity = NodeEntity.fromNodeDetail(getHighestUserRoleIfAny(), node, uri);
-
-      return Response.created(uri).entity(newNodeEntity).build();
-    } catch (Exception ex) {
-      throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
-    }
+    return siblings != null && siblings.stream().anyMatch(n -> folderName.equals(n.getName()));
   }
 
   private void decorateRoot(NodeEntity root, String lang) {
@@ -347,12 +362,8 @@ public class FolderResource extends RESTWebService {
     }
   }
 
-  private KmeliaService getKmeliaService() {
-    try {
-      return KmeliaService.get();
-    } catch (Exception e) {
-      throw new WebApplicationException(e, Status.INTERNAL_SERVER_ERROR);
-    }
+  protected KmeliaService getKmeliaService() {
+    return kmeliaService;
   }
 
   private SilverpeasRole getHighestUserRoleIfAny() {
