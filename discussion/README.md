@@ -44,7 +44,7 @@ locale ou Jenkins de cette nouvelle implémentation n'a été exécutée.
 - Édition et suppression réservées à l'auteur ou au gestionnaire de l'instance, avec refus des invités et anonymes pour les écritures.
 - Vérification de l'appartenance du message à la conversation de l'instance avant toute modification.
 - Contrôle de version lors d'une édition ou suppression ; les conflits sont traduits en HTTP 409.
-- Historique chronologique (récents en bas), pages de 30 messages, curseur exclusif stable, limite métier de 100.
+- Historique chronologique (récents en bas), pages de 30 messages par défaut (`history.pageSize`), curseur exclusif stable, limite métier de 100.
 - Défilement infini avec `IntersectionObserver`, bouton de chargement et reprise après erreur.
 - Compteur des messages non lus, excluant les messages de l'utilisateur et les messages supprimés.
 - Action explicite « Marquer comme lu », utilisant la séquence de la page affichée. Une simple consultation ne marque pas automatiquement l'historique comme lu.
@@ -594,7 +594,8 @@ Aucune migration SQL.
 ### Limites des pièces jointes par instance
 
 Les paramètres natifs de l'application exposent `maxImagesPerMessage` (4 par défaut),
-`maxImageSizeMb` (5 Mo par image) et `maxFileSizeMb` (20 Mo par fichier).
+`maxImageSizeMb` (5 Mo par image), `maxFileSizeMb` (20 Mo par fichier) et
+`maxFilesPerMessage` (4 fichiers par message).
 Les valeurs sont des entiers strictement positifs ; les tailles vont de 1 à 2047 Mo
 (1 Mo = 1 048 576 octets). Une valeur absente, vide ou invalide reprend uniquement
 la valeur par défaut du paramètre concerné. Le nombre de fichiers reste limité à 4.
@@ -701,3 +702,48 @@ Le test `discussion-i18n.test.cjs` contrôle que les clés utilisées par les so
 Java/JSP/JavaScript existent dans les bundles par défaut, français, anglais et
 allemand. L’éditeur partagé Core fournit également ses valeurs par défaut depuis
 son bundle natif, sans texte anglais en dur dans le JavaScript.
+
+## Réglages de fonctionnement
+
+Les paramètres globaux sont dans
+`properties/org/silverpeas/components/discussion/settings/DiscussionSettings.properties`.
+Ils peuvent être surchargés par les mécanismes habituels de configuration Silverpeas,
+notamment un bloc `configfile` du CustomerSettings pointant vers ce fichier. Les
+valeurs par défaut préservent le comportement existant.
+
+| Clé | Défaut | Usage |
+| --- | ---: | --- |
+| `history.pageSize` | 30 | Messages chargés par page, y compris dans un fil et autour d’un message |
+| `search.pageSize` | 20 | Résultats de recherche par page |
+| `presence.refreshMs` | 30000 | Intervalle de mise à jour des participants connectés |
+| `read.visibilityMs` | 1000 | Temps d’affichage avant lecture automatique |
+| `read.retryMs` | 2000 | Nouvelle tentative d’envoi d’un accusé de lecture |
+| `typing.intervalMs` | 2500 | Intervalle minimal entre signaux de saisie côté navigateur |
+| `typing.throttleMs` | 2000 | Limitation des signaux de saisie côté serveur |
+| `typing.idleMs` | 5000 | Inactivité avant arrêt du signal de saisie |
+| `typing.ttlMs` | 8000 | Expiration d’un signal de saisie |
+| `typing.maxStates` | 10000 | Nombre maximal d’états de saisie gardés en mémoire |
+| `live.retryInitialMs` | 1000 | Premier délai de nouvelle tentative après échec de synchronisation |
+| `live.retryMaxMs` | 30000 | Plafond du délai de nouvelle tentative |
+| `pins.excerptLength` | 180 | Caractères Unicode d’un extrait de message épinglé |
+| `quote.excerptLength` | 300 | Caractères Unicode d’une citation |
+| `event.durationMinutes` | 60 | Durée proposée pour un événement |
+| `event.leadMinutes` | 15 | Décalage initial de l’événement par rapport à l’heure courante |
+
+Les unités et plages autorisées sont indiquées dans le fichier. Une valeur absente,
+invalide ou hors plage reprend sa valeur par défaut. L’intervalle de saisie effectif
+ne peut pas être inférieur au seuil serveur ; son expiration ne peut pas être
+inférieure à l’inactivité plus l’intervalle effectif. Le plafond des nouvelles tentatives ne
+peut pas être inférieur au délai initial. Le navigateur reçoit les valeurs validées
+par le serveur ; les scripts conservent les anciennes valeurs uniquement comme
+secours pour des pages déjà ouvertes ou en cache.
+
+Le nombre de fichiers se règle **par instance**, dans les paramètres de l’application.
+Il est appliqué au sélecteur de fichiers, aux messages d’aide traduits et à la
+validation serveur. Les instances existantes sans valeur conservent la limite de 4.
+
+Les contraintes de stockage (dont les 2 000 caractères d’un message), les formats
+acceptés, les limites de lots des API et les bornes de sécurité restent techniques.
+La synchronisation des messages reste événementielle ; ces réglages n’ajoutent pas
+de scrutation périodique des messages. Aucun script SQL ni nouvelle version de
+migration n’est requis.

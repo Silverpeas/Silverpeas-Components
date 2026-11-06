@@ -137,3 +137,15 @@ test('quoting never injects HTML or silently truncates a nearly full draft',asyn
     assert.ok((await visual(page).locator('blockquote').innerText()).length<400);
   } finally {await browser.close();}
 });
+
+test('quotations use the configured Unicode character limit', async () => {
+  const {browser,page} = await setup({body:'😀'.repeat(25)});
+  try {
+    await page.evaluate(() => {document.getElementById('discussion').dataset.quoteExcerptLength = '8';});
+    await message(page, {text:'😀'.repeat(25)});
+    await quote(page);
+    const markdown = await page.locator('input[name=body]').inputValue();
+    assert.ok(markdown.includes('😀'.repeat(8) + '…'));
+    assert.ok(!markdown.includes('😀'.repeat(9)));
+  } finally {await browser.close();}
+});

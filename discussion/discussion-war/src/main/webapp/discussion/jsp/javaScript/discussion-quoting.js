@@ -40,7 +40,8 @@
       }
       if (!excerpt) { return; }
       // Use visible text, never canonical @mention identifiers, so quoting does not notify them again.
-      excerpt = [...excerpt].slice(0, 300).join('') + ([...excerpt].length > 300 ? '…' : '');
+      const maximum = Number(discussion.dataset.quoteExcerptLength) || 300;
+      excerpt = [...excerpt].slice(0, maximum).join('') + ([...excerpt].length > maximum ? '…' : '');
       const url = new URL(trigger.dataset.quoteUrl, document.baseURI);
       if (url.origin !== location.origin || !['http:','https:'].includes(url.protocol)) { return; }
       window.DiscussionRichEditor?.quote(textarea, {author:trigger.dataset.quoteAuthor, excerpt, url:url.href});

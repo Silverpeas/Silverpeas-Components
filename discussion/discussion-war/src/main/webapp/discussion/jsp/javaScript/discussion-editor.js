@@ -135,7 +135,8 @@
       preview.textContent = excerpt.dataset.pinText;
       renderBody(preview);
       const characters = Array.from(preview.textContent);
-      const text = characters.slice(0, 180).join('') + (characters.length > 180 ? '…' : '');
+      const maximum = Number(discussion.dataset.pinExcerptLength) || 180;
+      const text = characters.slice(0, maximum).join('') + (characters.length > maximum ? '…' : '');
       if (excerpt.textContent !== text) { excerpt.textContent = text; }
     });
   }

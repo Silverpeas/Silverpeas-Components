@@ -31,6 +31,7 @@ import org.silverpeas.core.annotation.Service;
 /** Instance-level upload policy, read afresh so administration changes apply to new messages. */
 @Service
 public class DiscussionUploadSettings {
+  public static final String MAX_FILES = "maxFilesPerMessage";
   public static final String MAX_IMAGES = "maxImagesPerMessage";
   public static final String IMAGE_SIZE = "maxImageSizeMb";
   public static final String FILE_SIZE = "maxFileSizeMb";
@@ -38,19 +39,22 @@ public class DiscussionUploadSettings {
   @Inject
   private OrganizationController organization;
 
-  public record Limits(int maxImages, int imageSizeMb, int fileSizeMb) {
+  public record Limits(int maxImages, int imageSizeMb, int fileSizeMb, int maxFiles) {
     public Limits {
-      if (maxImages < 1 || imageSizeMb < 1 || fileSizeMb < 1
+      if (maxImages < 1 || maxFiles < 1 || imageSizeMb < 1 || fileSizeMb < 1
           || imageSizeMb > (Integer.MAX_VALUE - 1) / MEBIBYTE
           || fileSizeMb > (Integer.MAX_VALUE - 1) / MEBIBYTE) {
         throw new IllegalArgumentException("Invalid attachment limits");
       }
     }
+    public Limits(int maxImages, int imageSizeMb, int fileSizeMb) {
+      this(maxImages, imageSizeMb, fileSizeMb, DiscussionFileUpload.MAX_FILES);
+    }
     public static Limits defaults() { return new Limits(4, 5, 20); }
     public int getMaxImages() { return maxImages; }
     public int getImageSizeMb() { return imageSizeMb; }
     public int getFileSizeMb() { return fileSizeMb; }
-    public int getMaxFiles() { return DiscussionFileUpload.MAX_FILES; }
+    public int getMaxFiles() { return maxFiles; }
     public int getImageBytes() { return imageSizeMb * MEBIBYTE; }
     public int getFileBytes() { return fileSizeMb * MEBIBYTE; }
 
@@ -69,7 +73,8 @@ public class DiscussionUploadSettings {
   public Limits forInstance(String instanceId) {
     return new Limits(parameter(instanceId, MAX_IMAGES, 4, Integer.MAX_VALUE),
         parameter(instanceId, IMAGE_SIZE, 5, (Integer.MAX_VALUE - 1) / MEBIBYTE),
-        parameter(instanceId, FILE_SIZE, 20, (Integer.MAX_VALUE - 1) / MEBIBYTE));
+        parameter(instanceId, FILE_SIZE, 20, (Integer.MAX_VALUE - 1) / MEBIBYTE),
+        parameter(instanceId, MAX_FILES, DiscussionFileUpload.MAX_FILES, Integer.MAX_VALUE));
   }
 
   private int parameter(String instanceId, String name, int fallback, int maximum) {

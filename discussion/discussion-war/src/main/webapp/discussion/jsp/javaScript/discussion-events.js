@@ -91,7 +91,7 @@
       if (!endEdited && form.elements.start.value) {
         // Work on wall-clock fields; their actual time zone is validated by the server.
         const start = new Date(form.elements.start.value + 'Z');
-        if (Number.isFinite(start.getTime())) { form.elements.end.value = new Date(start.getTime() + 3600000).toISOString().slice(0,16); }
+        if (Number.isFinite(start.getTime())) { form.elements.end.value = new Date(start.getTime() + (Number(discussion.dataset.eventDurationMinutes) || 60) * 60000).toISOString().slice(0,16); }
       }
       periodValid();
     });

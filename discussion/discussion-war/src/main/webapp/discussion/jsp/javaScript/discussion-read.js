@@ -29,6 +29,7 @@
     if (!discussion?.dataset.read) {
       return;
     }
+    const visibilityMs = Number(discussion.dataset.readVisibilityMs) || 1000;
     const history = document.getElementById('discussion-history');
     const visibleSince = new Map();
     const pending = new Set();
@@ -98,7 +99,7 @@
         discussion.querySelector('.discussion-unread-count').textContent = state.dataset.unreadCount;
         document.dispatchEvent(new Event('discussion:read'));
       } catch (error) {
-        retry = window.setTimeout(send, 2000);
+        retry = window.setTimeout(send, Number(discussion.dataset.readRetryMs) || 2000);
       } finally {
         sending = false;
       }
@@ -123,10 +124,10 @@
         present.add(id);
         const start = visibleSince.get(id) ?? now;
         visibleSince.set(id, start);
-        if (now - start >= 1000) {
+        if (now - start >= visibilityMs) {
           pending.add(id);
         } else {
-          wait = Math.min(wait, 1000 - (now - start));
+          wait = Math.min(wait, visibilityMs - (now - start));
         }
       });
       visibleSince.forEach((value, id) => {

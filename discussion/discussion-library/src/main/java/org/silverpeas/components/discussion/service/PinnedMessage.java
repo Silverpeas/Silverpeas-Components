@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.discussion.service;
 
+import org.silverpeas.components.discussion.DiscussionSettings;
 import org.silverpeas.components.discussion.model.DiscussionMessage;
 
 /** Sidebar snapshot with readable mentions and a Unicode-safe excerpt. */
@@ -41,7 +42,8 @@ public record PinnedMessage(String id, String author, String excerpt, String tex
   public static PinnedMessage from(DiscussionMessage message) {
     String text = message.getBody().isBlank() ? "📎" : DiscussionMentionService.displayText(message.getBody());
     int length = text.codePointCount(0, text.length());
-    String excerpt = length > 180 ? text.substring(0, text.offsetByCodePoints(0, 180)) + "…" : text;
+    int maximum = DiscussionSettings.PIN_EXCERPT_LENGTH.value();
+    String excerpt = length > maximum ? text.substring(0, text.offsetByCodePoints(0, maximum)) + "…" : text;
     var creator = message.getCreator();
     return new PinnedMessage(message.getId(), creator == null ? "" : creator.getDisplayedName(), excerpt, text);
   }

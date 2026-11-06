@@ -167,3 +167,25 @@ test('thread typing signals stay within the open thread and never include the dr
     assert.equal(await page.locator('#discussion-typing').isVisible(),false);
   } finally { await browser.close(); }
 });
+
+test('typing uses the configured idle delay and received-event expiry cap', async () => {
+  const browser = await launch();
+  try {
+    const page = await browser.newPage();
+    await setup(page, {activity:true, focused:true});
+    await page.evaluate(() => {
+      const discussion = document.getElementById('discussion');
+      discussion.dataset.typingIdleMs = '700';
+      discussion.dataset.typingTtlMs = '400';
+      window.delays = [];
+      const timeout = window.setTimeout;
+      window.setTimeout = (callback, delay, ...args) => {delays.push(delay); return timeout(callback, delay, ...args);};
+    });
+    await page.locator('textarea').fill('Private draft');
+    await page.waitForFunction(() => requests.some(request => request.active === 'true'));
+    assert.ok(await page.evaluate(() => delays.includes(700)));
+    await page.evaluate(() => emit('DISCUSSION_TYPING', {instanceId:'discussion1', userId:'3', name:'Alice', ttl:8000, revision:1}));
+    assert.ok(await page.evaluate(() => delays.some(delay => delay > 0 && delay <= 400)));
+    await page.waitForFunction(() => document.getElementById('discussion-typing').hidden, undefined, {timeout:1500});
+  } finally {await browser.close();}
+});

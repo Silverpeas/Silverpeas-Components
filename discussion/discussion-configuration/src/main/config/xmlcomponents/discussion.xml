@@ -133,6 +133,25 @@
         <message lang="de">1 bis 2047 MB pro Datei. Standard: 20 MB.</message>
       </help>
     </parameter>
+    <parameter>
+      <name>maxFilesPerMessage</name>
+      <label>
+        <message lang="fr">Nombre maximal de fichiers par message</message>
+        <message lang="en">Maximum files per message</message>
+        <message lang="de">Maximale Dateianzahl pro Nachricht</message>
+      </label>
+      <order>4</order>
+      <mandatory>false</mandatory>
+      <value>4</value>
+      <type>text</type>
+      <size>10</size>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Entier strictement positif. Par défaut : 4.</message>
+        <message lang="en">Positive integer. Default: 4.</message>
+        <message lang="de">Positive ganze Zahl. Standard: 4.</message>
+      </help>
+    </parameter>
   </parameters>
   <maxInstancesPerSpace>1</maxInstancesPerSpace>
 </WAComponent>

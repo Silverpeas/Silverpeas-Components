@@ -26,10 +26,10 @@ const assert=require('node:assert/strict');
 const path=require('node:path');
 const {chromium}=require('playwright');
 const launch=()=>chromium.launch({executablePath:process.env.CHROME_PATH||undefined,args:['--no-sandbox']});
-async function open(browser,focused=true) {
+async function open(browser,focused=true,visibilityMs=1000) {
   const page=await browser.newPage({viewport:{width:900,height:500}});
   page.setDefaultTimeout(5000);
-  await page.setContent(`<style>body{margin:0}header{position:fixed;top:0;height:60px;background:white;width:100%}.discussion-composer{margin:0;position:fixed;bottom:0;height:80px;background:white;width:100%}.discussion-message{height:100px}#discussion-history{padding:60px 0 80px}.gap{height:1200px}</style><main id="discussion" data-read="/read"><header class="discussion-header">Discussion <span class="discussion-unread-count">2</span></header><section id="discussion-history"><article id="message-old" class="discussion-message discussion-message--unread">Older unseen</article><div class="gap"></div><article id="message-new" class="discussion-message discussion-message--unread"><span class="discussion-unread-badge">Unread</span>Newly displayed</article></section><form class="discussion-composer">Composer</form></main>`);
+  await page.setContent(`<style>body{margin:0}header{position:fixed;top:0;height:60px;background:white;width:100%}.discussion-composer{margin:0;position:fixed;bottom:0;height:80px;background:white;width:100%}.discussion-message{height:100px}#discussion-history{padding:60px 0 80px}.gap{height:1200px}</style><main id="discussion" data-read="/read" data-read-visibility-ms="${visibilityMs}"><header class="discussion-header">Discussion <span class="discussion-unread-count">2</span></header><section id="discussion-history"><article id="message-old" class="discussion-message discussion-message--unread">Older unseen</article><div class="gap"></div><article id="message-new" class="discussion-message discussion-message--unread"><span class="discussion-unread-badge">Unread</span>Newly displayed</article></section><form class="discussion-composer">Composer</form></main>`);
   await page.evaluate(focused=>{
     window.focused=focused;
     document.hasFocus=()=>window.focused;
@@ -109,4 +109,13 @@ test('main messages covered by the mobile thread panel stay unread until it clos
     await page.waitForFunction(()=>calls.length===1);
     assert.deepEqual(await page.evaluate(()=>calls),['new']);
   }finally{await browser.close();}
+});
+
+test('configured visibility delay is used before marking the visible message read', async () => {
+  const browser = await chromium.launch({executablePath:process.env.CHROME_PATH || undefined,args:['--no-sandbox']});
+  try {
+    const page = await open(browser, true, 150);
+    await page.waitForFunction(() => calls.length === 1, undefined, {timeout:800});
+    assert.equal(await page.evaluate(() => calls[0]), 'new');
+  } finally {await browser.close();}
 });
