@@ -251,7 +251,7 @@
       previous = textarea.value;
       bodyInput.value = encodeMentions(previous, mentions);
       textarea.setCustomValidity(bodyInput.value.length > textarea.maxLength
-          ? discussion.dataset.lengthError || 'Message too long' : '');
+          ? discussion.dataset.lengthError : '');
     };
     textarea.addEventListener('input', synchronize);
     textarea.form?.addEventListener('submit', synchronize);
