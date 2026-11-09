@@ -92,7 +92,12 @@ public class ListDelegatedNewsResource extends RESTWebService {
    * news, a 403 is returned. If a problem occurs when processing the request, a 503 HTTP code is
    * returned.
    *
-   * @param newDelegatedNews an array of delegated news to update order or to delete
+   * <p>
+   * The delegated news are received as a list, not as a Java array: the JSON provider of the SCIM
+   * library, registered for the whole REST API, fails with any Java array.
+   * </p>
+   *
+   * @param newDelegatedNews the list of the delegated news to update order or to delete
    * @return the new list of delegated news after update or delete
    */
   @Operation(summary = "Reorders or deletes the delegated news.",
@@ -104,16 +109,17 @@ public class ListDelegatedNewsResource extends RESTWebService {
   @PUT
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
-  public List<DelegatedNewsEntity> updateDelegatedNews(final DelegatedNewsEntity[] newDelegatedNews) {
+  public List<DelegatedNewsEntity> updateDelegatedNews(
+      final List<DelegatedNewsEntity> newDelegatedNews) {
     checkIsManager();
     List<DelegatedNewsEntity> updatedEntities;
     List<DelegatedNews> initialListDelegatedNews = getDelegatedNewsService().getAllDelegatedNews();
     try {
-      if (initialListDelegatedNews.size() == newDelegatedNews.length) {// Update Order
+      if (initialListDelegatedNews.size() == newDelegatedNews.size()) {// Update Order
         updatedEntities = updateOrder(newDelegatedNews);
-      } else if (initialListDelegatedNews.size() > newDelegatedNews.length) {// Delete
+      } else if (initialListDelegatedNews.size() > newDelegatedNews.size()) {// Delete
         deleteList(newDelegatedNews, initialListDelegatedNews);
-        updatedEntities = List.of(newDelegatedNews);
+        updatedEntities = newDelegatedNews;
       } else {
         updatedEntities = List.of();
       }
@@ -138,7 +144,7 @@ public class ListDelegatedNewsResource extends RESTWebService {
     }
   }
 
-  private void deleteList(final DelegatedNewsEntity[] newDelegatedNews,
+  private void deleteList(final List<DelegatedNewsEntity> newDelegatedNews,
       List<DelegatedNews> initialListDelegatedNews) {
     boolean found;
     for (DelegatedNews delegatedNews : initialListDelegatedNews) {
@@ -157,8 +163,8 @@ public class ListDelegatedNewsResource extends RESTWebService {
     }
   }
 
-  private List<DelegatedNewsEntity> updateOrder(final DelegatedNewsEntity[] newDelegatedNews) {
-    List<DelegatedNewsEntity> results = new ArrayList<>(newDelegatedNews.length);
+  private List<DelegatedNewsEntity> updateOrder(final List<DelegatedNewsEntity> newDelegatedNews) {
+    List<DelegatedNewsEntity> results = new ArrayList<>(newDelegatedNews.size());
     int order = 0;
     for (DelegatedNewsEntity delegatedNewsEntity : newDelegatedNews) {
       // the tab of DelegatedNewsEntity is in the new order
