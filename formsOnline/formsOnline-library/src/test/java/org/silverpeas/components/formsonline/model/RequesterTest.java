@@ -16,12 +16,21 @@ package org.silverpeas.components.formsonline.model;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.silverpeas.core.admin.user.model.UserFull;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.content.form.Field;
+import org.silverpeas.core.contribution.content.form.PagesContext;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+
+import java.lang.reflect.Constructor;
 
 import java.util.Collections;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
@@ -97,6 +106,78 @@ class RequesterTest {
     when(boss.getValue(DELEGATE_APPROVER_FIELDNAME)).thenReturn("");
     when(boss.getAllDefinedValues(null)).thenReturn(Map.of(DELEGATE_APPROVER_FIELDNAME, ""));
     assertEquals("boss", validatorFor(requester, boss, null));
+  }
+
+
+  @Test
+  void validDirectoryFormDelegateIsValidator() throws Exception {
+    final UserFull requester = mockUser("requester");
+    final UserFull boss = mockUser("boss");
+    final UserFull delegate = mockUser("delegate");
+    when(requester.getValue(BOSS_FIELDNAME)).thenReturn("boss");
+    when(boss.getAllDefinedValues(null))
+        .thenReturn(Map.of(DELEGATE_APPROVER_FIELDNAME, "configured"));
+    final Field field = mock(Field.class);
+    final UserDetail directoryDelegate = mock(UserDetail.class);
+    when(directoryDelegate.getId()).thenReturn("delegate");
+    when(field.getObjectValue()).thenReturn(directoryDelegate);
+    assertEquals("delegate", validatorWithDirectoryField(requester, boss, delegate, field));
+  }
+
+  @Test
+  void invalidDirectoryFormDelegateFallsBackToBoss() throws Exception {
+    final UserFull requester = mockUser("requester");
+    final UserFull boss = mockUser("boss");
+    when(requester.getValue(BOSS_FIELDNAME)).thenReturn("boss");
+    when(boss.getAllDefinedValues(null))
+        .thenReturn(Map.of(DELEGATE_APPROVER_FIELDNAME, "configured"));
+    final Field field = mock(Field.class);
+    when(field.getObjectValue()).thenReturn("invalid user reference");
+    assertEquals("boss", validatorWithDirectoryField(requester, boss, null, field));
+  }
+
+  @Test
+  void absentDirectoryFormFallsBackToBoss() {
+    final UserFull requester = mockUser("requester");
+    final UserFull boss = mockUser("boss");
+    when(requester.getValue(BOSS_FIELDNAME)).thenReturn("boss");
+    when(boss.getAllDefinedValues(null))
+        .thenReturn(Map.of(DELEGATE_APPROVER_FIELDNAME, "configured"));
+    final PublicationTemplateManager manager = mock(PublicationTemplateManager.class);
+    try (MockedStatic<PublicationTemplateManager> templates =
+             mockStatic(PublicationTemplateManager.class)) {
+      templates.when(PublicationTemplateManager::getInstance).thenReturn(manager);
+      assertEquals("boss", validatorFor(requester, boss, null));
+    }
+  }
+
+  @Test
+  void missingRequesterInValidatorCacheHasNoValidator() throws Exception {
+    final Constructor<DefaultFormsOnlineService.HierarchicalValidatorCacheManager> constructor =
+        DefaultFormsOnlineService.HierarchicalValidatorCacheManager.class
+            .getDeclaredConstructor();
+    constructor.setAccessible(true);
+    final DefaultFormsOnlineService.HierarchicalValidatorCacheManager cache =
+        constructor.newInstance();
+    try (MockedStatic<UserFull> users = mockStatic(UserFull.class)) {
+      users.when(() -> UserFull.getById("missing")).thenReturn(null);
+      assertEquals("", cache.getHierarchicalValidatorOf("missing"));
+      assertEquals("", cache.getHierarchicalValidatorOf("missing"));
+    }
+  }
+
+  private static String validatorWithDirectoryField(final UserFull requester,
+      final UserFull boss, final UserFull delegate, final Field field) throws Exception {
+    final PublicationTemplateManager manager = mock(PublicationTemplateManager.class);
+    final PublicationTemplate template = mock(PublicationTemplate.class, RETURNS_DEEP_STUBS);
+    when(manager.getDirectoryTemplate(any(PagesContext.class))).thenReturn(template);
+    when(template.getRecordSet().getRecord("boss").getField(DELEGATE_APPROVER_FIELDNAME))
+        .thenReturn(field);
+    try (MockedStatic<PublicationTemplateManager> templates =
+             mockStatic(PublicationTemplateManager.class)) {
+      templates.when(PublicationTemplateManager::getInstance).thenReturn(manager);
+      return validatorFor(requester, boss, delegate);
+    }
   }
 
   private static UserFull mockUser(final String id) {
