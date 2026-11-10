@@ -53,6 +53,7 @@ public abstract class AbstractNewsUserNotification extends AbstractQuickInfoUser
   protected void performNotificationResource(String language, News resource,
       NotificationResourceData notificationResourceData) {
     notificationResourceData.setResourceName(resource.getTitle());
+    notificationResourceData.setResourceDescription(resource.getDescription());
   }
 
   @Override
