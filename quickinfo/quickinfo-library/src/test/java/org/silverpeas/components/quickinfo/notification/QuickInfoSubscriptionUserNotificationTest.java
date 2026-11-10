@@ -46,6 +46,7 @@ import org.silverpeas.core.notification.user.client.GroupRecipient;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
+import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.subscription.ContributionSubscribersProvider;
 import org.silverpeas.core.subscription.ResourceSubscriptionService;
@@ -182,6 +183,23 @@ class QuickInfoSubscriptionUserNotificationTest {
     assertThat(usersIn(metaData.getUserRecipients()),
         containsInAnyOrder(A_SUBSCRIBER, ANOTHER_SUBSCRIBER));
     assertThat(groupsIn(metaData.getGroupRecipients()), contains(A_SUBSCRIBED_GROUP));
+  }
+
+  /**
+   * The delayed notifications are rendered from the data of the notified resource and not from
+   * the template of the application: the description of the news has to be among them.
+   */
+  @Test
+  void theNotifiedResourceCarriesTheTitleAndTheDescriptionOfTheNews() {
+    subscribers.add(UserSubscriptionSubscriber.from(A_SUBSCRIBER));
+
+    final UserNotification notification =
+        new QuickInfoSubscriptionUserNotification(aNews(), NotifAction.CREATE).build();
+
+    final NotificationResourceData resource =
+        notification.getNotificationMetaData().getNotificationResourceData();
+    assertThat(resource.getResourceName(), is("A news"));
+    assertThat(resource.getResourceDescription(), is("The description of a news"));
   }
 
   @Test
