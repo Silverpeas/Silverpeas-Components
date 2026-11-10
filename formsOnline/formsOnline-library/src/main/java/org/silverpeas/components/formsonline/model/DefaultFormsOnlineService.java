@@ -1024,8 +1024,15 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
       }
 
       return cache.computeIfAbsent(userId,
-          id -> Optional.ofNullable(Requester.getById(id).getRequestValidator())
-              .orElse(EMPTY));
+          id -> {
+            final Requester requester = Requester.getById(id);
+            if (requester == null) {
+              SilverLogger.getLogger(DefaultFormsOnlineService.class).warn(
+                  "Unable to resolve hierarchical validator: requester {0} not found", id);
+              return EMPTY;
+            }
+            return Optional.ofNullable(requester.getRequestValidator()).orElse(EMPTY);
+          });
     }
     }
 }
