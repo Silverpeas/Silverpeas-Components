@@ -43,6 +43,15 @@ public abstract class AbstractScheduleEventUserNotification
   }
 
   @Override
+  protected void initialize() {
+    super.initialize();
+    // Schedule events belong to a global tool, not to a component instance.
+    // The tool identifier is needed to locate the notification templates, but cannot be
+    // passed to NotificationSender as a component instance identifier.
+    getNotificationMetaData().setComponentId(null);
+  }
+
+  @Override
   protected String getLocalizationBundlePath() {
     return "org.silverpeas.components.scheduleevent.multilang.ScheduleEventBundle";
   }
