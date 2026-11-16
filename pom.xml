@@ -324,6 +324,7 @@
     <module>scheduleEvent</module>
     <module>suggestionBox</module>
     <module>spaceMembers</module>
+    <module>directoryViewer</module>
     <module>community</module>
   </modules>
 
