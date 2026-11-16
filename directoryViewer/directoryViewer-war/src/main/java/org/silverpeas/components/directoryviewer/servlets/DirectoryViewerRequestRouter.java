@@ -34,7 +34,7 @@ public class DirectoryViewerRequestRouter
     }
     List<String> parameters = new ArrayList<>();
     // The native directory accepts one primary scope at a time.
-    String[] scopes = {"GroupIds", "SpaceId", "DomainIds", "UserId", "ComponentId"};
+    String[] scopes = {"GroupIds", "SpaceId", "DomainIds", "ComponentId"};
     for (String scope : scopes) {
       if (!controller.parameter(scope).isEmpty()) {
         add(parameters, scope, controller.parameter(scope));
@@ -42,7 +42,7 @@ public class DirectoryViewerRequestRouter
       }
     }
     for (String name : new String[]{"InWholeSpaceTree", "Sort", "View",
-        "DoNotUseContacts", "DoNotUseExtraForm", "UseQuickUserSelection"}) {
+        "DoNotUseContacts", "DoNotUseExtraForm"}) {
       if (!controller.parameter(name).isEmpty()) {
         add(parameters, name, controller.parameter(name));
       }
