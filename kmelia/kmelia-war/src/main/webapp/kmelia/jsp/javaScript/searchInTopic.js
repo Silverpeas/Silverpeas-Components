@@ -12,7 +12,10 @@ function searchInTopic() {
   var componentId = getComponentId();
   $.get(getWebContext()+'/RAjaxPublicationsListServlet?'+serializedExtraFormSearch,
       {Index:0,SearchRequest:true,Query:topicQuery,ComponentId:componentId,IEFix:ieFix},
-      __updateDataAndUI,"html");
+      function(data) {
+        __updateDataAndUI(data);
+        displayOperationsOfCurrentFolder();
+      }, "html");
 	return;
 }
 
