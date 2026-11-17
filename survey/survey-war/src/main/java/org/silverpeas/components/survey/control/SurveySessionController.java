@@ -284,8 +284,26 @@ public class SurveySessionController extends AbstractComponentSessionController 
     }
   }
 
+  /**
+   * Creates the specified survey, or poll, in the current component instance and classifies it
+   * on the PdC with the positions set for it.
+   * @param surveyDetail the survey to create.
+   * @return the identifier of the created survey.
+   * @throws SurveyException if a question of the survey has no answer type or an answer type not
+   * supported by the component instance, or if the survey cannot be created.
+   */
   public QuestionContainerPK createSurvey(QuestionContainerDetail surveyDetail)
       throws SurveyException {
+    List<String> questionStyles = getListQuestionStyle();
+    Optional<Question> questionWithUnsupportedStyle = surveyDetail.getQuestions()
+        .stream()
+        .filter(question -> !questionStyles.contains(question.getStyle()))
+        .findFirst();
+    if (questionWithUnsupportedStyle.isPresent()) {
+      throw new SurveyException(
+          "Cannot create survey with title " + surveyDetail.getHeader().getTitle() +
+              ": unsupported answer type " + questionWithUnsupportedStyle.get().getStyle());
+    }
 
     QuestionContainerPK qcPK = new QuestionContainerPK(null, getSpaceId(), getComponentId());
     try {
@@ -794,7 +812,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
         this.setSessionQuestions(qV);
       } else {
         String message = "Trying to delete a wrong question, questionIndexToDelete=" + qId +
-                         ", questions list size=" + (qV == null ? "null" : qV.size());
+            ", questions list size=" + (qV == null ? "null" : qV.size());
         SilverLogger.getLogger(this).warn(message);
       }
 
