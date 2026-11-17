@@ -123,6 +123,10 @@ void displayAnswer(int i, String style, MultiSilverpeasBundle resources, List<Co
     if (action == null) {
       action = "CreatePoll";
     }
+    // the answers can be entered only for a supported answer type: otherwise back to the header
+    if ("SendPollForm".equals(action) && !surveyScc.getListQuestionStyle().contains(style)) {
+      action = "CreatePoll";
+    }
 
     SettingBundle uploadSettings = ResourceLocator.getSettingBundle("org.silverpeas.util.uploads.uploadSettings");
     SettingBundle settings = ResourceLocator.getSettingBundle("org.silverpeas.survey.surveySettings");
@@ -265,7 +269,7 @@ void displayAnswer(int i, String style, MultiSilverpeasBundle resources, List<Co
         imageEmpty = false;
       }
     }
-    if(<%=!"0".equals(suggestion) && "SendQuestionForm".equals(action)%>){
+    if(<%=!"0".equals(suggestion) && "SendPollForm".equals(action)%>){
       if (isWhitespace(stripInitialWhitespace(document.pollForm.suggestionLabel.value))) {
         errorNb++;
       }
@@ -279,7 +283,7 @@ void displayAnswer(int i, String style, MultiSilverpeasBundle resources, List<Co
         for (var i=0; i < fields.length-1; i++) {
           errorMsg += "<%=resources.getString("SurveyCreationAnswerNb")%> "+fields[i]+" \n";
         }
-        if(<%=!"0".equals(suggestion) && "SendQuestionForm".equals(action)%>){
+        if(<%=!"0".equals(suggestion) && "SendPollForm".equals(action)%>){
           if (isWhitespace(stripInitialWhitespace(document.pollForm.suggestionLabel.value))) {
             errorMsg += "<%=resources.getString("OtherAnswer")%> \n";
           }
@@ -303,7 +307,7 @@ void displayAnswer(int i, String style, MultiSilverpeasBundle resources, List<Co
         errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.name")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
         errorNb++;
       }
-      <% if ("SendQuestionForm".equals(action)) { %>
+      <% if ("CreatePoll".equals(action)) { %>
       if (window.document.pollForm.questionStyle.options[window.document.pollForm.questionStyle.selectedIndex].value=="null") {
         //choisir au moins un style
         errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("survey.style")%>' <%=resources.getString("GML.MustBeFilled")%> \n";
@@ -365,7 +369,7 @@ void displayAnswer(int i, String style, MultiSilverpeasBundle resources, List<Co
         }
       }
    	  
-      <% if ("SendQuestionForm".equals(action)) { %>
+      <% if ("SendPollForm".equals(action)) { %>
       	<view:pdcValidateClassification errorCounter="errorNb" errorMessager="errorMsg"/>
       <% } %>
    
@@ -479,6 +483,7 @@ void displayAnswer(int i, String style, MultiSilverpeasBundle resources, List<Co
 			            <% } else { %>
 			            	<%=resources.getString("survey."+style)%><input type="hidden" name="questionStyle" value="<%=style%>"/>
 			            <% } %>
+			            &nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"/>
 					</div>
 				</div>
 				<%
