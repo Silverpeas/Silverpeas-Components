@@ -249,6 +249,15 @@ function displayPublicationsAndOperations(id) {
   });
 }
 
+/**
+ * Displays the operations of the current folder. Some operations depend on the publications
+ * presented, which are put in the user session by their loading, so they have to be refreshed
+ * once the publications found by a search in the folder are displayed.
+ */
+function displayOperationsOfCurrentFolder() {
+  displayOperations(getCurrentNodeId());
+}
+
 function displayOperations(id) {
   const ieFix = new Date().getTime();
   const componentId = getComponentId();

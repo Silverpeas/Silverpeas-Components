@@ -89,6 +89,10 @@
         return "0";
       }
 
+      function displayOperationsOfCurrentFolder() {
+        // the operations of this page are static: nothing to refresh
+      }
+
       function getCurrentUserId() {
         return "<%=userId%>";
       }
