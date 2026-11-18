@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app>
+  <display-name>Directory Viewer</display-name>
+  <servlet>
+    <servlet-name>DirectoryViewerRequestRouter</servlet-name>
+    <servlet-class>org.silverpeas.components.directoryviewer.servlets.DirectoryViewerRequestRouter</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>DirectoryViewerRequestRouter</servlet-name>
+    <url-pattern>/RdirectoryViewer/*</url-pattern>
+  </servlet-mapping>
+</web-app>
