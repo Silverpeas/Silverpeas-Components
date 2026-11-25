@@ -40,7 +40,6 @@ import org.silverpeas.core.contact.model.ContactPK;
 import org.silverpeas.core.contribution.content.form.*;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.exception.UtilTrappedException;
 import org.silverpeas.core.index.search.SearchEngineProvider;
@@ -68,8 +67,6 @@ import org.silverpeas.kernel.util.StringUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -89,7 +86,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   private Collection<UserFull> currentFullUsers = null;
   private Collection<CompleteContact> currentCompleteUsers = null;
   private String currentSearchCriteria;
-  private static final String GROUP_REFERENTIEL_PREFIX = "group_";
+  static final String GROUP_REFERENTIEL_PREFIX = "group_";
   private LocalizationBundle domainMultilang;
 
   public YellowpagesSessionController(MainSessionController mainSessionCtrl,
@@ -815,6 +812,8 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   private ExportCSVBuilder exportCurrentContactsAsCSV() {
     Collection<ContactFatherDetail> contacts = getCurrentContacts();
     ExportCSVBuilder csvBuilder = new ExportCSVBuilder();
+    ContactFormModels formModels = new ContactFormModels(
+        nodeId -> getNodeService().getDetail(getNodePK(nodeId)).getModelId());
     // Can't export all columns because data are heterogenous
 
     for (ContactFatherDetail contactFatherDetail : contacts) {
@@ -823,7 +822,8 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
         CSVRow csvRow = getCVSRow(contactFatherDetail, contact);
 
         // adding xml data
-        exportFormData(contactFatherDetail, csvRow);
+        formModels.getFormModelOf(contactFatherDetail)
+            .ifPresent(modelId -> exportFormData(contact, modelId, csvRow));
 
         csvBuilder.addLine(csvRow);
       }
@@ -856,43 +856,13 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     return csvRow;
   }
 
-  private void exportFormData(ContactFatherDetail contactFatherDetail, CSVRow csvRow) {
-    String modelId = "unknown";
-    ContactDetail contact = contactFatherDetail.getContactDetail();
+  private void exportFormData(ContactDetail contact, String modelId, CSVRow csvRow) {
     try {
-      modelId =
-          getNodeService().getDetail(new NodePK(contactFatherDetail.getNodeId(), getComponentId()))
-              .getModelId();
-      if (StringUtil.isDefined(modelId) && modelId.endsWith(".xml")) {
-        String xmlFormShortName = modelId.substring(0, modelId.indexOf('.'));
-        PublicationTemplateImpl pubTemplate =
-            (PublicationTemplateImpl) getPublicationTemplateManager()
-                .getPublicationTemplate(getComponentId() + ":" + xmlFormShortName, modelId);
-
-        // get template and data
-        AbstractForm formView = (AbstractForm) pubTemplate.getViewForm();
-        RecordSet recordSet = pubTemplate.getRecordSet();
-        DataRecord data = recordSet.getRecord(contact.getPK().getId());
-
-        List<FieldTemplate> fields = formView.getFieldTemplates();
-        for (FieldTemplate fieldTemplate : fields) {
-          String fieldType = fieldTemplate.getTypeName();
-          StringWriter sw = new StringWriter();
-          PrintWriter out = new PrintWriter(sw, true);
-
-          Field field = data.getField(fieldTemplate.getFieldName());
-          if (field != null && !fieldType.equals(Field.TYPE_FILE)) {
-            FieldDisplayer<Field> fieldDisplayer =
-                TypeManager.getInstance().getDisplayer(fieldType, "simpletext");
-            if (fieldDisplayer != null) {
-              fieldDisplayer.display(out, field, fieldTemplate, new PagesContext());
-            }
-            String fieldValue = sw.getBuffer().toString();
-            // removing ending carriage return appended by out.println() of displayers
-            csvRow.addCell(fieldValue.replaceFirst("\\s+$", ""));
-          }
-        }
-      }
+      String xmlFormShortName = modelId.substring(0, modelId.indexOf('.'));
+      PublicationTemplate template = getPublicationTemplateManager()
+          .getPublicationTemplate(getComponentId() + ":" + xmlFormShortName, modelId);
+      new ContactFormValues(TypeManager.getInstance()).getValuesOf(contact, template)
+          .forEach(csvRow::addCell);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(
           "Can't export modelId = " + modelId + ", contactId = " + contact.getPK().getId(), e);
